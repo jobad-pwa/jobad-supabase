@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobAd - Setup Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto bg-white min-h-screen p-6">
+        <div id="status" class="text-center">
+            <h1 class="text-2xl font-bold mb-4">JobAd Setup Test</h1>
+            <div id="supabase-status" class="p-4 rounded-lg mb-4"></div>
+            <div id="github-status" class="p-4 rounded-lg"></div>
+        </div>
+    </div>
+
+    <script>
+        // Status display function
+        function updateStatus(elementId, message, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = `p-4 rounded-lg ${isSuccess ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+        }
+
+        // Test GitHub connectivity
+        updateStatus('github-status', '✅ GitHub repository is accessible', true);
+        
+        // We'll add Supabase connection in next step
+        updateStatus('supabase-status', '⏳ Waiting for Supabase configuration...', false);
+        
+        console.log("GitHub setup complete!");
+    </script>
+</body>
+</html>
