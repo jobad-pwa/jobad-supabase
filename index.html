@@ -17,7 +17,7 @@
         
         <div class="space-y-3">
             <input type="tel" id="test-mobile" placeholder="Enter Mobile Number" class="w-full p-2 border rounded">
-            <button onclick="testMobile()" class="w-full bg-blue-600 text-white p-2 rounded">Test Mobile</button>
+            <button onclick="testMobileFunction()" class="w-full bg-blue-600 text-white p-2 rounded">Test Mobile</button>
         </div>
         
         <div id="result" class="mt-4 p-4 rounded-lg hidden"></div>
@@ -26,19 +26,23 @@
     <script>
         // YOUR SUPABASE KEY - REPLACE THIS
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';  // <--- CHANGE THIS
+        const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';  // <--- CHANGE THIS
         
         console.log('Script loaded');
         console.log('Supabase URL:', SUPABASE_URL);
         
-        let supabase;
+        // Create global variable
+        let supabaseClient = null;
         
         // Test function
-        async function testMobile() {
-            console.log('testMobile function called');
+        window.testMobileFunction = async function() {
+            console.log('testMobileFunction called');
             
-            const mobile = document.getElementById('test-mobile').value;
+            const mobileInput = document.getElementById('test-mobile');
+            const mobile = mobileInput ? mobileInput.value : '';
             const resultDiv = document.getElementById('result');
+            
+            if (!resultDiv) return;
             
             resultDiv.classList.remove('hidden');
             resultDiv.innerHTML = '⏳ Checking...';
@@ -53,8 +57,7 @@
             }
             
             try {
-                // First check if supabase is initialized
-                if (!supabase) {
+                if (!supabaseClient) {
                     resultDiv.innerHTML = '❌ Supabase not initialized. Check if ANON KEY is correct.';
                     resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
                     return;
@@ -62,7 +65,7 @@
                 
                 resultDiv.innerHTML = '⏳ Querying mobile_list table...';
                 
-                const { data, error } = await supabase
+                const { data, error } = await supabaseClient
                     .from('mobile_list')
                     .select('*')
                     .eq('mobile_number', mobile);
@@ -88,13 +91,15 @@
                 resultDiv.innerHTML = `❌ Error: ${err.message}`;
                 resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
             }
-        }
+        };
         
         // Initialize Supabase on page load
         async function initSupabase() {
             console.log('initSupabase started');
             
             const statusDiv = document.getElementById('status');
+            
+            if (!statusDiv) return;
             
             if (SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
                 statusDiv.innerHTML = '❌ Please replace YOUR_ANON_KEY_HERE with your actual Supabase anon key!';
@@ -103,18 +108,18 @@
             }
             
             try {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 console.log('Supabase client created');
                 
                 // Test the connection
-                const { data, error } = await supabase.from('mobile_list').select('count').limit(1);
+                const { data, error } = await supabaseClient.from('mobile_list').select('count', { count: 'exact', head: true });
                 
                 if (error) {
                     console.error('Connection test error:', error);
                     statusDiv.innerHTML = `❌ Supabase connection failed: ${error.message}`;
                     statusDiv.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-700';
                 } else {
-                    console.log('Connection test success:', data);
+                    console.log('Connection test success');
                     statusDiv.innerHTML = '✅ Connected to Supabase successfully! You can now test mobile numbers.';
                     statusDiv.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-700';
                 }
@@ -129,7 +134,6 @@
         // Start when page loads
         initSupabase();
         
-        // Also log that script finished
         console.log('Script finished loading');
     </script>
 </body>
