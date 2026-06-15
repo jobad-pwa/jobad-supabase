@@ -1,5 +1,5 @@
 // auth.js - Complete working version
-
+alert('auth.js loaded');
 // Initialize Supabase
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
