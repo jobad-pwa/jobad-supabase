@@ -34,7 +34,7 @@
                     <input type="password" id="pin-input" maxlength="4" class="w-full p-3 border rounded-lg text-lg tracking-widest" placeholder="****">
                 </div>
                 
-                <button id="action-btn" onclick="handleAction()" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg">Check Mobile</button>
+                <button id="action-btn" onclick="checkMobile()" class="w-full py-3 bg-blue-600 text-white font-bold rounded-lg">Check Mobile</button>
             </div>
             
             <div id="message" class="mt-4 p-3 rounded-lg text-sm hidden"></div>
@@ -49,40 +49,45 @@
     </div>
 
     <script>
-        // Direct configuration
+        // Configuration
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
         
         let supabase;
+        let currentAction = ''; // 'login' or 'register'
         let currentMobile = '';
-        let currentAction = '';
         
+        // Initialize Supabase
         async function init() {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             console.log('Supabase initialized');
             
-            // Test connection
-            const { data, error } = await supabase.from('platform_stats').select('mobile_list').single();
-            if (error) {
-                document.getElementById('status').innerHTML = `❌ Connection error: ${error.message}`;
-                document.getElementById('status').className = 'p-3 rounded-lg mb-4 bg-red-100 text-red-700 text-sm';
-            } else {
+            try {
+                const { data, error } = await supabase.from('platform_stats').select('mobile_list').single();
+                if (error) throw error;
                 document.getElementById('status').innerHTML = `✅ Connected! ${data.mobile_list.length} mobiles in list.`;
+            } catch (err) {
+                document.getElementById('status').innerHTML = `❌ Error: ${err.message}`;
+                document.getElementById('status').className = 'p-3 rounded-lg mb-4 bg-red-100 text-red-700 text-sm';
             }
         }
         
-        async function handleAction() {
-            console.log('handleAction called');
+        // Main function - called when button is clicked
+        async function checkMobile() {
+            console.log('checkMobile called');
             
             const mobile = document.getElementById('mobile-input').value.trim();
             const pin = document.getElementById('pin-input').value.trim();
             const actionBtn = document.getElementById('action-btn');
+            const messageDiv = document.getElementById('message');
             
+            // Step 1: Validate mobile
             if (!mobile || mobile.length !== 10) {
                 showMessage('Please enter valid 10-digit mobile number', 'red');
                 return;
             }
             
+            // Step 2: If we're in PIN mode (login or register)
             if (currentAction === 'login' || currentAction === 'register') {
                 if (!pin || pin.length !== 4) {
                     showMessage('Please enter 4-digit PIN', 'red');
@@ -90,7 +95,8 @@
                 }
                 
                 if (currentAction === 'login') {
-                    const { data: userData } = await supabase
+                    // Verify PIN
+                    const { data: userData, error } = await supabase
                         .from('active_users')
                         .select('*')
                         .eq('mobile', mobile)
@@ -100,9 +106,12 @@
                         showMessage('✅ Login successful!', 'green');
                         showDashboard(mobile);
                     } else {
-                        showMessage('❌ Invalid PIN.', 'red');
+                        showMessage('❌ Invalid PIN. Please try again.', 'red');
+                        // Reset PIN input
+                        document.getElementById('pin-input').value = '';
                     }
                 } else if (currentAction === 'register') {
+                    // Register new user
                     const newUser = {
                         mobile: mobile,
                         pin_hash: pin,
@@ -121,6 +130,7 @@
                         return;
                     }
                     
+                    // Add to platform_stats mobile_list
                     const { data: statsData } = await supabase
                         .from('platform_stats')
                         .select('mobile_list')
@@ -139,7 +149,8 @@
                 return;
             }
             
-            showMessage('⏳ Checking...', 'blue');
+            // Step 3: Initial check - call Edge Function
+            showMessage('⏳ Checking mobile number...', 'blue');
             actionBtn.disabled = true;
             actionBtn.innerText = 'Checking...';
             
@@ -154,27 +165,36 @@
                 console.log('Edge response:', data);
                 
                 if (data.exists && data.inActiveUsers) {
+                    // User exists - show login
                     currentAction = 'login';
+                    currentMobile = mobile;
                     document.getElementById('pin-container').style.display = 'block';
                     document.getElementById('pin-label').innerHTML = 'Enter your PIN *';
                     actionBtn.innerText = '🔐 Login';
-                    showMessage('Enter your PIN to login', 'green');
+                    showMessage('✅ Existing user! Enter your PIN to login.', 'green');
+                    
                 } else if (data.exists && !data.inActiveUsers) {
+                    // Mobile in platform_stats but not in active_users
                     currentAction = 'register';
+                    currentMobile = mobile;
                     document.getElementById('pin-container').style.display = 'block';
-                    document.getElementById('pin-label').innerHTML = 'Create a PIN *';
-                    actionBtn.innerText = '📝 Activate';
-                    showMessage('Create a PIN to activate your account', 'blue');
+                    document.getElementById('pin-label').innerHTML = 'Create a 4-digit PIN *';
+                    actionBtn.innerText = '📝 Activate Account';
+                    showMessage('📋 Account found! Create a PIN to activate.', 'blue');
+                    
                 } else {
+                    // New user
                     currentAction = 'register';
+                    currentMobile = mobile;
                     document.getElementById('pin-container').style.display = 'block';
-                    document.getElementById('pin-label').innerHTML = 'Create a PIN *';
+                    document.getElementById('pin-label').innerHTML = 'Create a 4-digit PIN *';
                     actionBtn.innerText = '📝 Register';
-                    showMessage('New user! Create a PIN to register', 'blue');
+                    showMessage('📱 New user! Create a PIN to register.', 'blue');
                 }
+                
             } catch (err) {
                 console.error('Error:', err);
-                showMessage('Error: ' + err.message, 'red');
+                showMessage('❌ Connection error: ' + err.message, 'red');
             } finally {
                 actionBtn.disabled = false;
             }
@@ -183,31 +203,43 @@
         function showDashboard(mobile) {
             document.getElementById('auth-container').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('welcome-msg').innerHTML = `Welcome ${mobile}!`;
+            document.getElementById('welcome-msg').innerHTML = `Welcome ${mobile}!<br><span class="text-sm font-normal">You are now logged in.</span>`;
         }
         
         function showMessage(msg, type) {
             const messageDiv = document.getElementById('message');
             messageDiv.classList.remove('hidden');
             messageDiv.innerHTML = msg;
-            const colors = { red: 'bg-red-100 text-red-700', green: 'bg-green-100 text-green-700', blue: 'bg-blue-100 text-blue-700' };
+            
+            const colors = {
+                red: 'bg-red-100 text-red-700',
+                green: 'bg-green-100 text-green-700',
+                blue: 'bg-blue-100 text-blue-700'
+            };
             messageDiv.className = `mt-4 p-3 rounded-lg text-sm ${colors[type] || colors.blue}`;
-            setTimeout(() => messageDiv.classList.add('hidden'), 5000);
+            
+            setTimeout(() => {
+                messageDiv.classList.add('hidden');
+            }, 5000);
         }
         
-        function logout() { 
-            location.reload(); 
+        function logout() {
+            location.reload();
         }
         
-        // Reset when mobile changes
+        // Reset when mobile number changes
         document.getElementById('mobile-input').addEventListener('input', function() {
+            // Reset UI
             document.getElementById('pin-container').style.display = 'none';
+            document.getElementById('pin-input').value = '';
             document.getElementById('action-btn').innerText = 'Check Mobile';
             document.getElementById('action-btn').disabled = false;
+            document.getElementById('message').classList.add('hidden');
             currentAction = '';
             currentMobile = '';
         });
         
+        // Start
         init();
     </script>
 </body>
