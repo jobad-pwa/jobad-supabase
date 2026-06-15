@@ -13,26 +13,24 @@
         <h1 class="text-3xl font-bold text-center text-blue-600">JobAd</h1>
         <p class="text-center text-gray-500 text-sm mb-8">Telangana Zone Based Jobs</p>
         
-        <!-- Test Links -->
         <div class="flex justify-center gap-4 mb-6 text-xs">
             <a href="test.html" class="text-blue-500">🔌 Test DB</a>
             <a href="test-edge.html" class="text-purple-500">🚀 Test Edge</a>
         </div>
         
-        <!-- Step 1: Mobile Input -->
+        <!-- Step 1 -->
         <div id="step1">
             <input type="tel" id="mobile" placeholder="Enter Mobile Number" class="w-full p-3 border rounded-lg mb-3">
             <button onclick="checkMobile()" class="w-full bg-blue-600 text-white p-3 rounded-lg">Check Mobile</button>
         </div>
         
-        <!-- Step 2: PIN Input -->
+        <!-- Step 2 -->
         <div id="step2" style="display:none">
             <input type="password" id="pin" placeholder="Enter PIN" maxlength="4" class="w-full p-3 border rounded-lg mb-3">
             <button onclick="submitPin()" class="w-full bg-green-600 text-white p-3 rounded-lg">Submit</button>
             <button onclick="resetForm()" class="w-full bg-gray-500 text-white p-2 rounded-lg mt-2 text-sm">Back</button>
         </div>
         
-        <!-- Message Display -->
         <div id="message" class="mt-4 p-3 rounded-lg text-center"></div>
     </div>
     
