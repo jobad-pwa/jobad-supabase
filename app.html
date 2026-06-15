@@ -20,34 +20,33 @@
         
         <div id="step1">
             <input type="tel" id="mobile" placeholder="Enter Mobile Number" class="w-full p-3 border rounded-lg mb-3">
-            <button id="checkBtn" class="w-full bg-blue-600 text-white p-3 rounded-lg">Check Mobile</button>
+            <button onclick="checkMobile()" class="w-full bg-blue-600 text-white p-3 rounded-lg">Check Mobile</button>
         </div>
         
         <div id="step2" style="display:none">
             <input type="password" id="pin" placeholder="Enter PIN" maxlength="4" class="w-full p-3 border rounded-lg mb-3">
-            <button id="submitBtn" class="w-full bg-green-600 text-white p-3 rounded-lg">Submit</button>
-            <button id="backBtn" class="w-full bg-gray-500 text-white p-2 rounded-lg mt-2 text-sm">Back</button>
+            <button onclick="submitPin()" class="w-full bg-green-600 text-white p-3 rounded-lg">Submit</button>
+            <button onclick="resetForm()" class="w-full bg-gray-500 text-white p-2 rounded-lg mt-2 text-sm">Back</button>
         </div>
         
         <div id="message" class="mt-4 p-3 rounded-lg text-center"></div>
     </div>
 
     <script>
+        // Configuration
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
         
+        // Create supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
+        // Global variables
         let currentMobile = '';
         let isExistingUser = false;
         
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
-        const messageDiv = document.getElementById('message');
-        const mobileInput = document.getElementById('mobile');
-        const pinInput = document.getElementById('pin');
-        
+        // Helper function to show message
         function showMessage(msg, type) {
+            const messageDiv = document.getElementById('message');
             messageDiv.innerHTML = msg;
             if (type === 'error') {
                 messageDiv.className = 'mt-4 p-3 rounded-lg text-center bg-red-100 text-red-700';
@@ -58,8 +57,10 @@
             }
         }
         
-        async function checkMobile() {
-            const mobile = mobileInput.value.trim();
+        // Check mobile function
+        window.checkMobile = async function() {
+            console.log('checkMobile called');
+            const mobile = document.getElementById('mobile').value.trim();
             
             if (!mobile || mobile.length !== 10) {
                 showMessage('Please enter a valid 10-digit mobile number', 'error');
@@ -87,18 +88,21 @@
                     showMessage('📱 New user! Create a PIN to register.', 'info');
                 }
                 
-                step1.style.display = 'none';
-                step2.style.display = 'block';
-                pinInput.value = '';
+                // Show PIN input
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+                document.getElementById('pin').value = '';
                 
             } catch (err) {
                 console.error('Error:', err);
                 showMessage('Error: ' + err.message, 'error');
             }
-        }
+        };
         
-        async function submitPin() {
-            const pin = pinInput.value.trim();
+        // Submit PIN function
+        window.submitPin = async function() {
+            console.log('submitPin called');
+            const pin = document.getElementById('pin').value.trim();
             
             if (!pin || pin.length !== 4) {
                 showMessage('Please enter a 4-digit PIN', 'error');
@@ -109,6 +113,7 @@
             
             try {
                 if (isExistingUser) {
+                    // LOGIN
                     const { data: user, error } = await supabase
                         .from('active_users')
                         .select('pin_hash')
@@ -122,12 +127,13 @@
                     
                     if (user && user.pin_hash === pin) {
                         showMessage('✅ Login successful! Welcome ' + currentMobile, 'success');
-                        setTimeout(() => reset(), 2000);
+                        setTimeout(() => resetForm(), 2000);
                     } else {
                         showMessage('❌ Invalid PIN. Please try again.', 'error');
-                        pinInput.value = '';
+                        document.getElementById('pin').value = '';
                     }
                 } else {
+                    // REGISTER
                     const newUser = {
                         mobile: currentMobile,
                         pin_hash: pin,
@@ -146,6 +152,7 @@
                         return;
                     }
                     
+                    // Add to platform_stats
                     const { data: stats } = await supabase
                         .from('platform_stats')
                         .select('mobile_list')
@@ -158,29 +165,26 @@
                     }
                     
                     showMessage('✅ Registration successful! Welcome ' + currentMobile, 'success');
-                    setTimeout(() => reset(), 2000);
+                    setTimeout(() => resetForm(), 2000);
                 }
             } catch (err) {
                 console.error('Error:', err);
                 showMessage('Error: ' + err.message, 'error');
             }
-        }
+        };
         
-        function reset() {
-            step1.style.display = 'block';
-            step2.style.display = 'none';
-            mobileInput.value = '';
-            pinInput.value = '';
-            messageDiv.innerHTML = '';
+        // Reset form
+        window.resetForm = function() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('mobile').value = '';
+            document.getElementById('pin').value = '';
+            document.getElementById('message').innerHTML = '';
             currentMobile = '';
             isExistingUser = false;
-        }
+        };
         
-        document.getElementById('checkBtn').addEventListener('click', checkMobile);
-        document.getElementById('submitBtn').addEventListener('click', submitPin);
-        document.getElementById('backBtn').addEventListener('click', reset);
-        
-        console.log('App ready');
+        console.log('App ready - inline functions defined');
     </script>
 </body>
 </html>
