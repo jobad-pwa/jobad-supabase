@@ -3,33 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd - Setup Test</title>
+    <title>JobAd - Supabase Test</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100">
     <div class="max-w-md mx-auto bg-white min-h-screen p-6">
         <div id="status" class="text-center">
-            <h1 class="text-2xl font-bold mb-4">JobAd Setup Test</h1>
-            <div id="supabase-status" class="p-4 rounded-lg mb-4"></div>
-            <div id="github-status" class="p-4 rounded-lg"></div>
+            <h1 class="text-2xl font-bold mb-4">JobAd Supabase Test</h1>
+            <div id="connection-status" class="p-4 rounded-lg mb-4"></div>
+            <div id="mobile-test" class="p-4 rounded-lg mb-4 hidden"></div>
+            <div id="result" class="p-4 rounded-lg"></div>
+        </div>
+        
+        <div class="mt-6 space-y-3">
+            <input type="tel" id="test-mobile" placeholder="Enter Mobile Number" class="w-full p-2 border rounded">
+            <button onclick="testMobileNumber()" class="w-full bg-blue-600 text-white p-2 rounded">Test Mobile</button>
         </div>
     </div>
 
     <script>
-        // Status display function
-        function updateStatus(elementId, message, isSuccess) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = message;
-            element.className = `p-4 rounded-lg ${isSuccess ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE'; // PASTE YOUR KEY HERE
+        
+        let supabase;
+        let connectionStatus = false;
+
+        // Initialize Supabase
+        async function initSupabase() {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                // Test connection by trying to fetch from mobile_list
+                const { data, error } = await supabase
+                    .from('mobile_list')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) throw error;
+                
+                connectionStatus = true;
+                document.getElementById('connection-status').innerHTML = '✅ Connected to Supabase successfully!';
+                document.getElementById('connection-status').className = 'p-4 rounded-lg bg-green-100 text-green-700';
+                document.getElementById('mobile-test').classList.remove('hidden');
+                
+                return true;
+            } catch (error) {
+                connectionStatus = false;
+                document.getElementById('connection-status').innerHTML = `❌ Connection failed: ${error.message}`;
+                document.getElementById('connection-status').className = 'p-4 rounded-lg bg-red-100 text-red-700';
+                return false;
+            }
         }
 
-        // Test GitHub connectivity
-        updateStatus('github-status', '✅ GitHub repository is accessible', true);
-        
-        // We'll add Supabase connection in next step
-        updateStatus('supabase-status', '⏳ Waiting for Supabase configuration...', false);
-        
-        console.log("GitHub setup complete!");
+        // Test mobile number in database
+        async function testMobileNumber() {
+            const mobile = document.getElementById('test-mobile').value.trim();
+            if (!mobile || mobile.length !== 10) {
+                alert('Please enter 10-digit mobile number');
+                return;
+            }
+            
+            if (!connectionStatus) {
+                alert('Supabase not connected');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '⏳ Checking mobile number...';
+            resultDiv.className = 'p-4 rounded-lg bg-blue-100 text-blue-700';
+            
+            try {
+                // Check in mobile_list
+                const { data: mobileData, error: mobileError } = await supabase
+                    .from('mobile_list')
+                    .select('*')
+                    .eq('mobile_number', mobile)
+                    .single();
+                
+                if (mobileError && mobileError.code !== 'PGRST116') {
+                    throw mobileError;
+                }
+                
+                // Check in users
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('mobile_number', mobile)
+                    .single();
+                
+                let message = '';
+                if (userData) {
+                    message = `✅ Mobile ${mobile} is REGISTERED user. Last login: ${userData.last_login}`;
+                    resultDiv.className = 'p-4 rounded-lg bg-green-100 text-green-700';
+                } else if (mobileData) {
+                    message = `⚠️ Mobile ${mobile} found in mobile_list but NOT REGISTERED. Status: ${mobileData.registration_status}`;
+                    resultDiv.className = 'p-4 rounded-lg bg-yellow-100 text-yellow-700';
+                } else {
+                    message = `📱 Mobile ${mobile} is NEW. You can register this number.`;
+                    resultDiv.className = 'p-4 rounded-lg bg-blue-100 text-blue-700';
+                }
+                
+                resultDiv.innerHTML = message;
+                
+                // Show full details in console
+                console.log('Mobile List Data:', mobileData);
+                console.log('User Data:', userData);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Error: ${error.message}`;
+                resultDiv.className = 'p-4 rounded-lg bg-red-100 text-red-700';
+            }
+        }
+
+        // Initialize on load
+        initSupabase();
     </script>
 </body>
 </html>
