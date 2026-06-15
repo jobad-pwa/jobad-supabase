@@ -6,7 +6,6 @@
     <title>JobAd - Smart Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="max-w-md mx-auto bg-white min-h-screen p-6">
@@ -49,6 +48,167 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script>
+        // Direct configuration
+        const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
+        
+        let supabase;
+        let currentMobile = '';
+        let currentAction = '';
+        
+        async function init() {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase initialized');
+            
+            // Test connection
+            const { data, error } = await supabase.from('platform_stats').select('mobile_list').single();
+            if (error) {
+                document.getElementById('status').innerHTML = `❌ Connection error: ${error.message}`;
+                document.getElementById('status').className = 'p-3 rounded-lg mb-4 bg-red-100 text-red-700 text-sm';
+            } else {
+                document.getElementById('status').innerHTML = `✅ Connected! ${data.mobile_list.length} mobiles in list.`;
+            }
+        }
+        
+        async function handleAction() {
+            console.log('handleAction called');
+            
+            const mobile = document.getElementById('mobile-input').value.trim();
+            const pin = document.getElementById('pin-input').value.trim();
+            const actionBtn = document.getElementById('action-btn');
+            
+            if (!mobile || mobile.length !== 10) {
+                showMessage('Please enter valid 10-digit mobile number', 'red');
+                return;
+            }
+            
+            if (currentAction === 'login' || currentAction === 'register') {
+                if (!pin || pin.length !== 4) {
+                    showMessage('Please enter 4-digit PIN', 'red');
+                    return;
+                }
+                
+                if (currentAction === 'login') {
+                    const { data: userData } = await supabase
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', mobile)
+                        .single();
+                    
+                    if (userData && userData.pin_hash === pin) {
+                        showMessage('✅ Login successful!', 'green');
+                        showDashboard(mobile);
+                    } else {
+                        showMessage('❌ Invalid PIN.', 'red');
+                    }
+                } else if (currentAction === 'register') {
+                    const newUser = {
+                        mobile: mobile,
+                        pin_hash: pin,
+                        full_name: '',
+                        job_title: '',
+                        created_at: new Date().toISOString(),
+                        last_active: new Date().toISOString()
+                    };
+                    
+                    const { error: insertError } = await supabase
+                        .from('active_users')
+                        .insert([newUser]);
+                    
+                    if (insertError) {
+                        showMessage('Registration failed: ' + insertError.message, 'red');
+                        return;
+                    }
+                    
+                    const { data: statsData } = await supabase
+                        .from('platform_stats')
+                        .select('mobile_list')
+                        .single();
+                    
+                    if (!statsData.mobile_list.includes(mobile)) {
+                        const updatedList = [...statsData.mobile_list, mobile];
+                        await supabase
+                            .from('platform_stats')
+                            .update({ mobile_list: updatedList });
+                    }
+                    
+                    showMessage('✅ Registration successful!', 'green');
+                    showDashboard(mobile);
+                }
+                return;
+            }
+            
+            showMessage('⏳ Checking...', 'blue');
+            actionBtn.disabled = true;
+            actionBtn.innerText = 'Checking...';
+            
+            try {
+                const response = await fetch('https://njhioapckeupxrcixmdh.supabase.co/functions/v1/sync-google-sheets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: mobile })
+                });
+                
+                const data = await response.json();
+                console.log('Edge response:', data);
+                
+                if (data.exists && data.inActiveUsers) {
+                    currentAction = 'login';
+                    document.getElementById('pin-container').style.display = 'block';
+                    document.getElementById('pin-label').innerHTML = 'Enter your PIN *';
+                    actionBtn.innerText = '🔐 Login';
+                    showMessage('Enter your PIN to login', 'green');
+                } else if (data.exists && !data.inActiveUsers) {
+                    currentAction = 'register';
+                    document.getElementById('pin-container').style.display = 'block';
+                    document.getElementById('pin-label').innerHTML = 'Create a PIN *';
+                    actionBtn.innerText = '📝 Activate';
+                    showMessage('Create a PIN to activate your account', 'blue');
+                } else {
+                    currentAction = 'register';
+                    document.getElementById('pin-container').style.display = 'block';
+                    document.getElementById('pin-label').innerHTML = 'Create a PIN *';
+                    actionBtn.innerText = '📝 Register';
+                    showMessage('New user! Create a PIN to register', 'blue');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showMessage('Error: ' + err.message, 'red');
+            } finally {
+                actionBtn.disabled = false;
+            }
+        }
+        
+        function showDashboard(mobile) {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('welcome-msg').innerHTML = `Welcome ${mobile}!`;
+        }
+        
+        function showMessage(msg, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.classList.remove('hidden');
+            messageDiv.innerHTML = msg;
+            const colors = { red: 'bg-red-100 text-red-700', green: 'bg-green-100 text-green-700', blue: 'bg-blue-100 text-blue-700' };
+            messageDiv.className = `mt-4 p-3 rounded-lg text-sm ${colors[type] || colors.blue}`;
+            setTimeout(() => messageDiv.classList.add('hidden'), 5000);
+        }
+        
+        function logout() { 
+            location.reload(); 
+        }
+        
+        // Reset when mobile changes
+        document.getElementById('mobile-input').addEventListener('input', function() {
+            document.getElementById('pin-container').style.display = 'none';
+            document.getElementById('action-btn').innerText = 'Check Mobile';
+            document.getElementById('action-btn').disabled = false;
+            currentAction = '';
+            currentMobile = '';
+        });
+        
+        init();
+    </script>
 </body>
 </html>
