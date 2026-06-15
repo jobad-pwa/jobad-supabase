@@ -11,7 +11,6 @@ function showMessage(msg, type) {
     const div = document.getElementById('message');
     if (!div) return;
     div.innerHTML = msg;
-    div.classList.remove('hidden');
     if (type === 'error') {
         div.className = 'mt-4 p-3 rounded-lg text-center bg-red-100 text-red-700';
     } else if (type === 'success') {
@@ -52,7 +51,6 @@ window.checkMobile = async function() {
             showMessage('📱 New user! Create a PIN to register', 'success');
         }
         
-        // Show PIN input
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
         document.getElementById('pin').value = '';
@@ -77,7 +75,6 @@ window.submitPin = async function() {
     
     try {
         if (isExistingUser) {
-            // LOGIN
             const { data: user, error } = await supabase
                 .from('active_users')
                 .select('pin_hash')
@@ -97,7 +94,6 @@ window.submitPin = async function() {
                 document.getElementById('pin').value = '';
             }
         } else {
-            // REGISTER
             const newUser = {
                 mobile: currentMobile,
                 pin_hash: pin,
@@ -116,7 +112,6 @@ window.submitPin = async function() {
                 return;
             }
             
-            // Add to platform_stats
             const { data: stats } = await supabase
                 .from('platform_stats')
                 .select('mobile_list')
@@ -148,4 +143,4 @@ window.resetForm = function() {
     isExistingUser = false;
 };
 
-console.log('auth.js loaded');
+console.log('auth.js loaded - ready');
