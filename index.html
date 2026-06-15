@@ -24,31 +24,18 @@
     </div>
 
     <script>
-        // YOUR SUPABASE KEY - REPLACE THIS
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';  // <--- CHANGE THIS
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';  // REPLACE THIS
         
-        console.log('Script loaded');
-        console.log('Supabase URL:', SUPABASE_URL);
-        
-        // Create global variable
         let supabaseClient = null;
         
-        // Test function
         window.testMobileFunction = async function() {
-            console.log('testMobileFunction called');
-            
-            const mobileInput = document.getElementById('test-mobile');
-            const mobile = mobileInput ? mobileInput.value : '';
+            const mobile = document.getElementById('test-mobile').value.trim();
             const resultDiv = document.getElementById('result');
-            
-            if (!resultDiv) return;
             
             resultDiv.classList.remove('hidden');
             resultDiv.innerHTML = '⏳ Checking...';
             resultDiv.className = 'mt-4 p-4 rounded-lg bg-blue-100 text-blue-700';
-            
-            console.log('Mobile number:', mobile);
             
             if (!mobile || mobile.length !== 10) {
                 resultDiv.innerHTML = '❌ Please enter 10-digit mobile number';
@@ -57,32 +44,35 @@
             }
             
             try {
-                if (!supabaseClient) {
-                    resultDiv.innerHTML = '❌ Supabase not initialized. Check if ANON KEY is correct.';
-                    resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
-                    return;
-                }
-                
-                resultDiv.innerHTML = '⏳ Querying mobile_list table...';
-                
+                // Query platform_stats table (NOT mobile_list)
                 const { data, error } = await supabaseClient
-                    .from('mobile_list')
-                    .select('*')
-                    .eq('mobile_number', mobile);
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
                 
-                console.log('Query result:', data, error);
+                if (error) throw error;
                 
-                if (error) {
-                    resultDiv.innerHTML = `❌ Database error: ${error.message}`;
-                    resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
-                    return;
-                }
+                const mobileList = data?.mobile_list || [];
+                const mobileExists = mobileList.includes(mobile);
                 
-                if (data && data.length > 0) {
-                    resultDiv.innerHTML = `✅ Mobile ${mobile} FOUND in mobile_list! First seen: ${data[0].first_seen}`;
+                if (mobileExists) {
+                    resultDiv.innerHTML = `✅ Mobile ${mobile} FOUND in platform_stats mobile_list!`;
                     resultDiv.className = 'mt-4 p-4 rounded-lg bg-green-100 text-green-700';
+                    
+                    // Check if user exists in active_users
+                    const { data: userData } = await supabaseClient
+                        .from('active_users')
+                        .select('mobile, full_name')
+                        .eq('mobile', mobile)
+                        .single();
+                    
+                    if (userData) {
+                        resultDiv.innerHTML += `<br>✓ User exists in active_users. Name: ${userData.full_name || 'Not set'}`;
+                    } else {
+                        resultDiv.innerHTML += `<br>⚠ User NOT in active_users. Ready for registration.`;
+                    }
                 } else {
-                    resultDiv.innerHTML = `📱 Mobile ${mobile} NOT found in mobile_list. You can register.`;
+                    resultDiv.innerHTML = `📱 Mobile ${mobile} NOT found. You can register as new user.`;
                     resultDiv.className = 'mt-4 p-4 rounded-lg bg-blue-100 text-blue-700';
                 }
                 
@@ -93,13 +83,8 @@
             }
         };
         
-        // Initialize Supabase on page load
         async function initSupabase() {
-            console.log('initSupabase started');
-            
             const statusDiv = document.getElementById('status');
-            
-            if (!statusDiv) return;
             
             if (SUPABASE_ANON_KEY === 'YOUR_ANON_KEY_HERE') {
                 statusDiv.innerHTML = '❌ Please replace YOUR_ANON_KEY_HERE with your actual Supabase anon key!';
@@ -109,32 +94,26 @@
             
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                console.log('Supabase client created');
                 
-                // Test the connection
-                const { data, error } = await supabaseClient.from('mobile_list').select('count', { count: 'exact', head: true });
+                // Test connection by getting platform_stats
+                const { data, error } = await supabaseClient.from('platform_stats').select('mobile_list').single();
                 
-                if (error) {
-                    console.error('Connection test error:', error);
-                    statusDiv.innerHTML = `❌ Supabase connection failed: ${error.message}`;
-                    statusDiv.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-700';
-                } else {
-                    console.log('Connection test success');
-                    statusDiv.innerHTML = '✅ Connected to Supabase successfully! You can now test mobile numbers.';
-                    statusDiv.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-700';
-                }
+                if (error) throw error;
+                
+                statusDiv.innerHTML = '✅ Connected to Supabase successfully! Using platform_stats table.';
+                statusDiv.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-700';
+                
+                // Show current mobile list
+                const mobileCount = data?.mobile_list?.length || 0;
+                statusDiv.innerHTML += `<br>📱 ${mobileCount} mobile numbers in list.`;
                 
             } catch (err) {
-                console.error('Init error:', err);
-                statusDiv.innerHTML = `❌ Error: ${err.message}`;
+                statusDiv.innerHTML = `❌ Connection failed: ${err.message}`;
                 statusDiv.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-700';
             }
         }
         
-        // Start when page loads
         initSupabase();
-        
-        console.log('Script finished loading');
     </script>
 </body>
 </html>
