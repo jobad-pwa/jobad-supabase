@@ -6,7 +6,6 @@
     <title>JobAd - Supabase Connection Test</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
 </head>
 <body class="bg-gray-100">
     <div class="max-w-md mx-auto bg-white min-h-screen p-6">
@@ -29,21 +28,35 @@
     </div>
 
     <script>
+        // Direct configuration (no external file)
+        const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
+        
         let supabase;
         
         async function init() {
-            supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
             const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '⏳ Connecting to Supabase...';
             
             try {
-                const { data, error } = await supabase.from('platform_stats').select('mobile_list').single();
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                // Test connection by getting platform_stats
+                const { data, error } = await supabase
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
+                
                 if (error) throw error;
                 
-                statusDiv.innerHTML = `✅ Connected! ${data?.mobile_list?.length || 0} mobiles in list.`;
+                const mobileCount = data?.mobile_list?.length || 0;
+                statusDiv.innerHTML = `✅ Connected to Supabase!<br>📱 ${mobileCount} mobile numbers in list.`;
                 statusDiv.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-700';
+                
             } catch (err) {
                 statusDiv.innerHTML = `❌ Connection failed: ${err.message}`;
                 statusDiv.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-700';
+                console.error('Connection error:', err);
             }
         }
         
@@ -56,31 +69,46 @@
             resultDiv.className = 'mt-4 p-4 rounded-lg bg-blue-100 text-blue-700';
             
             if (!mobile || mobile.length !== 10) {
-                resultDiv.innerHTML = '❌ Enter 10-digit mobile';
+                resultDiv.innerHTML = '❌ Please enter 10-digit mobile number';
                 resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
                 return;
             }
             
             try {
-                const { data, error } = await supabase.from('platform_stats').select('mobile_list').single();
+                // Query platform_stats
+                const { data, error } = await supabase
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
+                
                 if (error) throw error;
                 
-                const mobileExists = data.mobile_list.includes(mobile);
+                const mobileList = data?.mobile_list || [];
+                const mobileExists = mobileList.includes(mobile);
                 
                 if (mobileExists) {
-                    const { data: userData } = await supabase.from('active_users').select('full_name').eq('mobile', mobile).single();
-                    resultDiv.innerHTML = `✅ Mobile ${mobile} FOUND!<br>${userData ? `User: ${userData.full_name}` : 'Not registered yet'}`;
+                    // Check if user exists in active_users
+                    const { data: userData } = await supabase
+                        .from('active_users')
+                        .select('full_name')
+                        .eq('mobile', mobile)
+                        .single();
+                    
+                    resultDiv.innerHTML = `✅ Mobile ${mobile} FOUND in platform_stats!<br>${userData ? `👤 User: ${userData.full_name || 'No name'}` : '⚠️ Not in active_users yet'}`;
                     resultDiv.className = 'mt-4 p-4 rounded-lg bg-green-100 text-green-700';
                 } else {
-                    resultDiv.innerHTML = `📱 Mobile ${mobile} NOT found - New user`;
+                    resultDiv.innerHTML = `📱 Mobile ${mobile} NOT found. You can register as new user.`;
                     resultDiv.className = 'mt-4 p-4 rounded-lg bg-blue-100 text-blue-700';
                 }
+                
             } catch (err) {
+                console.error('Error:', err);
                 resultDiv.innerHTML = `❌ Error: ${err.message}`;
                 resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
             }
         }
         
+        // Start when page loads
         init();
     </script>
 </body>
