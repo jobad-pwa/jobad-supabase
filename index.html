@@ -119,152 +119,168 @@
 
         <div id="step1">
             <input type="tel" id="mobile" placeholder="Enter 10-digit mobile" maxlength="10">
-            <button onclick="doCheck()">Check Mobile</button>
+            <button id="checkBtn">Check Mobile</button>
         </div>
 
         <div id="step2" class="hidden">
             <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
-            <button onclick="doSubmit()">Submit</button>
-            <button onclick="doReset()" class="btn-back">Back</button>
+            <button id="submitBtn">Submit</button>
+            <button id="resetBtn" class="btn-back">Back</button>
         </div>
 
         <div id="msg" class="hidden"></div>
     </div>
 
     <script>
-        // Use a different variable name to avoid conflicts
-        const SB_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
+        (function() {
+            console.log('App initializing...');
 
-        const sb = window.supabase.createClient(SB_URL, SB_KEY);
+            const SB_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
+            const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
 
-        let curMobile = '';
-        let isUser = false;
+            const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-        function showMsg(txt, type) {
-            const el = document.getElementById('msg');
-            el.textContent = txt;
-            el.className = 'msg msg-' + type;
-            el.classList.remove('hidden');
-        }
+            let curMobile = '';
+            let isUser = false;
 
-        function hideMsg() {
-            document.getElementById('msg').classList.add('hidden');
-        }
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const msgEl = document.getElementById('msg');
+            const mobileInput = document.getElementById('mobile');
+            const pinInput = document.getElementById('pin');
+            const checkBtn = document.getElementById('checkBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const resetBtn = document.getElementById('resetBtn');
 
-        window.doCheck = async function() {
-            console.log('doCheck called');
-            const mobile = document.getElementById('mobile').value.trim();
-
-            if (!mobile || mobile.length !== 10) {
-                showMsg('Enter 10-digit mobile', 'red');
-                return;
+            function showMsg(txt, type) {
+                msgEl.textContent = txt;
+                msgEl.className = 'msg msg-' + type;
+                msgEl.classList.remove('hidden');
             }
 
-            curMobile = mobile;
-            showMsg('Checking...', 'blue');
+            function hideMsg() {
+                msgEl.classList.add('hidden');
+            }
 
-            try {
-                const { data: user, error } = await sb
-                    .from('active_users')
-                    .select('mobile')
-                    .eq('mobile', mobile)
-                    .single();
+            async function checkMobile() {
+                console.log('checkMobile called');
+                const mobile = mobileInput.value.trim();
 
-                if (user) {
-                    isUser = true;
-                    showMsg('✅ User found! Enter PIN', 'green');
-                } else {
-                    isUser = false;
-                    showMsg('📱 New user! Create PIN', 'green');
+                if (!mobile || mobile.length !== 10) {
+                    showMsg('Enter 10-digit mobile', 'red');
+                    return;
                 }
 
-                document.getElementById('step1').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-                document.getElementById('pin').value = '';
-                hideMsg();
+                curMobile = mobile;
+                showMsg('Checking...', 'blue');
 
-            } catch (err) {
-                if (err.message && err.message.includes('No rows found')) {
-                    isUser = false;
-                    showMsg('📱 New user! Create PIN', 'green');
-                    document.getElementById('step1').classList.add('hidden');
-                    document.getElementById('step2').classList.remove('hidden');
-                    document.getElementById('pin').value = '';
+                try {
+                    const { data: user, error } = await sb
+                        .from('active_users')
+                        .select('mobile')
+                        .eq('mobile', mobile)
+                        .single();
+
+                    if (user) {
+                        isUser = true;
+                        showMsg('✅ User found! Enter PIN', 'green');
+                    } else {
+                        isUser = false;
+                        showMsg('📱 New user! Create PIN', 'green');
+                    }
+
+                    step1.classList.add('hidden');
+                    step2.classList.remove('hidden');
+                    pinInput.value = '';
                     hideMsg();
-                } else {
+
+                } catch (err) {
+                    if (err.message && err.message.includes('No rows found')) {
+                        isUser = false;
+                        showMsg('📱 New user! Create PIN', 'green');
+                        step1.classList.add('hidden');
+                        step2.classList.remove('hidden');
+                        pinInput.value = '';
+                        hideMsg();
+                    } else {
+                        showMsg('Error: ' + err.message, 'red');
+                    }
+                }
+            }
+
+            async function submitPin() {
+                console.log('submitPin called');
+                const pin = pinInput.value.trim();
+
+                if (!pin || pin.length !== 4) {
+                    showMsg('Enter 4-digit PIN', 'red');
+                    return;
+                }
+
+                showMsg('Processing...', 'blue');
+
+                try {
+                    if (isUser) {
+                        const { data: user, error } = await sb
+                            .from('active_users')
+                            .select('pin_hash')
+                            .eq('mobile', curMobile)
+                            .single();
+
+                        if (error || !user) {
+                            showMsg('User not found', 'red');
+                            return;
+                        }
+
+                        if (user.pin_hash === pin) {
+                            showMsg('✅ Welcome ' + curMobile + '!', 'green');
+                            setTimeout(resetForm, 2000);
+                        } else {
+                            showMsg('❌ Wrong PIN. Try 1234', 'red');
+                            pinInput.value = '';
+                        }
+                    } else {
+                        const { error } = await sb
+                            .from('active_users')
+                            .insert([{
+                                mobile: curMobile,
+                                pin_hash: pin,
+                                full_name: '',
+                                job_title: '',
+                                created_at: new Date().toISOString(),
+                                last_active: new Date().toISOString()
+                            }]);
+
+                        if (error) {
+                            showMsg('Failed: ' + error.message, 'red');
+                            return;
+                        }
+
+                        showMsg('✅ Registered! Welcome ' + curMobile, 'green');
+                        setTimeout(resetForm, 2000);
+                    }
+                } catch (err) {
                     showMsg('Error: ' + err.message, 'red');
                 }
             }
-        };
 
-        window.doSubmit = async function() {
-            console.log('doSubmit called');
-            const pin = document.getElementById('pin').value.trim();
-
-            if (!pin || pin.length !== 4) {
-                showMsg('Enter 4-digit PIN', 'red');
-                return;
+            function resetForm() {
+                step1.classList.remove('hidden');
+                step2.classList.add('hidden');
+                mobileInput.value = '';
+                pinInput.value = '';
+                msgEl.classList.add('hidden');
+                curMobile = '';
+                isUser = false;
             }
 
-            showMsg('Processing...', 'blue');
+            // Attach event listeners
+            checkBtn.addEventListener('click', checkMobile);
+            submitBtn.addEventListener('click', submitPin);
+            resetBtn.addEventListener('click', resetForm);
 
-            try {
-                if (isUser) {
-                    const { data: user, error } = await sb
-                        .from('active_users')
-                        .select('pin_hash')
-                        .eq('mobile', curMobile)
-                        .single();
-
-                    if (error || !user) {
-                        showMsg('User not found', 'red');
-                        return;
-                    }
-
-                    if (user.pin_hash === pin) {
-                        showMsg('✅ Welcome ' + curMobile + '!', 'green');
-                        setTimeout(doReset, 2000);
-                    } else {
-                        showMsg('❌ Wrong PIN. Try 1234', 'red');
-                        document.getElementById('pin').value = '';
-                    }
-                } else {
-                    const { error } = await sb
-                        .from('active_users')
-                        .insert([{
-                            mobile: curMobile,
-                            pin_hash: pin,
-                            full_name: '',
-                            job_title: '',
-                            created_at: new Date().toISOString(),
-                            last_active: new Date().toISOString()
-                        }]);
-
-                    if (error) {
-                        showMsg('Failed: ' + error.message, 'red');
-                        return;
-                    }
-
-                    showMsg('✅ Registered! Welcome ' + curMobile, 'green');
-                    setTimeout(doReset, 2000);
-                }
-            } catch (err) {
-                showMsg('Error: ' + err.message, 'red');
-            }
-        };
-
-        window.doReset = function() {
-            document.getElementById('step1').classList.remove('hidden');
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('mobile').value = '';
-            document.getElementById('pin').value = '';
-            document.getElementById('msg').classList.add('hidden');
-            curMobile = '';
-            isUser = false;
-        };
-
-        console.log('App ready');
+            console.log('App ready - event listeners attached');
+        })();
     </script>
 </body>
 </html>
