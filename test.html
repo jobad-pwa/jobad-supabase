@@ -3,113 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd - Supabase Connection Test</title>
+    <title>JobAd - Complete Test</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .status { padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+        .success { background: #dcfce7; color: #166534; }
+        .error { background: #fee2e2; color: #991b1b; }
+        .info { background: #dbeafe; color: #1e40af; }
+        pre { background: #f3f4f6; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px; }
+    </style>
 </head>
 <body class="bg-gray-100">
     <div class="max-w-md mx-auto bg-white min-h-screen p-6">
-        <h1 class="text-2xl font-bold mb-4 text-center">Supabase Connection Test</h1>
+        <h1 class="text-2xl font-bold text-center mb-4">JobAd - System Test</h1>
         
-        <div id="status" class="p-4 rounded-lg mb-4 bg-yellow-100 text-yellow-700">
-            ⏳ Testing connection...
+        <!-- Test Controls -->
+        <div class="mb-4">
+            <input type="tel" id="mobile" placeholder="Enter Mobile Number" class="w-full p-2 border rounded mb-2">
+            <button onclick="runAllTests()" class="w-full bg-blue-600 text-white p-2 rounded">Run All Tests</button>
         </div>
         
-        <div class="space-y-3">
-            <input type="tel" id="mobile-input" placeholder="Enter Mobile Number" class="w-full p-2 border rounded">
-            <button onclick="testMobile()" class="w-full bg-blue-600 text-white p-2 rounded">Test Mobile</button>
+        <!-- Test Results -->
+        <div id="db-test" class="status info">⏳ Database test: Not run</div>
+        <div id="edge-test" class="status info">⏳ Edge Function test: Not run</div>
+        <div id="user-test" class="status info">⏳ User status: Not run</div>
+        
+        <div id="details" class="mt-4 hidden">
+            <h3 class="font-bold mb-2">Details:</h3>
+            <pre id="details-content"></pre>
         </div>
         
-        <div id="result" class="mt-4 p-4 rounded-lg hidden"></div>
-        
-        <div class="mt-6 text-center">
-            <a href="index.html" class="text-blue-600 text-sm">← Back to Main App</a>
+        <div class="mt-4 text-center">
+            <a href="index.html" class="text-blue-500 text-sm">← Back to App</a>
         </div>
     </div>
 
     <script>
-        // Direct configuration (no external file)
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
         
-        let supabase;
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
-        async function init() {
-            const statusDiv = document.getElementById('status');
-            statusDiv.innerHTML = '⏳ Connecting to Supabase...';
+        function updateStatus(elementId, message, type) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = message;
+            el.className = `status ${type}`;
+        }
+        
+        function showDetails(data) {
+            const details = document.getElementById('details');
+            const content = document.getElementById('details-content');
+            content.textContent = JSON.stringify(data, null, 2);
+            details.classList.remove('hidden');
+        }
+        
+        async function runAllTests() {
+            const mobile = document.getElementById('mobile').value.trim() || '9876543210';
+            
+            // Test 1: Database Connection
+            updateStatus('db-test', '⏳ Testing database connection...', 'info');
             
             try {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                
-                // Test connection by getting platform_stats
-                const { data, error } = await supabase
-                    .from('platform_stats')
-                    .select('mobile_list')
-                    .single();
+                const { data, error } = await supabase.from('platform_stats').select('mobile_list').single();
                 
                 if (error) throw error;
                 
                 const mobileCount = data?.mobile_list?.length || 0;
-                statusDiv.innerHTML = `✅ Connected to Supabase!<br>📱 ${mobileCount} mobile numbers in list.`;
-                statusDiv.className = 'p-4 rounded-lg mb-4 bg-green-100 text-green-700';
+                updateStatus('db-test', `✅ Database OK! ${mobileCount} mobiles in platform_stats`, 'success');
                 
-            } catch (err) {
-                statusDiv.innerHTML = `❌ Connection failed: ${err.message}`;
-                statusDiv.className = 'p-4 rounded-lg mb-4 bg-red-100 text-red-700';
-                console.error('Connection error:', err);
-            }
-        }
-        
-        async function testMobile() {
-            const mobile = document.getElementById('mobile-input').value.trim();
-            const resultDiv = document.getElementById('result');
-            
-            resultDiv.classList.remove('hidden');
-            resultDiv.innerHTML = '⏳ Checking...';
-            resultDiv.className = 'mt-4 p-4 rounded-lg bg-blue-100 text-blue-700';
-            
-            if (!mobile || mobile.length !== 10) {
-                resultDiv.innerHTML = '❌ Please enter 10-digit mobile number';
-                resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
-                return;
-            }
-            
-            try {
-                // Query platform_stats
-                const { data, error } = await supabase
-                    .from('platform_stats')
-                    .select('mobile_list')
-                    .single();
-                
-                if (error) throw error;
-                
-                const mobileList = data?.mobile_list || [];
-                const mobileExists = mobileList.includes(mobile);
-                
+                // Test 2: Check if mobile in database
+                const mobileExists = data.mobile_list.includes(mobile);
                 if (mobileExists) {
-                    // Check if user exists in active_users
-                    const { data: userData } = await supabase
+                    updateStatus('user-test', `✅ Mobile ${mobile} found in platform_stats`, 'success');
+                    
+                    // Check active_users
+                    const { data: user } = await supabase
                         .from('active_users')
                         .select('full_name')
                         .eq('mobile', mobile)
                         .single();
                     
-                    resultDiv.innerHTML = `✅ Mobile ${mobile} FOUND in platform_stats!<br>${userData ? `👤 User: ${userData.full_name || 'No name'}` : '⚠️ Not in active_users yet'}`;
-                    resultDiv.className = 'mt-4 p-4 rounded-lg bg-green-100 text-green-700';
+                    if (user) {
+                        updateStatus('user-test', `✅ Mobile ${mobile} - User exists: ${user.full_name || 'No name'}`, 'success');
+                    } else {
+                        updateStatus('user-test', `⚠️ Mobile ${mobile} in platform_stats but NOT in active_users`, 'info');
+                    }
                 } else {
-                    resultDiv.innerHTML = `📱 Mobile ${mobile} NOT found. You can register as new user.`;
-                    resultDiv.className = 'mt-4 p-4 rounded-lg bg-blue-100 text-blue-700';
+                    updateStatus('user-test', `📱 Mobile ${mobile} NOT found in platform_stats (New user)`, 'info');
                 }
                 
             } catch (err) {
-                console.error('Error:', err);
-                resultDiv.innerHTML = `❌ Error: ${err.message}`;
-                resultDiv.className = 'mt-4 p-4 rounded-lg bg-red-100 text-red-700';
+                updateStatus('db-test', `❌ Database error: ${err.message}`, 'error');
+            }
+            
+            // Test 3: Edge Function
+            updateStatus('edge-test', '⏳ Testing Edge Function...', 'info');
+            
+            try {
+                const response = await fetch('https://njhioapckeupxrcixmdh.supabase.co/functions/v1/sync-google-sheets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: mobile })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error);
+                
+                updateStatus('edge-test', `✅ Edge Function OK`, 'success');
+                showDetails(data);
+                
+                // Interpret result
+                if (data.exists && data.inActiveUsers) {
+                    updateStatus('user-test', `✅ ${mobile} → Existing user (Login with PIN)`, 'success');
+                } else if (data.exists && !data.inActiveUsers) {
+                    updateStatus('user-test', `📋 ${mobile} → Found in records. Ready to copy from Google Sheets.`, 'info');
+                } else {
+                    updateStatus('user-test', `📱 ${mobile} → New user (Can register)`, 'info');
+                }
+                
+            } catch (err) {
+                updateStatus('edge-test', `❌ Edge Function error: ${err.message}`, 'error');
             }
         }
         
-        // Start when page loads
-        init();
+        // Auto-run on page load
+        setTimeout(() => runAllTests(), 500);
     </script>
 </body>
 </html>
