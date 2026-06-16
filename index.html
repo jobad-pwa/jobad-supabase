@@ -45,6 +45,9 @@
             text-decoration: none;
             margin: 0 8px;
         }
+        .test-links a:hover {
+            text-decoration: underline;
+        }
         input {
             width: 100%;
             padding: 14px 16px;
@@ -53,6 +56,10 @@
             font-size: 16px;
             margin-bottom: 12px;
             box-sizing: border-box;
+        }
+        input:focus {
+            border-color: #2563eb;
+            outline: 2px solid #93c5fd;
         }
         button {
             width: 100%;
@@ -65,12 +72,18 @@
             font-weight: 600;
             cursor: pointer;
         }
+        button:hover {
+            background: #1d4ed8;
+        }
         button:active {
             transform: scale(0.98);
         }
         .btn-back {
             background: #6b7280;
             margin-top: 8px;
+        }
+        .btn-back:hover {
+            background: #4b5563;
         }
         .msg {
             margin-top: 16px;
@@ -93,10 +106,6 @@
         }
         .hidden {
             display: none;
-        }
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -153,9 +162,11 @@
             document.getElementById('msg').classList.add('hidden');
         }
         
-        // Check mobile in Supabase
+        // Check mobile
         window.checkMobile = async function() {
+            console.log('checkMobile called');
             var mobile = document.getElementById('mobile').value.trim();
+            
             if (!mobile || mobile.length !== 10) {
                 showMsg('Enter 10-digit mobile number', 'red');
                 return;
@@ -168,13 +179,13 @@
                 // Check if user exists in active_users
                 const { data: user, error } = await supabase
                     .from('active_users')
-                    .select('mobile')
+                    .select('mobile, full_name, pin_hash')
                     .eq('mobile', mobile)
                     .single();
                 
                 if (user) {
                     isExistingUser = true;
-                    showMsg('✅ User found! Enter your PIN (1234 for demo)', 'green');
+                    showMsg('✅ User found! Enter your PIN', 'green');
                 } else {
                     isExistingUser = false;
                     showMsg('📱 New user! Create a PIN to register', 'green');
@@ -182,15 +193,17 @@
                 
                 document.getElementById('step1').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('pin').value = '';
                 hideMsg();
                 
             } catch (err) {
-                // If user not found
-                if (err.message.includes('No rows found')) {
+                console.error('Error:', err);
+                if (err.message && err.message.includes('No rows found')) {
                     isExistingUser = false;
                     showMsg('📱 New user! Create a PIN to register', 'green');
                     document.getElementById('step1').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
+                    document.getElementById('pin').value = '';
                     hideMsg();
                 } else {
                     showMsg('Error: ' + err.message, 'red');
@@ -198,9 +211,11 @@
             }
         };
         
-        // Submit PIN to Supabase
+        // Submit PIN
         window.submitPin = async function() {
+            console.log('submitPin called');
             var pin = document.getElementById('pin').value.trim();
+            
             if (!pin || pin.length !== 4) {
                 showMsg('Enter 4-digit PIN', 'red');
                 return;
@@ -210,28 +225,36 @@
             
             try {
                 if (isExistingUser) {
-                    // LOGIN - Check PIN
+                    // LOGIN
                     const { data: user, error } = await supabase
                         .from('active_users')
                         .select('pin_hash')
                         .eq('mobile', currentMobile)
                         .single();
                     
+                    if (error) {
+                        showMsg('User not found', 'red');
+                        return;
+                    }
+                    
                     if (user && user.pin_hash === pin) {
                         showMsg('✅ Login successful! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
                     } else {
-                        showMsg('❌ Wrong PIN. Try 1234 for demo users', 'red');
+                        showMsg('❌ Wrong PIN. Try again.', 'red');
                         document.getElementById('pin').value = '';
                     }
                 } else {
-                    // REGISTER - Create new user
+                    // REGISTER
                     const { error } = await supabase
                         .from('active_users')
                         .insert([{
                             mobile: currentMobile,
                             pin_hash: pin,
-                            created_at: new Date().toISOString()
+                            full_name: '',
+                            job_title: '',
+                            created_at: new Date().toISOString(),
+                            last_active: new Date().toISOString()
                         }]);
                     
                     if (error) {
@@ -258,7 +281,7 @@
             isExistingUser = false;
         };
         
-        console.log('App ready with Supabase');
+        console.log('App ready');
     </script>
 </body>
 </html>
