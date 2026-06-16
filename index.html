@@ -140,7 +140,6 @@
         // SECTION 2: UI HELPERS
         // ============================================================
 
-        // Create Supabase client (only once)
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function showMsg(text, type) {
@@ -199,21 +198,18 @@
                 console.log('Edge response:', data);
 
                 if (data.exists && data.inActiveUsers) {
-                    // Existing user - Login
                     isUser = true;
                     actionType = 'login';
                     showMsg('✅ User found! Enter your PIN', 'green');
                     document.getElementById('submitBtn').textContent = '🔐 Login';
                     document.getElementById('submitBtn').className = 'btn-green';
                 } else if (data.exists && !data.inActiveUsers) {
-                    // In platform_stats but not in active_users - Activate
                     isUser = false;
                     actionType = 'activate';
                     showMsg('📋 Account found! Create a PIN to activate', 'yellow');
                     document.getElementById('submitBtn').textContent = '📝 Activate';
                     document.getElementById('submitBtn').className = 'btn-green';
                 } else {
-                    // New user - Register
                     isUser = false;
                     actionType = 'register';
                     showMsg('📱 New user! Create a PIN to register', 'blue');
@@ -231,6 +227,49 @@
                 showMsg('Error: ' + err.message, 'red');
             }
         };
+
+        // Function to update platform_stats
+        async function updatePlatformStats(mobile) {
+            try {
+                // Get current mobile_list
+                const { data: stats, error: getError } = await sb
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
+
+                if (getError) {
+                    console.error('Error fetching stats:', getError);
+                    return false;
+                }
+
+                const currentList = stats?.mobile_list || [];
+                
+                // Check if mobile already exists
+                if (currentList.includes(mobile)) {
+                    console.log('Mobile already in platform_stats:', mobile);
+                    return true;
+                }
+
+                // Add mobile to list
+                const updatedList = [...currentList, mobile];
+                
+                // Update the table (since there's only one row, we don't need a WHERE clause)
+                const { error: updateError } = await sb
+                    .from('platform_stats')
+                    .update({ mobile_list: updatedList });
+
+                if (updateError) {
+                    console.error('Error updating platform_stats:', updateError);
+                    return false;
+                }
+
+                console.log('Added to platform_stats:', mobile);
+                return true;
+            } catch (err) {
+                console.error('platform_stats update error:', err);
+                return false;
+            }
+        }
 
         window.submitPin = async function() {
             console.log('submitPin called');
@@ -281,26 +320,7 @@
                         // ==========================================
                         // UPDATE platform_stats with new mobile
                         // ==========================================
-                        try {
-                            const { data: stats } = await sb
-                                .from('platform_stats')
-                                .select('mobile_list')
-                                .single();
-
-                            if (stats) {
-                                const currentList = stats.mobile_list || [];
-                                if (!currentList.includes(currentMobile)) {
-                                    const updatedList = [...currentList, currentMobile];
-                                    await sb
-                                        .from('platform_stats')
-                                        .update({ mobile_list: updatedList })
-                                        .eq('id', 1);
-                                    console.log('Added to platform_stats:', currentMobile);
-                                }
-                            }
-                        } catch (statsErr) {
-                            console.log('Stats update error:', statsErr);
-                        }
+                        await updatePlatformStats(currentMobile);
 
                         showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
@@ -326,7 +346,7 @@
         // SECTION 5: APP INIT
         // ============================================================
 
-        console.log('App ready with dynamic button text and platform_stats update');
+        console.log('App ready with platform_stats update fix');
     </script>
 </body>
 </html>
