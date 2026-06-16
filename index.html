@@ -110,20 +110,17 @@
             <a href="test.html">🔌 DB Test</a>
         </div>
 
-        <!-- STEP 1: Mobile Input -->
         <div id="step1">
             <input type="tel" id="mobile" placeholder="Enter 10-digit mobile" maxlength="10">
             <button onclick="checkMobile()" id="checkBtn">Check Mobile</button>
         </div>
 
-        <!-- STEP 2: PIN Input -->
         <div id="step2" class="hidden">
             <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
             <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
             <button onclick="resetForm()" class="btn-back">Back</button>
         </div>
 
-        <!-- Message Display -->
         <div id="msg" class="hidden"></div>
     </div>
 
@@ -175,6 +172,53 @@
         let isUser = false;
         let actionType = ''; // 'login', 'activate', 'register'
 
+        // ============================================================
+        // UPDATE platform_stats - SIMPLE FUNCTION
+        // ============================================================
+        async function addMobileToPlatformStats(mobile) {
+            console.log('Adding mobile to platform_stats:', mobile);
+            
+            try {
+                // 1. Get current list
+                const { data: stats } = await sb
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
+
+                const currentList = stats?.mobile_list || [];
+                console.log('Current list:', currentList);
+
+                // 2. Check if already exists
+                if (currentList.includes(mobile)) {
+                    console.log('Mobile already exists in list');
+                    return true;
+                }
+
+                // 3. Create new list with mobile added
+                const updatedList = [...currentList, mobile];
+                console.log('Updated list:', updatedList);
+
+                // 4. Update platform_stats
+                const { error } = await sb
+                    .from('platform_stats')
+                    .update({ mobile_list: updatedList });
+
+                if (error) {
+                    console.error('Update error:', error);
+                    return false;
+                }
+
+                console.log('✅ platform_stats updated successfully');
+                return true;
+            } catch (err) {
+                console.error('Error updating platform_stats:', err);
+                return false;
+            }
+        }
+
+        // ============================================================
+        // CHECK MOBILE
+        // ============================================================
         window.checkMobile = async function() {
             console.log('checkMobile called');
             const mobile = document.getElementById('mobile').value.trim();
@@ -228,70 +272,9 @@
             }
         };
 
-        // Function to update platform_stats with DEBUG LOGGING
-        async function updatePlatformStats(mobile) {
-            console.log('=== updatePlatformStats called for:', mobile);
-            
-            try {
-                // STEP 1: Get current mobile_list
-                console.log('STEP 1: Fetching current platform_stats...');
-                const { data: stats, error: getError } = await sb
-                    .from('platform_stats')
-                    .select('mobile_list')
-                    .single();
-
-                if (getError) {
-                    console.error('ERROR fetching stats:', getError);
-                    return false;
-                }
-
-                console.log('Current mobile_list:', stats?.mobile_list);
-
-                const currentList = stats?.mobile_list || [];
-                
-                // STEP 2: Check if mobile already exists
-                if (currentList.includes(mobile)) {
-                    console.log('Mobile already in platform_stats:', mobile);
-                    return true;
-                }
-
-                // STEP 3: Add mobile to list
-                const updatedList = [...currentList, mobile];
-                console.log('Updated list will be:', updatedList);
-
-                // STEP 4: Update the table
-                console.log('STEP 4: Updating platform_stats...');
-                const { data: updateData, error: updateError } = await sb
-                    .from('platform_stats')
-                    .update({ mobile_list: updatedList });
-
-                if (updateError) {
-                    console.error('ERROR updating platform_stats:', updateError);
-                    return false;
-                }
-
-                console.log('Update successful! Response:', updateData);
-
-                // STEP 5: Verify the update
-                console.log('STEP 5: Verifying update...');
-                const { data: verifyData, error: verifyError } = await sb
-                    .from('platform_stats')
-                    .select('mobile_list')
-                    .single();
-
-                if (verifyError) {
-                    console.error('ERROR verifying update:', verifyError);
-                } else {
-                    console.log('Verified mobile_list:', verifyData?.mobile_list);
-                }
-
-                return true;
-            } catch (err) {
-                console.error('CRITICAL ERROR in updatePlatformStats:', err);
-                return false;
-            }
-        }
-
+        // ============================================================
+        // SUBMIT PIN (LOGIN / REGISTER)
+        // ============================================================
         window.submitPin = async function() {
             console.log('submitPin called');
             const pin = document.getElementById('pin').value.trim();
@@ -306,7 +289,7 @@
             try {
                 if (actionType === 'login') {
                     // ==========================================
-                    // LOGIN: Verify PIN via Edge Function
+                    // LOGIN
                     // ==========================================
                     const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
                         method: 'POST',
@@ -326,11 +309,8 @@
                     }
                 } else {
                     // ==========================================
-                    // REGISTER / ACTIVATE: Create new user
+                    // REGISTER / ACTIVATE
                     // ==========================================
-                    console.log('ACTION TYPE:', actionType);
-                    console.log('Registering mobile:', currentMobile);
-                    
                     const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -342,16 +322,9 @@
 
                     if (data.success) {
                         // ==========================================
-                        // UPDATE platform_stats with new mobile
+                        // UPDATE platform_stats - SIMPLE DIRECT CALL
                         // ==========================================
-                        console.log('Registration successful! Updating platform_stats...');
-                        const updated = await updatePlatformStats(currentMobile);
-                        
-                        if (updated) {
-                            console.log('✅ platform_stats updated successfully');
-                        } else {
-                            console.warn('⚠️ platform_stats update may have failed');
-                        }
+                        await addMobileToPlatformStats(currentMobile);
 
                         showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
@@ -366,18 +339,11 @@
         };
 
         // ============================================================
-        // SECTION 4: GOOGLE SHEETS INTEGRATION (FUTURE)
+        // SECTION 4: APP INIT
         // ============================================================
 
-        // function syncWithGoogleSheets() { ... }
-        // function copyFromGoogleSheets() { ... }
-        // function archiveToGoogleSheets() { ... }
-
-        // ============================================================
-        // SECTION 5: APP INIT
-        // ============================================================
-
-        console.log('App ready with DEBUG logging for platform_stats');
+        console.log('App ready - platform_stats update from frontend');
+        console.log('Test with new mobile: it will add to platform_stats');
     </script>
 </body>
 </html>
