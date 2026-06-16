@@ -228,45 +228,66 @@
             }
         };
 
-        // Function to update platform_stats
+        // Function to update platform_stats with DEBUG LOGGING
         async function updatePlatformStats(mobile) {
+            console.log('=== updatePlatformStats called for:', mobile);
+            
             try {
-                // Get current mobile_list
+                // STEP 1: Get current mobile_list
+                console.log('STEP 1: Fetching current platform_stats...');
                 const { data: stats, error: getError } = await sb
                     .from('platform_stats')
                     .select('mobile_list')
                     .single();
 
                 if (getError) {
-                    console.error('Error fetching stats:', getError);
+                    console.error('ERROR fetching stats:', getError);
                     return false;
                 }
 
+                console.log('Current mobile_list:', stats?.mobile_list);
+
                 const currentList = stats?.mobile_list || [];
                 
-                // Check if mobile already exists
+                // STEP 2: Check if mobile already exists
                 if (currentList.includes(mobile)) {
                     console.log('Mobile already in platform_stats:', mobile);
                     return true;
                 }
 
-                // Add mobile to list
+                // STEP 3: Add mobile to list
                 const updatedList = [...currentList, mobile];
-                
-                // Update the table (since there's only one row, we don't need a WHERE clause)
-                const { error: updateError } = await sb
+                console.log('Updated list will be:', updatedList);
+
+                // STEP 4: Update the table
+                console.log('STEP 4: Updating platform_stats...');
+                const { data: updateData, error: updateError } = await sb
                     .from('platform_stats')
                     .update({ mobile_list: updatedList });
 
                 if (updateError) {
-                    console.error('Error updating platform_stats:', updateError);
+                    console.error('ERROR updating platform_stats:', updateError);
                     return false;
                 }
 
-                console.log('Added to platform_stats:', mobile);
+                console.log('Update successful! Response:', updateData);
+
+                // STEP 5: Verify the update
+                console.log('STEP 5: Verifying update...');
+                const { data: verifyData, error: verifyError } = await sb
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
+
+                if (verifyError) {
+                    console.error('ERROR verifying update:', verifyError);
+                } else {
+                    console.log('Verified mobile_list:', verifyData?.mobile_list);
+                }
+
                 return true;
             } catch (err) {
-                console.error('platform_stats update error:', err);
+                console.error('CRITICAL ERROR in updatePlatformStats:', err);
                 return false;
             }
         }
@@ -307,6 +328,9 @@
                     // ==========================================
                     // REGISTER / ACTIVATE: Create new user
                     // ==========================================
+                    console.log('ACTION TYPE:', actionType);
+                    console.log('Registering mobile:', currentMobile);
+                    
                     const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -320,7 +344,14 @@
                         // ==========================================
                         // UPDATE platform_stats with new mobile
                         // ==========================================
-                        await updatePlatformStats(currentMobile);
+                        console.log('Registration successful! Updating platform_stats...');
+                        const updated = await updatePlatformStats(currentMobile);
+                        
+                        if (updated) {
+                            console.log('✅ platform_stats updated successfully');
+                        } else {
+                            console.warn('⚠️ platform_stats update may have failed');
+                        }
 
                         showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
@@ -346,7 +377,7 @@
         // SECTION 5: APP INIT
         // ============================================================
 
-        console.log('App ready with platform_stats update fix');
+        console.log('App ready with DEBUG logging for platform_stats');
     </script>
 </body>
 </html>
