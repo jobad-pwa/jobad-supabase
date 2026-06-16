@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JobAd</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: system-ui, -apple-system, sans-serif;
             background: #f3f4f6;
@@ -102,7 +105,8 @@
             display: none;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
 </head>
 <body>
     <div class="card">
@@ -115,90 +119,102 @@
 
         <div id="step1">
             <input type="tel" id="mobile" placeholder="Enter 10-digit mobile" maxlength="10">
-            <button onclick="checkMobile()">Check Mobile</button>
+            <button onclick="doCheck()">Check Mobile</button>
         </div>
 
         <div id="step2" class="hidden">
             <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
-            <button onclick="submitPin()">Submit</button>
-            <button onclick="resetForm()" class="btn-back">Back</button>
+            <button onclick="doSubmit()">Submit</button>
+            <button onclick="doReset()" class="btn-back">Back</button>
         </div>
 
         <div id="msg" class="hidden"></div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
+        // Use a different variable name to avoid conflicts
+        const SB_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let currentMobile = '';
-        let isExistingUser = false;
+        const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-        function showMsg(text, type) {
-            const div = document.getElementById('msg');
-            div.textContent = text;
-            div.className = 'msg msg-' + type;
-            div.classList.remove('hidden');
+        let curMobile = '';
+        let isUser = false;
+
+        function showMsg(txt, type) {
+            const el = document.getElementById('msg');
+            el.textContent = txt;
+            el.className = 'msg msg-' + type;
+            el.classList.remove('hidden');
         }
 
-        window.checkMobile = async function() {
+        function hideMsg() {
+            document.getElementById('msg').classList.add('hidden');
+        }
+
+        window.doCheck = async function() {
+            console.log('doCheck called');
             const mobile = document.getElementById('mobile').value.trim();
+
             if (!mobile || mobile.length !== 10) {
-                showMsg('Enter 10-digit mobile number', 'red');
+                showMsg('Enter 10-digit mobile', 'red');
                 return;
             }
-            currentMobile = mobile;
+
+            curMobile = mobile;
             showMsg('Checking...', 'blue');
 
             try {
-                const { data: user, error } = await supabase
+                const { data: user, error } = await sb
                     .from('active_users')
                     .select('mobile')
                     .eq('mobile', mobile)
                     .single();
 
                 if (user) {
-                    isExistingUser = true;
-                    showMsg('✅ User found! Enter your PIN', 'green');
+                    isUser = true;
+                    showMsg('✅ User found! Enter PIN', 'green');
                 } else {
-                    isExistingUser = false;
-                    showMsg('📱 New user! Create a PIN to register', 'green');
+                    isUser = false;
+                    showMsg('📱 New user! Create PIN', 'green');
                 }
 
                 document.getElementById('step1').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
                 document.getElementById('pin').value = '';
-                document.getElementById('msg').classList.add('hidden');
+                hideMsg();
 
             } catch (err) {
                 if (err.message && err.message.includes('No rows found')) {
-                    isExistingUser = false;
-                    showMsg('📱 New user! Create a PIN to register', 'green');
+                    isUser = false;
+                    showMsg('📱 New user! Create PIN', 'green');
                     document.getElementById('step1').classList.add('hidden');
                     document.getElementById('step2').classList.remove('hidden');
                     document.getElementById('pin').value = '';
-                    document.getElementById('msg').classList.add('hidden');
+                    hideMsg();
                 } else {
                     showMsg('Error: ' + err.message, 'red');
                 }
             }
         };
 
-        window.submitPin = async function() {
+        window.doSubmit = async function() {
+            console.log('doSubmit called');
             const pin = document.getElementById('pin').value.trim();
+
             if (!pin || pin.length !== 4) {
                 showMsg('Enter 4-digit PIN', 'red');
                 return;
             }
+
             showMsg('Processing...', 'blue');
 
             try {
-                if (isExistingUser) {
-                    const { data: user, error } = await supabase
+                if (isUser) {
+                    const { data: user, error } = await sb
                         .from('active_users')
                         .select('pin_hash')
-                        .eq('mobile', currentMobile)
+                        .eq('mobile', curMobile)
                         .single();
 
                     if (error || !user) {
@@ -207,17 +223,17 @@
                     }
 
                     if (user.pin_hash === pin) {
-                        showMsg('✅ Login successful! Welcome ' + currentMobile, 'green');
-                        setTimeout(resetForm, 2000);
+                        showMsg('✅ Welcome ' + curMobile + '!', 'green');
+                        setTimeout(doReset, 2000);
                     } else {
-                        showMsg('❌ Wrong PIN. Try 1234 for demo', 'red');
+                        showMsg('❌ Wrong PIN. Try 1234', 'red');
                         document.getElementById('pin').value = '';
                     }
                 } else {
-                    const { error } = await supabase
+                    const { error } = await sb
                         .from('active_users')
                         .insert([{
-                            mobile: currentMobile,
+                            mobile: curMobile,
                             pin_hash: pin,
                             full_name: '',
                             job_title: '',
@@ -226,26 +242,26 @@
                         }]);
 
                     if (error) {
-                        showMsg('Registration failed: ' + error.message, 'red');
+                        showMsg('Failed: ' + error.message, 'red');
                         return;
                     }
 
-                    showMsg('✅ Registered! Welcome ' + currentMobile, 'green');
-                    setTimeout(resetForm, 2000);
+                    showMsg('✅ Registered! Welcome ' + curMobile, 'green');
+                    setTimeout(doReset, 2000);
                 }
             } catch (err) {
                 showMsg('Error: ' + err.message, 'red');
             }
         };
 
-        window.resetForm = function() {
+        window.doReset = function() {
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
-            currentMobile = '';
-            isExistingUser = false;
+            curMobile = '';
+            isUser = false;
         };
 
         console.log('App ready');
