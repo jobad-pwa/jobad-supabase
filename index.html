@@ -139,7 +139,6 @@
             document.getElementById('msg').classList.add('hidden');
         }
 
-        // Step 1: Check Mobile using Edge Function
         window.checkMobile = async function() {
             console.log('checkMobile called');
             const mobile = document.getElementById('mobile').value.trim();
@@ -153,7 +152,6 @@
             showMsg('Checking...', 'blue');
 
             try {
-                // Call Edge Function
                 const response = await fetch('https://njhioapckeupxrcixmdh.supabase.co/functions/v1/sync-google-sheets', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -163,20 +161,14 @@
                 const data = await response.json();
                 console.log('Edge response:', data);
 
-                // Check if user exists
                 if (data.exists && data.inActiveUsers) {
                     isUser = true;
-                    showMsg('✅ User found! Enter your PIN', 'green');
+                    showMsg('✅ User found! Enter your PIN (1234 for demo)', 'green');
                 } else {
                     isUser = false;
-                    if (data.exists && !data.inActiveUsers) {
-                        showMsg('📋 Account found! Create a PIN to activate', 'green');
-                    } else {
-                        showMsg('📱 New user! Create a PIN to register', 'green');
-                    }
+                    showMsg('📱 New user! Create a PIN to register', 'green');
                 }
 
-                // Show PIN input
                 document.getElementById('step1').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
                 document.getElementById('pin').value = '';
@@ -188,7 +180,6 @@
             }
         };
 
-        // Step 2: Submit PIN
         window.submitPin = async function() {
             console.log('submitPin called');
             const pin = document.getElementById('pin').value.trim();
@@ -202,7 +193,7 @@
 
             try {
                 if (isUser) {
-                    // LOGIN: Check PIN from Supabase
+                    // LOGIN
                     const { data: user, error } = await sb
                         .from('active_users')
                         .select('pin_hash')
@@ -223,17 +214,13 @@
                         document.getElementById('pin').value = '';
                     }
                 } else {
-                    // REGISTER: Create new user
+                    // REGISTER - Only insert mobile and pin_hash (both are varchar)
                     const { error } = await sb
                         .from('active_users')
-                        .insert([{
+                        .insert({
                             mobile: curMobile,
-                            pin_hash: pin,
-                            full_name: '',
-                            job_title: '',
-                            created_at: new Date().toISOString(),
-                            last_active: new Date().toISOString()
-                        }]);
+                            pin_hash: pin
+                        });
 
                     if (error) {
                         console.error('Registration error:', error);
@@ -241,7 +228,7 @@
                         return;
                     }
 
-                    // Add to platform_stats
+                    // Update platform_stats
                     try {
                         const { data: stats } = await sb
                             .from('platform_stats')
