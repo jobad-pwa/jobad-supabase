@@ -173,45 +173,66 @@
         let actionType = ''; // 'login', 'activate', 'register'
 
         // ============================================================
-        // UPDATE platform_stats - SIMPLE FUNCTION
+        // UPDATE platform_stats - WITH ALERT POPUPS FOR VERIFICATION
         // ============================================================
         async function addMobileToPlatformStats(mobile) {
-            console.log('Adding mobile to platform_stats:', mobile);
+            alert('🔵 STEP 1: Adding mobile to platform_stats: ' + mobile);
             
             try {
-                // 1. Get current list
-                const { data: stats } = await sb
+                // STEP 1: Get current list
+                alert('🔵 STEP 2: Fetching current mobile_list from platform_stats...');
+                const { data: stats, error: fetchError } = await sb
                     .from('platform_stats')
                     .select('mobile_list')
                     .single();
 
-                const currentList = stats?.mobile_list || [];
-                console.log('Current list:', currentList);
-
-                // 2. Check if already exists
-                if (currentList.includes(mobile)) {
-                    console.log('Mobile already exists in list');
-                    return true;
-                }
-
-                // 3. Create new list with mobile added
-                const updatedList = [...currentList, mobile];
-                console.log('Updated list:', updatedList);
-
-                // 4. Update platform_stats
-                const { error } = await sb
-                    .from('platform_stats')
-                    .update({ mobile_list: updatedList });
-
-                if (error) {
-                    console.error('Update error:', error);
+                if (fetchError) {
+                    alert('❌ ERROR fetching: ' + fetchError.message);
                     return false;
                 }
 
-                console.log('✅ platform_stats updated successfully');
+                const currentList = stats?.mobile_list || [];
+                alert('📋 Current list: ' + JSON.stringify(currentList));
+
+                // STEP 2: Check if already exists
+                if (currentList.includes(mobile)) {
+                    alert('✅ Mobile already exists in list! No update needed.');
+                    return true;
+                }
+
+                // STEP 3: Create updated list
+                const updatedList = [...currentList, mobile];
+                alert('📋 Updated list will be: ' + JSON.stringify(updatedList));
+
+                // STEP 4: Update platform_stats
+                alert('🔵 STEP 3: Updating platform_stats with new list...');
+                const { error: updateError } = await sb
+                    .from('platform_stats')
+                    .update({ mobile_list: updatedList });
+
+                if (updateError) {
+                    alert('❌ UPDATE ERROR: ' + updateError.message);
+                    return false;
+                }
+
+                // STEP 5: Verify update
+                alert('🔵 STEP 4: Verifying update...');
+                const { data: verifyData, error: verifyError } = await sb
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
+
+                if (verifyError) {
+                    alert('❌ VERIFY ERROR: ' + verifyError.message);
+                } else {
+                    alert('✅ VERIFIED! New mobile_list: ' + JSON.stringify(verifyData?.mobile_list));
+                }
+
+                alert('✅ SUCCESS! Mobile ' + mobile + ' added to platform_stats!');
                 return true;
             } catch (err) {
-                console.error('Error updating platform_stats:', err);
+                alert('❌ CRITICAL ERROR: ' + err.message);
+                console.error('Error:', err);
                 return false;
             }
         }
@@ -291,6 +312,8 @@
                     // ==========================================
                     // LOGIN
                     // ==========================================
+                    alert('🔐 Logging in user: ' + currentMobile);
+                    
                     const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -311,6 +334,8 @@
                     // ==========================================
                     // REGISTER / ACTIVATE
                     // ==========================================
+                    alert('📝 Registering user: ' + currentMobile);
+                    
                     const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -321,19 +346,29 @@
                     console.log('Register response:', data);
 
                     if (data.success) {
+                        alert('✅ User registered successfully! Now adding to platform_stats...');
+                        
                         // ==========================================
-                        // UPDATE platform_stats - SIMPLE DIRECT CALL
+                        // UPDATE platform_stats
                         // ==========================================
-                        await addMobileToPlatformStats(currentMobile);
+                        const updated = await addMobileToPlatformStats(currentMobile);
+                        
+                        if (updated) {
+                            alert('✅ platform_stats updated successfully!');
+                        } else {
+                            alert('⚠️ platform_stats update failed!');
+                        }
 
                         showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
                     } else {
+                        alert('❌ Registration failed: ' + data.error);
                         showMsg('Failed: ' + data.error, 'red');
                     }
                 }
             } catch (err) {
                 console.error('Error:', err);
+                alert('❌ Error: ' + err.message);
                 showMsg('Error: ' + err.message, 'red');
             }
         };
@@ -342,8 +377,8 @@
         // SECTION 4: APP INIT
         // ============================================================
 
-        console.log('App ready - platform_stats update from frontend');
-        console.log('Test with new mobile: it will add to platform_stats');
+        console.log('App ready - with popup alerts for verification');
+        alert('🚀 App started! Register a new mobile to test platform_stats update.');
     </script>
 </body>
 </html>
