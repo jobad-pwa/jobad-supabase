@@ -139,7 +139,7 @@
             document.getElementById('msg').classList.add('hidden');
         }
 
-        // Make functions global for onclick
+        // Step 1: Check Mobile using Edge Function
         window.checkMobile = async function() {
             console.log('checkMobile called');
             const mobile = document.getElementById('mobile').value.trim();
@@ -153,39 +153,42 @@
             showMsg('Checking...', 'blue');
 
             try {
-                const { data: user, error } = await sb
-                    .from('active_users')
-                    .select('mobile')
-                    .eq('mobile', mobile)
-                    .single();
+                // Call Edge Function
+                const response = await fetch('https://njhioapckeupxrcixmdh.supabase.co/functions/v1/sync-google-sheets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: mobile })
+                });
 
-                if (user) {
+                const data = await response.json();
+                console.log('Edge response:', data);
+
+                // Check if user exists
+                if (data.exists && data.inActiveUsers) {
                     isUser = true;
-                    showMsg('✅ User found! Enter PIN', 'green');
+                    showMsg('✅ User found! Enter your PIN', 'green');
                 } else {
                     isUser = false;
-                    showMsg('📱 New user! Create PIN', 'green');
+                    if (data.exists && !data.inActiveUsers) {
+                        showMsg('📋 Account found! Create a PIN to activate', 'green');
+                    } else {
+                        showMsg('📱 New user! Create a PIN to register', 'green');
+                    }
                 }
 
+                // Show PIN input
                 document.getElementById('step1').classList.add('hidden');
                 document.getElementById('step2').classList.remove('hidden');
                 document.getElementById('pin').value = '';
                 hideMsg();
 
             } catch (err) {
-                if (err.message && err.message.includes('No rows found')) {
-                    isUser = false;
-                    showMsg('📱 New user! Create PIN', 'green');
-                    document.getElementById('step1').classList.add('hidden');
-                    document.getElementById('step2').classList.remove('hidden');
-                    document.getElementById('pin').value = '';
-                    hideMsg();
-                } else {
-                    showMsg('Error: ' + err.message, 'red');
-                }
+                console.error('Error:', err);
+                showMsg('Error: ' + err.message, 'red');
             }
         };
 
+        // Step 2: Submit PIN
         window.submitPin = async function() {
             console.log('submitPin called');
             const pin = document.getElementById('pin').value.trim();
@@ -199,18 +202,20 @@
 
             try {
                 if (isUser) {
+                    // LOGIN: Check PIN from Supabase
                     const { data: user, error } = await sb
                         .from('active_users')
                         .select('pin_hash')
                         .eq('mobile', curMobile)
                         .single();
 
-                    if (error || !user) {
-                        showMsg('User not found', 'red');
+                    if (error) {
+                        console.error('Login error:', error);
+                        showMsg('Error checking user', 'red');
                         return;
                     }
 
-                    if (user.pin_hash === pin) {
+                    if (user && user.pin_hash === pin) {
                         showMsg('✅ Welcome ' + curMobile + '!', 'green');
                         setTimeout(resetForm, 2000);
                     } else {
@@ -218,6 +223,7 @@
                         document.getElementById('pin').value = '';
                     }
                 } else {
+                    // REGISTER: Create new user
                     const { error } = await sb
                         .from('active_users')
                         .insert([{
@@ -230,14 +236,32 @@
                         }]);
 
                     if (error) {
-                        showMsg('Failed: ' + error.message, 'red');
+                        console.error('Registration error:', error);
+                        showMsg('Registration failed: ' + error.message, 'red');
                         return;
+                    }
+
+                    // Add to platform_stats
+                    try {
+                        const { data: stats } = await sb
+                            .from('platform_stats')
+                            .select('mobile_list')
+                            .single();
+
+                        if (stats && !stats.mobile_list.includes(curMobile)) {
+                            await sb
+                                .from('platform_stats')
+                                .update({ mobile_list: [...stats.mobile_list, curMobile] });
+                        }
+                    } catch (statsErr) {
+                        console.log('Stats update skipped:', statsErr);
                     }
 
                     showMsg('✅ Registered! Welcome ' + curMobile, 'green');
                     setTimeout(resetForm, 2000);
                 }
             } catch (err) {
+                console.error('Error:', err);
                 showMsg('Error: ' + err.message, 'red');
             }
         };
@@ -252,7 +276,7 @@
             isUser = false;
         };
 
-        console.log('Script ready - functions defined globally');
+        console.log('Script ready');
     </script>
 </body>
 </html>
