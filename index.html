@@ -140,7 +140,8 @@
         // SECTION 2: UI HELPERS
         // ============================================================
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Create Supabase client (only once)
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function showMsg(text, type) {
             const el = document.getElementById('msg');
@@ -160,7 +161,6 @@
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
             document.getElementById('checkBtn').textContent = 'Check Mobile';
-            document.getElementById('checkBtn').className = '';
             document.getElementById('submitBtn').textContent = 'Submit';
             document.getElementById('submitBtn').className = 'btn-green';
             currentMobile = '';
@@ -174,7 +174,7 @@
 
         let currentMobile = '';
         let isUser = false;
-        let actionType = ''; // 'login' or 'register'
+        let actionType = ''; // 'login', 'activate', 'register'
 
         window.checkMobile = async function() {
             console.log('checkMobile called');
@@ -282,7 +282,7 @@
                         // UPDATE platform_stats with new mobile
                         // ==========================================
                         try {
-                            const { data: stats } = await supabase
+                            const { data: stats } = await sb
                                 .from('platform_stats')
                                 .select('mobile_list')
                                 .single();
@@ -291,7 +291,7 @@
                                 const currentList = stats.mobile_list || [];
                                 if (!currentList.includes(currentMobile)) {
                                     const updatedList = [...currentList, currentMobile];
-                                    await supabase
+                                    await sb
                                         .from('platform_stats')
                                         .update({ mobile_list: updatedList })
                                         .eq('id', 1);
