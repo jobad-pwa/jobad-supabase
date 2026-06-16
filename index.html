@@ -166,7 +166,11 @@
                     showMsg('✅ User found! Enter your PIN (1234 for demo)', 'green');
                 } else {
                     isUser = false;
-                    showMsg('📱 New user! Create a PIN to register', 'green');
+                    if (data.exists && !data.inActiveUsers) {
+                        showMsg('📋 Account found! Create a PIN to activate', 'green');
+                    } else {
+                        showMsg('📱 New user! Create a PIN to register', 'green');
+                    }
                 }
 
                 document.getElementById('step1').classList.add('hidden');
@@ -193,12 +197,12 @@
 
             try {
                 if (isUser) {
-                    // LOGIN
+                    // LOGIN - Check PIN directly
                     const { data: user, error } = await sb
                         .from('active_users')
                         .select('pin_hash')
                         .eq('mobile', curMobile)
-                        .single();
+                        .maybeSingle();
 
                     if (error) {
                         console.error('Login error:', error);
@@ -214,38 +218,22 @@
                         document.getElementById('pin').value = '';
                     }
                 } else {
-                    // REGISTER - Only insert mobile and pin_hash (both are varchar)
-                    const { error } = await sb
-                        .from('active_users')
-                        .insert({
-                            mobile: curMobile,
-                            pin_hash: pin
-                        });
+                    // REGISTER - Use the new Edge Function
+                    const response = await fetch('https://njhioapckeupxrcixmdh.supabase.co/functions/v1/register-user', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mobile: curMobile, pin: pin })
+                    });
 
-                    if (error) {
-                        console.error('Registration error:', error);
-                        showMsg('Registration failed: ' + error.message, 'red');
-                        return;
+                    const data = await response.json();
+                    console.log('Register response:', data);
+
+                    if (data.success) {
+                        showMsg('✅ Registered! Welcome ' + curMobile, 'green');
+                        setTimeout(resetForm, 2000);
+                    } else {
+                        showMsg('Registration failed: ' + data.error, 'red');
                     }
-
-                    // Update platform_stats
-                    try {
-                        const { data: stats } = await sb
-                            .from('platform_stats')
-                            .select('mobile_list')
-                            .single();
-
-                        if (stats && !stats.mobile_list.includes(curMobile)) {
-                            await sb
-                                .from('platform_stats')
-                                .update({ mobile_list: [...stats.mobile_list, curMobile] });
-                        }
-                    } catch (statsErr) {
-                        console.log('Stats update skipped:', statsErr);
-                    }
-
-                    showMsg('✅ Registered! Welcome ' + curMobile, 'green');
-                    setTimeout(resetForm, 2000);
                 }
             } catch (err) {
                 console.error('Error:', err);
