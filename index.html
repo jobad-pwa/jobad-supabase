@@ -80,6 +80,12 @@
         .btn-back:hover {
             background: #4b5563;
         }
+        .btn-green {
+            background: #16a34a;
+        }
+        .btn-green:hover {
+            background: #15803d;
+        }
         .msg {
             margin-top: 16px;
             padding: 12px;
@@ -90,45 +96,34 @@
         .msg-green { background: #dcfce7; color: #166534; }
         .msg-red { background: #fee2e2; color: #991b1b; }
         .msg-blue { background: #dbeafe; color: #1e40af; }
+        .msg-yellow { background: #fef3c7; color: #92400e; }
         .hidden { display: none; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="card">
-        <!-- ========================================== -->
-        <!-- HEADER -->
-        <!-- ========================================== -->
         <h1>JobAd</h1>
         <div class="sub">Telangana Zone Based Jobs</div>
 
-        <!-- ========================================== -->
-        <!-- TEST LINKS -->
-        <!-- ========================================== -->
         <div class="test-links">
             <a href="test.html">🔌 DB Test</a>
         </div>
 
-        <!-- ========================================== -->
-        <!-- STEP 1: MOBILE INPUT -->
-        <!-- ========================================== -->
+        <!-- STEP 1: Mobile Input -->
         <div id="step1">
             <input type="tel" id="mobile" placeholder="Enter 10-digit mobile" maxlength="10">
-            <button onclick="checkMobile()">Check Mobile</button>
+            <button onclick="checkMobile()" id="checkBtn">Check Mobile</button>
         </div>
 
-        <!-- ========================================== -->
-        <!-- STEP 2: PIN INPUT -->
-        <!-- ========================================== -->
+        <!-- STEP 2: PIN Input -->
         <div id="step2" class="hidden">
             <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
-            <button onclick="submitPin()">Submit</button>
+            <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
             <button onclick="resetForm()" class="btn-back">Back</button>
         </div>
 
-        <!-- ========================================== -->
-        <!-- MESSAGE DISPLAY -->
-        <!-- ========================================== -->
+        <!-- Message Display -->
         <div id="msg" class="hidden"></div>
     </div>
 
@@ -145,7 +140,8 @@
         // SECTION 2: UI HELPERS
         // ============================================================
 
-        // Show message to user
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         function showMsg(text, type) {
             const el = document.getElementById('msg');
             el.textContent = text;
@@ -153,20 +149,23 @@
             el.classList.remove('hidden');
         }
 
-        // Hide message
         function hideMsg() {
             document.getElementById('msg').classList.add('hidden');
         }
 
-        // Reset form to initial state
         function resetForm() {
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
+            document.getElementById('checkBtn').textContent = 'Check Mobile';
+            document.getElementById('checkBtn').className = '';
+            document.getElementById('submitBtn').textContent = 'Submit';
+            document.getElementById('submitBtn').className = 'btn-green';
             currentMobile = '';
             isUser = false;
+            actionType = '';
         }
 
         // ============================================================
@@ -175,8 +174,8 @@
 
         let currentMobile = '';
         let isUser = false;
+        let actionType = ''; // 'login' or 'register'
 
-        // Step 1: Check if mobile exists
         window.checkMobile = async function() {
             console.log('checkMobile called');
             const mobile = document.getElementById('mobile').value.trim();
@@ -200,15 +199,26 @@
                 console.log('Edge response:', data);
 
                 if (data.exists && data.inActiveUsers) {
+                    // Existing user - Login
                     isUser = true;
+                    actionType = 'login';
                     showMsg('✅ User found! Enter your PIN', 'green');
-                } else {
+                    document.getElementById('submitBtn').textContent = '🔐 Login';
+                    document.getElementById('submitBtn').className = 'btn-green';
+                } else if (data.exists && !data.inActiveUsers) {
+                    // In platform_stats but not in active_users - Activate
                     isUser = false;
-                    if (data.exists && !data.inActiveUsers) {
-                        showMsg('📋 Account found! Create a PIN to activate', 'green');
-                    } else {
-                        showMsg('📱 New user! Create a PIN to register', 'green');
-                    }
+                    actionType = 'activate';
+                    showMsg('📋 Account found! Create a PIN to activate', 'yellow');
+                    document.getElementById('submitBtn').textContent = '📝 Activate';
+                    document.getElementById('submitBtn').className = 'btn-green';
+                } else {
+                    // New user - Register
+                    isUser = false;
+                    actionType = 'register';
+                    showMsg('📱 New user! Create a PIN to register', 'blue');
+                    document.getElementById('submitBtn').textContent = '📝 Register';
+                    document.getElementById('submitBtn').className = 'btn-green';
                 }
 
                 document.getElementById('step1').classList.add('hidden');
@@ -222,7 +232,6 @@
             }
         };
 
-        // Step 2: Submit PIN (Login or Register)
         window.submitPin = async function() {
             console.log('submitPin called');
             const pin = document.getElementById('pin').value.trim();
@@ -235,7 +244,7 @@
             showMsg('Processing...', 'blue');
 
             try {
-                if (isUser) {
+                if (actionType === 'login') {
                     // ==========================================
                     // LOGIN: Verify PIN via Edge Function
                     // ==========================================
@@ -257,7 +266,7 @@
                     }
                 } else {
                     // ==========================================
-                    // REGISTER: Create new user via Edge Function
+                    // REGISTER / ACTIVATE: Create new user
                     // ==========================================
                     const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                         method: 'POST',
@@ -269,10 +278,34 @@
                     console.log('Register response:', data);
 
                     if (data.success) {
-                        showMsg('✅ Registered! Welcome ' + currentMobile, 'green');
+                        // ==========================================
+                        // UPDATE platform_stats with new mobile
+                        // ==========================================
+                        try {
+                            const { data: stats } = await supabase
+                                .from('platform_stats')
+                                .select('mobile_list')
+                                .single();
+
+                            if (stats) {
+                                const currentList = stats.mobile_list || [];
+                                if (!currentList.includes(currentMobile)) {
+                                    const updatedList = [...currentList, currentMobile];
+                                    await supabase
+                                        .from('platform_stats')
+                                        .update({ mobile_list: updatedList })
+                                        .eq('id', 1);
+                                    console.log('Added to platform_stats:', currentMobile);
+                                }
+                            }
+                        } catch (statsErr) {
+                            console.log('Stats update error:', statsErr);
+                        }
+
+                        showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
                     } else {
-                        showMsg('Registration failed: ' + data.error, 'red');
+                        showMsg('Failed: ' + data.error, 'red');
                     }
                 }
             } catch (err) {
@@ -285,7 +318,6 @@
         // SECTION 4: GOOGLE SHEETS INTEGRATION (FUTURE)
         // ============================================================
 
-        // This section will be added when implementing Google Sheets sync
         // function syncWithGoogleSheets() { ... }
         // function copyFromGoogleSheets() { ... }
         // function archiveToGoogleSheets() { ... }
@@ -294,7 +326,7 @@
         // SECTION 5: APP INIT
         // ============================================================
 
-        console.log('App ready - single file with sections');
+        console.log('App ready with dynamic button text and platform_stats update');
     </script>
 </body>
 </html>
