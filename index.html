@@ -115,114 +115,148 @@
             font-weight: bold;
         }
 
-        /* Zone Search Styles */
-        .zone-search-wrapper {
-            position: relative;
-            width: 100%;
-        }
-        .zone-display {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 14px 16px;
-            cursor: pointer;
+        /* ========================================== */
+        /* LOCATION SELECTOR - TOP RIGHT CORNER       */
+        /* ========================================== */
+        .location-top {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+        }
+        .location-trigger {
+            display: flex;
             align-items: center;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-            font-size: 15px;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 500;
             color: #1e293b;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
         }
-        .zone-display:hover {
+        .location-trigger:hover {
             border-color: #3b82f6;
+            background: #eff6ff;
         }
-        .zone-display .zone-arrow {
-            font-size: 12px;
-            color: #6b7280;
-            transition: transform 0.3s ease;
+        .location-trigger .loc-icon {
+            font-size: 14px;
         }
-        .zone-display .zone-arrow.open {
+        .location-trigger .loc-name {
+            max-width: 100px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .location-trigger .loc-arrow {
+            font-size: 10px;
+            color: #94a3b8;
+            transition: transform 0.2s ease;
+        }
+        .location-trigger .loc-arrow.open {
             transform: rotate(180deg);
         }
-        .zone-dropdown {
+        .location-popup {
             position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
+            top: 100%;
             right: 0;
+            margin-top: 4px;
             background: white;
-            border: 2px solid #3b82f6;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            z-index: 100;
-            max-height: 300px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            width: 260px;
+            max-height: 280px;
             overflow: hidden;
+            z-index: 200;
             display: none;
         }
-        .zone-dropdown.open {
+        .location-popup.open {
             display: block;
         }
-        .zone-dropdown input {
+        .location-popup input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border: none;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
             outline: none;
-            margin: 0;
-            border-radius: 0;
-            background: white;
+            border-radius: 12px 12px 0 0;
         }
-        .zone-dropdown input:focus {
-            border-bottom: 2px solid #3b82f6;
+        .location-popup input:focus {
+            border-bottom-color: #3b82f6;
         }
-        .zone-list {
-            max-height: 220px;
+        .location-popup .list {
+            max-height: 200px;
             overflow-y: auto;
             padding: 4px 0;
         }
-        .zone-item {
-            padding: 10px 16px;
+        .location-popup .item {
+            padding: 8px 14px;
             cursor: pointer;
-            font-size: 14px;
-            transition: background 0.2s ease;
-            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            transition: background 0.15s ease;
             color: #1e293b;
         }
-        .zone-item:hover {
-            background: #eff6ff;
+        .location-popup .item:hover {
+            background: #f1f5f9;
         }
-        .zone-item:last-child {
-            border-bottom: none;
-        }
-        .zone-item.no-result {
-            color: #6b7280;
-            cursor: default;
-        }
-        .zone-item.no-result:hover {
-            background: white;
-        }
-        .zone-item.selected {
+        .location-popup .item.selected {
             background: #dbeafe;
-            font-weight: 600;
+            font-weight: 500;
         }
-        .location-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .location-popup .item .check {
+            color: #16a34a;
+            margin-left: 6px;
+        }
+        .location-popup .no-result {
+            padding: 10px 14px;
+            color: #94a3b8;
             font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 6px;
+            text-align: center;
         }
-        .location-label span {
-            background: #dbeafe;
-            color: #1e40af;
-            padding: 0 8px;
-            border-radius: 4px;
-            font-size: 10px;
+        .location-popup .confirm-row {
+            display: flex;
+            gap: 6px;
+            padding: 8px 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .location-popup .confirm-row button {
+            flex: 1;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 600;
+            cursor: pointer;
         }
-        .hidden-input { display: none; }
+        .location-popup .confirm-row .btn-confirm {
+            background: #16a34a;
+            color: white;
+        }
+        .location-popup .confirm-row .btn-confirm:hover {
+            background: #15803d;
+        }
+        .location-popup .confirm-row .btn-skip {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        .location-popup .confirm-row .btn-skip:hover {
+            background: #cbd5e1;
+        }
+        .location-popup .msg {
+            padding: 4px 12px 8px;
+            font-size: 11px;
+            text-align: center;
+        }
+        .location-popup .msg.success { color: #16a34a; }
+        .location-popup .msg.error { color: #dc2626; }
+
+        .location-wrapper {
+            position: relative;
+        }
     </style>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen pb-20 select-none">
@@ -271,17 +305,28 @@
                 </div>
 
                 <!-- ========================================== -->
-                <!-- LOCATION SELECTOR (Shows after login)      -->
+                <!-- LOCATION SELECTOR - TOP RIGHT CORNER       -->
                 <!-- ========================================== -->
-                <div id="location-selector" style="display: none;" class="bg-slate-50 p-5 rounded-2xl border border-slate-200/60 shadow-sm">
-                    <div class="location-label">📍 Select Your Zone <span>Required</span></div>
-                    <div id="zone-search-container"></div>
-                    <input type="hidden" id="selected-zone-id" class="hidden-input">
-                    <div style="margin-top: 12px; display: flex; gap: 8px;">
-                        <button onclick="confirmLocation()" class="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition">✅ Confirm</button>
-                        <button onclick="skipLocation()" class="flex-1 py-2.5 bg-slate-400 hover:bg-slate-500 text-white text-xs font-bold rounded-xl transition">Skip</button>
+                <div id="location-selector" style="display: none;">
+                    <div class="location-top">
+                        <div class="location-wrapper">
+                            <div class="location-trigger" onclick="toggleLocationPopup()">
+                                <span class="loc-icon">📍</span>
+                                <span class="loc-name" id="loc-selected-label">Select Zone</span>
+                                <span class="loc-arrow" id="loc-arrow">▼</span>
+                            </div>
+                            <div class="location-popup" id="loc-popup">
+                                <input type="text" id="loc-search" placeholder="Search zone..." oninput="filterLocations()">
+                                <div class="list" id="loc-list"></div>
+                                <input type="hidden" id="loc-selected-id">
+                                <div class="confirm-row">
+                                    <button class="btn-confirm" onclick="confirmLocation()">✅ Confirm</button>
+                                    <button class="btn-skip" onclick="skipLocation()">Skip</button>
+                                </div>
+                                <div id="loc-msg" class="msg"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="location-msg" class="text-center text-xs font-medium mt-2"></div>
                 </div>
             </div>
 
@@ -514,14 +559,15 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
         const EDGE_FUNCTION_URL = 'https://njhioapckeupxrcixmdh.supabase.co/functions/v1';
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
         // SECTION 2: STATE
         // ============================================================
         let currentUser = null;
         let currentMobile = '';
-        let currentAction = null; // 'login' or 'register'
+        let currentAction = null;
+        let locationZones = [];
 
         // ============================================================
         // SECTION 3: UI HELPERS
@@ -665,7 +711,7 @@
             .then(res => res.json())
             .then(async (data) => {
                 if (data.success) {
-                    const { data: userData, error } = await supabase
+                    const { data: userData, error } = await sb
                         .from('active_users')
                         .select('*')
                         .eq('mobile', mobile)
@@ -715,49 +761,118 @@
         }
 
         // ============================================================
-        // SECTION 5: LOCATION (Using locations.js)
+        // SECTION 5: LOCATION SELECTOR - TOP RIGHT CORNER
         // ============================================================
 
-        function showLocationSelector() {
-            const container = document.getElementById('zone-search-container');
-            if (!container) return;
+        const LOCATION_ZONES = [
+            { id: 100, name: "Hyderabad" },
+            { id: 200, name: "North Telangana" },
+            { id: 300, name: "East Telangana" },
+            { id: 400, name: "South Telangana" }
+        ];
 
-            // Create the searchable zone input
-            if (window.LOCATION && window.LOCATION.createZoneSearchInput) {
-                window.LOCATION.createZoneSearchInput();
-                // Auto-detect location
-                window.LOCATION.detectLocation();
+        let selectedLocId = null;
+
+        function renderLocationList(zones) {
+            const list = document.getElementById('loc-list');
+            if (!list) return;
+            if (zones.length === 0) {
+                list.innerHTML = '<div class="item no-result">No zones found</div>';
+                return;
             }
+            list.innerHTML = zones.map(zone => `
+                <div class="item ${selectedLocId === zone.id ? 'selected' : ''}" 
+                     onclick="selectLocation(${zone.id}, '${zone.name}')">
+                    📍 ${zone.name}
+                    ${selectedLocId === zone.id ? '<span class="check">✓</span>' : ''}
+                </div>
+            `).join('');
+        }
 
+        function toggleLocationPopup() {
+            const popup = document.getElementById('loc-popup');
+            const arrow = document.getElementById('loc-arrow');
+            if (popup) {
+                const isOpen = popup.classList.contains('open');
+                popup.classList.toggle('open');
+                if (arrow) arrow.classList.toggle('open');
+                if (!isOpen) {
+                    setTimeout(() => {
+                        const input = document.getElementById('loc-search');
+                        if (input) { input.focus(); input.select(); }
+                    }, 100);
+                    renderLocationList(LOCATION_ZONES);
+                }
+            }
+        }
+
+        function filterLocations() {
+            const input = document.getElementById('loc-search');
+            if (!input) return;
+            const query = input.value.toLowerCase().trim();
+            const filtered = query ? LOCATION_ZONES.filter(z => z.name.toLowerCase().includes(query)) : LOCATION_ZONES;
+            renderLocationList(filtered);
+        }
+
+        function selectLocation(id, name) {
+            selectedLocId = id;
+            document.getElementById('loc-selected-label').textContent = name;
+            document.getElementById('loc-selected-id').value = id;
+            // Close popup
+            const popup = document.getElementById('loc-popup');
+            const arrow = document.getElementById('loc-arrow');
+            if (popup) popup.classList.remove('open');
+            if (arrow) arrow.classList.remove('open');
+            renderLocationList(LOCATION_ZONES);
+            document.getElementById('loc-msg').textContent = '';
+            document.getElementById('loc-msg').className = 'msg';
+        }
+
+        function showLocationSelector() {
             document.getElementById('location-selector').style.display = 'block';
-            document.getElementById('location-selector').scrollIntoView({ behavior: 'smooth' });
+            // Auto-detect
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    const city = data.city || '';
+                    const matched = LOCATION_ZONES.find(z => 
+                        city.toLowerCase().includes(z.name.toLowerCase()) || 
+                        z.name.toLowerCase().includes(city.toLowerCase())
+                    );
+                    if (matched) {
+                        selectLocation(matched.id, matched.name);
+                        document.getElementById('loc-selected-label').textContent = matched.name + ' (Detected)';
+                    }
+                })
+                .catch(() => {
+                    selectLocation(100, 'Hyderabad');
+                    document.getElementById('loc-selected-label').textContent = 'Hyderabad (Default)';
+                });
         }
 
         function confirmLocation() {
-            const zoneId = window.LOCATION.getSelectedZoneId ? window.LOCATION.getSelectedZoneId() : null;
-            const msgDiv = document.getElementById('location-msg');
-
+            const zoneId = parseInt(document.getElementById('loc-selected-id').value);
+            const msgDiv = document.getElementById('loc-msg');
             if (!zoneId) {
                 msgDiv.textContent = '⚠️ Please select a zone';
-                msgDiv.className = 'text-center text-xs font-medium mt-2 text-red-500';
+                msgDiv.className = 'msg error';
                 return;
             }
-
-            const zoneName = window.LOCATION.getZoneName ? window.LOCATION.getZoneName(zoneId) : zoneId;
-
-            // Save to Supabase
-            if (currentUser && window.LOCATION.saveUserLocation) {
-                window.LOCATION.saveUserLocation(currentUser.mobile, zoneId, supabase)
-                    .then(saved => {
-                        if (saved) {
+            const zoneName = LOCATION_ZONES.find(z => z.id === zoneId)?.name || zoneId;
+            if (currentUser && sb) {
+                sb.from('active_users')
+                    .update({ zone_id: zoneId, last_active: new Date().toISOString() })
+                    .eq('mobile', currentUser.mobile)
+                    .then(({ error }) => {
+                        if (error) {
+                            msgDiv.textContent = '❌ Failed to save';
+                            msgDiv.className = 'msg error';
+                        } else {
                             msgDiv.textContent = '✅ Location saved: ' + zoneName;
-                            msgDiv.className = 'text-center text-xs font-medium mt-2 text-green-600';
+                            msgDiv.className = 'msg success';
                             document.getElementById('location-selector').style.display = 'none';
                             showScreen('screen-home');
                             showToast('📍 Location set to ' + zoneName);
-                        } else {
-                            msgDiv.textContent = '❌ Failed to save location';
-                            msgDiv.className = 'text-center text-xs font-medium mt-2 text-red-500';
                         }
                     });
             }
@@ -766,8 +881,19 @@
         function skipLocation() {
             document.getElementById('location-selector').style.display = 'none';
             showScreen('screen-home');
-            showToast('📍 You can set location later from profile');
+            showToast('📍 You can set location later');
         }
+
+        // Close popup on outside click
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.location-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                const popup = document.getElementById('loc-popup');
+                const arrow = document.getElementById('loc-arrow');
+                if (popup) popup.classList.remove('open');
+                if (arrow) arrow.classList.remove('open');
+            }
+        });
 
         // ============================================================
         // SECTION 6: ZONE & FILTER FUNCTIONS (Existing)
@@ -1090,7 +1216,7 @@
             document.getElementById('global-header').classList.add('hidden'); 
             document.getElementById('global-nav').classList.add('hidden'); 
             populateZoneDropdowns();
-            console.log("✅ App loaded with location selector");
+            console.log("✅ App loaded with location selector (top right)");
         });
     </script>
 </body>
