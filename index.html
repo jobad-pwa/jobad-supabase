@@ -173,7 +173,7 @@
         let actionType = ''; // 'login', 'activate', 'register'
 
         // ============================================================
-        // UPDATE platform_stats - WITH ALERT POPUPS FOR VERIFICATION
+        // UPDATE platform_stats - WITH DETAILED ERROR LOGGING
         // ============================================================
         async function addMobileToPlatformStats(mobile) {
             alert('🔵 STEP 1: Adding mobile to platform_stats: ' + mobile);
@@ -187,7 +187,8 @@
                     .single();
 
                 if (fetchError) {
-                    alert('❌ ERROR fetching: ' + fetchError.message);
+                    alert('❌ ERROR fetching: ' + fetchError.message + '\nCode: ' + fetchError.code);
+                    console.error('Fetch error:', fetchError);
                     return false;
                 }
 
@@ -206,13 +207,17 @@
 
                 // STEP 4: Update platform_stats
                 alert('🔵 STEP 3: Updating platform_stats with new list...');
-                const { error: updateError } = await sb
+                
+                const result = await sb
                     .from('platform_stats')
                     .update({ mobile_list: updatedList });
-
-                if (updateError) {
-                    alert('❌ UPDATE ERROR: ' + updateError.message);
+                
+                if (result.error) {
+                    alert('❌ UPDATE ERROR: ' + result.error.message + '\nCode: ' + result.error.code + '\nDetails: ' + JSON.stringify(result.error));
+                    console.error('Update error:', result.error);
                     return false;
+                } else {
+                    alert('✅ Update successful!');
                 }
 
                 // STEP 5: Verify update
@@ -224,15 +229,21 @@
 
                 if (verifyError) {
                     alert('❌ VERIFY ERROR: ' + verifyError.message);
+                    console.error('Verify error:', verifyError);
                 } else {
                     alert('✅ VERIFIED! New mobile_list: ' + JSON.stringify(verifyData?.mobile_list));
+                    
+                    if (verifyData?.mobile_list?.includes(mobile)) {
+                        alert('✅ SUCCESS! Mobile ' + mobile + ' is now in platform_stats!');
+                    } else {
+                        alert('⚠️ Mobile ' + mobile + ' NOT found in verified list! Update may have failed.');
+                    }
                 }
 
-                alert('✅ SUCCESS! Mobile ' + mobile + ' added to platform_stats!');
                 return true;
             } catch (err) {
-                alert('❌ CRITICAL ERROR: ' + err.message);
-                console.error('Error:', err);
+                alert('❌ CRITICAL ERROR: ' + err.message + '\nStack: ' + err.stack);
+                console.error('Critical error:', err);
                 return false;
             }
         }
@@ -312,8 +323,6 @@
                     // ==========================================
                     // LOGIN
                     // ==========================================
-                    alert('🔐 Logging in user: ' + currentMobile);
-                    
                     const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -334,8 +343,6 @@
                     // ==========================================
                     // REGISTER / ACTIVATE
                     // ==========================================
-                    alert('📝 Registering user: ' + currentMobile);
-                    
                     const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -346,29 +353,19 @@
                     console.log('Register response:', data);
 
                     if (data.success) {
-                        alert('✅ User registered successfully! Now adding to platform_stats...');
-                        
                         // ==========================================
                         // UPDATE platform_stats
                         // ==========================================
-                        const updated = await addMobileToPlatformStats(currentMobile);
-                        
-                        if (updated) {
-                            alert('✅ platform_stats updated successfully!');
-                        } else {
-                            alert('⚠️ platform_stats update failed!');
-                        }
+                        await addMobileToPlatformStats(currentMobile);
 
                         showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
                     } else {
-                        alert('❌ Registration failed: ' + data.error);
                         showMsg('Failed: ' + data.error, 'red');
                     }
                 }
             } catch (err) {
                 console.error('Error:', err);
-                alert('❌ Error: ' + err.message);
                 showMsg('Error: ' + err.message, 'red');
             }
         };
@@ -377,8 +374,8 @@
         // SECTION 4: APP INIT
         // ============================================================
 
-        console.log('App ready - with popup alerts for verification');
-        alert('🚀 App started! Register a new mobile to test platform_stats update.');
+        console.log('App ready - with detailed error logging');
+        alert('🚀 Testing platform_stats update. Register a new number!');
     </script>
 </body>
 </html>
