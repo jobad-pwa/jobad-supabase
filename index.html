@@ -6,6 +6,7 @@
     <title>JobAd - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="locations.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -18,35 +19,45 @@
             min-height: 100vh;
         }
         .card {
-            max-width: 400px;
+            max-width: 420px;
             width: 100%;
             background: white;
             border-radius: 24px;
             padding: 32px 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        h1 {
-            font-size: 36px;
-            font-weight: 800;
-            text-align: center;
-            color: #2563eb;
-            margin: 0 0 8px 0;
+        h1 { font-size: 36px; font-weight: 800; text-align: center; color: #2563eb; margin: 0 0 8px 0; }
+        .sub { text-align: center; color: #6b7280; font-size: 13px; margin-bottom: 32px; }
+        .test-links { text-align: center; margin-bottom: 24px; font-size: 12px; }
+        .test-links a { color: #3b82f6; text-decoration: none; margin: 0 8px; }
+        .zone-selector {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            flex-wrap: wrap;
         }
-        .sub {
-            text-align: center;
-            color: #6b7280;
+        .zone-selector select {
+            flex: 1;
+            min-width: 120px;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
             font-size: 13px;
-            margin-bottom: 32px;
+            font-weight: 500;
         }
-        .test-links {
-            text-align: center;
-            margin-bottom: 24px;
-            font-size: 12px;
-        }
-        .test-links a {
-            color: #3b82f6;
-            text-decoration: none;
-            margin: 0 8px;
+        .zone-selector .detected {
+            font-size: 11px;
+            color: #16a34a;
+            background: #dcfce7;
+            padding: 2px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
         }
         input {
             width: 100%;
@@ -58,13 +69,8 @@
             box-sizing: border-box;
             transition: all 0.3s ease;
         }
-        input:focus {
-            border-color: #2563eb;
-            outline: 2px solid #93c5fd;
-        }
-        input:disabled {
-            opacity: 0.6;
-        }
+        input:focus { border-color: #2563eb; outline: 2px solid #93c5fd; }
+        input:disabled { opacity: 0.6; }
         button {
             width: 100%;
             padding: 14px;
@@ -77,32 +83,14 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        button:hover {
-            background: #1d4ed8;
-        }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .btn-back {
-            background: #6b7280;
-            margin-top: 8px;
-        }
-        .btn-back:hover {
-            background: #4b5563;
-        }
-        .btn-green {
-            background: #16a34a;
-        }
-        .btn-green:hover {
-            background: #15803d;
-        }
-        .btn-yellow {
-            background: #d97706;
-        }
-        .btn-yellow:hover {
-            background: #b45309;
-        }
+        button:hover { background: #1d4ed8; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-back { background: #6b7280; margin-top: 8px; }
+        .btn-back:hover { background: #4b5563; }
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #15803d; }
+        .btn-yellow { background: #d97706; }
+        .btn-yellow:hover { background: #b45309; }
         .msg {
             margin-top: 16px;
             padding: 12px;
@@ -116,32 +104,20 @@
         .msg-blue { background: #dbeafe; color: #1e40af; }
         .msg-yellow { background: #fef3c7; color: #92400e; }
         .hidden { display: none; }
-        .password-wrapper {
-            position: relative;
-        }
+        .password-wrapper { position: relative; }
         .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
+            position: absolute; right: 12px; top: 50%;
             transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 14px;
-            user-select: none;
-            padding: 4px;
+            cursor: pointer; font-size: 14px; user-select: none; padding: 4px;
         }
         .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
+            position: fixed; bottom: 80px; left: 50%;
             transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: bold;
+            background: #1e293b; color: white;
+            padding: 8px 16px; border-radius: 999px;
+            font-size: 12px; font-weight: bold;
             z-index: 1000;
-            animation: fadeOut 2s ease forwards;
+            animation: fadeOut 2.5s ease forwards;
             white-space: nowrap;
         }
         @keyframes fadeOut {
@@ -149,49 +125,16 @@
             70% { opacity: 1; }
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
         }
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #e5e7eb;
-            border-top: 2px solid #2563eb;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
+        .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
+        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .location-group {
+            display: flex;
+            gap: 8px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .dot-green { background: #16a34a; }
-        .dot-blue { background: #3b82f6; }
-        .dot-yellow { background: #d97706; }
-        .dot-red { background: #dc2626; }
-        .mobile-display {
-            font-size: 20px;
-            font-weight: bold;
-            color: #1e293b;
-            padding: 4px 0;
-        }
-        .action-label {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .location-group select {
+            flex: 1;
         }
     </style>
 </head>
@@ -211,7 +154,7 @@
             <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
         </div>
 
-        <!-- STEP 2: PIN INPUT (Auto-shows) -->
+        <!-- STEP 2: PIN INPUT -->
         <div id="step2" class="hidden fade-in">
             <div id="user-info" class="text-center mb-4">
                 <div class="mobile-display" id="display-mobile">--</div>
@@ -225,16 +168,40 @@
             <button onclick="resetForm()" class="btn-back">← Change Number</button>
         </div>
 
-        <!-- MESSAGE -->
-        <div id="msg" class="hidden"></div>
+        <!-- STEP 3: LOCATION SELECTOR -->
+        <div id="step3" class="hidden fade-in">
+            <div class="zone-selector">
+                <span>📍</span>
+                <div class="location-group" style="flex:1;">
+                    <select id="zone-select" onchange="onZoneChange()">
+                        <option value="">Select Zone</option>
+                    </select>
+                    <select id="area-select">
+                        <option value="">Select Area</option>
+                    </select>
+                </div>
+                <span class="detected" id="detected-badge">📍 Auto</span>
+            </div>
+            <button onclick="saveLocation()" class="btn-green">✅ Confirm Location</button>
+            <button onclick="skipLocation()" class="btn-back">Skip for now</button>
+        </div>
 
-        <!-- DASHBOARD -->
-        <div id="dashboard" class="hidden" style="margin-top: 20px;">
+        <!-- STEP 4: DASHBOARD -->
+        <div id="step4" class="hidden fade-in">
             <div class="msg msg-green" style="text-align:center;">
                 ✅ Logged in as <span id="dash-mobile"></span>
             </div>
-            <button onclick="logout()" class="btn-back" style="margin-top: 12px;">🚪 Logout</button>
+            <div id="dash-zone" class="zone-selector" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+                <span>📍</span>
+                <span id="dash-zone-name" style="font-weight:600;">--</span>
+                <span style="font-size:11px;color:#6b7280;margin-left:auto;">Preferred Location</span>
+            </div>
+            <button onclick="goHome()" class="btn-green" style="margin-top:12px;">🏠 Go to Home Feed</button>
+            <button onclick="logout()" class="btn-back" style="margin-top:8px;">🚪 Logout</button>
         </div>
+
+        <!-- Message -->
+        <div id="msg" class="hidden"></div>
     </div>
 
     <script>
@@ -251,7 +218,7 @@
         // STATE
         // ============================================================
         let currentMobile = '';
-        let actionType = ''; // 'login', 'register', 'reactivate'
+        let actionType = '';
         let currentUser = null;
         let isChecking = false;
 
@@ -274,7 +241,7 @@
             toast.className = 'toast';
             toast.textContent = msg;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
+            setTimeout(() => toast.remove(), 2500);
         }
 
         function togglePin() {
@@ -285,7 +252,8 @@
         function resetForm() {
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('step2').classList.add('hidden');
-            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.add('hidden');
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
@@ -327,6 +295,57 @@
             document.getElementById('pin').value = '';
             document.getElementById('pin').focus();
             hideMessage();
+        }
+
+        // ============================================================
+        // LOCATION HANDLERS (Using locations.js)
+        // ============================================================
+        function onZoneChange() {
+            const zoneId = parseInt(document.getElementById('zone-select').value);
+            if (zoneId) {
+                window.LOCATION.populateAreaDropdown(zoneId);
+            } else {
+                const areaSelect = document.getElementById('area-select');
+                areaSelect.innerHTML = '<option value="">Select Area</option>';
+            }
+        }
+
+        async function saveLocation() {
+            const zoneId = parseInt(document.getElementById('zone-select').value);
+            const areaId = parseInt(document.getElementById('area-select').value) || null;
+            
+            if (!zoneId) {
+                showMessage('Please select a zone', 'yellow');
+                return;
+            }
+            
+            const zoneName = window.LOCATION.getZoneName(zoneId);
+            const areaName = window.LOCATION.getAreaName(areaId);
+            const displayLocation = areaId ? `${areaName}, ${zoneName}` : zoneName;
+            
+            // Save to Supabase
+            const saved = await window.LOCATION.saveUserLocation(currentMobile, zoneId, areaId, sb);
+            
+            if (saved) {
+                document.getElementById('step3').classList.add('hidden');
+                document.getElementById('step4').classList.remove('hidden');
+                document.getElementById('dash-zone-name').textContent = displayLocation;
+                document.getElementById('dash-mobile').textContent = currentUser?.mobile || currentMobile;
+                showToast(`✅ Location saved: ${displayLocation}`);
+            } else {
+                showMessage('Failed to save location', 'red');
+            }
+        }
+
+        function skipLocation() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.remove('hidden');
+            document.getElementById('dash-zone-name').textContent = 'Not set';
+            document.getElementById('dash-mobile').textContent = currentUser?.mobile || currentMobile;
+        }
+
+        function goHome() {
+            showToast('🏠 Home feed coming soon!');
         }
 
         // ============================================================
@@ -372,10 +391,10 @@
                     actionType = 'login';
                     showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
                     setStatus('✓ User found', 'green');
-                } else if (data.inAllUsers) {
+                } else if (data.inArchive) {
                     actionType = 'reactivate';
-                    showPinScreen(mobile, '📋 Account found in all_users', 'yellow', '🔄 Reactivate', 'yellow');
-                    setStatus('📋 Found in all_users', 'yellow');
+                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
+                    setStatus('📋 Archived', 'yellow');
                 } else {
                     actionType = 'register';
                     showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
@@ -440,10 +459,14 @@
                     if (userData) {
                         currentUser = userData;
                         document.getElementById('step2').classList.add('hidden');
-                        document.getElementById('dashboard').classList.remove('hidden');
-                        document.getElementById('dash-mobile').textContent = currentMobile;
+                        
+                        // Show location selector
+                        document.getElementById('step3').classList.remove('hidden');
+                        window.LOCATION.populateZoneDropdown();
+                        window.LOCATION.populateAreaDropdown();
+                        await window.LOCATION.detectLocation();
                         hideMessage();
-                        showToast('✅ Welcome ' + currentMobile + '!');
+                        showToast('✅ Welcome! Select your location.');
                     }
                 } else {
                     showMessage('❌ ' + data.error, 'red');
@@ -482,8 +505,8 @@
         // ============================================================
         // APP INIT
         // ============================================================
-        console.log('✅ JobAd Login App Ready (Auto-detect)');
-        console.log('📱 Just type 10 digits - it auto-checks!');
+        console.log('✅ JobAd App Ready');
+        console.log('📍 Locations loaded from GitHub');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         
         document.getElementById('mobile').focus();
