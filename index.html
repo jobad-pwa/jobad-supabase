@@ -2,42 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>JobAd PWA - Smart Login/Registration</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="locations.js"></script>
     <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f3f4f6;
-            margin: 0;
-            padding: 20px;
+        .app-screen { display: none; }
+        .app-screen.active { display: block; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .feed-card { transition: all 0.2s ease; }
+        .feed-card:active { transform: scale(0.98); }
+        #cluster-suggestions { backdrop-filter: blur(4px); }
+        .type-selector-btn { transition: all 0.2s ease; }
+        .toast-notification {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: fadeOut 2s ease forwards;
+            white-space: nowrap;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
             display: flex;
+            align-items: center;
             justify-content: center;
-            min-height: 100vh;
         }
-        .card {
-            max-width: 420px;
-            width: 100%;
+        .action-modal {
             background: white;
-            border-radius: 24px;
-            padding: 32px 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 340px;
+            border-radius: 20px;
+            animation: slideUp 0.3s ease;
         }
-        h1 { font-size: 36px; font-weight: 800; text-align: center; color: #2563eb; margin: 0 0 8px 0; }
-        .sub { text-align: center; color: #6b7280; font-size: 13px; margin-bottom: 32px; }
-        .test-links { text-align: center; margin-bottom: 24px; font-size: 12px; }
-        .test-links a { color: #3b82f6; text-decoration: none; margin: 0 8px; }
-        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        body.modal-open { overflow: hidden; }
+        .stat-card { transition: all 0.2s ease; }
+        .stat-card:hover { transform: translateY(-2px); }
+        .required-badge {
+            background: #fef3c7;
+            color: #d97706;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+        .location-hint {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+        }
+        .zone-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 14px;
+            user-select: none;
+        }
+        select, input, textarea {
+            transition: all 0.2s ease;
+        }
+        select:focus, input:focus, textarea:focus {
+            border-color: #3b82f6;
+            outline: none;
+            ring: 2px solid #3b82f6;
+        }
+        .demo-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .auth-mode-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
         /* Zone Search Styles */
         .zone-search-wrapper {
             position: relative;
             width: 100%;
         }
         .zone-display {
-            background: #f1f5f9;
+            background: #f8fafc;
             border-radius: 12px;
             padding: 14px 16px;
             cursor: pointer;
@@ -48,29 +132,35 @@
             transition: all 0.3s ease;
             font-size: 15px;
             font-weight: 500;
+            color: #1e293b;
         }
         .zone-display:hover {
-            border-color: #2563eb;
+            border-color: #3b82f6;
         }
         .zone-display .zone-arrow {
             font-size: 12px;
             color: #6b7280;
             transition: transform 0.3s ease;
         }
+        .zone-display .zone-arrow.open {
+            transform: rotate(180deg);
+        }
         .zone-dropdown {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 4px);
             left: 0;
             right: 0;
             background: white;
-            border: 2px solid #2563eb;
+            border: 2px solid #3b82f6;
             border-radius: 12px;
-            margin-top: 4px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             z-index: 100;
-            max-height: 280px;
+            max-height: 300px;
             overflow: hidden;
             display: none;
+        }
+        .zone-dropdown.open {
+            display: block;
         }
         .zone-dropdown input {
             width: 100%;
@@ -80,10 +170,11 @@
             font-size: 14px;
             outline: none;
             margin: 0;
+            border-radius: 0;
+            background: white;
         }
         .zone-dropdown input:focus {
-            border-color: #2563eb;
-            outline: none;
+            border-bottom: 2px solid #3b82f6;
         }
         .zone-list {
             max-height: 220px;
@@ -96,6 +187,7 @@
             font-size: 14px;
             transition: background 0.2s ease;
             border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
         }
         .zone-item:hover {
             background: #eff6ff;
@@ -110,439 +202,896 @@
         .zone-item.no-result:hover {
             background: white;
         }
-        
-        input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 12px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-        input:focus { border-color: #2563eb; outline: 2px solid #93c5fd; }
-        input:disabled { opacity: 0.6; }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
+        .zone-item.selected {
+            background: #dbeafe;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
-        button:hover { background: #1d4ed8; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-back { background: #6b7280; margin-top: 8px; }
-        .btn-back:hover { background: #4b5563; }
-        .btn-green { background: #16a34a; }
-        .btn-green:hover { background: #15803d; }
-        .btn-yellow { background: #d97706; }
-        .btn-yellow:hover { background: #b45309; }
-        .msg {
-            margin-top: 16px;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 14px;
-            transition: all 0.3s ease;
+        .location-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 6px;
         }
-        .msg-green { background: #dcfce7; color: #166534; }
-        .msg-red { background: #fee2e2; color: #991b1b; }
-        .msg-blue { background: #dbeafe; color: #1e40af; }
-        .msg-yellow { background: #fef3c7; color: #92400e; }
-        .hidden { display: none; }
-        .password-wrapper { position: relative; }
-        .toggle-password {
-            position: absolute; right: 12px; top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer; font-size: 14px; user-select: none; padding: 4px;
+        .location-label span {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
         }
-        .toast {
-            position: fixed; bottom: 80px; left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b; color: white;
-            padding: 8px 16px; border-radius: 999px;
-            font-size: 12px; font-weight: bold;
-            z-index: 1000;
-            animation: fadeOut 2.5s ease forwards;
-            white-space: nowrap;
-        }
-        @keyframes fadeOut {
-            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            70% { opacity: 1; }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
-        }
-        .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
-        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
-        .fade-in { animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .hidden-input { display: none; }
-        .zone-display .detected-badge {
-            font-size: 11px;
-            color: #16a34a;
-            background: #dcfce7;
-            padding: 2px 10px;
-            border-radius: 12px;
-            margin-left: 8px;
-        }
     </style>
 </head>
-<body>
-    <div class="card">
-        <h1>JobAd</h1>
-        <div class="sub">Telangana Zone Based Jobs</div>
+<body class="bg-slate-100 font-sans min-h-screen pb-20 select-none">
 
-        <div class="test-links">
-            <a href="test.html">🔌 DB Test</a>
-        </div>
-
-        <!-- STEP 1: MOBILE INPUT -->
-        <div id="step1">
-            <label class="action-label">📱 Enter Mobile Number</label>
-            <input type="tel" id="mobile" placeholder="9876543210" maxlength="10" autofocus>
-            <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
-        </div>
-
-        <!-- STEP 2: PIN INPUT -->
-        <div id="step2" class="hidden fade-in">
-            <div id="user-info" class="text-center mb-4">
-                <div class="mobile-display" id="display-mobile">--</div>
-                <div id="status-badge" class="text-sm font-medium"></div>
-            </div>
-            <div class="password-wrapper">
-                <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
-                <span class="toggle-password" onclick="togglePin()">👁️</span>
-            </div>
-            <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
-            <button onclick="resetForm()" class="btn-back">← Change Number</button>
-        </div>
-
-        <!-- STEP 3: LOCATION SELECTOR (Searchable Zone) -->
-        <div id="step3" class="hidden fade-in">
-            <div style="margin-bottom: 12px;">
-                <label class="action-label">📍 Select Your Zone</label>
-                <div id="zone-search-container"></div>
-                <input type="hidden" id="selected-zone-id" class="hidden-input">
-            </div>
-            <button onclick="confirmLocation()" class="btn-green">✅ Confirm Location</button>
-            <button onclick="skipLocation()" class="btn-back">Skip for now</button>
-        </div>
-
-        <!-- STEP 4: DASHBOARD -->
-        <div id="step4" class="hidden fade-in">
-            <div class="msg msg-green" style="text-align:center;">
-                ✅ Logged in as <span id="dash-mobile"></span>
-            </div>
-            <div id="dash-zone" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:12px; padding:12px 16px; margin-top:12px; display:flex; align-items:center; gap:10px;">
-                <span>📍</span>
-                <span id="dash-zone-name" style="font-weight:600;">--</span>
-                <span style="font-size:11px;color:#6b7280;margin-left:auto;">Preferred Zone</span>
-            </div>
-            <button onclick="goHome()" class="btn-green" style="margin-top:12px;">🏠 Go to Home Feed</button>
-            <button onclick="logout()" class="btn-back" style="margin-top:8px;">🚪 Logout</button>
-        </div>
-
-        <!-- Message -->
-        <div id="msg" class="hidden"></div>
+    <div class="hidden md:block demo-badge text-white text-center py-2 px-4 shadow-md font-medium text-sm">
+        📍 Demo: Existing users: 9876543210, 9988776655 | PIN: 1234
     </div>
+
+    <main class="max-w-md mx-auto bg-white min-h-screen shadow-2xl border-x border-slate-200 relative flex flex-col justify-between">
+        
+        <div>
+            <header id="global-header" class="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 py-3 flex justify-between items-center hidden">
+                <h1 class="text-xl font-extrabold text-slate-800 tracking-tight cursor-pointer" onclick="showScreen('screen-home')">JobAd</h1>
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm cursor-pointer border shadow-sm" onclick="showScreen('screen-profile')">👤</div>
+            </header>
+
+            <!-- ========================================== -->
+            <!-- SCREEN 1: SMART REGISTRATION / LOGIN      -->
+            <!-- ========================================== -->
+            <div id="screen-auth" class="app-screen active p-6 space-y-8 pt-16">
+                <div class="text-center space-y-2">
+                    <h1 class="text-3xl font-black text-slate-800 tracking-wider">JobAd</h1>
+                    <p class="text-xs text-slate-400 font-semibold uppercase tracking-widest">Telangana Zone Based Jobs</p>
+                </div>
+                
+                <div class="space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-200/60 shadow-sm">
+                    <h2 class="text-base font-bold text-slate-700 mb-2">Get Started</h2>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Mobile Number</label>
+                        <input id="auth-mobile" type="tel" placeholder="9876543210" maxlength="10" class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl font-bold focus:outline-blue-500" oninput="checkMobileExists()">
+                    </div>
+                    
+                    <div id="pin-section" style="display: none;">
+                        <div class="password-wrapper">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1" id="pin-label">Enter PIN</label>
+                            <input id="auth-pin" type="password" placeholder="****" maxlength="4" class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl tracking-widest focus:outline-blue-500 pr-10">
+                            <span class="toggle-password" onclick="togglePinVisibility('auth-pin')">👁️</span>
+                        </div>
+                    </div>
+                    
+                    <button id="auth-button" onclick="handleAuth()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-blue-100" disabled>
+                        Enter Mobile Number First
+                    </button>
+                    
+                    <div id="auth-status" class="text-center text-xs font-medium"></div>
+                </div>
+
+                <!-- ========================================== -->
+                <!-- LOCATION SELECTOR (Shows after login)      -->
+                <!-- ========================================== -->
+                <div id="location-selector" style="display: none;" class="bg-slate-50 p-5 rounded-2xl border border-slate-200/60 shadow-sm">
+                    <div class="location-label">📍 Select Your Zone <span>Required</span></div>
+                    <div id="zone-search-container"></div>
+                    <input type="hidden" id="selected-zone-id" class="hidden-input">
+                    <div style="margin-top: 12px; display: flex; gap: 8px;">
+                        <button onclick="confirmLocation()" class="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition">✅ Confirm</button>
+                        <button onclick="skipLocation()" class="flex-1 py-2.5 bg-slate-400 hover:bg-slate-500 text-white text-xs font-bold rounded-xl transition">Skip</button>
+                    </div>
+                    <div id="location-msg" class="text-center text-xs font-medium mt-2"></div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- SCREEN 2: HOME SCREEN                     -->
+            <!-- ========================================== -->
+            <div id="screen-home" class="app-screen p-0 space-y-3">
+                <div class="bg-slate-900 px-4 py-3 shadow-md space-y-1 relative">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">📍 Filter by Zone</label>
+                        <span id="cluster-status-badge" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-bold">All Zones</span>
+                    </div>
+                    <div class="relative">
+                        <input id="cluster-search-input" type="text" oninput="searchClusters(this.value)" onfocus="searchClusters(this.value)" placeholder="Search zone (Hyderabad, Warangal, Nizamabad...)" class="w-full bg-slate-800 text-white border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500">
+                        <button onclick="clearClusterSelection()" class="absolute right-2.5 top-2 text-slate-400 hover:text-white text-xs font-bold">✕</button>
+                    </div>
+                    <div id="cluster-suggestions" class="absolute left-4 right-4 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto hidden z-50"></div>
+                </div>
+
+                <div class="px-4">
+                    <div class="grid grid-cols-3 gap-1 bg-slate-200/60 p-1 rounded-xl">
+                        <button onclick="setTypeSelection('BOTH')" id="btn-type-BOTH" class="type-selector-btn py-1.5 text-xs font-bold rounded-lg bg-white text-slate-800 shadow-sm transition-all">Both</button>
+                        <button onclick="setTypeSelection('J')" id="btn-type-J" class="type-selector-btn py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all">Jobs Only</button>
+                        <button onclick="setTypeSelection('S')" id="btn-type-S" class="type-selector-btn py-1.5 text-xs font-bold rounded-lg text-slate-600 hover:text-slate-900 transition-all">Profiles Only</button>
+                    </div>
+                </div>
+
+                <div class="px-4 space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Job Title</label><input id="filter-title" type="text" oninput="applyFilters()" placeholder="Eg: Engineer" class="w-full px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold"></div>
+                        <div><label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Experience</label><select id="filter-exp" onchange="applyFilters()" class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"><option value="ALL">Any</option><option value="0-2">0-2 Years</option><option value="3-5">3-5 Years</option><option value="5+">5+ Years</option></select></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Skills</label><input id="filter-skills" type="text" oninput="applyFilters()" placeholder="Eg: python" class="w-full px-2.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"></div>
+                        <div><label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Area</label><select id="filter-subarea" onchange="applyFilters()" class="w-full px-2 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs"><option value="ALL">Any</option></select></div>
+                    </div>
+                </div>
+
+                <div class="px-4 flex justify-between items-center border-b border-slate-100 pb-1.5 pt-1">
+                    <span id="results-count" class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Showing 0 Records</span>
+                </div>
+
+                <div id="feed-container" class="px-4 space-y-3 pb-4"></div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- SCREEN 3: MY PROFILE                      -->
+            <!-- ========================================== -->
+            <div id="screen-profile" class="app-screen p-4 space-y-4 overflow-y-auto pb-20">
+                <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-4 text-white">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] font-bold opacity-80 uppercase tracking-wider">Welcome,</p>
+                            <p id="profile-mobile-display" class="text-xl font-black">--</p>
+                        </div>
+                        <button onclick="logout()" class="text-xs font-bold bg-white/20 px-3 py-1.5 rounded-xl hover:bg-white/30 transition">Logout</button>
+                    </div>
+                </div>
+
+                <!-- SEEKER DASHBOARD -->
+                <div id="seeker-card-inactive" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-700">👤 Job Seeker Profile</h3>
+                        <span class="required-badge">⚠️ Required to Apply</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Complete your seeker profile with preferred zone to get matched with relevant jobs in Telangana.</p>
+                    <button onclick="showScreen('screen-edit-seeker')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition">+ Create Seeker Profile</button>
+                </div>
+
+                <div id="seeker-card-active" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm hidden">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                        <h3 class="text-sm font-bold text-slate-800">✓ Seeker Profile Active</h3>
+                        <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Ready to Connect</span>
+                    </div>
+                    <div class="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-3 text-xs">
+                        <p class="font-bold text-slate-800 text-sm" id="lbl-seeker-title">--</p>
+                        <p class="text-slate-600 mt-1">📍 Preferred Location: <span id="lbl-seeker-location" class="font-semibold text-blue-600">--</span></p>
+                        <p class="text-slate-600">💰 Expected: <span id="lbl-seeker-sal">--</span></p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="stat-card bg-blue-50 rounded-xl p-2 text-center"><p class="text-lg font-black text-blue-600" id="seeker-views">0</p><p class="text-[9px] font-bold text-slate-500">👁️ Profile Views</p></div>
+                        <div class="stat-card bg-emerald-50 rounded-xl p-2 text-center"><p class="text-lg font-black text-emerald-600" id="seeker-calls">0</p><p class="text-[9px] font-bold text-slate-500">📞 Calls</p></div>
+                        <div class="stat-card bg-purple-50 rounded-xl p-2 text-center"><p class="text-lg font-black text-purple-600" id="seeker-whatsapp">0</p><p class="text-[9px] font-bold text-slate-500">💬 WhatsApp</p></div>
+                    </div>
+                    <div class="flex gap-2"><button onclick="viewOwnSeeker()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg">View Public</button><button onclick="showScreen('screen-edit-seeker')" class="flex-1 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-lg">Edit</button></div>
+                </div>
+
+                <!-- RECRUITER DASHBOARD -->
+                <div id="recruiter-card-inactive" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-700">🏢 Recruiter Profile</h3>
+                        <span class="required-badge">⚠️ Required to Post Jobs</span>
+                    </div>
+                    <p class="text-xs text-slate-500">Create your recruiter profile to post jobs and find candidates across Telangana zones.</p>
+                    <div class="flex gap-2">
+                        <input id="txt-company-name" type="text" placeholder="Enter Company Name" class="flex-1 px-3 py-1.5 bg-slate-50 border rounded-xl text-xs">
+                        <button onclick="saveRecruiterProfile()" class="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-xl">Save & Activate</button>
+                    </div>
+                </div>
+
+                <div id="recruiter-card-active" class="bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm hidden">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                        <h3 class="text-sm font-bold text-slate-800">🏢 Recruiter Active</h3>
+                        <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Can Post Jobs</span>
+                    </div>
+                    <p class="text-xs text-slate-600">Company: <span id="lbl-company-name" class="font-bold text-slate-800">--</span></p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="stat-card bg-blue-50 rounded-xl p-2 text-center"><p class="text-lg font-black text-blue-600" id="recruiter-total-views">0</p><p class="text-[9px] font-bold text-slate-500">👁️ Views</p></div>
+                        <div class="stat-card bg-emerald-50 rounded-xl p-2 text-center"><p class="text-lg font-black text-emerald-600" id="recruiter-total-calls">0</p><p class="text-[9px] font-bold text-slate-500">📞 Contacts</p></div>
+                        <div class="stat-card bg-purple-50 rounded-xl p-2 text-center"><p class="text-lg font-black text-purple-600" id="recruiter-total-wa">0</p><p class="text-[9px] font-bold text-slate-500">💬 Inquiries</p></div>
+                    </div>
+                    <div class="border-t pt-3">
+                        <div class="flex justify-between items-center mb-2"><span class="text-[10px] font-extrabold text-slate-400">📋 Active Jobs</span><span id="lbl-active-count" class="text-xs font-black bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md">0</span></div>
+                        <div id="recruiter-jobs-list" class="space-y-2 max-h-48 overflow-y-auto"></div>
+                    </div>
+                    <button onclick="handlePostJobNavigation()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl">+ Post New Job</button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- SCREEN 4: EDIT SEEKER PROFILE             -->
+            <!-- ========================================== -->
+            <div id="screen-edit-seeker" class="app-screen p-5 space-y-4 overflow-y-auto">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h2 class="text-base font-black">👤 Complete Seeker Profile</h2>
+                    <button onclick="showScreen('screen-profile')" class="text-xs font-bold text-slate-400">Cancel</button>
+                </div>
+                <div class="location-hint p-3 rounded-lg text-xs">
+                    <p class="font-bold text-blue-700">📍 Why select your location?</p>
+                    <p class="text-slate-600 mt-1">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</p>
+                </div>
+                <div class="space-y-3 text-xs">
+                    <div><label class="block font-bold mb-1">Full Name *</label><input id="f-seeker-name" type="text" value="Ramesh Kumar" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div>
+                    <div><label class="block font-bold mb-1">Job Title *</label><input id="f-seeker-title" type="text" value="Senior Software Developer" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block font-bold mb-1">Experience *</label><input id="f-seeker-exp" type="text" value="5 Years" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div>
+                        <div><label class="block font-bold mb-1">Expected Salary</label><input id="f-seeker-sal" type="text" value="₹15 LPA" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div>
+                    </div>
+                    
+                    <div>
+                        <label class="block font-bold mb-1">📍 Select Zone *</label>
+                        <select id="f-seeker-cluster" class="w-full px-3 py-2 bg-slate-50 border rounded-xl font-semibold" onchange="updateSeekerAreas()">
+                            <option value="">-- Select Zone --</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block font-bold mb-1">Select Area *</label>
+                        <select id="f-seeker-loc" class="w-full px-3 py-2 bg-slate-50 border rounded-xl">
+                            <option value="">Select zone first</option>
+                        </select>
+                    </div>
+                    
+                    <div><label class="block font-bold mb-1">Skills *</label><input id="f-seeker-skills" type="text" value="Java, Python, React, AWS" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div>
+                    <div><label class="block font-bold mb-1">About Me</label><textarea id="f-seeker-details" rows="3" class="w-full px-3 py-2 bg-slate-50 border rounded-xl">Experienced full-stack developer with 5+ years experience looking for opportunities in Hyderabad.</textarea></div>
+                    <button onclick="saveSeekerProfile()" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl">✅ Activate Profile</button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- SCREEN 5: ACTION REQUIRED MODAL           -->
+            <!-- ========================================== -->
+            <div id="action-required-modal" class="modal-overlay" style="display: none;" onclick="closeActionModal()">
+                <div class="action-modal p-6 text-center space-y-4" onclick="event.stopPropagation()">
+                    <div class="w-16 h-16 bg-amber-100 text-amber-600 text-3xl flex items-center justify-center rounded-full mx-auto">⚠️</div>
+                    <h3 class="text-lg font-black text-slate-800" id="action-modal-title">Profile Required</h3>
+                    <p class="text-xs text-slate-500" id="action-modal-message">Complete your profile to access this feature</p>
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="closeActionModal(); showScreen('screen-profile')" class="flex-1 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl">Go to Profile</button>
+                        <button onclick="closeActionModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-xl">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- SCREEN 6: JOB POSTING FORM                -->
+            <!-- ========================================== -->
+            <div id="screen-post-job-form" class="app-screen p-5 space-y-4">
+                <div class="flex justify-between items-center border-b pb-2"><h2 class="text-base font-black">🏢 Post a New Job</h2><button onclick="showScreen('screen-profile')" class="text-xs font-bold text-slate-400">Cancel</button></div>
+                <div class="space-y-3 text-xs">
+                    <div><label class="block font-bold text-slate-400 mb-1">Company</label><input id="f-job-company" type="text" class="w-full px-3 py-2 bg-slate-100 border rounded-xl font-bold text-slate-500" readonly></div>
+                    <div><label class="block font-bold mb-1">Job Title *</label><input id="f-job-title" type="text" placeholder="e.g., Senior Developer" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div>
+                    <div class="grid grid-cols-2 gap-2"><div><label class="block font-bold mb-1">Experience *</label><input id="f-job-exp" type="text" placeholder="3-5 Years" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div><div><label class="block font-bold mb-1">Salary *</label><input id="f-job-sal" type="text" placeholder="₹15 LPA" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div></div>
+                    <div><label class="block font-bold mb-1">📍 Job Location Zone *</label><select id="f-job-cluster" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"><option value="">-- Select Zone --</option></select></div>
+                    <div><label class="block font-bold mb-1">Specific Area *</label><select id="f-job-loc" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"><option value="">Select zone first</option></select></div>
+                    <div><label class="block font-bold mb-1">Skills *</label><input id="f-job-skills" type="text" placeholder="Python, AWS, Docker" class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></div>
+                    <div><label class="block font-bold mb-1">Description</label><textarea id="f-job-details" rows="3" placeholder="Job details..." class="w-full px-3 py-2 bg-slate-50 border rounded-xl"></textarea></div>
+                    <button onclick="publishNewJob()" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl">🚀 Publish Job</button>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- SCREEN 7: DETAIL VIEW                     -->
+            <!-- ========================================== -->
+            <div id="screen-detail" class="app-screen p-5 space-y-5">
+                <div class="flex justify-between items-center border-b pb-2"><h2 class="text-base font-black">📋 Job Details</h2><button onclick="showScreen('screen-home')" class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">← Back</button></div>
+                <div><h2 id="det-title" class="text-xl font-black">--</h2><p id="det-meta" class="text-xs text-slate-400 mt-0.5">--</p></div>
+                <div class="bg-slate-50 p-3 rounded-xl">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-bold text-slate-500">📍 Location:</span>
+                        <span id="det-location-badge" class="zone-badge">--</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <p>⏱️ Experience: <span id="det-exp" class="font-bold">--</span></p>
+                        <p>💰 Salary: <span id="det-sal" class="font-bold">--</span></p>
+                    </div>
+                </div>
+                <div><h4 class="text-[10px] font-bold uppercase text-slate-400">Skills Required</h4><p id="det-skills" class="text-xs font-bold bg-slate-100 px-3 py-2 rounded-lg inline-block">--</p></div>
+                <div><h4 class="text-[10px] font-bold uppercase text-slate-400">Job Description</h4><div id="det-desc" class="text-xs bg-slate-50 p-3 rounded-xl leading-relaxed">--</div></div>
+                <div class="grid grid-cols-2 gap-2 pt-4">
+                    <a href="#" id="call-link" class="py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-center transition">📞 Call Now</a>
+                    <a href="#" id="wa-link" target="_blank" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-center transition">💬 WhatsApp</a>
+                </div>
+                <div class="text-center text-[10px] text-slate-400 pt-2">📌 Complete your profile to connect</div>
+            </div>
+        </div>
+
+        <nav id="global-nav" class="bg-white border-t border-slate-200 h-16 flex items-center justify-around px-2 sticky bottom-0 z-50 hidden">
+            <button onclick="navigateWithCheck('screen-home')" class="nav-btn flex flex-col items-center text-slate-400"><span class="text-lg">🏠</span><span class="text-[10px]">Home</span></button>
+            <button onclick="navigateWithCheck('post-job')" class="nav-btn flex flex-col items-center text-slate-400"><span class="text-lg">➕</span><span class="text-[10px]">Post Job</span></button>
+            <button onclick="navigateWithCheck('screen-profile')" class="nav-btn flex flex-col items-center text-slate-400"><span class="text-lg">👤</span><span class="text-[10px]">Profile</span></button>
+        </nav>
+    </main>
 
     <script>
         // ============================================================
-        // CONFIGURATION
+        // SECTION 1: CONFIGURATION
         // ============================================================
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
         const EDGE_FUNCTION_URL = 'https://njhioapckeupxrcixmdh.supabase.co/functions/v1';
 
-        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // STATE
+        // SECTION 2: STATE
         // ============================================================
-        let currentMobile = '';
-        let actionType = '';
         let currentUser = null;
-        let isChecking = false;
+        let currentMobile = '';
+        let currentAction = null; // 'login' or 'register'
 
         // ============================================================
-        // UI HELPERS
+        // SECTION 3: UI HELPERS
         // ============================================================
-        function showMessage(msg, type) {
-            const el = document.getElementById('msg');
-            el.textContent = msg;
-            el.className = 'msg msg-' + type;
-            el.classList.remove('hidden');
-        }
-
-        function hideMessage() {
-            document.getElementById('msg').classList.add('hidden');
-        }
-
         function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
+            let toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerText = msg;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2500);
+            setTimeout(() => toast.remove(), 2000);
         }
 
-        function togglePin() {
-            const input = document.getElementById('pin');
-            input.type = input.type === 'password' ? 'text' : 'password';
+        function showScreen(screenId) {
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+            let target = document.getElementById(screenId);
+            if (target) target.classList.add('active');
+            window.scrollTo(0, 0);
         }
 
-        function resetForm() {
-            document.getElementById('step1').classList.remove('hidden');
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.add('hidden');
-            document.getElementById('step4').classList.add('hidden');
-            document.getElementById('mobile').value = '';
-            document.getElementById('pin').value = '';
-            document.getElementById('msg').classList.add('hidden');
-            document.getElementById('mobile-status').textContent = '';
-            document.getElementById('submitBtn').textContent = 'Submit';
-            document.getElementById('submitBtn').className = 'btn-green';
-            document.getElementById('submitBtn').disabled = false;
-            currentMobile = '';
-            actionType = '';
-            currentUser = null;
-            isChecking = false;
-            document.getElementById('mobile').focus();
+        function togglePinVisibility(inputId) {
+            let input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+            } else {
+                input.type = "password";
+            }
         }
 
-        function setStatus(text, type) {
-            const el = document.getElementById('mobile-status');
+        function showMessage(msg, type) {
+            const div = document.getElementById('auth-status');
+            if (!div) return;
             const colors = {
                 green: 'text-green-600',
-                blue: 'text-blue-600',
-                yellow: 'text-yellow-600',
                 red: 'text-red-600',
-                gray: 'text-slate-400'
+                blue: 'text-blue-600',
+                yellow: 'text-yellow-600'
             };
-            el.textContent = text;
-            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
+            div.innerHTML = `<span class="${colors[type] || 'text-gray-600'}">${msg}</span>`;
         }
 
-        function showPinScreen(mobile, status, statusType, btnText, btnClass) {
-            currentMobile = mobile;
-            document.getElementById('display-mobile').textContent = mobile;
-            document.getElementById('status-badge').textContent = status;
-            document.getElementById('status-badge').className = 'text-sm font-medium text-' + statusType + '-600';
-            document.getElementById('submitBtn').textContent = btnText;
-            document.getElementById('submitBtn').className = 'btn-' + btnClass;
-            document.getElementById('submitBtn').disabled = false;
-            
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
-            document.getElementById('pin').value = '';
-            document.getElementById('pin').focus();
-            hideMessage();
+        function showActionModal(title, message) {
+            document.getElementById('action-modal-title').innerText = title;
+            document.getElementById('action-modal-message').innerText = message;
+            document.getElementById('action-required-modal').style.display = 'flex';
+            document.body.classList.add('modal-open');
+        }
+
+        function closeActionModal() {
+            document.getElementById('action-required-modal').style.display = 'none';
+            document.body.classList.remove('modal-open');
         }
 
         // ============================================================
-        // LOCATION HANDLERS
+        // SECTION 4: AUTHENTICATION
         // ============================================================
-        function confirmLocation() {
-            const zoneId = window.LOCATION.getSelectedZoneId();
-            
-            if (!zoneId) {
-                showMessage('Please select a zone', 'yellow');
-                return;
-            }
-            
-            const zoneName = window.LOCATION.getZoneName(zoneId);
-            
-            // Save to Supabase
-            window.LOCATION.saveUserLocation(currentMobile, zoneId, sb).then(saved => {
-                if (saved) {
-                    document.getElementById('step3').classList.add('hidden');
-                    document.getElementById('step4').classList.remove('hidden');
-                    document.getElementById('dash-zone-name').textContent = zoneName + ' Zone';
-                    document.getElementById('dash-mobile').textContent = currentUser?.mobile || currentMobile;
-                    showToast(`✅ Location saved: ${zoneName} Zone`);
-                } else {
-                    showMessage('Failed to save location', 'red');
-                }
-            });
-        }
+        function checkMobileExists() {
+            let mobile = document.getElementById('auth-mobile').value.trim();
+            let pinSection = document.getElementById('pin-section');
+            let authButton = document.getElementById('auth-button');
+            let authStatus = document.getElementById('auth-status');
+            let pinLabel = document.getElementById('pin-label');
 
-        function skipLocation() {
-            document.getElementById('step3').classList.add('hidden');
-            document.getElementById('step4').classList.remove('hidden');
-            document.getElementById('dash-zone-name').textContent = 'Not set';
-            document.getElementById('dash-mobile').textContent = currentUser?.mobile || currentMobile;
-        }
-
-        function goHome() {
-            showToast('🏠 Home feed coming soon!');
-        }
-
-        // ============================================================
-        // AUTO-DETECT MOBILE
-        // ============================================================
-        document.getElementById('mobile').addEventListener('input', function(e) {
-            const mobile = this.value.trim();
-            const statusEl = document.getElementById('mobile-status');
-            
-            statusEl.textContent = '';
-            
             if (mobile.length === 10) {
-                autoCheckMobile(mobile);
-            } else if (mobile.length > 0 && mobile.length < 10) {
-                setStatus('Enter 10 digits', 'gray');
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step1').classList.remove('hidden');
-            } else {
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step1').classList.remove('hidden');
-            }
-        });
+                authStatus.innerHTML = '<span class="text-blue-600">⏳ Checking...</span>';
 
-        async function autoCheckMobile(mobile) {
-            if (isChecking) return;
-            isChecking = true;
-            
-            const mobileInput = document.getElementById('mobile');
-            mobileInput.disabled = true;
-            setStatus('⏳ Checking...', 'blue');
-
-            try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
+                fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mobile: mobile })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.inActiveUsers) {
+                        currentAction = 'login';
+                        pinSection.style.display = 'block';
+                        pinLabel.innerHTML = 'Enter PIN to Login *';
+                        authButton.innerHTML = '🔐 Login';
+                        authButton.disabled = false;
+                        authStatus.innerHTML = '<span class="text-green-600">✓ Existing user! Enter your PIN to login.</span>';
+                    } else if (data.inArchive) {
+                        currentAction = 'reactivate';
+                        pinSection.style.display = 'block';
+                        pinLabel.innerHTML = 'Create a PIN to Reactivate *';
+                        authButton.innerHTML = '🔄 Reactivate';
+                        authButton.disabled = false;
+                        authStatus.innerHTML = '<span class="text-yellow-600">📋 Archived account! Create a PIN to reactivate.</span>';
+                    } else {
+                        currentAction = 'register';
+                        pinSection.style.display = 'block';
+                        pinLabel.innerHTML = 'Create a 4-digit PIN *';
+                        authButton.innerHTML = '📝 Register New Account';
+                        authButton.disabled = false;
+                        authStatus.innerHTML = '<span class="text-blue-600">✨ New user! Create a PIN to register.</span>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    authStatus.innerHTML = '<span class="text-red-600">❌ Error checking mobile. Please try again.</span>';
                 });
-
-                const data = await response.json();
-                console.log('Auto-check response:', data);
-
-                if (data.inActiveUsers) {
-                    actionType = 'login';
-                    showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
-                    setStatus('✓ User found', 'green');
-                } else if (data.inArchive) {
-                    actionType = 'reactivate';
-                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
-                    setStatus('📋 Archived', 'yellow');
-                } else {
-                    actionType = 'register';
-                    showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
-                    setStatus('✨ New user', 'blue');
-                }
-
-            } catch (err) {
-                console.error('Error:', err);
-                setStatus('❌ Error checking', 'red');
-                showMessage('Error: ' + err.message, 'red');
-            } finally {
-                isChecking = false;
-                mobileInput.disabled = false;
+            } else if (mobile.length > 0 && mobile.length < 10) {
+                pinSection.style.display = 'none';
+                authButton.disabled = true;
+                authButton.innerHTML = 'Enter Complete Mobile Number';
+                authStatus.innerHTML = '<span class="text-orange-500">⚠️ Please enter 10-digit mobile number</span>';
+            } else {
+                pinSection.style.display = 'none';
+                authButton.disabled = true;
+                authButton.innerHTML = 'Enter Mobile Number First';
+                authStatus.innerHTML = '';
             }
         }
 
-        // ============================================================
-        // SUBMIT PIN
-        // ============================================================
-        window.submitPin = async function() {
-            console.log('submitPin called');
-            const pin = document.getElementById('pin').value.trim();
+        function handleAuth() {
+            let mobile = document.getElementById('auth-mobile').value.trim();
+            let pin = document.getElementById('auth-pin').value.trim();
 
-            if (!pin || pin.length !== 4) {
-                showMessage('Enter 4-digit PIN', 'red');
-                document.getElementById('pin').focus();
+            if (mobile.length !== 10) {
+                showMessage('Please enter valid 10-digit mobile number', 'red');
                 return;
             }
 
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Processing...';
-            showMessage('Processing...', 'blue');
+            if (pin.length !== 4) {
+                showMessage('Please enter 4-digit PIN', 'red');
+                return;
+            }
 
-            try {
-                let endpoint = '';
-                if (actionType === 'login') endpoint = '/login-user';
-                else if (actionType === 'reactivate') endpoint = '/reactivate-user';
-                else endpoint = '/register-user';
+            const authButton = document.getElementById('auth-button');
+            authButton.disabled = true;
+            authButton.innerHTML = '⏳ Processing...';
 
-                const response = await fetch(`${EDGE_FUNCTION_URL}${endpoint}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
-                });
+            let endpoint = '';
+            if (currentAction === 'login') endpoint = '/login-user';
+            else if (currentAction === 'reactivate') endpoint = '/reactivate-user';
+            else endpoint = '/register-user';
 
-                const data = await response.json();
-                console.log('Auth response:', data);
-
+            fetch(`${EDGE_FUNCTION_URL}${endpoint}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mobile: mobile, pin: pin })
+            })
+            .then(res => res.json())
+            .then(async (data) => {
                 if (data.success) {
-                    const { data: userData, error } = await sb
+                    const { data: userData, error } = await supabase
                         .from('active_users')
                         .select('*')
-                        .eq('mobile', currentMobile)
+                        .eq('mobile', mobile)
                         .single();
 
                     if (error) {
                         showMessage('Error fetching user data', 'red');
+                        authButton.disabled = false;
+                        authButton.innerHTML = 'Try Again';
                         return;
                     }
 
                     if (userData) {
                         currentUser = userData;
-                        document.getElementById('step2').classList.add('hidden');
+                        currentMobile = mobile;
+                        document.getElementById('profile-mobile-display').innerHTML = mobile;
+                        document.getElementById('global-header').classList.remove('hidden');
+                        document.getElementById('global-nav').classList.remove('hidden');
+                        populateZoneDropdowns();
+                        syncSubAreas();
+
+                        // Show location selector
+                        showLocationSelector();
+
+                        // Clear auth form
+                        document.getElementById('auth-pin').value = '';
+                        document.getElementById('auth-mobile').value = '';
+                        document.getElementById('pin-section').style.display = 'none';
+                        document.getElementById('auth-button').disabled = true;
+                        document.getElementById('auth-button').innerHTML = 'Enter Mobile Number First';
+                        showMessage('', '');
                         
-                        // Show location selector with searchable zone
-                        document.getElementById('step3').classList.remove('hidden');
-                        window.LOCATION.createZoneSearchInput();
-                        await window.LOCATION.detectLocation();
-                        hideMessage();
-                        showToast('✅ Welcome! Select your zone.');
+                        showToast(`✅ Welcome ${mobile}!`);
                     }
                 } else {
                     showMessage('❌ ' + data.error, 'red');
-                    document.getElementById('pin').value = '';
-                    document.getElementById('pin').focus();
+                    authButton.disabled = false;
+                    authButton.innerHTML = currentAction === 'login' ? '🔐 Login' : '📝 Register';
                 }
-            } catch (err) {
+            })
+            .catch(err => {
                 console.error('Error:', err);
-                showMessage('Error: ' + err.message, 'red');
-            } finally {
-                submitBtn.disabled = false;
-                const btnText = actionType === 'login' ? '🔐 Login' : actionType === 'reactivate' ? '🔄 Reactivate' : '📝 Register';
-                submitBtn.textContent = btnText;
-            }
-        };
+                showMessage('❌ Error: ' + err.message, 'red');
+                authButton.disabled = false;
+                authButton.innerHTML = 'Try Again';
+            });
+        }
 
         // ============================================================
-        // LOGOUT
+        // SECTION 5: LOCATION (Using locations.js)
         // ============================================================
-        window.logout = function() {
-            if (confirm('Are you sure you want to logout?')) {
-                resetForm();
-                showToast('👋 Logged out');
+
+        function showLocationSelector() {
+            const container = document.getElementById('zone-search-container');
+            if (!container) return;
+
+            // Create the searchable zone input
+            if (window.LOCATION && window.LOCATION.createZoneSearchInput) {
+                window.LOCATION.createZoneSearchInput();
+                // Auto-detect location
+                window.LOCATION.detectLocation();
             }
-        };
+
+            document.getElementById('location-selector').style.display = 'block';
+            document.getElementById('location-selector').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function confirmLocation() {
+            const zoneId = window.LOCATION.getSelectedZoneId ? window.LOCATION.getSelectedZoneId() : null;
+            const msgDiv = document.getElementById('location-msg');
+
+            if (!zoneId) {
+                msgDiv.textContent = '⚠️ Please select a zone';
+                msgDiv.className = 'text-center text-xs font-medium mt-2 text-red-500';
+                return;
+            }
+
+            const zoneName = window.LOCATION.getZoneName ? window.LOCATION.getZoneName(zoneId) : zoneId;
+
+            // Save to Supabase
+            if (currentUser && window.LOCATION.saveUserLocation) {
+                window.LOCATION.saveUserLocation(currentUser.mobile, zoneId, supabase)
+                    .then(saved => {
+                        if (saved) {
+                            msgDiv.textContent = '✅ Location saved: ' + zoneName;
+                            msgDiv.className = 'text-center text-xs font-medium mt-2 text-green-600';
+                            document.getElementById('location-selector').style.display = 'none';
+                            showScreen('screen-home');
+                            showToast('📍 Location set to ' + zoneName);
+                        } else {
+                            msgDiv.textContent = '❌ Failed to save location';
+                            msgDiv.className = 'text-center text-xs font-medium mt-2 text-red-500';
+                        }
+                    });
+            }
+        }
+
+        function skipLocation() {
+            document.getElementById('location-selector').style.display = 'none';
+            showScreen('screen-home');
+            showToast('📍 You can set location later from profile');
+        }
 
         // ============================================================
-        // ENTER KEY SUPPORT
+        // SECTION 6: ZONE & FILTER FUNCTIONS (Existing)
         // ============================================================
-        document.getElementById('pin').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                window.submitPin();
-            }
+
+        // Telangana Zones
+        const clustersMaster = [
+            { id: "HYD", name: "Hyderabad", areas: ["Hitech City", "Madhapur", "Gachibowli", "Kondapur", "Kukatpally", "Miyapur", "Uppal", "LB Nagar", "Dilsukhnagar"] },
+            { id: "NORTH", name: "North Telangana", areas: ["Nizamabad", "Karimnagar", "Adilabad", "Mancherial", "Jagtial"] },
+            { id: "EAST", name: "East Telangana", areas: ["Warangal", "Hanumakonda", "Khammam", "Mahabubabad"] },
+            { id: "SOUTH", name: "South Telangana", areas: ["Mahabubnagar", "Nalgonda", "Suryapet", "Nagarkurnool"] }
+        ];
+
+        let locationsMaster = [];
+        clustersMaster.forEach(cluster => {
+            cluster.areas.forEach(area => {
+                locationsMaster.push({
+                    id: `${cluster.id}_${area.replace(/\s/g, '_')}`,
+                    cluster: cluster.id,
+                    zoneName: cluster.name,
+                    areaName: area,
+                    displayLocation: `${cluster.name} - ${area}`
+                });
+            });
         });
 
+        let feedItems = [
+            { 
+                type: "J", 
+                title: "Senior Software Engineer", 
+                exp: 5, 
+                skills: "Java, Spring Boot, Microservices", 
+                locId: "HYD_Hitech_City", 
+                salary: "₹18-22 LPA", 
+                entity: "TechMahindra", 
+                desc: "Looking for experienced Java developer for our Hitech City office. Hybrid work mode available.", 
+                contact: "9988776655" 
+            },
+            { 
+                type: "J", 
+                title: "Frontend Developer", 
+                exp: 3, 
+                skills: "React, Angular, Vue.js", 
+                locId: "HYD_Madhapur", 
+                salary: "₹12-15 LPA", 
+                entity: "Infosys", 
+                desc: "Urgent requirement for React developer with 3+ years experience. Immediate joiners preferred.", 
+                contact: "9988776655" 
+            },
+            { 
+                type: "S", 
+                title: "Full Stack Developer", 
+                exp: 4, 
+                skills: "MERN Stack, Python, AWS", 
+                locId: "HYD_Gachibowli", 
+                salary: "₹14 LPA", 
+                entity: "Priya Sharma", 
+                desc: "Experienced full stack developer looking for challenging role in product based company.", 
+                contact: "9876543210" 
+            }
+        ];
+
+        let recruiterJobs = [];
+        let state = { 
+            isLoggedIn: false, mobile: '', selectedClusterId: 'ALL', activeTypeSelection: 'BOTH', 
+            hasSeekerProfile: false, hasRecruiterProfile: false, companyName: '', 
+            seekerData: null, seekerLocId: ''
+        };
+
+        function populateZoneDropdowns() {
+            const zoneOptions = clustersMaster.map(c => `<option value="${c.id}">📍 ${c.name} Zone</option>`).join('');
+            if (document.getElementById('f-job-cluster')) 
+                document.getElementById('f-job-cluster').innerHTML = '<option value="">-- Select Zone --</option>' + zoneOptions;
+            if (document.getElementById('f-seeker-cluster'))
+                document.getElementById('f-seeker-cluster').innerHTML = '<option value="">-- Select Zone --</option>' + zoneOptions;
+        }
+
+        function getDisplayLocation(locId) {
+            let loc = locationsMaster.find(l => l.id === locId);
+            return loc ? loc.displayLocation : 'Unknown Location';
+        }
+
+        function navigateWithCheck(target) {
+            if (target === 'post-job') {
+                if (!state.hasRecruiterProfile) showActionModal("Recruiter Profile Required", "Please create your recruiter profile first to post jobs.");
+                else handlePostJobNavigation();
+            } else {
+                showScreen(target);
+            }
+        }
+
+        function validateAndConnect(type, phone, title) {
+            if (!state.hasSeekerProfile && !state.hasRecruiterProfile) {
+                showActionModal("Profile Required", "Complete your profile (Seeker or Recruiter) to connect with others.");
+                return false;
+            }
+            if (type === 'call') {
+                window.location.href = `tel:${phone}`;
+                showToast("📞 Initiating call...");
+            } else {
+                window.open(`https://wa.me/91${phone.replace(/\D/g,'')}?text=Hi%20I'm%20interested%20in%20${encodeURIComponent(title)}`, '_blank');
+                showToast("💬 Opening WhatsApp...");
+            }
+            return true;
+        }
+
+        function searchClusters(q) { 
+            let box = document.getElementById('cluster-suggestions'); 
+            let matches = clustersMaster.filter(c => c.name.toLowerCase().includes(q.toLowerCase())); 
+            if (matches.length === 0) { box.innerHTML = '<div class="p-3 text-xs">No zones match</div>'; box.classList.remove('hidden'); return; } 
+            box.innerHTML = matches.map(c => `<div onclick="selectClusterOption('${c.id}','${c.name} Zone')" class="p-3 text-xs hover:bg-slate-100 cursor-pointer">📍 ${c.name} Zone</div>`).join(''); 
+            box.classList.remove('hidden'); 
+        }
+
+        function selectClusterOption(id, name) { 
+            state.selectedClusterId = id; 
+            document.getElementById('cluster-search-input').value = name; 
+            document.getElementById('cluster-suggestions').classList.add('hidden'); 
+            document.getElementById('cluster-status-badge').innerText = name; 
+            syncSubAreas(); 
+        }
+
+        function clearClusterSelection() { 
+            state.selectedClusterId = 'ALL'; 
+            document.getElementById('cluster-search-input').value = ''; 
+            document.getElementById('cluster-status-badge').innerText = "All Zones"; 
+            syncSubAreas(); 
+        }
+
+        document.addEventListener('click', (e) => { 
+            let box = document.getElementById('cluster-suggestions'); 
+            if (box && !box.contains(e.target) && e.target !== document.getElementById('cluster-search-input')) box.classList.add('hidden'); 
+        });
+
+        function syncSubAreas() { 
+            let dropdown = document.getElementById('filter-subarea'); 
+            dropdown.innerHTML = '<option value="ALL">All areas</option>'; 
+            let locs = state.selectedClusterId === 'ALL' ? locationsMaster : locationsMaster.filter(l => l.cluster === state.selectedClusterId); 
+            locs.forEach(l => dropdown.innerHTML += `<option value="${l.id}">${l.displayLocation}</option>`); 
+            applyFilters(); 
+        }
+
+        function setTypeSelection(type) { state.activeTypeSelection = type; applyFilters(); }
+
+        function applyFilters() { 
+            let subarea = document.getElementById('filter-subarea').value, expSel = document.getElementById('filter-exp').value, title = document.getElementById('filter-title').value.toLowerCase(), skills = document.getElementById('filter-skills').value.toLowerCase(); 
+            let container = document.getElementById('feed-container'); 
+            container.innerHTML = ''; 
+            let count = 0; 
+            feedItems.forEach(item => { 
+                let loc = locationsMaster.find(l => l.id === item.locId); 
+                if (state.selectedClusterId !== 'ALL' && loc?.cluster !== state.selectedClusterId) return; 
+                if (state.activeTypeSelection !== 'BOTH' && item.type !== state.activeTypeSelection) return; 
+                if (subarea !== 'ALL' && item.locId !== subarea) return; 
+                if (expSel !== 'ALL') { let e = item.exp; if (expSel === '0-2' && e>2) return; if (expSel === '3-5' && (e<3||e>5)) return; if (expSel === '5+' && e<6) return; } 
+                if (title && !item.title.toLowerCase().includes(title)) return; 
+                if (skills && !item.skills.toLowerCase().includes(skills)) return; 
+                count++; 
+                let badge = item.type === 'S' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'; 
+                let locationDisplay = loc ? loc.displayLocation : 'Unknown';
+                container.innerHTML += `<div onclick='openDetail("${item.type}", "${item.title}", ${item.exp}, "${item.skills}", "${item.salary}", "${item.entity}", "${item.desc}", "${item.locId}", "${item.contact || ''}")' class="feed-card border rounded-xl p-3 mb-2 cursor-pointer hover:border-blue-400 transition-all"><div class="font-bold">${escapeHtml(item.title)}</div><div class="text-xs">${item.exp} yrs | 📍 ${escapeHtml(locationDisplay)} | ${item.salary}</div><span class="text-[10px] px-2 py-0.5 rounded ${badge}">${item.type === 'S' ? 'SEEKER' : 'JOB'}</span></div>`; 
+            }); 
+            document.getElementById('results-count').innerText = `Showing ${count} Records`; 
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+
+        function openDetail(type, title, exp, skills, salary, entity, desc, locId, contact) { 
+            let loc = locationsMaster.find(l => l.id === locId); 
+            let locationDisplay = loc ? loc.displayLocation : 'Unknown Location';
+            document.getElementById('det-title').innerText = title; 
+            document.getElementById('det-meta').innerHTML = `${escapeHtml(entity)} • ${type === 'S' ? 'Job Seeker' : 'Employer'}`; 
+            document.getElementById('det-exp').innerText = exp + " Years"; 
+            document.getElementById('det-sal').innerText = salary; 
+            document.getElementById('det-location-badge').innerHTML = locationDisplay;
+            document.getElementById('det-skills').innerHTML = skills; 
+            document.getElementById('det-desc').innerHTML = desc; 
+            let phone = contact || '9876543210';
+            document.getElementById('call-link').onclick = (e) => { e.preventDefault(); validateAndConnect('call', phone, title); };
+            document.getElementById('wa-link').onclick = (e) => { e.preventDefault(); validateAndConnect('wa', phone, title); };
+            showScreen('screen-detail'); 
+        }
+
+        function updateAreasByCluster(selectId, targetId) { 
+            let clusterId = document.getElementById(selectId).value; 
+            let areaSelect = document.getElementById(targetId); 
+            areaSelect.innerHTML = '<option value="">Select area</option>'; 
+            if (clusterId) { 
+                let areas = locationsMaster.filter(l => l.cluster === clusterId); 
+                areas.forEach(a => areaSelect.innerHTML += `<option value="${a.id}">${a.areaName}</option>`); 
+            } 
+        }
+
+        function updateSeekerAreas() {
+            let clusterId = document.getElementById('f-seeker-cluster').value;
+            let areaSelect = document.getElementById('f-seeker-loc');
+            areaSelect.innerHTML = '<option value="">Select area</option>';
+            if (clusterId) {
+                let areas = locationsMaster.filter(l => l.cluster === clusterId);
+                areas.forEach(a => areaSelect.innerHTML += `<option value="${a.id}">${a.areaName}</option>`);
+            }
+        }
+
+        document.getElementById('f-job-cluster')?.addEventListener('change', () => updateAreasByCluster('f-job-cluster', 'f-job-loc'));
+        document.getElementById('f-seeker-cluster')?.addEventListener('change', updateSeekerAreas);
+
+        function publishNewJob() { 
+            if (!state.hasRecruiterProfile) { showActionModal("Recruiter Profile Required", "Please complete your recruiter profile first."); return; } 
+            let title = document.getElementById('f-job-title').value.trim(); 
+            if (!title) { showToast("⚠️ Please fill job title"); return; } 
+            let clusterId = document.getElementById('f-job-cluster').value;
+            let locId = document.getElementById('f-job-loc').value;
+            let loc = locationsMaster.find(l => l.id === locId);
+            if (!clusterId || !locId) { showToast("⚠️ Please select zone and area"); return; }
+            let newJob = { type: "J", title, exp: parseInt(document.getElementById('f-job-exp').value) || 3, skills: document.getElementById('f-job-skills').value || "Required skills", locId: locId, salary: document.getElementById('f-job-sal').value || "Negotiable", entity: state.companyName, desc: document.getElementById('f-job-details').value || "New opportunity", contact: state.mobile }; 
+            feedItems.push(newJob); 
+            recruiterJobs.push(newJob); 
+            updateRecruiterJobsDisplay(); 
+            showToast(`✅ Job posted at ${loc?.displayLocation || 'selected location'}`); 
+            showScreen('screen-profile'); 
+            applyFilters(); 
+        }
+
+        function updateRecruiterJobsDisplay() { 
+            let container = document.getElementById('recruiter-jobs-list'); 
+            if (container) { 
+                container.innerHTML = ''; 
+                document.getElementById('lbl-active-count').innerText = recruiterJobs.length; 
+                if (recruiterJobs.length === 0) container.innerHTML = '<div class="text-xs text-slate-400 text-center py-2">No jobs posted yet</div>'; 
+                else recruiterJobs.forEach((job, idx) => { 
+                    let loc = locationsMaster.find(l => l.id === job.locId); 
+                    container.innerHTML += `<div class="border rounded-xl p-2 text-xs"><div class="font-bold">${escapeHtml(job.title)}</div><div>📍 ${loc?.displayLocation || 'Unknown'} | 💰 ${job.salary}</div><button onclick="deleteRecruiterJob(${idx})" class="text-rose-500 text-[10px] mt-1 hover:underline">Delete</button></div>`; 
+                }); 
+            } 
+        }
+
+        function deleteRecruiterJob(idx) { 
+            if (confirm("Delete this job?")) { 
+                let job = recruiterJobs[idx]; 
+                let feedIndex = feedItems.findIndex(f => f === job); 
+                if (feedIndex !== -1) feedItems.splice(feedIndex, 1); 
+                recruiterJobs.splice(idx, 1); 
+                updateRecruiterJobsDisplay(); 
+                applyFilters(); 
+                showToast("🗑️ Job deleted successfully"); 
+            } 
+        }
+
+        function saveSeekerProfile() { 
+            let clusterId = document.getElementById('f-seeker-cluster').value;
+            let locId = document.getElementById('f-seeker-loc').value;
+            let loc = locationsMaster.find(l => l.id === locId);
+            
+            if (!clusterId || !locId) { 
+                showToast("⚠️ Please select your preferred zone and area"); 
+                return; 
+            }
+            
+            state.hasSeekerProfile = true; 
+            state.seekerLocId = locId;
+            state.seekerData = { 
+                name: document.getElementById('f-seeker-name').value, 
+                title: document.getElementById('f-seeker-title').value, 
+                exp: document.getElementById('f-seeker-exp').value, 
+                location: loc?.displayLocation || '',
+                skills: document.getElementById('f-seeker-skills').value, 
+                sal: document.getElementById('f-seeker-sal').value, 
+                desc: document.getElementById('f-seeker-details').value 
+            }; 
+            
+            document.getElementById('lbl-seeker-title').innerText = state.seekerData.title; 
+            document.getElementById('lbl-seeker-location').innerText = state.seekerData.location;
+            document.getElementById('lbl-seeker-sal').innerText = state.seekerData.sal; 
+            document.getElementById('seeker-views').innerText = "24"; 
+            document.getElementById('seeker-calls').innerText = "5"; 
+            document.getElementById('seeker-whatsapp').innerText = "8"; 
+            document.getElementById('seeker-card-inactive').classList.add('hidden'); 
+            document.getElementById('seeker-card-active').classList.remove('hidden'); 
+            showToast(`✅ Seeker profile activated! Location: ${state.seekerData.location}`); 
+            showScreen('screen-profile'); 
+        }
+
+        function viewOwnSeeker() { 
+            if (state.seekerData) openDetail('S', state.seekerData.title, parseInt(state.seekerData.exp)||0, state.seekerData.skills, state.seekerData.sal, state.seekerData.name, state.seekerData.desc, state.seekerLocId, state.mobile); 
+        }
+
+        function saveRecruiterProfile() { 
+            let comp = document.getElementById('txt-company-name').value.trim(); 
+            if (!comp) { showToast("⚠️ Enter company name"); return; } 
+            state.hasRecruiterProfile = true; 
+            state.companyName = comp; 
+            document.getElementById('lbl-company-name').innerText = comp; 
+            document.getElementById('recruiter-total-views').innerText = "156"; 
+            document.getElementById('recruiter-total-calls').innerText = "23"; 
+            document.getElementById('recruiter-total-wa').innerText = "18"; 
+            document.getElementById('recruiter-card-inactive').classList.add('hidden'); 
+            document.getElementById('recruiter-card-active').classList.remove('hidden'); 
+            document.getElementById('f-job-company').value = comp; 
+            showToast("✅ Recruiter profile activated! You can now post jobs."); 
+        }
+
+        function handlePostJobNavigation() { 
+            if (!state.hasRecruiterProfile) showActionModal("Recruiter Profile Required", "Please create your recruiter profile first to post jobs."); 
+            else { 
+                document.getElementById('f-job-company').value = state.companyName; 
+                showScreen('screen-post-job-form'); 
+            } 
+        }
+
+        function logout() { 
+            if (confirm("Are you sure you want to logout?")) {
+                location.reload(); 
+            }
+        }
+
         // ============================================================
-        // APP INIT
+        // SECTION 7: APP INIT
         // ============================================================
-        console.log('✅ JobAd App Ready (Searchable Zone)');
-        console.log('📍 Click on zone to search');
-        console.log('📱 Test users: 9876543210 (PIN: 1234)');
-        
-        document.getElementById('mobile').focus();
+        window.addEventListener('load', () => { 
+            document.getElementById('global-header').classList.add('hidden'); 
+            document.getElementById('global-nav').classList.add('hidden'); 
+            populateZoneDropdowns();
+            console.log("✅ App loaded with location selector");
+        });
     </script>
 </body>
 </html>
