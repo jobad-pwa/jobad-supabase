@@ -203,25 +203,21 @@
             margin-bottom: 0;
         }
 
-        /* HOME SCREEN - BLANK WITH JOBAD */
+        /* HOME SCREEN - ONLY JOBAD AT TOP */
         .home-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             min-height: 300px;
-            padding: 40px 0;
+            padding-top: 10px;
         }
         .home-container .logo {
             font-size: 48px;
             font-weight: 900;
             color: #2563eb;
             letter-spacing: 2px;
-        }
-        .home-container .sub-text {
-            color: #94a3b8;
-            font-size: 14px;
-            margin-top: 8px;
+            margin: 0;
         }
         .home-container .logout-btn {
             margin-top: 40px;
@@ -276,12 +272,11 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- HOME SCREEN - BLANK WITH JOBAD -->
+        <!-- HOME SCREEN - ONLY JOBAD AT TOP -->
         <!-- ========================================== -->
         <div id="home-screen" class="hidden">
             <div class="home-container">
-                <div class="logo">JobAd</div>
-                <div class="sub-text">Telangana Zone Based Jobs</div>
+                <div class="logo">jobAd</div>
                 <button class="logout-btn" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
