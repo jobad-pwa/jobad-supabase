@@ -173,25 +173,21 @@
         let actionType = ''; // 'login', 'activate', 'register'
 
         // ============================================================
-        // UPDATE platform_stats - FINAL FIX
+        // UPDATE platform_stats - CLEAN VERSION (JSONB Fix)
         // ============================================================
         async function addMobileToPlatformStats(mobile) {
-            alert('🔵 Adding mobile to platform_stats: ' + mobile);
-            
             try {
-                // STEP 1: Get current list
+                // Get current list
                 const { data: stats, error: fetchError } = await sb
                     .from('platform_stats')
-                    .select('*')
+                    .select('mobile_list')
                     .single();
 
                 if (fetchError) {
-                    alert('❌ ERROR fetching: ' + fetchError.message);
                     console.error('Fetch error:', fetchError);
                     return false;
                 }
 
-                // Current list might be JSON array or string
                 let currentList = stats?.mobile_list || [];
                 
                 // If it's a string, parse it
@@ -202,54 +198,29 @@
                         currentList = [];
                     }
                 }
-                
-                alert('📋 Current list: ' + JSON.stringify(currentList));
 
                 if (currentList.includes(mobile)) {
-                    alert('✅ Mobile already exists in list!');
                     return true;
                 }
 
-                // Create updated list as JSON array
+                // ==========================================
+                // FIX: Send as ARRAY (JSONB), not string
+                // ==========================================
                 const updatedList = [...currentList, mobile];
-                const jsonList = JSON.stringify(updatedList);
-                alert('📋 Updated list (JSON): ' + jsonList);
 
-                // ==========================================
-                // FIX: Use the current mobile_list as WHERE clause
-                // ==========================================
-                const currentJson = JSON.stringify(currentList);
-                alert('🔵 WHERE clause: mobile_list = ' + currentJson);
-                
                 const { error: updateError } = await sb
                     .from('platform_stats')
-                    .update({ mobile_list: jsonList })
-                    .eq('mobile_list', currentJson);
+                    .update({ mobile_list: updatedList });
 
                 if (updateError) {
-                    alert('❌ UPDATE ERROR: ' + updateError.message);
                     console.error('Update error:', updateError);
                     return false;
                 }
 
-                // Verify update
-                const { data: verifyData } = await sb
-                    .from('platform_stats')
-                    .select('mobile_list')
-                    .single();
-
-                alert('✅ VERIFIED! New mobile_list: ' + JSON.stringify(verifyData?.mobile_list));
-                
-                if (verifyData?.mobile_list?.includes(mobile)) {
-                    alert('✅ SUCCESS! Mobile ' + mobile + ' added to platform_stats!');
-                } else {
-                    alert('⚠️ Mobile NOT found in verified list!');
-                }
-
+                console.log('✅ platform_stats updated:', updatedList);
                 return true;
             } catch (err) {
-                alert('❌ ERROR: ' + err.message);
-                console.error('Error:', err);
+                console.error('Error updating platform_stats:', err);
                 return false;
             }
         }
@@ -380,8 +351,7 @@
         // SECTION 4: APP INIT
         // ============================================================
 
-        console.log('App ready - platform_stats update with WHERE clause using JSON string');
-        alert('🚀 Testing platform_stats update!');
+        console.log('App ready - JSONB fix: storing as array, not string');
     </script>
 </body>
 </html>
