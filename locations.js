@@ -44,106 +44,166 @@ const LOCATION_DATA = {
 // Helper Functions
 // ============================================================
 
-// Get all zones
 function getZones() {
     return LOCATION_DATA.zones;
 }
 
-// Get areas for a specific zone
 function getAreas(zoneId) {
     return LOCATION_DATA.areas.filter(a => a.zone_id === zoneId);
 }
 
-// Get zone name from ID
 function getZoneName(zoneId) {
     const zone = LOCATION_DATA.zones.find(z => z.zone_id === zoneId);
     return zone ? zone.zone_name : 'Unknown Zone';
 }
 
-// Get area name from ID
 function getAreaName(areaId) {
     const area = LOCATION_DATA.areas.find(a => a.area_id === areaId);
     return area ? area.area_name : 'Unknown Area';
 }
 
-// Populate zone dropdown
-function populateZoneDropdown(selectId = 'zone-select') {
-    const select = document.getElementById(selectId);
-    if (!select) return;
-    
-    select.innerHTML = '<option value="">Select Zone</option>';
-    LOCATION_DATA.zones.forEach(zone => {
-        select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
-    });
+function searchZones(query) {
+    if (!query || query.trim() === '') {
+        return LOCATION_DATA.zones;
+    }
+    const q = query.toLowerCase().trim();
+    return LOCATION_DATA.zones.filter(zone => 
+        zone.zone_name.toLowerCase().includes(q)
+    );
 }
 
-// Populate area dropdown based on selected zone
-function populateAreaDropdown(zoneId, targetId = 'area-select') {
-    const select = document.getElementById(targetId);
-    if (!select) return;
+// ============================================================
+// Searchable Zone Dropdown
+// ============================================================
+function createZoneSearchInput() {
+    const container = document.getElementById('zone-search-container');
+    if (!container) return;
     
-    const areas = getAreas(zoneId);
-    select.innerHTML = '<option value="">Select Area</option>';
-    areas.forEach(area => {
-        select.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-    });
+    container.innerHTML = `
+        <div class="zone-search-wrapper">
+            <div class="zone-display" id="zone-display" onclick="toggleZoneDropdown()">
+                <span id="zone-selected-label">📍 Select Zone</span>
+                <span class="zone-arrow">▼</span>
+            </div>
+            <div class="zone-dropdown" id="zone-dropdown" style="display:none;">
+                <input type="text" id="zone-search-input" placeholder="Search zone..." oninput="filterZones()">
+                <div class="zone-list" id="zone-list"></div>
+            </div>
+        </div>
+    `;
+    
+    // Populate zone list
+    renderZoneList(LOCATION_DATA.zones);
 }
 
+function renderZoneList(zones) {
+    const list = document.getElementById('zone-list');
+    if (!list) return;
+    
+    if (zones.length === 0) {
+        list.innerHTML = '<div class="zone-item no-result">No zones found</div>';
+        return;
+    }
+    
+    list.innerHTML = zones.map(zone => `
+        <div class="zone-item" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
+            📍 ${zone.zone_name}
+        </div>
+    `).join('');
+}
+
+function toggleZoneDropdown() {
+    const dropdown = document.getElementById('zone-dropdown');
+    if (dropdown) {
+        const isOpen = dropdown.style.display === 'block';
+        dropdown.style.display = isOpen ? 'none' : 'block';
+        if (!isOpen) {
+            setTimeout(() => {
+                const input = document.getElementById('zone-search-input');
+                if (input) input.focus();
+            }, 100);
+        }
+    }
+}
+
+function filterZones() {
+    const input = document.getElementById('zone-search-input');
+    if (!input) return;
+    
+    const query = input.value;
+    const filtered = searchZones(query);
+    renderZoneList(filtered);
+}
+
+function selectZone(zoneId, zoneName) {
+    const display = document.getElementById('zone-selected-label');
+    if (display) {
+        display.textContent = `📍 ${zoneName}`;
+    }
+    
+    // Store selected zone
+    const hiddenInput = document.getElementById('selected-zone-id');
+    if (hiddenInput) {
+        hiddenInput.value = zoneId;
+    }
+    
+    // Close dropdown
+    const dropdown = document.getElementById('zone-dropdown');
+    if (dropdown) {
+        dropdown.style.display = 'none';
+    }
+    
+    // Trigger change event
+    const event = new Event('change');
+    document.dispatchEvent(event);
+}
+
+function getSelectedZoneId() {
+    const hidden = document.getElementById('selected-zone-id');
+    return hidden ? parseInt(hidden.value) : null;
+}
+
+// ============================================================
 // Detect location via IP
+// ============================================================
 async function detectLocation() {
-    const zoneSelect = document.getElementById('zone-select');
-    const areaSelect = document.getElementById('area-select');
-    const badge = document.getElementById('detected-badge');
-    
-    if (!zoneSelect) return;
+    const display = document.getElementById('zone-selected-label');
+    if (!display) return;
     
     try {
         const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
         const city = data.city || '';
         
-        // Find matching area
-        let matchedArea = null;
-        for (const area of LOCATION_DATA.areas) {
-            if (city.toLowerCase().includes(area.area_name.toLowerCase()) || 
-                area.area_name.toLowerCase().includes(city.toLowerCase())) {
-                matchedArea = area;
+        // Find matching zone
+        let matchedZone = null;
+        for (const zone of LOCATION_DATA.zones) {
+            if (city.toLowerCase().includes(zone.zone_name.toLowerCase()) || 
+                zone.zone_name.toLowerCase().includes(city.toLowerCase())) {
+                matchedZone = zone;
                 break;
             }
         }
         
-        if (matchedArea) {
-            zoneSelect.value = matchedArea.zone_id;
-            populateAreaDropdown(matchedArea.zone_id);
-            areaSelect.value = matchedArea.area_id;
-            
-            const zoneName = getZoneName(matchedArea.zone_id);
-            if (badge) {
-                badge.textContent = `📍 ${zoneName}`;
-                badge.className = 'detected';
-            }
+        if (matchedZone) {
+            selectZone(matchedZone.zone_id, matchedZone.zone_name);
+            display.textContent = `📍 ${matchedZone.zone_name} (Detected)`;
         } else {
             // Default to Hyderabad
-            zoneSelect.value = 100;
-            populateAreaDropdown(100);
-            if (badge) {
-                badge.textContent = '📍 Hyderabad (Default)';
-                badge.className = 'detected';
-            }
+            selectZone(100, 'Hyderabad');
+            display.textContent = '📍 Hyderabad (Default)';
         }
     } catch (err) {
         console.log('Location detection failed:', err);
-        zoneSelect.value = 100;
-        populateAreaDropdown(100);
-        if (badge) {
-            badge.textContent = '📍 Hyderabad (Default)';
-            badge.className = 'detected';
-        }
+        selectZone(100, 'Hyderabad');
+        display.textContent = '📍 Hyderabad (Default)';
     }
 }
 
-// Save location to user profile (calls Supabase)
-async function saveUserLocation(mobile, zoneId, areaId, supabase) {
+// ============================================================
+// Save location to user profile
+// ============================================================
+async function saveUserLocation(mobile, zoneId, supabase) {
     if (!zoneId) {
         console.log('No zone selected');
         return false;
@@ -153,8 +213,7 @@ async function saveUserLocation(mobile, zoneId, areaId, supabase) {
         const { error } = await supabase
             .from('active_users')
             .update({ 
-                zone_id: zoneId, 
-                area_id: areaId || null,
+                zone_id: zoneId,
                 last_active: new Date().toISOString() 
             })
             .eq('mobile', mobile);
@@ -164,7 +223,7 @@ async function saveUserLocation(mobile, zoneId, areaId, supabase) {
             return false;
         }
         
-        console.log('✅ Location saved:', { zoneId, areaId });
+        console.log('✅ Location saved:', { zoneId });
         return true;
     } catch (err) {
         console.error('Save error:', err);
@@ -172,14 +231,11 @@ async function saveUserLocation(mobile, zoneId, areaId, supabase) {
     }
 }
 
+// ============================================================
 // Get location display string
-function getLocationDisplay(zoneId, areaId) {
-    const zoneName = getZoneName(zoneId);
-    const areaName = getAreaName(areaId);
-    if (areaId) {
-        return `${areaName}, ${zoneName}`;
-    }
-    return zoneName;
+// ============================================================
+function getLocationDisplay(zoneId) {
+    return getZoneName(zoneId);
 }
 
 // Expose globally
@@ -188,12 +244,14 @@ window.LOCATION = {
     getAreas,
     getZoneName,
     getAreaName,
-    populateZoneDropdown,
-    populateAreaDropdown,
+    searchZones,
+    createZoneSearchInput,
+    selectZone,
+    getSelectedZoneId,
     detectLocation,
     saveUserLocation,
     getLocationDisplay,
     LOCATION_DATA
 };
 
-console.log('✅ locations.js loaded (GitHub storage)');
+console.log('✅ locations.js loaded (Searchable Zone)');
