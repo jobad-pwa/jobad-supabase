@@ -193,15 +193,6 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .pin-input-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .pin-input-group input {
-            flex: 1;
-            margin-bottom: 0;
-        }
     </style>
 </head>
 <body>
@@ -213,18 +204,14 @@
             <a href="test.html">🔌 DB Test</a>
         </div>
 
-        <!-- ========================================== -->
         <!-- STEP 1: MOBILE INPUT -->
-        <!-- ========================================== -->
         <div id="step1">
             <label class="action-label">📱 Enter Mobile Number</label>
             <input type="tel" id="mobile" placeholder="9876543210" maxlength="10" autofocus>
             <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
         </div>
 
-        <!-- ========================================== -->
         <!-- STEP 2: PIN INPUT (Auto-shows) -->
-        <!-- ========================================== -->
         <div id="step2" class="hidden fade-in">
             <div id="user-info" class="text-center mb-4">
                 <div class="mobile-display" id="display-mobile">--</div>
@@ -238,14 +225,10 @@
             <button onclick="resetForm()" class="btn-back">← Change Number</button>
         </div>
 
-        <!-- ========================================== -->
         <!-- MESSAGE -->
-        <!-- ========================================== -->
         <div id="msg" class="hidden"></div>
 
-        <!-- ========================================== -->
         <!-- DASHBOARD -->
-        <!-- ========================================== -->
         <div id="dashboard" class="hidden" style="margin-top: 20px;">
             <div class="msg msg-green" style="text-align:center;">
                 ✅ Logged in as <span id="dash-mobile"></span>
@@ -353,15 +336,12 @@
             const mobile = this.value.trim();
             const statusEl = document.getElementById('mobile-status');
             
-            // Clear previous status
             statusEl.textContent = '';
             
             if (mobile.length === 10) {
-                // Auto-check when 10 digits are entered
                 autoCheckMobile(mobile);
             } else if (mobile.length > 0 && mobile.length < 10) {
                 setStatus('Enter 10 digits', 'gray');
-                // Hide pin screen if visible
                 document.getElementById('step2').classList.add('hidden');
                 document.getElementById('step1').classList.remove('hidden');
             } else {
@@ -392,10 +372,10 @@
                     actionType = 'login';
                     showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
                     setStatus('✓ User found', 'green');
-                } else if (data.inArchive) {
+                } else if (data.inAllUsers) {
                     actionType = 'reactivate';
-                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
-                    setStatus('📋 Archived', 'yellow');
+                    showPinScreen(mobile, '📋 Account found in all_users', 'yellow', '🔄 Reactivate', 'yellow');
+                    setStatus('📋 Found in all_users', 'yellow');
                 } else {
                     actionType = 'register';
                     showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
@@ -506,7 +486,6 @@
         console.log('📱 Just type 10 digits - it auto-checks!');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         
-        // Focus on mobile input
         document.getElementById('mobile').focus();
     </script>
 </body>
