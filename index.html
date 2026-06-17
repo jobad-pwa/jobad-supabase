@@ -6,6 +6,7 @@
     <title>JobAd - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="locations.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -257,20 +258,8 @@
             border-radius: 4px;
             font-weight: 700;
         }
-        .zone-filter input {
+        .zone-filter #zone-search-container {
             width: 100%;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: white;
-            font-weight: 600;
-            outline: none;
-            margin-bottom: 0;
-        }
-        .zone-filter input::placeholder {
-            color: #64748b;
         }
         .type-buttons {
             display: grid;
@@ -442,7 +431,8 @@
                         <label>📍 Filter by Zone</label>
                         <span id="zone-status">All Zones</span>
                     </div>
-                    <input type="text" id="zone-search-input" placeholder="Search zone (Hyderabad, Warangal, Nizamabad...)" oninput="filterZones()">
+                    <div id="zone-search-container"></div>
+                    <input type="hidden" id="selected-zone-id">
                 </div>
 
                 <!-- BOTH | JOBS ONLY | PROFILES ONLY -->
@@ -515,6 +505,7 @@
         let currentUser = null;
         let isChecking = false;
         let currentFilter = 'BOTH';
+        let selectedZoneId = null;
 
         // ============================================================
         // FEED DATA
@@ -601,6 +592,34 @@
         }
 
         // ============================================================
+        // ZONE FILTER FUNCTIONS (Using locations.js)
+        // ============================================================
+        function initZoneFilter() {
+            // Create the searchable zone input using locations.js
+            if (window.LOCATION && window.LOCATION.createZoneSearchInput) {
+                window.LOCATION.createZoneSearchInput();
+                
+                // Auto-detect location
+                setTimeout(() => {
+                    window.LOCATION.detectLocation();
+                }, 500);
+            }
+            
+            // Listen for zone selection changes
+            document.addEventListener('change', function(e) {
+                if (e.target.id === 'selected-zone-id') {
+                    const zoneId = window.LOCATION.getSelectedZoneId();
+                    if (zoneId) {
+                        selectedZoneId = zoneId;
+                        const zoneName = window.LOCATION.getZoneName(zoneId);
+                        document.getElementById('zone-status').textContent = zoneName;
+                        renderFeed();
+                    }
+                }
+            });
+        }
+
+        // ============================================================
         // FEED FUNCTIONS
         // ============================================================
         function setFilter(type) {
@@ -616,18 +635,6 @@
             renderFeed();
         }
 
-        function filterZones() {
-            // Zone filter functionality
-            const input = document.getElementById('zone-search-input');
-            const status = document.getElementById('zone-status');
-            if (input.value.trim()) {
-                status.textContent = input.value;
-            } else {
-                status.textContent = 'All Zones';
-            }
-            renderFeed();
-        }
-
         function renderFeed() {
             const container = document.getElementById('feed-container');
             const count = document.getElementById('results-count');
@@ -639,6 +646,12 @@
                 filtered = filtered.filter(item => item.type === 'JOB');
             } else if (currentFilter === 'SEEKER') {
                 filtered = filtered.filter(item => item.type === 'SEEKER');
+            }
+            
+            // Filter by selected zone
+            if (selectedZoneId) {
+                const zoneName = window.LOCATION.getZoneName(selectedZoneId);
+                filtered = filtered.filter(item => item.location.includes(zoneName));
             }
             
             // Filter by title
@@ -798,6 +811,10 @@
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('home-screen').classList.remove('hidden');
                         hideMessage();
+                        
+                        // Initialize zone filter
+                        initZoneFilter();
+                        
                         renderFeed();
                         showToast('✅ Welcome ' + currentMobile + '!');
                     }
