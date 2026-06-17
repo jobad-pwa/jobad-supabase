@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd</title>
+    <title>JobAd - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -54,10 +56,14 @@
             font-size: 16px;
             margin-bottom: 12px;
             box-sizing: border-box;
+            transition: all 0.3s ease;
         }
         input:focus {
             border-color: #2563eb;
             outline: 2px solid #93c5fd;
+        }
+        input:disabled {
+            opacity: 0.6;
         }
         button {
             width: 100%;
@@ -69,9 +75,14 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         button:hover {
             background: #1d4ed8;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         .btn-back {
             background: #6b7280;
@@ -86,20 +97,112 @@
         .btn-green:hover {
             background: #15803d;
         }
+        .btn-yellow {
+            background: #d97706;
+        }
+        .btn-yellow:hover {
+            background: #b45309;
+        }
         .msg {
             margin-top: 16px;
             padding: 12px;
             border-radius: 12px;
             text-align: center;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         .msg-green { background: #dcfce7; color: #166534; }
         .msg-red { background: #fee2e2; color: #991b1b; }
         .msg-blue { background: #dbeafe; color: #1e40af; }
         .msg-yellow { background: #fef3c7; color: #92400e; }
         .hidden { display: none; }
+        .password-wrapper {
+            position: relative;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 14px;
+            user-select: none;
+            padding: 4px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: fadeOut 2s ease forwards;
+            white-space: nowrap;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .dot-green { background: #16a34a; }
+        .dot-blue { background: #3b82f6; }
+        .dot-yellow { background: #d97706; }
+        .dot-red { background: #dc2626; }
+        .mobile-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+            padding: 4px 0;
+        }
+        .action-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pin-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pin-input-group input {
+            flex: 1;
+            margin-bottom: 0;
+        }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="card">
@@ -110,223 +213,301 @@
             <a href="test.html">🔌 DB Test</a>
         </div>
 
-        <!-- STEP 1: Mobile Input -->
+        <!-- ========================================== -->
+        <!-- STEP 1: MOBILE INPUT -->
+        <!-- ========================================== -->
         <div id="step1">
-            <input type="tel" id="mobile" placeholder="Enter 10-digit mobile" maxlength="10">
-            <button onclick="checkMobile()" id="checkBtn">Check Mobile</button>
+            <label class="action-label">📱 Enter Mobile Number</label>
+            <input type="tel" id="mobile" placeholder="9876543210" maxlength="10" autofocus>
+            <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
         </div>
 
-        <!-- STEP 2: PIN Input -->
-        <div id="step2" class="hidden">
-            <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
+        <!-- ========================================== -->
+        <!-- STEP 2: PIN INPUT (Auto-shows) -->
+        <!-- ========================================== -->
+        <div id="step2" class="hidden fade-in">
+            <div id="user-info" class="text-center mb-4">
+                <div class="mobile-display" id="display-mobile">--</div>
+                <div id="status-badge" class="text-sm font-medium"></div>
+            </div>
+            <div class="password-wrapper">
+                <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
+                <span class="toggle-password" onclick="togglePin()">👁️</span>
+            </div>
             <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
-            <button onclick="resetForm()" class="btn-back">Back</button>
+            <button onclick="resetForm()" class="btn-back">← Change Number</button>
         </div>
 
-        <!-- Message Display -->
+        <!-- ========================================== -->
+        <!-- MESSAGE -->
+        <!-- ========================================== -->
         <div id="msg" class="hidden"></div>
+
+        <!-- ========================================== -->
+        <!-- DASHBOARD -->
+        <!-- ========================================== -->
+        <div id="dashboard" class="hidden" style="margin-top: 20px;">
+            <div class="msg msg-green" style="text-align:center;">
+                ✅ Logged in as <span id="dash-mobile"></span>
+            </div>
+            <button onclick="logout()" class="btn-back" style="margin-top: 12px;">🚪 Logout</button>
+        </div>
     </div>
 
     <script>
         // ============================================================
-        // SECTION 1: CONFIGURATION
+        // CONFIGURATION
         // ============================================================
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
-
         const EDGE_FUNCTION_URL = 'https://njhioapckeupxrcixmdh.supabase.co/functions/v1';
 
-        // ============================================================
-        // SECTION 2: UI HELPERS
-        // ============================================================
-
-        // Create Supabase client (only once)
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        function showMsg(text, type) {
+        // ============================================================
+        // STATE
+        // ============================================================
+        let currentMobile = '';
+        let actionType = ''; // 'login', 'register', 'reactivate'
+        let currentUser = null;
+        let isChecking = false;
+
+        // ============================================================
+        // UI HELPERS
+        // ============================================================
+        function showMessage(msg, type) {
             const el = document.getElementById('msg');
-            el.textContent = text;
+            el.textContent = msg;
             el.className = 'msg msg-' + type;
             el.classList.remove('hidden');
         }
 
-        function hideMsg() {
+        function hideMessage() {
             document.getElementById('msg').classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function togglePin() {
+            const input = document.getElementById('pin');
+            input.type = input.type === 'password' ? 'text' : 'password';
         }
 
         function resetForm() {
             document.getElementById('step1').classList.remove('hidden');
             document.getElementById('step2').classList.add('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
-            document.getElementById('checkBtn').textContent = 'Check Mobile';
+            document.getElementById('mobile-status').textContent = '';
             document.getElementById('submitBtn').textContent = 'Submit';
             document.getElementById('submitBtn').className = 'btn-green';
+            document.getElementById('submitBtn').disabled = false;
             currentMobile = '';
-            isUser = false;
             actionType = '';
+            currentUser = null;
+            isChecking = false;
+            document.getElementById('mobile').focus();
+        }
+
+        function setStatus(text, type) {
+            const el = document.getElementById('mobile-status');
+            const colors = {
+                green: 'text-green-600',
+                blue: 'text-blue-600',
+                yellow: 'text-yellow-600',
+                red: 'text-red-600',
+                gray: 'text-slate-400'
+            };
+            el.textContent = text;
+            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
+        }
+
+        function showPinScreen(mobile, status, statusType, btnText, btnClass) {
+            currentMobile = mobile;
+            document.getElementById('display-mobile').textContent = mobile;
+            document.getElementById('status-badge').textContent = status;
+            document.getElementById('status-badge').className = 'text-sm font-medium text-' + statusType + '-600';
+            document.getElementById('submitBtn').textContent = btnText;
+            document.getElementById('submitBtn').className = 'btn-' + btnClass;
+            document.getElementById('submitBtn').disabled = false;
+            
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('pin').value = '';
+            document.getElementById('pin').focus();
+            hideMessage();
         }
 
         // ============================================================
-        // SECTION 3: AUTHENTICATION
+        // AUTO-DETECT MOBILE
         // ============================================================
-
-        let currentMobile = '';
-        let isUser = false;
-        let actionType = ''; // 'login', 'activate', 'register'
-
-        window.checkMobile = async function() {
-            console.log('checkMobile called');
-            const mobile = document.getElementById('mobile').value.trim();
-
-            if (!mobile || mobile.length !== 10) {
-                showMsg('Enter 10-digit mobile', 'red');
-                return;
+        document.getElementById('mobile').addEventListener('input', function(e) {
+            const mobile = this.value.trim();
+            const statusEl = document.getElementById('mobile-status');
+            
+            // Clear previous status
+            statusEl.textContent = '';
+            
+            if (mobile.length === 10) {
+                // Auto-check when 10 digits are entered
+                autoCheckMobile(mobile);
+            } else if (mobile.length > 0 && mobile.length < 10) {
+                setStatus('Enter 10 digits', 'gray');
+                // Hide pin screen if visible
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').classList.remove('hidden');
+            } else {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').classList.remove('hidden');
             }
+        });
 
-            currentMobile = mobile;
-            showMsg('Checking...', 'blue');
+        async function autoCheckMobile(mobile) {
+            if (isChecking) return;
+            isChecking = true;
+            
+            const mobileInput = document.getElementById('mobile');
+            mobileInput.disabled = true;
+            setStatus('⏳ Checking...', 'blue');
 
             try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/sync-google-sheets`, {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mobile: mobile })
                 });
 
                 const data = await response.json();
-                console.log('Edge response:', data);
+                console.log('Auto-check response:', data);
 
-                if (data.exists && data.inActiveUsers) {
-                    // Existing user - Login
-                    isUser = true;
+                if (data.inActiveUsers) {
                     actionType = 'login';
-                    showMsg('✅ User found! Enter your PIN', 'green');
-                    document.getElementById('submitBtn').textContent = '🔐 Login';
-                    document.getElementById('submitBtn').className = 'btn-green';
-                } else if (data.exists && !data.inActiveUsers) {
-                    // In platform_stats but not in active_users - Activate
-                    isUser = false;
-                    actionType = 'activate';
-                    showMsg('📋 Account found! Create a PIN to activate', 'yellow');
-                    document.getElementById('submitBtn').textContent = '📝 Activate';
-                    document.getElementById('submitBtn').className = 'btn-green';
+                    showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
+                    setStatus('✓ User found', 'green');
+                } else if (data.inArchive) {
+                    actionType = 'reactivate';
+                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
+                    setStatus('📋 Archived', 'yellow');
                 } else {
-                    // New user - Register
-                    isUser = false;
                     actionType = 'register';
-                    showMsg('📱 New user! Create a PIN to register', 'blue');
-                    document.getElementById('submitBtn').textContent = '📝 Register';
-                    document.getElementById('submitBtn').className = 'btn-green';
+                    showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
+                    setStatus('✨ New user', 'blue');
                 }
-
-                document.getElementById('step1').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-                document.getElementById('pin').value = '';
-                hideMsg();
 
             } catch (err) {
                 console.error('Error:', err);
-                showMsg('Error: ' + err.message, 'red');
+                setStatus('❌ Error checking', 'red');
+                showMessage('Error: ' + err.message, 'red');
+            } finally {
+                isChecking = false;
+                mobileInput.disabled = false;
             }
-        };
+        }
 
+        // ============================================================
+        // SUBMIT PIN
+        // ============================================================
         window.submitPin = async function() {
             console.log('submitPin called');
             const pin = document.getElementById('pin').value.trim();
 
             if (!pin || pin.length !== 4) {
-                showMsg('Enter 4-digit PIN', 'red');
+                showMessage('Enter 4-digit PIN', 'red');
+                document.getElementById('pin').focus();
                 return;
             }
 
-            showMsg('Processing...', 'blue');
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+            showMessage('Processing...', 'blue');
 
             try {
-                if (actionType === 'login') {
-                    // ==========================================
-                    // LOGIN: Verify PIN via Edge Function
-                    // ==========================================
-                    const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: currentMobile, pin: pin })
-                    });
+                let endpoint = '';
+                if (actionType === 'login') endpoint = '/login-user';
+                else if (actionType === 'reactivate') endpoint = '/reactivate-user';
+                else endpoint = '/register-user';
 
-                    const data = await response.json();
-                    console.log('Login response:', data);
+                const response = await fetch(`${EDGE_FUNCTION_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
+                });
 
-                    if (data.success) {
-                        showMsg('✅ Welcome ' + currentMobile + '!', 'green');
-                        setTimeout(resetForm, 2000);
-                    } else {
-                        showMsg('❌ ' + data.error, 'red');
-                        document.getElementById('pin').value = '';
+                const data = await response.json();
+                console.log('Auth response:', data);
+
+                if (data.success) {
+                    const { data: userData, error } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', currentMobile)
+                        .single();
+
+                    if (error) {
+                        showMessage('Error fetching user data', 'red');
+                        return;
+                    }
+
+                    if (userData) {
+                        currentUser = userData;
+                        document.getElementById('step2').classList.add('hidden');
+                        document.getElementById('dashboard').classList.remove('hidden');
+                        document.getElementById('dash-mobile').textContent = currentMobile;
+                        hideMessage();
+                        showToast('✅ Welcome ' + currentMobile + '!');
                     }
                 } else {
-                    // ==========================================
-                    // REGISTER / ACTIVATE: Create new user
-                    // ==========================================
-                    const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mobile: currentMobile, pin: pin })
-                    });
-
-                    const data = await response.json();
-                    console.log('Register response:', data);
-
-                    if (data.success) {
-                        // ==========================================
-                        // UPDATE platform_stats with new mobile
-                        // ==========================================
-                        try {
-                            const { data: stats } = await sb
-                                .from('platform_stats')
-                                .select('mobile_list')
-                                .single();
-
-                            if (stats) {
-                                const currentList = stats.mobile_list || [];
-                                if (!currentList.includes(currentMobile)) {
-                                    const updatedList = [...currentList, currentMobile];
-                                    await sb
-                                        .from('platform_stats')
-                                        .update({ mobile_list: updatedList })
-                                        .eq('id', 1);
-                                    console.log('Added to platform_stats:', currentMobile);
-                                }
-                            }
-                        } catch (statsErr) {
-                            console.log('Stats update error:', statsErr);
-                        }
-
-                        showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
-                        setTimeout(resetForm, 2000);
-                    } else {
-                        showMsg('Failed: ' + data.error, 'red');
-                    }
+                    showMessage('❌ ' + data.error, 'red');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
                 }
             } catch (err) {
                 console.error('Error:', err);
-                showMsg('Error: ' + err.message, 'red');
+                showMessage('Error: ' + err.message, 'red');
+            } finally {
+                submitBtn.disabled = false;
+                const btnText = actionType === 'login' ? '🔐 Login' : actionType === 'reactivate' ? '🔄 Reactivate' : '📝 Register';
+                submitBtn.textContent = btnText;
             }
         };
 
         // ============================================================
-        // SECTION 4: GOOGLE SHEETS INTEGRATION (FUTURE)
+        // LOGOUT
         // ============================================================
-
-        // function syncWithGoogleSheets() { ... }
-        // function copyFromGoogleSheets() { ... }
-        // function archiveToGoogleSheets() { ... }
+        window.logout = function() {
+            if (confirm('Are you sure you want to logout?')) {
+                resetForm();
+                showToast('👋 Logged out');
+            }
+        };
 
         // ============================================================
-        // SECTION 5: APP INIT
+        // ENTER KEY SUPPORT
         // ============================================================
+        document.getElementById('pin').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                window.submitPin();
+            }
+        });
 
-        console.log('App ready with dynamic button text and platform_stats update');
+        // ============================================================
+        // APP INIT
+        // ============================================================
+        console.log('✅ JobAd Login App Ready (Auto-detect)');
+        console.log('📱 Just type 10 digits - it auto-checks!');
+        console.log('📱 Test users: 9876543210 (PIN: 1234)');
+        
+        // Focus on mobile input
+        document.getElementById('mobile').focus();
     </script>
 </body>
 </html>
