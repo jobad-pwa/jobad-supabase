@@ -56,10 +56,14 @@
             font-size: 16px;
             margin-bottom: 12px;
             box-sizing: border-box;
+            transition: all 0.3s ease;
         }
         input:focus {
             border-color: #2563eb;
             outline: 2px solid #93c5fd;
+        }
+        input:disabled {
+            opacity: 0.6;
         }
         button {
             width: 100%;
@@ -71,6 +75,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         button:hover {
             background: #1d4ed8;
@@ -104,6 +109,7 @@
             border-radius: 12px;
             text-align: center;
             font-size: 14px;
+            transition: all 0.3s ease;
         }
         .msg-green { background: #dcfce7; color: #166534; }
         .msg-red { background: #fee2e2; color: #991b1b; }
@@ -121,6 +127,7 @@
             cursor: pointer;
             font-size: 14px;
             user-select: none;
+            padding: 4px;
         }
         .toast {
             position: fixed;
@@ -142,6 +149,59 @@
             70% { opacity: 1; }
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
         }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .dot-green { background: #16a34a; }
+        .dot-blue { background: #3b82f6; }
+        .dot-yellow { background: #d97706; }
+        .dot-red { background: #dc2626; }
+        .mobile-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+            padding: 4px 0;
+        }
+        .action-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pin-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pin-input-group input {
+            flex: 1;
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -153,26 +213,39 @@
             <a href="test.html">🔌 DB Test</a>
         </div>
 
-        <!-- STEP 1: Mobile Input -->
+        <!-- ========================================== -->
+        <!-- STEP 1: MOBILE INPUT -->
+        <!-- ========================================== -->
         <div id="step1">
-            <input type="tel" id="mobile" placeholder="Enter 10-digit mobile" maxlength="10">
-            <button onclick="checkMobile()" id="checkBtn">Check Mobile</button>
+            <label class="action-label">📱 Enter Mobile Number</label>
+            <input type="tel" id="mobile" placeholder="9876543210" maxlength="10" autofocus>
+            <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
         </div>
 
-        <!-- STEP 2: PIN Input -->
-        <div id="step2" class="hidden">
+        <!-- ========================================== -->
+        <!-- STEP 2: PIN INPUT (Auto-shows) -->
+        <!-- ========================================== -->
+        <div id="step2" class="hidden fade-in">
+            <div id="user-info" class="text-center mb-4">
+                <div class="mobile-display" id="display-mobile">--</div>
+                <div id="status-badge" class="text-sm font-medium"></div>
+            </div>
             <div class="password-wrapper">
                 <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
                 <span class="toggle-password" onclick="togglePin()">👁️</span>
             </div>
             <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
-            <button onclick="resetForm()" class="btn-back">Back</button>
+            <button onclick="resetForm()" class="btn-back">← Change Number</button>
         </div>
 
-        <!-- Message Display -->
+        <!-- ========================================== -->
+        <!-- MESSAGE -->
+        <!-- ========================================== -->
         <div id="msg" class="hidden"></div>
 
-        <!-- Dashboard (shown after login) -->
+        <!-- ========================================== -->
+        <!-- DASHBOARD -->
+        <!-- ========================================== -->
         <div id="dashboard" class="hidden" style="margin-top: 20px;">
             <div class="msg msg-green" style="text-align:center;">
                 ✅ Logged in as <span id="dash-mobile"></span>
@@ -197,6 +270,7 @@
         let currentMobile = '';
         let actionType = ''; // 'login', 'register', 'reactivate'
         let currentUser = null;
+        let isChecking = false;
 
         // ============================================================
         // UI HELPERS
@@ -232,28 +306,77 @@
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
-            document.getElementById('checkBtn').textContent = 'Check Mobile';
+            document.getElementById('mobile-status').textContent = '';
             document.getElementById('submitBtn').textContent = 'Submit';
             document.getElementById('submitBtn').className = 'btn-green';
+            document.getElementById('submitBtn').disabled = false;
             currentMobile = '';
             actionType = '';
             currentUser = null;
+            isChecking = false;
+            document.getElementById('mobile').focus();
+        }
+
+        function setStatus(text, type) {
+            const el = document.getElementById('mobile-status');
+            const colors = {
+                green: 'text-green-600',
+                blue: 'text-blue-600',
+                yellow: 'text-yellow-600',
+                red: 'text-red-600',
+                gray: 'text-slate-400'
+            };
+            el.textContent = text;
+            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
+        }
+
+        function showPinScreen(mobile, status, statusType, btnText, btnClass) {
+            currentMobile = mobile;
+            document.getElementById('display-mobile').textContent = mobile;
+            document.getElementById('status-badge').textContent = status;
+            document.getElementById('status-badge').className = 'text-sm font-medium text-' + statusType + '-600';
+            document.getElementById('submitBtn').textContent = btnText;
+            document.getElementById('submitBtn').className = 'btn-' + btnClass;
+            document.getElementById('submitBtn').disabled = false;
+            
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('pin').value = '';
+            document.getElementById('pin').focus();
+            hideMessage();
         }
 
         // ============================================================
-        // STEP 1: CHECK MOBILE
+        // AUTO-DETECT MOBILE
         // ============================================================
-        window.checkMobile = async function() {
-            console.log('checkMobile called');
-            const mobile = document.getElementById('mobile').value.trim();
-
-            if (!mobile || mobile.length !== 10) {
-                showMessage('Enter 10-digit mobile', 'red');
-                return;
+        document.getElementById('mobile').addEventListener('input', function(e) {
+            const mobile = this.value.trim();
+            const statusEl = document.getElementById('mobile-status');
+            
+            // Clear previous status
+            statusEl.textContent = '';
+            
+            if (mobile.length === 10) {
+                // Auto-check when 10 digits are entered
+                autoCheckMobile(mobile);
+            } else if (mobile.length > 0 && mobile.length < 10) {
+                setStatus('Enter 10 digits', 'gray');
+                // Hide pin screen if visible
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').classList.remove('hidden');
+            } else {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').classList.remove('hidden');
             }
+        });
 
-            currentMobile = mobile;
-            showMessage('Checking...', 'blue');
+        async function autoCheckMobile(mobile) {
+            if (isChecking) return;
+            isChecking = true;
+            
+            const mobileInput = document.getElementById('mobile');
+            mobileInput.disabled = true;
+            setStatus('⏳ Checking...', 'blue');
 
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
@@ -263,41 +386,34 @@
                 });
 
                 const data = await response.json();
-                console.log('Check response:', data);
+                console.log('Auto-check response:', data);
 
                 if (data.inActiveUsers) {
-                    // Active user - Login
                     actionType = 'login';
-                    showMessage('✅ User found! Enter your PIN', 'green');
-                    document.getElementById('submitBtn').textContent = '🔐 Login';
-                    document.getElementById('submitBtn').className = 'btn-green';
+                    showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
+                    setStatus('✓ User found', 'green');
                 } else if (data.inArchive) {
-                    // Archived user - Reactivate
                     actionType = 'reactivate';
-                    showMessage('📋 Archived account! Create PIN to reactivate', 'yellow');
-                    document.getElementById('submitBtn').textContent = '🔄 Reactivate';
-                    document.getElementById('submitBtn').className = 'btn-yellow';
+                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
+                    setStatus('📋 Archived', 'yellow');
                 } else {
-                    // New user - Register
                     actionType = 'register';
-                    showMessage('📱 New user! Create a PIN to register', 'blue');
-                    document.getElementById('submitBtn').textContent = '📝 Register';
-                    document.getElementById('submitBtn').className = 'btn-green';
+                    showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
+                    setStatus('✨ New user', 'blue');
                 }
-
-                document.getElementById('step1').classList.add('hidden');
-                document.getElementById('step2').classList.remove('hidden');
-                document.getElementById('pin').value = '';
-                hideMessage();
 
             } catch (err) {
                 console.error('Error:', err);
+                setStatus('❌ Error checking', 'red');
                 showMessage('Error: ' + err.message, 'red');
+            } finally {
+                isChecking = false;
+                mobileInput.disabled = false;
             }
-        };
+        }
 
         // ============================================================
-        // STEP 2: SUBMIT PIN
+        // SUBMIT PIN
         // ============================================================
         window.submitPin = async function() {
             console.log('submitPin called');
@@ -305,6 +421,7 @@
 
             if (!pin || pin.length !== 4) {
                 showMessage('Enter 4-digit PIN', 'red');
+                document.getElementById('pin').focus();
                 return;
             }
 
@@ -329,7 +446,6 @@
                 console.log('Auth response:', data);
 
                 if (data.success) {
-                    // Fetch user data
                     const { data: userData, error } = await sb
                         .from('active_users')
                         .select('*')
@@ -343,7 +459,6 @@
 
                     if (userData) {
                         currentUser = userData;
-                        // Show dashboard
                         document.getElementById('step2').classList.add('hidden');
                         document.getElementById('dashboard').classList.remove('hidden');
                         document.getElementById('dash-mobile').textContent = currentMobile;
@@ -352,13 +467,16 @@
                     }
                 } else {
                     showMessage('❌ ' + data.error, 'red');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
                 }
             } catch (err) {
                 console.error('Error:', err);
                 showMessage('Error: ' + err.message, 'red');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = actionType === 'login' ? '🔐 Login' : '📝 Register';
+                const btnText = actionType === 'login' ? '🔐 Login' : actionType === 'reactivate' ? '🔄 Reactivate' : '📝 Register';
+                submitBtn.textContent = btnText;
             }
         };
 
@@ -373,10 +491,23 @@
         };
 
         // ============================================================
+        // ENTER KEY SUPPORT
+        // ============================================================
+        document.getElementById('pin').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                window.submitPin();
+            }
+        });
+
+        // ============================================================
         // APP INIT
         // ============================================================
-        console.log('✅ JobAd Login App Ready');
+        console.log('✅ JobAd Login App Ready (Auto-detect)');
+        console.log('📱 Just type 10 digits - it auto-checks!');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
+        
+        // Focus on mobile input
+        document.getElementById('mobile').focus();
     </script>
 </body>
 </html>
