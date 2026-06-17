@@ -73,20 +73,28 @@ function searchZones(query) {
 }
 
 // ============================================================
-// Searchable Zone Dropdown
+// Searchable Zone Dropdown - MAIN FUNCTION
 // ============================================================
 function createZoneSearchInput() {
     const container = document.getElementById('zone-search-container');
-    if (!container) return;
+    if (!container) {
+        console.error('zone-search-container not found');
+        return;
+    }
+    
+    // Get selected zone ID if already set
+    const hiddenInput = document.getElementById('selected-zone-id');
+    const currentZoneId = hiddenInput ? parseInt(hiddenInput.value) : null;
+    const currentZoneName = currentZoneId ? getZoneName(currentZoneId) : null;
     
     container.innerHTML = `
         <div class="zone-search-wrapper">
             <div class="zone-display" id="zone-display" onclick="toggleZoneDropdown()">
-                <span id="zone-selected-label">📍 Select Zone</span>
-                <span class="zone-arrow">▼</span>
+                <span id="zone-selected-label">${currentZoneName ? '📍 ' + currentZoneName : '📍 Select Zone'}</span>
+                <span class="zone-arrow" id="zone-arrow">▼</span>
             </div>
-            <div class="zone-dropdown" id="zone-dropdown" style="display:none;">
-                <input type="text" id="zone-search-input" placeholder="Search zone..." oninput="filterZones()">
+            <div class="zone-dropdown" id="zone-dropdown">
+                <input type="text" id="zone-search-input" placeholder="Search zone..." oninput="filterZones()" autofocus>
                 <div class="zone-list" id="zone-list"></div>
             </div>
         </div>
@@ -94,33 +102,55 @@ function createZoneSearchInput() {
     
     // Populate zone list
     renderZoneList(LOCATION_DATA.zones);
+    
+    // If zone already selected, show it
+    if (currentZoneName) {
+        const label = document.getElementById('zone-selected-label');
+        if (label) label.textContent = '📍 ' + currentZoneName;
+    }
 }
 
 function renderZoneList(zones) {
     const list = document.getElementById('zone-list');
     if (!list) return;
     
+    // Get currently selected zone
+    const hiddenInput = document.getElementById('selected-zone-id');
+    const selectedId = hiddenInput ? parseInt(hiddenInput.value) : null;
+    
     if (zones.length === 0) {
         list.innerHTML = '<div class="zone-item no-result">No zones found</div>';
         return;
     }
     
-    list.innerHTML = zones.map(zone => `
-        <div class="zone-item" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
-            📍 ${zone.zone_name}
-        </div>
-    `).join('');
+    list.innerHTML = zones.map(zone => {
+        const isSelected = (selectedId === zone.zone_id);
+        const checkmark = isSelected ? ' ✅' : '';
+        return `
+            <div class="zone-item ${isSelected ? 'selected' : ''}" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
+                📍 ${zone.zone_name}${checkmark}
+            </div>
+        `;
+    }).join('');
 }
 
 function toggleZoneDropdown() {
     const dropdown = document.getElementById('zone-dropdown');
+    const arrow = document.getElementById('zone-arrow');
     if (dropdown) {
-        const isOpen = dropdown.style.display === 'block';
-        dropdown.style.display = isOpen ? 'none' : 'block';
-        if (!isOpen) {
+        const isOpen = dropdown.classList.contains('open');
+        if (isOpen) {
+            dropdown.classList.remove('open');
+            if (arrow) arrow.classList.remove('open');
+        } else {
+            dropdown.classList.add('open');
+            if (arrow) arrow.classList.add('open');
             setTimeout(() => {
                 const input = document.getElementById('zone-search-input');
-                if (input) input.focus();
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
             }, 100);
         }
     }
@@ -138,7 +168,7 @@ function filterZones() {
 function selectZone(zoneId, zoneName) {
     const display = document.getElementById('zone-selected-label');
     if (display) {
-        display.textContent = `📍 ${zoneName}`;
+        display.textContent = '📍 ' + zoneName;
     }
     
     // Store selected zone
@@ -149,9 +179,14 @@ function selectZone(zoneId, zoneName) {
     
     // Close dropdown
     const dropdown = document.getElementById('zone-dropdown');
+    const arrow = document.getElementById('zone-arrow');
     if (dropdown) {
-        dropdown.style.display = 'none';
+        dropdown.classList.remove('open');
+        if (arrow) arrow.classList.remove('open');
     }
+    
+    // Update list to show selection
+    renderZoneList(LOCATION_DATA.zones);
     
     // Trigger change event
     const event = new Event('change');
@@ -187,7 +222,7 @@ async function detectLocation() {
         
         if (matchedZone) {
             selectZone(matchedZone.zone_id, matchedZone.zone_name);
-            display.textContent = `📍 ${matchedZone.zone_name} (Detected)`;
+            display.textContent = '📍 ' + matchedZone.zone_name + ' (Detected)';
         } else {
             // Default to Hyderabad
             selectZone(100, 'Hyderabad');
@@ -238,6 +273,36 @@ function getLocationDisplay(zoneId) {
     return getZoneName(zoneId);
 }
 
+// ============================================================
+// Close dropdown on outside click
+// ============================================================
+document.addEventListener('click', function(e) {
+    const wrapper = document.querySelector('.zone-search-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        const dropdown = document.getElementById('zone-dropdown');
+        const arrow = document.getElementById('zone-arrow');
+        if (dropdown) {
+            dropdown.classList.remove('open');
+            if (arrow) arrow.classList.remove('open');
+        }
+    }
+});
+
+// ============================================================
+// Enter key support for search
+// ============================================================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const input = document.getElementById('zone-search-input');
+        if (input && document.activeElement === input) {
+            const firstItem = document.querySelector('.zone-item:not(.no-result)');
+            if (firstItem) {
+                firstItem.click();
+            }
+        }
+    }
+});
+
 // Expose globally
 window.LOCATION = {
     getZones,
@@ -254,4 +319,4 @@ window.LOCATION = {
     LOCATION_DATA
 };
 
-console.log('✅ locations.js loaded (Searchable Zone)');
+console.log('✅ locations.js loaded (Complete with searchable zone)');
