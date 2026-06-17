@@ -173,7 +173,7 @@
         let actionType = ''; // 'login', 'activate', 'register'
 
         // ============================================================
-        // UPDATE platform_stats - FIXED WITH WHERE CLAUSE
+        // UPDATE platform_stats - FIXED JSON FORMAT
         // ============================================================
         async function addMobileToPlatformStats(mobile) {
             alert('🔵 Adding mobile to platform_stats: ' + mobile);
@@ -191,7 +191,18 @@
                     return false;
                 }
 
-                const currentList = stats?.mobile_list || [];
+                // Current list might be JSON array or string
+                let currentList = stats?.mobile_list || [];
+                
+                // If it's a string, parse it
+                if (typeof currentList === 'string') {
+                    try {
+                        currentList = JSON.parse(currentList);
+                    } catch (e) {
+                        currentList = [];
+                    }
+                }
+                
                 alert('📋 Current list: ' + JSON.stringify(currentList));
 
                 if (currentList.includes(mobile)) {
@@ -199,20 +210,22 @@
                     return true;
                 }
 
+                // Create updated list as JSON array
                 const updatedList = [...currentList, mobile];
                 alert('📋 Updated list: ' + JSON.stringify(updatedList));
 
                 // ==========================================
-                // FIX: Add WHERE clause with a condition
-                // that always matches the single row
+                // FIX: Format as proper JSON
                 // ==========================================
-                alert('🔵 Updating platform_stats with WHERE clause...');
+                alert('🔵 Updating platform_stats with JSON format...');
                 
-                // Since there's only one row, we can use a condition that always matches
+                // Convert to JSON string if needed
+                const jsonList = JSON.stringify(updatedList);
+                alert('📋 JSON format: ' + jsonList);
+                
                 const { error: updateError } = await sb
                     .from('platform_stats')
-                    .update({ mobile_list: updatedList })
-                    .eq('mobile_list', currentList);  // ← WHERE clause
+                    .update({ mobile_list: jsonList });  // Send as JSON string
 
                 if (updateError) {
                     alert('❌ UPDATE ERROR: ' + updateError.message);
@@ -368,8 +381,8 @@
         // SECTION 4: APP INIT
         // ============================================================
 
-        console.log('App ready - platform_stats update fixed with WHERE clause');
-        alert('🚀 Testing platform_stats update. Register a new number!');
+        console.log('App ready - platform_stats update with JSON format');
+        alert('🚀 Testing platform_stats update with JSON format!');
     </script>
 </body>
 </html>
