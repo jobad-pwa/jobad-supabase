@@ -173,7 +173,7 @@
         let actionType = ''; // 'login', 'activate', 'register'
 
         // ============================================================
-        // UPDATE platform_stats - FIXED JSON FORMAT
+        // UPDATE platform_stats - FINAL FIX
         // ============================================================
         async function addMobileToPlatformStats(mobile) {
             alert('🔵 Adding mobile to platform_stats: ' + mobile);
@@ -182,7 +182,7 @@
                 // STEP 1: Get current list
                 const { data: stats, error: fetchError } = await sb
                     .from('platform_stats')
-                    .select('mobile_list')
+                    .select('*')
                     .single();
 
                 if (fetchError) {
@@ -212,20 +212,19 @@
 
                 // Create updated list as JSON array
                 const updatedList = [...currentList, mobile];
-                alert('📋 Updated list: ' + JSON.stringify(updatedList));
+                const jsonList = JSON.stringify(updatedList);
+                alert('📋 Updated list (JSON): ' + jsonList);
 
                 // ==========================================
-                // FIX: Format as proper JSON
+                // FIX: Use the current mobile_list as WHERE clause
                 // ==========================================
-                alert('🔵 Updating platform_stats with JSON format...');
-                
-                // Convert to JSON string if needed
-                const jsonList = JSON.stringify(updatedList);
-                alert('📋 JSON format: ' + jsonList);
+                const currentJson = JSON.stringify(currentList);
+                alert('🔵 WHERE clause: mobile_list = ' + currentJson);
                 
                 const { error: updateError } = await sb
                     .from('platform_stats')
-                    .update({ mobile_list: jsonList });  // Send as JSON string
+                    .update({ mobile_list: jsonList })
+                    .eq('mobile_list', currentJson);
 
                 if (updateError) {
                     alert('❌ UPDATE ERROR: ' + updateError.message);
@@ -381,8 +380,8 @@
         // SECTION 4: APP INIT
         // ============================================================
 
-        console.log('App ready - platform_stats update with JSON format');
-        alert('🚀 Testing platform_stats update with JSON format!');
+        console.log('App ready - platform_stats update with WHERE clause using JSON string');
+        alert('🚀 Testing platform_stats update!');
     </script>
 </body>
 </html>
