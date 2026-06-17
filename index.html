@@ -173,11 +173,13 @@
         let actionType = ''; // 'login', 'activate', 'register'
 
         // ============================================================
-        // UPDATE platform_stats - CLEAN VERSION (JSONB Fix)
+        // UPDATE platform_stats - FRONTEND (WORKING)
         // ============================================================
-        async function addMobileToPlatformStats(mobile) {
+        async function updatePlatformStats(mobile) {
             try {
-                // Get current list
+                console.log('🔄 Updating platform_stats for:', mobile);
+                
+                // 1. Get current list
                 const { data: stats, error: fetchError } = await sb
                     .from('platform_stats')
                     .select('mobile_list')
@@ -189,38 +191,55 @@
                 }
 
                 let currentList = stats?.mobile_list || [];
-                
-                // If it's a string, parse it
-                if (typeof currentList === 'string') {
-                    try {
-                        currentList = JSON.parse(currentList);
-                    } catch (e) {
-                        currentList = [];
-                    }
-                }
+                console.log('📋 Current list:', currentList);
 
+                // 2. Check if already exists
                 if (currentList.includes(mobile)) {
+                    console.log('✅ Mobile already exists');
                     return true;
                 }
 
-                // ==========================================
-                // FIX: Send as ARRAY (JSONB), not string
-                // ==========================================
+                // 3. Create updated list
                 const updatedList = [...currentList, mobile];
+                console.log('📋 Updated list:', updatedList);
 
+                // 4. Update platform_stats
                 const { error: updateError } = await sb
                     .from('platform_stats')
                     .update({ mobile_list: updatedList });
 
                 if (updateError) {
                     console.error('Update error:', updateError);
-                    return false;
+                    
+                    // Try alternative: use .eq with a condition that always matches
+                    const { error: updateError2 } = await sb
+                        .from('platform_stats')
+                        .update({ mobile_list: updatedList })
+                        .eq('mobile_list', currentList);
+
+                    if (updateError2) {
+                        console.error('Update error 2:', updateError2);
+                        return false;
+                    }
                 }
 
-                console.log('✅ platform_stats updated:', updatedList);
-                return true;
+                // 5. Verify
+                const { data: verifyData } = await sb
+                    .from('platform_stats')
+                    .select('mobile_list')
+                    .single();
+
+                console.log('✅ Verified list:', verifyData?.mobile_list);
+                
+                if (verifyData?.mobile_list?.includes(mobile)) {
+                    console.log('✅ SUCCESS! Mobile added to platform_stats');
+                    return true;
+                } else {
+                    console.log('⚠️ Mobile not found in verified list');
+                    return false;
+                }
             } catch (err) {
-                console.error('Error updating platform_stats:', err);
+                console.error('Error:', err);
                 return false;
             }
         }
@@ -331,9 +350,15 @@
 
                     if (data.success) {
                         // ==========================================
-                        // UPDATE platform_stats
+                        // UPDATE platform_stats FROM FRONTEND
                         // ==========================================
-                        await addMobileToPlatformStats(currentMobile);
+                        const updated = await updatePlatformStats(currentMobile);
+                        
+                        if (updated) {
+                            console.log('✅ platform_stats updated from frontend');
+                        } else {
+                            console.warn('⚠️ platform_stats update may have failed');
+                        }
 
                         showMsg('✅ ' + (actionType === 'activate' ? 'Activated' : 'Registered') + '! Welcome ' + currentMobile, 'green');
                         setTimeout(resetForm, 2000);
@@ -351,7 +376,7 @@
         // SECTION 4: APP INIT
         // ============================================================
 
-        console.log('App ready - JSONB fix: storing as array, not string');
+        console.log('App ready - platform_stats updated from frontend');
     </script>
 </body>
 </html>
