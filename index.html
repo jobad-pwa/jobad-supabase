@@ -34,7 +34,7 @@
         }
 
         /* ========================================== */
-        /* LOGIN SCREEN - CENTERED */
+        /* LOGIN SCREEN */
         /* ========================================== */
         #login-screen {
             display: flex;
@@ -121,7 +121,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* ========================================== */
-        /* HOME SCREEN - FIXED EVERYTHING EXCEPT FEED */
+        /* HOME SCREEN - FIXED LAYOUT */
         /* ========================================== */
         .home-container {
             display: flex;
@@ -143,6 +143,7 @@
             font-size: 22px;
             font-weight: 900;
             color: #2563eb;
+            cursor: pointer;
         }
         .home-header .gender-icon {
             width: 32px;
@@ -176,7 +177,24 @@
             border-color: #8b5cf6;
         }
 
-        /* TOP SECTION - FIXED (Zone Filter, Type Buttons, Filters, Results Count) */
+        /* PAGE CONTENT WRAPPER */
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding: 8px 0;
+        }
+        .page-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .page-content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* ========================================== */
+        /* HOME PAGE - FILTERS + FEED */
+        /* ========================================== */
         .home-top {
             flex-shrink: 0;
             padding-bottom: 6px;
@@ -319,24 +337,6 @@
             letter-spacing: 0.05em;
         }
 
-        /* FEED CONTAINER - ONLY THIS SCROLLS */
-        .feed-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            min-height: 0;
-            padding-right: 2px;
-        }
-        .feed-wrapper::-webkit-scrollbar {
-            width: 3px;
-        }
-        .feed-wrapper::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        .feed-wrapper::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
         .feed-container {
             display: flex;
             flex-direction: column;
@@ -365,7 +365,117 @@
         .feed-card .badge-seeker { background: #dcfce7; color: #166534; }
         .no-records { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 13px; }
 
-        /* FOOTER - FIXED */
+        /* ========================================== */
+        /* PROFILE PAGE */
+        /* ========================================== */
+        .profile-header-card {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 16px;
+            padding: 16px 20px;
+            color: white;
+            margin-bottom: 16px;
+        }
+        .profile-header-card .welcome {
+            font-size: 11px;
+            opacity: 0.8;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .profile-header-card .mobile {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 2px 0;
+        }
+        .profile-header-card .badge {
+            font-size: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .profile-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .profile-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .profile-section .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .profile-section .section-badge {
+            font-size: 9px;
+            background: #fef3c7;
+            color: #d97706;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+        .profile-section .section-desc {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+        .profile-section .section-input {
+            display: flex;
+            gap: 8px;
+        }
+        .profile-section .section-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 12px;
+            outline: none;
+            margin-bottom: 0;
+        }
+        .profile-section .section-input input:focus {
+            border-color: #2563eb;
+        }
+        .profile-section .section-btn {
+            padding: 8px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .profile-section .section-btn:hover {
+            background: #1d4ed8;
+        }
+        .profile-section .section-btn-green {
+            background: #16a34a;
+        }
+        .profile-section .section-btn-green:hover {
+            background: #15803d;
+        }
+
+        /* Active profile states */
+        .profile-active {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+        .profile-active .section-badge {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* ========================================== */
+        /* FOOTER NAV - FIXED */
+        /* ========================================== */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -417,6 +527,8 @@
             70% { opacity: 1; }
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
         }
+
+        .hidden-page { display: none; }
     </style>
 </head>
 <body>
@@ -447,19 +559,19 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- HOME SCREEN - ONLY FEED SCROLLS           -->
+        <!-- HOME SCREEN (with Filters + Feed)          -->
         <!-- ========================================== -->
-        <div id="home-screen" class="hidden" style="height:100%;">
+        <div id="home-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
-                <!-- HEADER - FIXED -->
+                <!-- HEADER -->
                 <div class="home-header">
-                    <div class="logo">JobAd</div>
+                    <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
                         <span id="gender-symbol">👤</span>
                     </div>
                 </div>
 
-                <!-- TOP SECTION - FIXED -->
+                <!-- HOME TOP - FIXED -->
                 <div class="home-top">
                     <div class="zone-filter">
                         <div class="header">
@@ -512,12 +624,12 @@
                     </div>
                 </div>
 
-                <!-- FEED - ONLY THIS SCROLLS -->
-                <div class="feed-wrapper" id="feed-wrapper">
+                <!-- FEED - SCROLLS -->
+                <div class="page-content">
                     <div id="feed-container" class="feed-container"></div>
                 </div>
 
-                <!-- FOOTER - FIXED -->
+                <!-- FOOTER -->
                 <div class="bottom-nav">
                     <button class="nav-item active" onclick="goHome()">
                         <span class="icon">🏠</span>
@@ -528,6 +640,99 @@
                         <span class="label">Post Job</span>
                     </button>
                     <button class="nav-item" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PROFILE PAGE                               -->
+        <!-- ========================================== -->
+        <div id="profile-page" class="hidden-page" style="height:100%;">
+            <div class="home-container">
+                <!-- HEADER -->
+                <div class="home-header">
+                    <div class="logo" onclick="goHome()">JobAd</div>
+                    <div class="gender-icon" id="gender-icon-profile" style="display:none;" onclick="goToProfile()">
+                        <span id="gender-symbol-profile">👤</span>
+                    </div>
+                </div>
+
+                <!-- PROFILE CONTENT - SCROLLS -->
+                <div class="page-content">
+                    <!-- Profile Header -->
+                    <div class="profile-header-card">
+                        <div class="welcome">Welcome,</div>
+                        <div class="mobile" id="profile-mobile">--</div>
+                        <span class="badge" id="profile-badge">⭐ Member</span>
+                    </div>
+
+                    <!-- Seeker Profile -->
+                    <div class="profile-section" id="seeker-section">
+                        <div class="section-header">
+                            <span class="section-title">👤 Job Seeker Profile</span>
+                            <span class="section-badge" id="seeker-badge">⚠️ Required to Apply</span>
+                        </div>
+                        <div class="section-desc" id="seeker-desc">Complete your seeker profile with preferred zone to get matched with relevant jobs.</div>
+                        <div id="seeker-input-area">
+                            <div class="section-input">
+                                <input type="text" id="seeker-name" placeholder="Full Name">
+                                <button class="section-btn section-btn-green" onclick="saveSeekerProfile()">+ Create</button>
+                            </div>
+                            <div style="margin-top:6px; display:flex; gap:6px;">
+                                <input type="text" id="seeker-title" placeholder="Job Title" style="flex:1;">
+                                <input type="text" id="seeker-exp" placeholder="Experience" style="flex:1;">
+                            </div>
+                            <div style="margin-top:6px;">
+                                <input type="text" id="seeker-skills" placeholder="Skills (comma separated)" style="width:100%;">
+                            </div>
+                        </div>
+                        <div id="seeker-active-area" style="display:none;">
+                            <div style="background:#f8fafc; border-radius:10px; padding:10px; font-size:12px;">
+                                <p><strong id="seeker-display-name">--</strong></p>
+                                <p style="color:#64748b; margin-top:2px;"><span id="seeker-display-title">--</span> • <span id="seeker-display-exp">--</span> yrs</p>
+                                <p style="color:#64748b; margin-top:2px;">Skills: <span id="seeker-display-skills">--</span></p>
+                            </div>
+                            <button class="section-btn" style="margin-top:6px; width:100%;" onclick="editSeekerProfile()">✏️ Edit Profile</button>
+                        </div>
+                    </div>
+
+                    <!-- Recruiter Profile -->
+                    <div class="profile-section" id="recruiter-section">
+                        <div class="section-header">
+                            <span class="section-title">🏢 Recruiter Profile</span>
+                            <span class="section-badge" id="recruiter-badge">⚠️ Required to Post Jobs</span>
+                        </div>
+                        <div class="section-desc" id="recruiter-desc">Create your recruiter profile to post jobs and find candidates.</div>
+                        <div id="recruiter-input-area">
+                            <div class="section-input">
+                                <input type="text" id="recruiter-company" placeholder="Company Name">
+                                <button class="section-btn section-btn-green" onclick="saveRecruiterProfile()">Save & Activate</button>
+                            </div>
+                        </div>
+                        <div id="recruiter-active-area" style="display:none;">
+                            <div style="background:#f8fafc; border-radius:10px; padding:10px; font-size:12px;">
+                                <p><strong id="recruiter-display-company">--</strong></p>
+                                <p style="color:#64748b; margin-top:2px;">✅ Recruiter profile active</p>
+                            </div>
+                            <button class="section-btn" style="margin-top:6px; width:100%;" onclick="editRecruiterProfile()">✏️ Edit Company</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="bottom-nav">
+                    <button class="nav-item" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </button>
+                    <button class="nav-item" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </button>
+                    <button class="nav-item active" onclick="goToProfile()">
                         <span class="icon">👤</span>
                         <span class="label">Profile</span>
                     </button>
@@ -627,12 +832,16 @@
         let selectedAreaId = null;
         let feedItems = [];
         let currentPage = 'home';
+        let isSeekerProfileActive = false;
+        let isRecruiterProfileActive = false;
 
         // ============================================================
         // NAVIGATION FUNCTIONS
         // ============================================================
         function goHome() {
             currentPage = 'home';
+            document.getElementById('home-page').classList.remove('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[0].classList.add('active');
             document.getElementById('feed-container').style.display = 'flex';
@@ -643,18 +852,16 @@
             currentPage = 'postjob';
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
-            document.getElementById('feed-container').style.display = 'none';
-            document.getElementById('results-count').textContent = '📝 Post a Job';
             showToast('📝 Job posting coming soon!');
         }
 
         function goToProfile() {
             currentPage = 'profile';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.remove('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[2].classList.add('active');
-            document.getElementById('feed-container').style.display = 'none';
-            document.getElementById('results-count').textContent = '👤 My Profile';
-            showToast('👤 Profile coming soon!');
+            loadProfile();
         }
 
         // ============================================================
@@ -663,29 +870,190 @@
         function updateGenderIcon(user) {
             const iconContainer = document.getElementById('gender-icon');
             const symbol = document.getElementById('gender-symbol');
+            const iconContainerProfile = document.getElementById('gender-icon-profile');
+            const symbolProfile = document.getElementById('gender-symbol-profile');
             
             if (!user) {
-                iconContainer.style.display = 'none';
+                if (iconContainer) iconContainer.style.display = 'none';
+                if (iconContainerProfile) iconContainerProfile.style.display = 'none';
                 return;
             }
             
-            iconContainer.style.display = 'flex';
-            
             const gender = user.gender;
+            let icon = '👤';
+            let cls = 'gender-icon other';
             
             if (gender === 0) {
-                symbol.textContent = '👤';
-                iconContainer.className = 'gender-icon other';
+                icon = '👤';
+                cls = 'gender-icon other';
             } else if (gender === 1) {
-                symbol.textContent = '♀';
-                iconContainer.className = 'gender-icon female';
+                icon = '♀';
+                cls = 'gender-icon female';
             } else if (gender === 2) {
-                symbol.textContent = '♂';
-                iconContainer.className = 'gender-icon male';
-            } else {
-                symbol.textContent = '👤';
-                iconContainer.className = 'gender-icon other';
+                icon = '♂';
+                cls = 'gender-icon male';
             }
+            
+            if (iconContainer) {
+                iconContainer.style.display = 'flex';
+                iconContainer.className = cls;
+                if (symbol) symbol.textContent = icon;
+            }
+            if (iconContainerProfile) {
+                iconContainerProfile.style.display = 'flex';
+                iconContainerProfile.className = cls;
+                if (symbolProfile) symbolProfile.textContent = icon;
+            }
+        }
+
+        // ============================================================
+        // PROFILE FUNCTIONS
+        // ============================================================
+        async function loadProfile() {
+            if (!currentUser) return;
+            
+            document.getElementById('profile-mobile').textContent = currentUser.mobile;
+            
+            // Check seeker profile
+            if (currentUser.full_name && currentUser.full_name.trim() !== '') {
+                isSeekerProfileActive = true;
+                document.getElementById('seeker-badge').textContent = '✅ Active';
+                document.getElementById('seeker-badge').className = 'section-badge';
+                document.getElementById('seeker-badge').style.background = '#dcfce7';
+                document.getElementById('seeker-badge').style.color = '#166534';
+                document.getElementById('seeker-desc').textContent = 'Your seeker profile is active.';
+                document.getElementById('seeker-input-area').style.display = 'none';
+                document.getElementById('seeker-active-area').style.display = 'block';
+                document.getElementById('seeker-display-name').textContent = currentUser.full_name;
+                document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
+                document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
+                document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
+                document.getElementById('seeker-section').className = 'profile-section profile-active';
+            } else {
+                isSeekerProfileActive = false;
+                document.getElementById('seeker-badge').textContent = '⚠️ Required to Apply';
+                document.getElementById('seeker-badge').className = 'section-badge';
+                document.getElementById('seeker-badge').style.background = '#fef3c7';
+                document.getElementById('seeker-badge').style.color = '#d97706';
+                document.getElementById('seeker-desc').textContent = 'Complete your seeker profile with preferred zone to get matched with relevant jobs.';
+                document.getElementById('seeker-input-area').style.display = 'block';
+                document.getElementById('seeker-active-area').style.display = 'none';
+                document.getElementById('seeker-section').className = 'profile-section';
+            }
+            
+            // Check recruiter profile
+            if (currentUser.company_name && currentUser.company_name.trim() !== '') {
+                isRecruiterProfileActive = true;
+                document.getElementById('recruiter-badge').textContent = '✅ Active';
+                document.getElementById('recruiter-badge').className = 'section-badge';
+                document.getElementById('recruiter-badge').style.background = '#dcfce7';
+                document.getElementById('recruiter-badge').style.color = '#166534';
+                document.getElementById('recruiter-desc').textContent = 'Your recruiter profile is active.';
+                document.getElementById('recruiter-input-area').style.display = 'none';
+                document.getElementById('recruiter-active-area').style.display = 'block';
+                document.getElementById('recruiter-display-company').textContent = currentUser.company_name;
+                document.getElementById('recruiter-section').className = 'profile-section profile-active';
+            } else {
+                isRecruiterProfileActive = false;
+                document.getElementById('recruiter-badge').textContent = '⚠️ Required to Post Jobs';
+                document.getElementById('recruiter-badge').className = 'section-badge';
+                document.getElementById('recruiter-badge').style.background = '#fef3c7';
+                document.getElementById('recruiter-badge').style.color = '#d97706';
+                document.getElementById('recruiter-desc').textContent = 'Create your recruiter profile to post jobs and find candidates.';
+                document.getElementById('recruiter-input-area').style.display = 'block';
+                document.getElementById('recruiter-active-area').style.display = 'none';
+                document.getElementById('recruiter-section').className = 'profile-section';
+            }
+        }
+
+        async function saveSeekerProfile() {
+            const name = document.getElementById('seeker-name').value.trim();
+            const title = document.getElementById('seeker-title').value.trim();
+            const exp = document.getElementById('seeker-exp').value.trim();
+            const skills = document.getElementById('seeker-skills').value.trim();
+            
+            if (!name) {
+                showToast('⚠️ Please enter your full name');
+                return;
+            }
+            
+            const updates = {
+                full_name: name,
+                job_title: title || '',
+                total_experience_years: parseInt(exp) || 0,
+                skills_comma_separated: skills || '',
+                last_active: new Date().toISOString()
+            };
+            
+            try {
+                const { error } = await sb
+                    .from('active_users')
+                    .update(updates)
+                    .eq('mobile', currentUser.mobile);
+                
+                if (error) throw error;
+                
+                // Update current user
+                currentUser = { ...currentUser, ...updates };
+                showToast('✅ Seeker profile saved!');
+                loadProfile();
+            } catch (err) {
+                showToast('❌ Failed to save: ' + err.message);
+            }
+        }
+
+        function editSeekerProfile() {
+            document.getElementById('seeker-name').value = currentUser.full_name || '';
+            document.getElementById('seeker-title').value = currentUser.job_title || '';
+            document.getElementById('seeker-exp').value = currentUser.total_experience_years || '';
+            document.getElementById('seeker-skills').value = currentUser.skills_comma_separated || '';
+            document.getElementById('seeker-input-area').style.display = 'block';
+            document.getElementById('seeker-active-area').style.display = 'none';
+            document.getElementById('seeker-section').className = 'profile-section';
+            document.getElementById('seeker-badge').textContent = '✏️ Editing';
+            document.getElementById('seeker-badge').style.background = '#dbeafe';
+            document.getElementById('seeker-badge').style.color = '#1e40af';
+            document.getElementById('seeker-desc').textContent = 'Update your seeker profile.';
+            document.querySelector('#seeker-input-area .section-btn').textContent = '💾 Update';
+        }
+
+        async function saveRecruiterProfile() {
+            const company = document.getElementById('recruiter-company').value.trim();
+            
+            if (!company) {
+                showToast('⚠️ Please enter company name');
+                return;
+            }
+            
+            try {
+                const { error } = await sb
+                    .from('active_users')
+                    .update({ 
+                        company_name: company,
+                        last_active: new Date().toISOString()
+                    })
+                    .eq('mobile', currentUser.mobile);
+                
+                if (error) throw error;
+                
+                currentUser.company_name = company;
+                showToast('✅ Recruiter profile activated!');
+                loadProfile();
+            } catch (err) {
+                showToast('❌ Failed to save: ' + err.message);
+            }
+        }
+
+        function editRecruiterProfile() {
+            document.getElementById('recruiter-company').value = currentUser.company_name || '';
+            document.getElementById('recruiter-input-area').style.display = 'block';
+            document.getElementById('recruiter-active-area').style.display = 'none';
+            document.getElementById('recruiter-section').className = 'profile-section';
+            document.getElementById('recruiter-badge').textContent = '✏️ Editing';
+            document.getElementById('recruiter-badge').style.background = '#dbeafe';
+            document.getElementById('recruiter-badge').style.color = '#1e40af';
+            document.getElementById('recruiter-desc').textContent = 'Update your company name.';
+            document.querySelector('#recruiter-input-area .section-btn').textContent = '💾 Update';
         }
 
         // ============================================================
@@ -777,9 +1145,11 @@
         function resetForm() {
             document.getElementById('step1').style.display = 'block';
             document.getElementById('step2').classList.add('hidden');
-            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('gender-icon').style.display = 'none';
+            document.getElementById('gender-icon-profile').style.display = 'none';
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
@@ -1097,7 +1467,8 @@
                         currentUser = userData;
                         document.getElementById('step2').classList.add('hidden');
                         document.getElementById('login-screen').style.display = 'none';
-                        document.getElementById('home-screen').classList.remove('hidden');
+                        document.getElementById('home-page').classList.remove('hidden-page');
+                        document.getElementById('profile-page').classList.add('hidden-page');
                         
                         updateGenderIcon(userData);
                         
