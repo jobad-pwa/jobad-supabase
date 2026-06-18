@@ -169,7 +169,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* HOME SCREEN */
         .home-container { padding-top: 4px; }
         .home-container .logo {
             text-align: left;
@@ -195,7 +194,6 @@
             background: #cbd5e1;
         }
 
-        /* ZONE FILTER - SEARCHABLE */
         .zone-filter {
             background: #0f172a;
             border-radius: 12px;
@@ -275,9 +273,6 @@
             background: #1e3a5f;
             color: white;
         }
-        .zone-filter .suggestions .item .highlight {
-            color: #60a5fa;
-        }
         .zone-filter .suggestions .no-result {
             padding: 8px 12px;
             font-size: 12px;
@@ -285,7 +280,39 @@
             text-align: center;
         }
 
-        /* TYPE BUTTONS */
+        .area-filter {
+            margin-top: 8px;
+            display: none;
+        }
+        .area-filter.show {
+            display: block;
+        }
+        .area-filter select {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 0;
+        }
+        .area-filter select option {
+            background: #1e293b;
+            color: white;
+        }
+        .area-filter .label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 2px;
+        }
+
         .type-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -313,7 +340,6 @@
             color: #64748b;
         }
 
-        /* FILTER ROWS */
         .filter-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -344,7 +370,6 @@
             border-color: #3b82f6;
         }
 
-        /* RESULTS */
         .results-count {
             display: flex;
             justify-content: space-between;
@@ -361,7 +386,6 @@
             letter-spacing: 0.05em;
         }
 
-        /* FEED */
         .feed-container {
             display: flex;
             flex-direction: column;
@@ -410,61 +434,21 @@
             color: #94a3b8;
             font-size: 14px;
         }
-
-        /* AREA FILTER - SUBTLE */
-        .area-filter {
-            margin-top: 8px;
-            display: none;
-        }
-        .area-filter.show {
-            display: block;
-        }
-        .area-filter select {
-            width: 100%;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: white;
-            font-weight: 600;
-            outline: none;
-            margin-bottom: 0;
-        }
-        .area-filter select option {
-            background: #1e293b;
-            color: white;
-        }
-        .area-filter .label {
-            font-size: 9px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: block;
-            margin-bottom: 2px;
-        }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- LOGIN SCREEN -->
         <div id="login-screen">
             <h1>JobAd</h1>
             <div class="sub">Telangana Zone Based Jobs</div>
-
             <div class="test-links">
                 <a href="test.html">🔌 DB Test</a>
             </div>
-
-            <!-- STEP 1: MOBILE INPUT -->
             <div id="step1">
                 <label class="action-label">📱 Enter Mobile Number</label>
                 <input type="tel" id="mobile" placeholder="9876543210" maxlength="10" autofocus>
                 <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
             </div>
-
-            <!-- STEP 2: PIN INPUT -->
             <div id="step2" class="hidden fade-in">
                 <div id="user-info" class="text-center mb-4">
                     <div class="mobile-display" id="display-mobile">--</div>
@@ -477,20 +461,13 @@
                 <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
-
-            <!-- MESSAGE -->
             <div id="msg" class="hidden"></div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- HOME SCREEN - SEARCHABLE ZONE + AREA       -->
-        <!-- ========================================== -->
         <div id="home-screen" class="hidden">
             <div class="home-container">
-                <!-- JobAd Logo - Top Left -->
                 <div class="logo">JobAd</div>
                 
-                <!-- FILTER BY ZONE - SEARCHABLE -->
                 <div class="zone-filter">
                     <div class="header">
                         <label>📍 Filter by Zone</label>
@@ -500,8 +477,6 @@
                         <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
                         <div class="suggestions" id="zone-suggestions"></div>
                     </div>
-                    
-                    <!-- Area Filter - Shows when zone is selected -->
                     <div class="area-filter" id="area-filter">
                         <div class="label">📍 Filter by Area</div>
                         <select id="area-select" onchange="onAreaChange()">
@@ -510,14 +485,12 @@
                     </div>
                 </div>
 
-                <!-- BOTH | JOBS ONLY | PROFILES ONLY -->
                 <div class="type-buttons">
                     <button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button>
                     <button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button>
                     <button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button>
                 </div>
 
-                <!-- FILTER ROW 1 -->
                 <div class="filter-row">
                     <div>
                         <label>Job Title</label>
@@ -534,7 +507,6 @@
                     </div>
                 </div>
 
-                <!-- FILTER ROW 2 -->
                 <div class="filter-row">
                     <div>
                         <label>Skills</label>
@@ -548,15 +520,12 @@
                     </div>
                 </div>
 
-                <!-- RESULTS COUNT -->
                 <div class="results-count">
                     <span id="results-count">Showing 0 Records</span>
                 </div>
 
-                <!-- FEED CONTAINER -->
                 <div id="feed-container" class="feed-container"></div>
 
-                <!-- LOGOUT BUTTON -->
                 <button class="logout-btn" onclick="logout()">🚪 Logout</button>
             </div>
         </div>
@@ -584,7 +553,7 @@
         let selectedAreaId = null;
 
         // ============================================================
-        // FEED DATA (with zone_id and area_id)
+        // FEED DATA (with zone_id and area_id matching your schema)
         // ============================================================
         const feedItems = [
             { type: "JOB", title: "Senior Software Engineer", exp: 5, skills: "Java, Spring Boot", zone_id: 100, area_id: 100005, location: "Hyderabad - Hitech City", salary: "₹18-22 LPA", company: "TechMahindra", desc: "Looking for experienced Java developer", contact: "9988776655" },
@@ -676,14 +645,24 @@
             const suggestions = document.getElementById('zone-suggestions');
             const query = input.value.toLowerCase().trim();
 
+            // Debug: Check if LOCATION is loaded
+            if (!window.LOCATION) {
+                console.error('❌ locations.js not loaded!');
+                suggestions.innerHTML = '<div class="no-result">⚠️ locations.js not loaded</div>';
+                suggestions.classList.add('show');
+                return;
+            }
+
             if (!query) {
                 suggestions.classList.remove('show');
                 document.getElementById('area-filter').classList.remove('show');
                 return;
             }
 
-            // Search in zones from locations.js
-            const zones = window.LOCATION ? window.LOCATION.getZones() : [];
+            // Get zones from locations.js
+            const zones = window.LOCATION.getZones();
+            console.log('Zones from locations.js:', zones);
+            
             const matches = zones.filter(zone => 
                 zone.zone_name.toLowerCase().includes(query)
             );
@@ -709,17 +688,22 @@
             selectedAreaId = null;
             document.getElementById('zone-status').textContent = zoneName;
 
-            // Populate area dropdown
+            // Populate area dropdown using locations.js
             populateAreas(zoneId);
-            
-            // Show area filter
             document.getElementById('area-filter').classList.add('show');
             renderFeed();
         }
 
         function populateAreas(zoneId) {
             const areaSelect = document.getElementById('area-select');
-            const areas = window.LOCATION ? window.LOCATION.getAreas(zoneId) : [];
+            
+            if (!window.LOCATION) {
+                console.error('❌ locations.js not loaded!');
+                return;
+            }
+            
+            const areas = window.LOCATION.getAreas(zoneId);
+            console.log('Areas for zone', zoneId, ':', areas);
             
             areaSelect.innerHTML = '<option value="">All Areas</option>';
             areas.forEach(area => {
@@ -731,6 +715,39 @@
             const areaSelect = document.getElementById('area-select');
             selectedAreaId = areaSelect.value ? parseInt(areaSelect.value) : null;
             renderFeed();
+        }
+
+        // Auto-detect location on page load
+        function autoDetectLocation() {
+            if (!window.LOCATION) {
+                console.error('❌ locations.js not loaded for auto-detect');
+                return;
+            }
+            
+            // Try to detect location via IP
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    const city = data.city || '';
+                    console.log('Detected city:', city);
+                    
+                    const zones = window.LOCATION.getZones();
+                    const matched = zones.find(zone => 
+                        city.toLowerCase().includes(zone.zone_name.toLowerCase()) ||
+                        zone.zone_name.toLowerCase().includes(city.toLowerCase())
+                    );
+                    
+                    if (matched) {
+                        selectZone(matched.zone_id, matched.zone_name);
+                        document.getElementById('zone-search').value = matched.zone_name + ' (Detected)';
+                    }
+                })
+                .catch(err => {
+                    console.log('Auto-detect failed:', err);
+                    // Default to Hyderabad
+                    selectZone(100, 'Hyderabad');
+                    document.getElementById('zone-search').value = 'Hyderabad (Default)';
+                });
         }
 
         // Close suggestions on outside click
@@ -776,12 +793,10 @@
                 filtered = filtered.filter(item => item.type === 'SEEKER');
             }
 
-            // Filter by zone
             if (selectedZoneId) {
                 filtered = filtered.filter(item => item.zone_id === selectedZoneId);
             }
 
-            // Filter by area
             if (selectedAreaId) {
                 filtered = filtered.filter(item => item.area_id === selectedAreaId);
             }
@@ -937,6 +952,10 @@
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('home-screen').classList.remove('hidden');
                         hideMessage();
+                        
+                        // Auto-detect location after login
+                        setTimeout(autoDetectLocation, 500);
+                        
                         renderFeed();
                         showToast('✅ Welcome ' + currentMobile + '!');
                     }
@@ -978,7 +997,16 @@
         // APP INIT
         // ============================================================
         console.log('✅ JobAd Login App Ready');
-        console.log('📍 Using locations.js for zones and areas');
+        console.log('📍 Checking for locations.js...');
+        console.log('window.LOCATION:', window.LOCATION);
+        
+        if (window.LOCATION) {
+            console.log('✅ locations.js loaded successfully!');
+            console.log('Zones:', window.LOCATION.getZones());
+        } else {
+            console.error('❌ locations.js NOT loaded! Please check the file.');
+        }
+        
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
     </script>
