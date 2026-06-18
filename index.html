@@ -472,6 +472,24 @@
             color: #166534;
         }
 
+        /* Logout Button */
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 4px;
+        }
+        .logout-btn:hover {
+            background: #fecaca;
+        }
+
         /* ========================================== */
         /* EDIT SEEKER PROFILE PAGE */
         /* ========================================== */
@@ -545,6 +563,7 @@
             resize: vertical;
             min-height: 60px;
         }
+        .edit-field select option { padding: 4px; }
 
         .edit-activate-btn {
             width: 100%;
@@ -766,6 +785,7 @@
                                 <p><strong id="seeker-display-name">--</strong></p>
                                 <p style="color:#64748b; margin-top:2px;"><span id="seeker-display-title">--</span> • <span id="seeker-display-exp">--</span> yrs</p>
                                 <p style="color:#64748b; margin-top:2px;">Skills: <span id="seeker-display-skills">--</span></p>
+                                <p style="color:#64748b; margin-top:2px;">📍 <span id="seeker-display-location">--</span></p>
                             </div>
                             <button class="section-btn" style="margin-top:6px; width:100%;" onclick="goToEditSeeker()">✏️ Edit Profile</button>
                         </div>
@@ -792,6 +812,9 @@
                             <button class="section-btn" style="margin-top:6px; width:100%;" onclick="editRecruiterProfile()">✏️ Edit Company</button>
                         </div>
                     </div>
+
+                    <!-- Logout Button -->
+                    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
                 </div>
 
                 <div class="bottom-nav">
@@ -846,6 +869,20 @@
                             <label>Expected Salary</label>
                             <input type="text" id="edit-seeker-salary" placeholder="₹15 LPA">
                         </div>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Gender</label>
+                        <select id="edit-seeker-gender">
+                            <option value="0">Not Specified</option>
+                            <option value="1">Female</option>
+                            <option value="2">Male</option>
+                        </select>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Notice Period (days)</label>
+                        <input type="text" id="edit-seeker-notice" placeholder="30">
                     </div>
 
                     <div class="edit-field">
@@ -904,7 +941,7 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // ZONE & AREA DATA
+        // ZONE & AREA DATA (with "All Zone" options)
         // ============================================================
         const ZONES = [
             { zone_id: 100, zone_name: "Hyderabad" },
@@ -914,6 +951,12 @@
         ];
 
         const AREAS = [
+            // "All Zone" options for searching entire zone
+            { area_id: 100000, zone_id: 100, area_name: "All Hyderabad" },
+            { area_id: 200000, zone_id: 200, area_name: "All North Telangana" },
+            { area_id: 300000, zone_id: 300, area_name: "All East Telangana" },
+            { area_id: 400000, zone_id: 400, area_name: "All South Telangana" },
+            // Hyderabad (zone_id: 100)
             { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
             { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
             { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
@@ -928,6 +971,7 @@
             { area_id: 100997, zone_id: 100, area_name: "Medak" },
             { area_id: 100998, zone_id: 100, area_name: "Sangareddy" },
             { area_id: 100999, zone_id: 100, area_name: "Zahirabad" },
+            // North Telangana (zone_id: 200)
             { area_id: 200001, zone_id: 200, area_name: "Adilabad" },
             { area_id: 200002, zone_id: 200, area_name: "Asifabad" },
             { area_id: 200003, zone_id: 200, area_name: "Mancherial" },
@@ -939,6 +983,7 @@
             { area_id: 200009, zone_id: 200, area_name: "Sircilla" },
             { area_id: 200010, zone_id: 200, area_name: "Kamareddy" },
             { area_id: 200011, zone_id: 200, area_name: "Siddipet" },
+            // East Telangana (zone_id: 300)
             { area_id: 300001, zone_id: 300, area_name: "Warangal" },
             { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
             { area_id: 300003, zone_id: 300, area_name: "Khammam" },
@@ -948,6 +993,7 @@
             { area_id: 300007, zone_id: 300, area_name: "Kothagudem" },
             { area_id: 300008, zone_id: 300, area_name: "Bhuvanagiri" },
             { area_id: 300009, zone_id: 300, area_name: "Jangaon" },
+            // South Telangana (zone_id: 400)
             { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
             { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
             { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
@@ -1044,10 +1090,8 @@
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.remove('hidden-page');
             
-            // Populate zones
             populateEditZones();
             
-            // Fill existing data if any
             if (currentUser) {
                 document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
                 document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
@@ -1055,6 +1099,8 @@
                 document.getElementById('edit-seeker-salary').value = currentUser.expected_salary_monthly ? `₹${currentUser.expected_salary_monthly}` : '';
                 document.getElementById('edit-seeker-skills').value = currentUser.skills_comma_separated || '';
                 document.getElementById('edit-seeker-about').value = currentUser.professional_summary || '';
+                document.getElementById('edit-seeker-gender').value = currentUser.gender || 0;
+                document.getElementById('edit-seeker-notice').value = currentUser.notice_period_days || '';
                 
                 if (currentUser.zone_id) {
                     document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
@@ -1130,6 +1176,9 @@
                 document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
                 document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
                 document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
+                const zoneName = getZoneName(currentUser.zone_id);
+                const areaName = getAreaName(currentUser.area_id);
+                document.getElementById('seeker-display-location').textContent = areaName ? `${zoneName} - ${areaName}` : zoneName || 'Not set';
                 document.getElementById('seeker-section').className = 'profile-section profile-active';
             } else {
                 isSeekerProfileActive = false;
@@ -1177,6 +1226,8 @@
             const about = document.getElementById('edit-seeker-about').value.trim();
             const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
             const areaId = parseInt(document.getElementById('edit-seeker-area').value);
+            const gender = parseInt(document.getElementById('edit-seeker-gender').value);
+            const notice = parseInt(document.getElementById('edit-seeker-notice').value) || 0;
             
             if (!name) {
                 showToast('⚠️ Please enter your full name');
@@ -1197,6 +1248,8 @@
                 professional_summary: about || '',
                 zone_id: zoneId,
                 area_id: areaId || null,
+                gender: gender || 0,
+                notice_period_days: notice,
                 last_active: new Date().toISOString()
             };
             
@@ -1719,8 +1772,6 @@
         console.log('✅ JobAd Login App Ready');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
-
-        // Pre-populate edit page zones
         populateEditZones();
     </script>
 </body>
