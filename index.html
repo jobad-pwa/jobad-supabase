@@ -24,6 +24,9 @@
             border-radius: 24px;
             padding: 32px 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 600px;
             position: relative;
         }
         h1 { font-size: 36px; font-weight: 800; text-align: center; color: #2563eb; margin: 0 0 8px 0; }
@@ -111,24 +114,83 @@
         .fade-in { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .home-container { padding-top: 4px; }
-        .home-container .logo {
-            text-align: left;
-            width: 100%;
+        /* ========================================== */
+        /* HOME SCREEN - FIXED LAYOUT */
+        /* ========================================== */
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 520px;
+        }
+        
+        /* Header: JobAd + Gender Icon on same line */
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .home-header .logo {
             font-size: 24px;
             font-weight: 900;
             color: #2563eb;
-            margin-bottom: 16px;
+        }
+        .home-header .gender-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .home-header .gender-icon:hover {
+            border-color: #2563eb;
+            transform: scale(1.05);
+        }
+        .home-header .gender-icon.male {
+            color: #2563eb;
+            border-color: #2563eb;
+        }
+        .home-header .gender-icon.female {
+            color: #ec4899;
+            border-color: #ec4899;
+        }
+        .home-header .gender-icon.other {
+            color: #8b5cf6;
+            border-color: #8b5cf6;
         }
 
-        /* Bottom Navigation */
+        /* Scrollable Content Area */
+        .home-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 8px;
+        }
+        .home-content::-webkit-scrollbar {
+            width: 3px;
+        }
+        .home-content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        /* Bottom Navigation - FIXED at bottom */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
             align-items: center;
             border-top: 1px solid #e2e8f0;
-            padding-top: 12px;
-            margin-top: 12px;
+            padding-top: 10px;
+            margin-top: 10px;
+            flex-shrink: 0;
+            background: white;
         }
         .bottom-nav .nav-item {
             display: flex;
@@ -142,6 +204,9 @@
             transition: color 0.2s ease;
             padding: 4px 12px;
             border-radius: 8px;
+            background: none;
+            border: none;
+            width: auto;
         }
         .bottom-nav .nav-item:hover {
             color: #3b82f6;
@@ -159,41 +224,7 @@
             letter-spacing: 0.05em;
         }
 
-        /* Gender Icon - Top Right */
-        .gender-icon {
-            position: absolute;
-            top: 20px;
-            right: 24px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 700;
-            border: 2px solid #e2e8f0;
-            background: #f8fafc;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .gender-icon:hover {
-            border-color: #2563eb;
-            transform: scale(1.05);
-        }
-        .gender-icon.male {
-            color: #2563eb;
-            border-color: #2563eb;
-        }
-        .gender-icon.female {
-            color: #ec4899;
-            border-color: #ec4899;
-        }
-        .gender-icon.other {
-            color: #8b5cf6;
-            border-color: #8b5cf6;
-        }
-
+        /* Zone Filter */
         .zone-filter {
             background: #0f172a;
             border-radius: 12px;
@@ -336,7 +367,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            padding-bottom: 10px;
+            padding-bottom: 4px;
         }
         .feed-card {
             border: 1px solid #e2e8f0;
@@ -363,11 +394,6 @@
 </head>
 <body>
     <div class="card">
-        <!-- Gender Icon - Top Right -->
-        <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
-            <span id="gender-symbol">👤</span>
-        </div>
-
         <div id="login-screen">
             <h1>JobAd</h1>
             <div class="sub">Telangana Zone Based Jobs</div>
@@ -394,74 +420,83 @@
 
         <div id="home-screen" class="hidden">
             <div class="home-container">
-                <div class="logo">JobAd</div>
-                
-                <div class="zone-filter">
-                    <div class="header">
-                        <label>📍 Filter by Zone</label>
-                        <span id="zone-status">All Zones</span>
-                    </div>
-                    <div class="search-wrapper">
-                        <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
-                        <div class="suggestions" id="zone-suggestions"></div>
+                <!-- Header: JobAd + Gender Icon on same line -->
+                <div class="home-header">
+                    <div class="logo">JobAd</div>
+                    <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
+                        <span id="gender-symbol">👤</span>
                     </div>
                 </div>
 
-                <div class="type-buttons">
-                    <button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button>
-                    <button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button>
-                    <button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button>
+                <!-- Scrollable Content -->
+                <div class="home-content" id="home-content">
+                    <div class="zone-filter">
+                        <div class="header">
+                            <label>📍 Filter by Zone</label>
+                            <span id="zone-status">All Zones</span>
+                        </div>
+                        <div class="search-wrapper">
+                            <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
+                            <div class="suggestions" id="zone-suggestions"></div>
+                        </div>
+                    </div>
+
+                    <div class="type-buttons">
+                        <button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button>
+                        <button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button>
+                        <button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button>
+                    </div>
+
+                    <div class="filter-row">
+                        <div>
+                            <label>Job Title</label>
+                            <input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()">
+                        </div>
+                        <div>
+                            <label>Experience</label>
+                            <select id="filter-exp" onchange="renderFeed()">
+                                <option value="ALL">Any</option>
+                                <option value="0-2">0-2 Years</option>
+                                <option value="3-5">3-5 Years</option>
+                                <option value="5+">5+ Years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-row">
+                        <div>
+                            <label>Skills</label>
+                            <input type="text" id="filter-skills" placeholder="Eg: python" oninput="renderFeed()">
+                        </div>
+                        <div>
+                            <label>Area</label>
+                            <select id="filter-area" onchange="onAreaFilterChange()">
+                                <option value="ALL">All areas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="results-count">
+                        <span id="results-count">Showing 0 Records</span>
+                    </div>
+
+                    <div id="feed-container" class="feed-container"></div>
                 </div>
 
-                <div class="filter-row">
-                    <div>
-                        <label>Job Title</label>
-                        <input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()">
-                    </div>
-                    <div>
-                        <label>Experience</label>
-                        <select id="filter-exp" onchange="renderFeed()">
-                            <option value="ALL">Any</option>
-                            <option value="0-2">0-2 Years</option>
-                            <option value="3-5">3-5 Years</option>
-                            <option value="5+">5+ Years</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="filter-row">
-                    <div>
-                        <label>Skills</label>
-                        <input type="text" id="filter-skills" placeholder="Eg: python" oninput="renderFeed()">
-                    </div>
-                    <div>
-                        <label>Area</label>
-                        <select id="filter-area" onchange="onAreaFilterChange()">
-                            <option value="ALL">All areas</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="results-count">
-                    <span id="results-count">Showing 0 Records</span>
-                </div>
-
-                <div id="feed-container" class="feed-container"></div>
-
-                <!-- Bottom Navigation -->
+                <!-- Bottom Navigation - FIXED at bottom -->
                 <div class="bottom-nav">
-                    <div class="nav-item active" onclick="goHome()">
+                    <button class="nav-item active" onclick="goHome()">
                         <span class="icon">🏠</span>
                         <span class="label">Home</span>
-                    </div>
-                    <div class="nav-item" onclick="goPostJob()">
+                    </button>
+                    <button class="nav-item" onclick="goPostJob()">
                         <span class="icon">➕</span>
                         <span class="label">Post Job</span>
-                    </div>
-                    <div class="nav-item" onclick="goToProfile()">
+                    </button>
+                    <button class="nav-item" onclick="goToProfile()">
                         <span class="icon">👤</span>
                         <span class="label">Profile</span>
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
@@ -545,26 +580,25 @@
         function goHome() {
             currentPage = 'home';
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelector('.bottom-nav .nav-item:nth-child(1)').classList.add('active');
+            document.querySelectorAll('.bottom-nav .nav-item')[0].classList.add('active');
             document.getElementById('feed-container').style.display = 'flex';
+            document.getElementById('results-count').textContent = 'Showing ' + feedItems.length + ' Records';
             renderFeed();
-            showToast('🏠 Home');
         }
 
         function goPostJob() {
             currentPage = 'postjob';
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelector('.bottom-nav .nav-item:nth-child(2)').classList.add('active');
+            document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
             document.getElementById('feed-container').style.display = 'none';
             document.getElementById('results-count').textContent = '📝 Post a Job';
-            // Show job posting form (coming soon)
             showToast('📝 Job posting coming soon!');
         }
 
         function goToProfile() {
             currentPage = 'profile';
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelector('.bottom-nav .nav-item:nth-child(3)').classList.add('active');
+            document.querySelectorAll('.bottom-nav .nav-item')[2].classList.add('active');
             document.getElementById('feed-container').style.display = 'none';
             document.getElementById('results-count').textContent = '👤 My Profile';
             showToast('👤 Profile coming soon!');
@@ -1012,7 +1046,6 @@
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('home-screen').classList.remove('hidden');
                         
-                        // Update gender icon
                         updateGenderIcon(userData);
                         
                         hideMessage();
