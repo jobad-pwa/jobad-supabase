@@ -452,7 +452,13 @@
             border-bottom: 1px solid #e2e8f0;
             margin-bottom: 12px;
         }
-        .edit-page-header h2 { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0; }
+        .edit-page-header h2 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+            white-space: nowrap;
+        }
         .edit-page-header .cancel-btn {
             font-size: 12px;
             font-weight: 700;
@@ -460,8 +466,13 @@
             cursor: pointer;
             background: none;
             border: none;
+            padding: 4px 8px;
+            flex-shrink: 0;
+            margin-left: 8px;
         }
-        .edit-page-header .cancel-btn:hover { color: #64748b; }
+        .edit-page-header .cancel-btn:hover {
+            color: #64748b;
+        }
 
         .edit-hint {
             background: #eff6ff;
@@ -938,7 +949,6 @@
         // ============================================================
         function formatSalaryDisplay(value) {
             if (!value) return '';
-            // Remove all non-digit characters
             const num = value.toString().replace(/[^0-9]/g, '');
             if (!num) return '';
             return Number(num).toLocaleString('en-IN');
@@ -974,16 +984,13 @@
                 });
             }
 
-            // Salary input formatter
             const salaryInput = document.getElementById('edit-seeker-salary');
             if (salaryInput) {
                 salaryInput.addEventListener('input', function() {
-                    const cursorPos = this.selectionStart;
                     const rawValue = parseSalaryValue(this.value);
                     if (rawValue) {
                         const formatted = formatSalaryDisplay(rawValue);
                         this.value = formatted;
-                        // Keep cursor at end
                         this.setSelectionRange(this.value.length, this.value.length);
                     }
                 });
