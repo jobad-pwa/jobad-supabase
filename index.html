@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd - Login</title>
+    <title>JobAd</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -32,10 +32,75 @@
             position: relative;
             overflow: hidden;
         }
+        .hidden { display: none; }
+        .hidden-page { display: none; }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        input:focus { border-color: #2563eb; outline: 2px solid #93c5fd; }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { background: #1d4ed8; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-back { background: #6b7280; margin-top: 8px; }
+        .btn-back:hover { background: #4b5563; }
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #15803d; }
+        .btn-yellow { background: #d97706; }
+        .btn-yellow:hover { background: #b45309; }
+        .msg {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .msg-green { background: #dcfce7; color: #166534; }
+        .msg-red { background: #fee2e2; color: #991b1b; }
+        .msg-blue { background: #dbeafe; color: #1e40af; }
+        .msg-yellow { background: #fef3c7; color: #92400e; }
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: fadeOut 2s ease forwards;
+            white-space: nowrap;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
+        }
+        .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
+        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========================================== */
         /* LOGIN SCREEN */
-        /* ========================================== */
         #login-screen {
             display: flex;
             flex-direction: column;
@@ -58,52 +123,6 @@
             color: #3b82f6;
             text-decoration: none;
         }
-        #login-screen input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 12px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        #login-screen input:focus {
-            border-color: #2563eb;
-            outline: 2px solid #93c5fd;
-        }
-        #login-screen input:disabled { opacity: 0.6; }
-        #login-screen button {
-            width: 100%;
-            padding: 14px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        #login-screen button:hover { background: #1d4ed8; }
-        #login-screen button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #login-screen .btn-back { background: #6b7280; margin-top: 8px; }
-        #login-screen .btn-back:hover { background: #4b5563; }
-        #login-screen .btn-green { background: #16a34a; }
-        #login-screen .btn-green:hover { background: #15803d; }
-        #login-screen .btn-yellow { background: #d97706; }
-        #login-screen .btn-yellow:hover { background: #b45309; }
-        #login-screen .msg {
-            margin-top: 16px;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 14px;
-        }
-        #login-screen .msg-green { background: #dcfce7; color: #166534; }
-        #login-screen .msg-red { background: #fee2e2; color: #991b1b; }
-        #login-screen .msg-blue { background: #dbeafe; color: #1e40af; }
-        #login-screen .msg-yellow { background: #fef3c7; color: #92400e; }
-        #login-screen .hidden { display: none; }
         #login-screen .password-wrapper { position: relative; }
         #login-screen .toggle-password {
             position: absolute;
@@ -115,22 +134,15 @@
             user-select: none;
             padding: 4px;
         }
-        .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
-        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
-        .fade-in { animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .mobile-status { font-size: 12px; color: #94a3b8; margin-top: 4px; }
 
-        /* ========================================== */
-        /* HOME SCREEN - FIXED LAYOUT */
-        /* ========================================== */
+        /* HOME SCREEN */
         .home-container {
             display: flex;
             flex-direction: column;
             height: 100%;
             width: 100%;
         }
-
-        /* HEADER - FIXED */
         .home-header {
             display: flex;
             justify-content: space-between;
@@ -157,49 +169,22 @@
             border: 2px solid #e2e8f0;
             background: #f8fafc;
             cursor: pointer;
-            transition: all 0.2s ease;
             flex-shrink: 0;
         }
-        .home-header .gender-icon:hover {
-            border-color: #2563eb;
-            transform: scale(1.05);
-        }
-        .home-header .gender-icon.male {
-            color: #2563eb;
-            border-color: #2563eb;
-        }
-        .home-header .gender-icon.female {
-            color: #ec4899;
-            border-color: #ec4899;
-        }
-        .home-header .gender-icon.other {
-            color: #8b5cf6;
-            border-color: #8b5cf6;
-        }
+        .home-header .gender-icon.male { color: #2563eb; border-color: #2563eb; }
+        .home-header .gender-icon.female { color: #ec4899; border-color: #ec4899; }
+        .home-header .gender-icon.other { color: #8b5cf6; border-color: #8b5cf6; }
 
-        /* PAGE CONTENT WRAPPER */
         .page-content {
             flex: 1;
             overflow-y: auto;
             min-height: 0;
             padding: 8px 0;
         }
-        .page-content::-webkit-scrollbar {
-            width: 3px;
-        }
-        .page-content::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
+        .page-content::-webkit-scrollbar { width: 3px; }
+        .page-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* ========================================== */
-        /* HOME PAGE - FILTERS + FEED */
-        /* ========================================== */
-        .home-top {
-            flex-shrink: 0;
-            padding-bottom: 6px;
-        }
-
+        .home-top { flex-shrink: 0; padding-bottom: 6px; }
         .zone-filter {
             background: #0f172a;
             border-radius: 12px;
@@ -264,7 +249,6 @@
             cursor: pointer;
         }
         .zone-filter .suggestions .item:hover { background: #334155; }
-        .zone-filter .suggestions .item.selected { background: #1e3a5f; color: white; }
         .zone-filter .suggestions .no-result {
             padding: 8px 12px;
             font-size: 12px;
@@ -319,7 +303,6 @@
             outline: none;
             margin-bottom: 0;
         }
-        .filter-row input:focus, .filter-row select:focus { border-color: #3b82f6; }
 
         .results-count {
             display: flex;
@@ -365,240 +348,6 @@
         .feed-card .badge-seeker { background: #dcfce7; color: #166534; }
         .no-records { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 13px; }
 
-        /* ========================================== */
-        /* PROFILE PAGE */
-        /* ========================================== */
-        .profile-header-card {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            border-radius: 16px;
-            padding: 16px 20px;
-            color: white;
-            margin-bottom: 16px;
-        }
-        .profile-header-card .welcome {
-            font-size: 11px;
-            opacity: 0.8;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .profile-header-card .mobile {
-            font-size: 22px;
-            font-weight: 700;
-            margin: 2px 0;
-        }
-        .profile-header-card .badge {
-            font-size: 10px;
-            background: rgba(255,255,255,0.2);
-            padding: 2px 12px;
-            border-radius: 12px;
-            display: inline-block;
-        }
-
-        .profile-section {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .profile-section .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .profile-section .section-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        .profile-section .section-badge {
-            font-size: 9px;
-            background: #fef3c7;
-            color: #d97706;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-        .profile-section .section-desc {
-            font-size: 12px;
-            color: #64748b;
-            margin-bottom: 10px;
-        }
-        .profile-section .section-input {
-            display: flex;
-            gap: 8px;
-        }
-        .profile-section .section-input input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 12px;
-            outline: none;
-            margin-bottom: 0;
-        }
-        .profile-section .section-input input:focus {
-            border-color: #2563eb;
-        }
-        .profile-section .section-btn {
-            padding: 8px 16px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .profile-section .section-btn:hover {
-            background: #1d4ed8;
-        }
-        .profile-section .section-btn-green {
-            background: #16a34a;
-        }
-        .profile-section .section-btn-green:hover {
-            background: #15803d;
-        }
-
-        .profile-active {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-        }
-        .profile-active .section-badge {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        /* Logout Button */
-        .logout-btn {
-            width: 100%;
-            padding: 10px;
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fca5a5;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 4px;
-        }
-        .logout-btn:hover {
-            background: #fecaca;
-        }
-
-        /* ========================================== */
-        /* EDIT SEEKER PROFILE PAGE */
-        /* ========================================== */
-        .edit-page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 12px;
-        }
-        .edit-page-header h2 {
-            font-size: 16px;
-            font-weight: 800;
-            color: #1e293b;
-            margin: 0;
-        }
-        .edit-page-header .cancel-btn {
-            font-size: 12px;
-            font-weight: 700;
-            color: #94a3b8;
-            cursor: pointer;
-            background: none;
-            border: none;
-        }
-        .edit-page-header .cancel-btn:hover {
-            color: #64748b;
-        }
-
-        .edit-hint {
-            background: #eff6ff;
-            border-left: 3px solid #3b82f6;
-            padding: 10px 14px;
-            border-radius: 8px;
-            margin-bottom: 14px;
-        }
-        .edit-hint .hint-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #1d4ed8;
-        }
-        .edit-hint .hint-desc {
-            font-size: 11px;
-            color: #475569;
-            margin-top: 2px;
-        }
-
-        .edit-field {
-            margin-bottom: 10px;
-        }
-        .edit-field label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 2px;
-        }
-        .edit-field label .limit-hint {
-            font-size: 9px;
-            color: #94a3b8;
-            font-weight: 400;
-        }
-        .edit-field input, .edit-field select, .edit-field textarea {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 13px;
-            outline: none;
-            font-family: inherit;
-        }
-        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus {
-            border-color: #2563eb;
-        }
-        .edit-field textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-        .edit-field select option { padding: 4px; }
-
-        .char-counter {
-            text-align: right;
-            font-size: 10px;
-            color: #94a3b8;
-            margin-top: 2px;
-        }
-        .char-counter .over-limit {
-            color: #dc2626;
-        }
-
-        .edit-activate-btn {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 4px;
-        }
-        .edit-activate-btn:hover {
-            background: #1d4ed8;
-        }
-
-        /* ========================================== */
-        /* FOOTER NAV - FIXED */
-        /* ========================================== */
         .bottom-nav {
             display: flex;
             justify-content: space-around;
@@ -618,7 +367,6 @@
             font-size: 9px;
             font-weight: 600;
             cursor: pointer;
-            transition: color 0.2s ease;
             padding: 3px 12px;
             border-radius: 8px;
             background: none;
@@ -630,44 +378,150 @@
         .bottom-nav .nav-item .icon { font-size: 18px; margin-bottom: 1px; }
         .bottom-nav .nav-item .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
+        /* PROFILE PAGE */
+        .profile-header-card {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 16px;
+            padding: 16px 20px;
             color: white;
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: bold;
-            z-index: 1000;
-            animation: fadeOut 2s ease forwards;
-            white-space: nowrap;
+            margin-bottom: 16px;
         }
-        @keyframes fadeOut {
-            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            70% { opacity: 1; }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
-        }
+        .profile-header-card .welcome { font-size: 11px; opacity: 0.8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+        .profile-header-card .mobile { font-size: 22px; font-weight: 700; margin: 2px 0; }
+        .profile-header-card .badge { font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 12px; border-radius: 12px; display: inline-block; }
 
-        .hidden-page { display: none; }
+        .profile-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .profile-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .profile-section .section-title { font-size: 14px; font-weight: 700; color: #1e293b; }
+        .profile-section .section-badge {
+            font-size: 9px;
+            background: #fef3c7;
+            color: #d97706;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+        .profile-section .section-desc { font-size: 12px; color: #64748b; margin-bottom: 10px; }
+        .profile-section .section-btn {
+            padding: 8px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .profile-section .section-btn:hover { background: #1d4ed8; }
+        .profile-section .section-btn-green { background: #16a34a; }
+        .profile-section .section-btn-green:hover { background: #15803d; }
+        .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
+        .profile-active .section-badge { background: #dcfce7; color: #166534; }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .logout-btn:hover { background: #fecaca; }
+
+        /* EDIT SEEKER */
+        .edit-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        .edit-page-header h2 { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0; }
+        .edit-page-header .cancel-btn {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .edit-page-header .cancel-btn:hover { color: #64748b; }
+
+        .edit-hint {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+        .edit-hint .hint-title { font-size: 12px; font-weight: 700; color: #1d4ed8; }
+        .edit-hint .hint-desc { font-size: 11px; color: #475569; margin-top: 2px; }
+
+        .edit-field { margin-bottom: 10px; }
+        .edit-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        .edit-field label .limit-hint { font-size: 9px; color: #94a3b8; font-weight: 400; }
+        .edit-field input, .edit-field select, .edit-field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
+        .edit-field textarea { resize: vertical; min-height: 60px; }
+
+        .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
+        .edit-activate-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .edit-activate-btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
     <div class="card">
-        <!-- ========================================== -->
         <!-- LOGIN SCREEN -->
-        <!-- ========================================== -->
         <div id="login-screen">
             <h1>JobAd</h1>
             <div class="test-links"><a href="test.html">🔌 DB Test</a></div>
             <div id="step1" style="width:100%;">
                 <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10" autofocus>
-                <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
+                <div class="mobile-status" id="mobile-status"></div>
             </div>
             <div id="step2" class="hidden fade-in" style="width:100%;">
-                <div id="user-info" class="text-center mb-4">
+                <div class="text-center mb-4">
                     <div class="mobile-display" id="display-mobile">--</div>
                     <div id="status-badge" class="text-sm font-medium"></div>
                 </div>
@@ -681,9 +535,7 @@
             <div id="msg" class="hidden"></div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- HOME PAGE                                  -->
-        <!-- ========================================== -->
+        <!-- HOME PAGE -->
         <div id="home-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="home-header">
@@ -766,9 +618,7 @@
             </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- PROFILE PAGE                               -->
-        <!-- ========================================== -->
+        <!-- PROFILE PAGE -->
         <div id="profile-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="home-header">
@@ -785,7 +635,6 @@
                         <span class="badge" id="profile-badge">⭐ Member</span>
                     </div>
 
-                    <!-- Seeker Profile -->
                     <div class="profile-section" id="seeker-section">
                         <div class="section-header">
                             <span class="section-title">👤 Job Seeker Profile</span>
@@ -806,7 +655,6 @@
                         </div>
                     </div>
 
-                    <!-- Recruiter Profile -->
                     <div class="profile-section" id="recruiter-section">
                         <div class="section-header">
                             <span class="section-title">🏢 Recruiter Profile</span>
@@ -828,7 +676,6 @@
                         </div>
                     </div>
 
-                    <!-- Logout Button -->
                     <button class="logout-btn" onclick="logout()">🚪 Logout</button>
                 </div>
 
@@ -849,9 +696,7 @@
             </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- EDIT SEEKER PROFILE PAGE                   -->
-        <!-- ========================================== -->
+        <!-- EDIT SEEKER PAGE -->
         <div id="edit-seeker-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="edit-page-header">
@@ -1070,12 +915,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             const aboutTextarea = document.getElementById('edit-seeker-about');
             const charCount = document.getElementById('char-count');
-            
             if (aboutTextarea && charCount) {
                 aboutTextarea.addEventListener('input', function() {
                     charCount.textContent = this.value.length;
                 });
             }
+            populateEditZones();
         });
 
         // ============================================================
@@ -1114,9 +959,7 @@
             document.getElementById('home-page').classList.add('hidden-page');
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.remove('hidden-page');
-            
             populateEditZones();
-            
             if (currentUser) {
                 document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
                 document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
@@ -1126,7 +969,6 @@
                 document.getElementById('edit-seeker-about').value = currentUser.professional_summary || '';
                 document.getElementById('edit-seeker-gender').value = currentUser.gender || 0;
                 document.getElementById('edit-seeker-notice').value = currentUser.notice_period_days || '';
-                
                 if (currentUser.zone_id) {
                     document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
                     updateEditAreas();
@@ -1135,8 +977,6 @@
                     }
                 }
             }
-            
-            // Reset char counter
             const aboutTextarea = document.getElementById('edit-seeker-about');
             const charCount = document.getElementById('char-count');
             if (aboutTextarea && charCount) {
@@ -1152,28 +992,17 @@
             const symbol = document.getElementById('gender-symbol');
             const iconContainerProfile = document.getElementById('gender-icon-profile');
             const symbolProfile = document.getElementById('gender-symbol-profile');
-            
             if (!user) {
                 if (iconContainer) iconContainer.style.display = 'none';
                 if (iconContainerProfile) iconContainerProfile.style.display = 'none';
                 return;
             }
-            
             const gender = user.gender;
             let icon = '👤';
             let cls = 'gender-icon other';
-            
-            if (gender === 0) {
-                icon = '👤';
-                cls = 'gender-icon other';
-            } else if (gender === 1) {
-                icon = '♀';
-                cls = 'gender-icon female';
-            } else if (gender === 2) {
-                icon = '♂';
-                cls = 'gender-icon male';
-            }
-            
+            if (gender === 0) { icon = '👤'; cls = 'gender-icon other'; }
+            else if (gender === 1) { icon = '♀'; cls = 'gender-icon female'; }
+            else if (gender === 2) { icon = '♂'; cls = 'gender-icon male'; }
             if (iconContainer) {
                 iconContainer.style.display = 'flex';
                 iconContainer.className = cls;
@@ -1191,13 +1020,9 @@
         // ============================================================
         async function loadProfile() {
             if (!currentUser) return;
-            
             document.getElementById('profile-mobile').textContent = currentUser.mobile;
-            
-            // Check seeker profile
             if (currentUser.full_name && currentUser.full_name.trim() !== '') {
                 document.getElementById('seeker-badge').textContent = '✅ Active';
-                document.getElementById('seeker-badge').className = 'section-badge';
                 document.getElementById('seeker-badge').style.background = '#dcfce7';
                 document.getElementById('seeker-badge').style.color = '#166534';
                 document.getElementById('seeker-desc').textContent = 'Your seeker profile is active.';
@@ -1213,7 +1038,6 @@
                 document.getElementById('seeker-section').className = 'profile-section profile-active';
             } else {
                 document.getElementById('seeker-badge').textContent = '⚠️ Required to Apply';
-                document.getElementById('seeker-badge').className = 'section-badge';
                 document.getElementById('seeker-badge').style.background = '#fef3c7';
                 document.getElementById('seeker-badge').style.color = '#d97706';
                 document.getElementById('seeker-desc').textContent = 'Complete your seeker profile with preferred zone to get matched with relevant jobs.';
@@ -1221,11 +1045,8 @@
                 document.getElementById('seeker-active-area').style.display = 'none';
                 document.getElementById('seeker-section').className = 'profile-section';
             }
-            
-            // Check recruiter profile
             if (currentUser.company_name && currentUser.company_name.trim() !== '') {
                 document.getElementById('recruiter-badge').textContent = '✅ Active';
-                document.getElementById('recruiter-badge').className = 'section-badge';
                 document.getElementById('recruiter-badge').style.background = '#dcfce7';
                 document.getElementById('recruiter-badge').style.color = '#166534';
                 document.getElementById('recruiter-desc').textContent = 'Your recruiter profile is active.';
@@ -1235,7 +1056,6 @@
                 document.getElementById('recruiter-section').className = 'profile-section profile-active';
             } else {
                 document.getElementById('recruiter-badge').textContent = '⚠️ Required to Post Jobs';
-                document.getElementById('recruiter-badge').className = 'section-badge';
                 document.getElementById('recruiter-badge').style.background = '#fef3c7';
                 document.getElementById('recruiter-badge').style.color = '#d97706';
                 document.getElementById('recruiter-desc').textContent = 'Create your recruiter profile to post jobs and find candidates.';
@@ -1256,45 +1076,15 @@
             const areaId = parseInt(document.getElementById('edit-seeker-area').value);
             const gender = parseInt(document.getElementById('edit-seeker-gender').value);
             const notice = parseInt(document.getElementById('edit-seeker-notice').value) || 0;
-            
-            // Validation
-            if (!name) {
-                showToast('⚠️ Please enter your full name');
-                return;
-            }
-            if (name.length > 50) {
-                showToast('⚠️ Name must be less than 50 characters');
-                return;
-            }
-            if (title.length > 50) {
-                showToast('⚠️ Job title must be less than 50 characters');
-                return;
-            }
-            if (exp && (parseInt(exp) > 99 || parseInt(exp) < 0)) {
-                showToast('⚠️ Experience must be between 0-99 years');
-                return;
-            }
-            if (salary && parseInt(salary) > 9999999) {
-                showToast('⚠️ Salary cannot exceed ₹99,99,999');
-                return;
-            }
-            if (notice > 365 || notice < 0) {
-                showToast('⚠️ Notice period must be between 0-365 days');
-                return;
-            }
-            if (skills.length > 100) {
-                showToast('⚠️ Skills must be less than 100 characters');
-                return;
-            }
-            if (about.length > 200) {
-                showToast('⚠️ About Me must be less than 200 characters');
-                return;
-            }
-            if (!zoneId) {
-                showToast('⚠️ Please select your zone');
-                return;
-            }
-            
+            if (!name) { showToast('⚠️ Please enter your full name'); return; }
+            if (name.length > 50) { showToast('⚠️ Name must be less than 50 characters'); return; }
+            if (title.length > 50) { showToast('⚠️ Job title must be less than 50 characters'); return; }
+            if (exp && (parseInt(exp) > 99 || parseInt(exp) < 0)) { showToast('⚠️ Experience must be between 0-99 years'); return; }
+            if (salary && parseInt(salary) > 9999999) { showToast('⚠️ Salary cannot exceed ₹99,99,999'); return; }
+            if (notice > 365 || notice < 0) { showToast('⚠️ Notice period must be between 0-365 days'); return; }
+            if (skills.length > 100) { showToast('⚠️ Skills must be less than 100 characters'); return; }
+            if (about.length > 200) { showToast('⚠️ About Me must be less than 200 characters'); return; }
+            if (!zoneId) { showToast('⚠️ Please select your zone'); return; }
             const updates = {
                 full_name: name,
                 job_title: title || '',
@@ -1308,15 +1098,9 @@
                 notice_period_days: notice,
                 last_active: new Date().toISOString()
             };
-            
             try {
-                const { error } = await sb
-                    .from('active_users')
-                    .update(updates)
-                    .eq('mobile', currentUser.mobile);
-                
+                const { error } = await sb.from('active_users').update(updates).eq('mobile', currentUser.mobile);
                 if (error) throw error;
-                
                 currentUser = { ...currentUser, ...updates };
                 showToast('✅ Seeker profile saved!');
                 goToProfile();
@@ -1327,27 +1111,11 @@
 
         async function saveRecruiterProfile() {
             const company = document.getElementById('recruiter-company').value.trim();
-            
-            if (!company) {
-                showToast('⚠️ Please enter company name');
-                return;
-            }
-            if (company.length > 100) {
-                showToast('⚠️ Company name must be less than 100 characters');
-                return;
-            }
-            
+            if (!company) { showToast('⚠️ Please enter company name'); return; }
+            if (company.length > 100) { showToast('⚠️ Company name must be less than 100 characters'); return; }
             try {
-                const { error } = await sb
-                    .from('active_users')
-                    .update({ 
-                        company_name: company,
-                        last_active: new Date().toISOString()
-                    })
-                    .eq('mobile', currentUser.mobile);
-                
+                const { error } = await sb.from('active_users').update({ company_name: company, last_active: new Date().toISOString() }).eq('mobile', currentUser.mobile);
                 if (error) throw error;
-                
                 currentUser.company_name = company;
                 showToast('✅ Recruiter profile activated!');
                 loadProfile();
@@ -1373,23 +1141,11 @@
         // ============================================================
         async function fetchFeedData() {
             console.log('🔄 Fetching feed data from Supabase...');
-            
             try {
-                const { data: jobs, error: jobsError } = await sb
-                    .from('active_jobs')
-                    .select('*')
-                    .limit(50);
-                
+                const { data: jobs, error: jobsError } = await sb.from('active_jobs').select('*').limit(50);
                 if (jobsError) throw jobsError;
-                
-                const { data: seekers, error: seekersError } = await sb
-                    .from('active_users')
-                    .select('*')
-                    .not('full_name', 'is', null)
-                    .limit(50);
-                
+                const { data: seekers, error: seekersError } = await sb.from('active_users').select('*').not('full_name', 'is', null).limit(50);
                 if (seekersError) throw seekersError;
-                
                 const formattedJobs = (jobs || []).map(job => ({
                     type: 'JOB',
                     title: job.job_title || 'Untitled Job',
@@ -1402,7 +1158,6 @@
                     desc: job.job_description || '',
                     contact: job.mobile || 'N/A'
                 }));
-                
                 const formattedSeekers = (seekers || []).map(user => ({
                     type: 'SEEKER',
                     title: user.job_title || 'Job Seeker',
@@ -1415,15 +1170,12 @@
                     desc: user.professional_summary || '',
                     contact: user.mobile || 'N/A'
                 }));
-                
                 feedItems = [...formattedJobs, ...formattedSeekers];
                 console.log(`✅ Loaded ${feedItems.length} items from Supabase`);
-                
             } catch (err) {
                 console.error('❌ Error fetching from Supabase:', err.message);
                 feedItems = [];
             }
-            
             renderFeed();
         }
 
@@ -1437,9 +1189,7 @@
             el.classList.remove('hidden');
         }
 
-        function hideMessage() {
-            document.getElementById('msg').classList.add('hidden');
-        }
+        function hideMessage() { document.getElementById('msg').classList.add('hidden'); }
 
         function showToast(msg) {
             const toast = document.createElement('div');
@@ -1500,26 +1250,150 @@
         }
 
         // ============================================================
+        // MOBILE CHECK
+        // ============================================================
+        document.getElementById('mobile').addEventListener('input', function(e) {
+            const mobile = this.value.trim();
+            const statusEl = document.getElementById('mobile-status');
+            statusEl.textContent = '';
+            if (mobile.length === 10) {
+                autoCheckMobile(mobile);
+            } else if (mobile.length > 0 && mobile.length < 10) {
+                setStatus('Enter 10 digits', 'gray');
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').style.display = 'block';
+            } else {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').style.display = 'block';
+            }
+        });
+
+        async function autoCheckMobile(mobile) {
+            if (isChecking) return;
+            isChecking = true;
+            const mobileInput = document.getElementById('mobile');
+            mobileInput.disabled = true;
+            setStatus('⏳ Checking...', 'blue');
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: mobile })
+                });
+                const data = await response.json();
+                console.log('Check response:', data);
+
+                if (data.inActiveUsers) {
+                    actionType = 'login';
+                    showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
+                    setStatus('✓ User found', 'green');
+                } else if (data.inAllUsers) {
+                    actionType = 'reactivate';
+                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
+                    setStatus('📋 Archived', 'yellow');
+                } else {
+                    actionType = 'register';
+                    showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
+                    setStatus('✨ New user', 'blue');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                setStatus('❌ Error checking: ' + err.message, 'red');
+                showMessage('Error: ' + err.message, 'red');
+            } finally {
+                isChecking = false;
+                mobileInput.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // SUBMIT PIN
+        // ============================================================
+        window.submitPin = async function() {
+            console.log('submitPin called');
+            const pin = document.getElementById('pin').value.trim();
+            if (!pin || pin.length !== 4) {
+                showMessage('Enter 4-digit PIN', 'red');
+                document.getElementById('pin').focus();
+                return;
+            }
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+            showMessage('Processing...', 'blue');
+
+            try {
+                let endpoint = '';
+                if (actionType === 'login') endpoint = '/login-user';
+                else if (actionType === 'reactivate') endpoint = '/reactivate-user';
+                else endpoint = '/register-user';
+
+                const response = await fetch(`${EDGE_FUNCTION_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
+                });
+                const data = await response.json();
+                console.log('Auth response:', data);
+
+                if (data.success) {
+                    const { data: userData, error } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', currentMobile)
+                        .single();
+
+                    if (error) {
+                        showMessage('Error fetching user data', 'red');
+                        return;
+                    }
+
+                    if (userData) {
+                        currentUser = userData;
+                        document.getElementById('step2').classList.add('hidden');
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('home-page').classList.remove('hidden-page');
+                        document.getElementById('profile-page').classList.add('hidden-page');
+                        document.getElementById('edit-seeker-page').classList.add('hidden-page');
+                        updateGenderIcon(userData);
+                        hideMessage();
+                        setTimeout(autoDetectLocation, 500);
+                        await fetchFeedData();
+                        showToast('✅ Welcome ' + currentMobile + '!');
+                    }
+                } else {
+                    showMessage('❌ ' + data.error, 'red');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showMessage('Error: ' + err.message, 'red');
+            } finally {
+                submitBtn.disabled = false;
+                const btnText = actionType === 'login' ? '🔐 Login' : actionType === 'reactivate' ? '🔄 Reactivate' : '📝 Register';
+                submitBtn.textContent = btnText;
+            }
+        };
+
+        // ============================================================
         // SEARCHABLE ZONE
         // ============================================================
         function searchZone() {
             const input = document.getElementById('zone-search');
             const suggestions = document.getElementById('zone-suggestions');
             const query = input.value.toLowerCase().trim();
-
             if (!query) {
                 suggestions.classList.remove('show');
                 return;
             }
-
             const matches = ZONES.filter(zone => zone.zone_name.toLowerCase().includes(query));
-            
             if (matches.length === 0) {
                 suggestions.innerHTML = '<div class="no-result">No zones found</div>';
                 suggestions.classList.add('show');
                 return;
             }
-
             suggestions.innerHTML = matches.map(zone => `
                 <div class="item" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
                     📍 ${zone.zone_name}
@@ -1534,14 +1408,12 @@
             selectedZoneId = zoneId;
             selectedAreaId = null;
             document.getElementById('zone-status').textContent = zoneName;
-            
             const areaSelect = document.getElementById('filter-area');
             const areas = getAreasByZone(zoneId);
             areaSelect.innerHTML = '<option value="ALL">All areas</option>';
             areas.forEach(area => {
                 areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
             });
-            
             renderFeed();
         }
 
@@ -1602,45 +1474,34 @@
         }
 
         function renderFeed() {
-            if (currentPage !== 'home') {
-                return;
-            }
-            
+            if (currentPage !== 'home') return;
             const container = document.getElementById('feed-container');
             const count = document.getElementById('results-count');
-            
             if (!feedItems || feedItems.length === 0) {
                 container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
                 count.textContent = 'Showing 0 Records';
                 return;
             }
-            
             let filtered = [...feedItems];
-
             if (currentFilter === 'JOB') {
                 filtered = filtered.filter(item => item.type === 'JOB');
             } else if (currentFilter === 'SEEKER') {
                 filtered = filtered.filter(item => item.type === 'SEEKER');
             }
-
             if (selectedZoneId) {
                 filtered = filtered.filter(item => item.zone_id === selectedZoneId);
             }
-
             if (selectedAreaId) {
                 filtered = filtered.filter(item => item.area_id === selectedAreaId);
             }
-
             const titleFilter = document.getElementById('filter-title').value.toLowerCase();
             if (titleFilter) {
                 filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
             }
-
             const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
             if (skillsFilter) {
                 filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
             }
-
             const expFilter = document.getElementById('filter-exp').value;
             if (expFilter === '0-2') {
                 filtered = filtered.filter(item => item.exp <= 2);
@@ -1649,163 +1510,27 @@
             } else if (expFilter === '5+') {
                 filtered = filtered.filter(item => item.exp > 5);
             }
-
             count.textContent = `Showing ${filtered.length} Records`;
-
             if (filtered.length === 0) {
                 container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
                 return;
             }
-
             container.innerHTML = filtered.map(item => {
                 const zoneName = getZoneName(item.zone_id);
                 const areaName = getAreaName(item.area_id);
                 const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
-                
                 return `
                 <div class="feed-card" onclick="openDetail('${item.type}', '${item.title}', ${item.exp}, '${item.skills}', '${item.salary}', '${item.company}', '${item.desc}', '${locationDisplay}', '${item.contact}')">
                     <div class="title">${item.title}</div>
                     <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
                     <span class="badge ${item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job'}">${item.type === 'SEEKER' ? 'SEEKER' : 'JOB'}</span>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function openDetail(type, title, exp, skills, salary, company, desc, location, contact) {
             alert(`📋 ${title}\n🏢 ${company}\n📍 ${location}\n💰 ${salary}\n📝 ${desc}`);
         }
-
-        // ============================================================
-        // AUTO-DETECT MOBILE
-        // ============================================================
-        document.getElementById('mobile').addEventListener('input', function(e) {
-            const mobile = this.value.trim();
-            const statusEl = document.getElementById('mobile-status');
-            statusEl.textContent = '';
-            if (mobile.length === 10) {
-                autoCheckMobile(mobile);
-            } else if (mobile.length > 0 && mobile.length < 10) {
-                setStatus('Enter 10 digits', 'gray');
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step1').style.display = 'block';
-            } else {
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step1').style.display = 'block';
-            }
-        });
-
-        async function autoCheckMobile(mobile) {
-            if (isChecking) return;
-            isChecking = true;
-            const mobileInput = document.getElementById('mobile');
-            mobileInput.disabled = true;
-            setStatus('⏳ Checking...', 'blue');
-
-            try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: mobile })
-                });
-                const data = await response.json();
-
-                if (data.inActiveUsers) {
-                    actionType = 'login';
-                    showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
-                    setStatus('✓ User found', 'green');
-                } else if (data.inArchive) {
-                    actionType = 'reactivate';
-                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
-                    setStatus('📋 Archived', 'yellow');
-                } else {
-                    actionType = 'register';
-                    showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
-                    setStatus('✨ New user', 'blue');
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                setStatus('❌ Error checking', 'red');
-                showMessage('Error: ' + err.message, 'red');
-            } finally {
-                isChecking = false;
-                mobileInput.disabled = false;
-            }
-        }
-
-        // ============================================================
-        // SUBMIT PIN
-        // ============================================================
-        window.submitPin = async function() {
-            console.log('submitPin called');
-            const pin = document.getElementById('pin').value.trim();
-
-            if (!pin || pin.length !== 4) {
-                showMessage('Enter 4-digit PIN', 'red');
-                document.getElementById('pin').focus();
-                return;
-            }
-
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Processing...';
-            showMessage('Processing...', 'blue');
-
-            try {
-                let endpoint = '';
-                if (actionType === 'login') endpoint = '/login-user';
-                else if (actionType === 'reactivate') endpoint = '/reactivate-user';
-                else endpoint = '/register-user';
-
-                const response = await fetch(`${EDGE_FUNCTION_URL}${endpoint}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    const { data: userData, error } = await sb
-                        .from('active_users')
-                        .select('*')
-                        .eq('mobile', currentMobile)
-                        .single();
-
-                    if (error) {
-                        showMessage('Error fetching user data', 'red');
-                        return;
-                    }
-
-                    if (userData) {
-                        currentUser = userData;
-                        document.getElementById('step2').classList.add('hidden');
-                        document.getElementById('login-screen').style.display = 'none';
-                        document.getElementById('home-page').classList.remove('hidden-page');
-                        document.getElementById('profile-page').classList.add('hidden-page');
-                        document.getElementById('edit-seeker-page').classList.add('hidden-page');
-                        
-                        updateGenderIcon(userData);
-                        
-                        hideMessage();
-                        
-                        setTimeout(autoDetectLocation, 500);
-                        await fetchFeedData();
-                        showToast('✅ Welcome ' + currentMobile + '!');
-                    }
-                } else {
-                    showMessage('❌ ' + data.error, 'red');
-                    document.getElementById('pin').value = '';
-                    document.getElementById('pin').focus();
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                showMessage('Error: ' + err.message, 'red');
-            } finally {
-                submitBtn.disabled = false;
-                const btnText = actionType === 'login' ? '🔐 Login' : actionType === 'reactivate' ? '🔄 Reactivate' : '📝 Register';
-                submitBtn.textContent = btnText;
-            }
-        };
 
         // ============================================================
         // LOGOUT
@@ -1817,22 +1542,15 @@
             }
         };
 
-        // ============================================================
-        // ENTER KEY SUPPORT
-        // ============================================================
         document.getElementById('pin').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 window.submitPin();
             }
         });
 
-        // ============================================================
-        // APP INIT
-        // ============================================================
         console.log('✅ JobAd Login App Ready');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
-        populateEditZones();
     </script>
 </body>
 </html>
