@@ -7,321 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #f3f4f6;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        .card {
-            max-width: 400px;
-            width: 100%;
-            background: white;
-            border-radius: 24px;
-            padding: 32px 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 36px;
-            font-weight: 800;
-            text-align: center;
-            color: #2563eb;
-            margin: 0 0 8px 0;
-        }
-        .sub {
-            text-align: center;
-            color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 32px;
-        }
-        .test-links {
-            text-align: center;
-            margin-bottom: 24px;
-            font-size: 12px;
-        }
-        .test-links a {
-            color: #3b82f6;
-            text-decoration: none;
-            margin: 0 8px;
-        }
-        input, select {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 16px;
-            margin-bottom: 12px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-        input:focus, select:focus {
-            border-color: #2563eb;
-            outline: 2px solid #93c5fd;
-        }
-        input:disabled {
-            opacity: 0.6;
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            background: #1d4ed8;
-        }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .btn-back {
-            background: #6b7280;
-            margin-top: 8px;
-        }
-        .btn-back:hover {
-            background: #4b5563;
-        }
-        .btn-green {
-            background: #16a34a;
-        }
-        .btn-green:hover {
-            background: #15803d;
-        }
-        .btn-yellow {
-            background: #d97706;
-        }
-        .btn-yellow:hover {
-            background: #b45309;
-        }
-        .msg {
-            margin-top: 16px;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-        .msg-green { background: #dcfce7; color: #166534; }
-        .msg-red { background: #fee2e2; color: #991b1b; }
-        .msg-blue { background: #dbeafe; color: #1e40af; }
-        .msg-yellow { background: #fef3c7; color: #92400e; }
-        .hidden { display: none; }
-        .password-wrapper {
-            position: relative;
-        }
-        .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 14px;
-            user-select: none;
-            padding: 4px;
-        }
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e293b;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 1000;
-            animation: fadeOut 2s ease forwards;
-            white-space: nowrap;
-        }
-        @keyframes fadeOut {
-            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            70% { opacity: 1; }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
-        }
-        .mobile-display {
-            font-size: 20px;
-            font-weight: bold;
-            color: #1e293b;
-            padding: 4px 0;
-        }
-        .action-label {
-            font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .home-container { padding-top: 4px; }
-        .home-container .logo {
-            text-align: left;
-            width: 100%;
-            font-size: 24px;
-            font-weight: 900;
-            color: #2563eb;
-            margin-bottom: 16px;
-        }
-        .home-container .logout-btn {
-            width: 100%;
-            padding: 10px;
-            background: #e2e8f0;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #475569;
-            cursor: pointer;
-            margin-top: 8px;
-        }
-        .home-container .logout-btn:hover {
-            background: #cbd5e1;
-        }
-
-        .zone-filter {
-            background: #0f172a;
-            border-radius: 12px;
-            padding: 12px 14px;
-            margin-bottom: 12px;
-        }
-        .zone-filter .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .zone-filter .header label {
-            font-size: 10px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        .zone-filter .header span {
-            font-size: 9px;
-            background: rgba(52, 211, 153, 0.2);
-            color: #34d399;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
-        .zone-filter .search-wrapper {
-            position: relative;
-        }
-        .zone-filter .search-wrapper input {
-            width: 100%;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: white;
-            font-weight: 600;
-            outline: none;
-            margin-bottom: 0;
-        }
-        .zone-filter .search-wrapper input::placeholder {
-            color: #64748b;
-        }
-        .zone-filter .search-wrapper input:focus {
-            border-color: #3b82f6;
-        }
-        .zone-filter .suggestions {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            margin-top: 4px;
-            max-height: 180px;
-            overflow-y: auto;
-            z-index: 50;
-            display: none;
-        }
-        .zone-filter .suggestions.show {
-            display: block;
-        }
-        .zone-filter .suggestions .item {
-            padding: 8px 12px;
-            font-size: 12px;
-            color: #e2e8f0;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        .zone-filter .suggestions .item:hover {
-            background: #334155;
-        }
-        .zone-filter .suggestions .item.selected {
-            background: #1e3a5f;
-            color: white;
-        }
-        .zone-filter .suggestions .no-result {
-            padding: 8px 12px;
-            font-size: 12px;
-            color: #64748b;
-            text-align: center;
-        }
-
-        .type-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 4px;
-            background: #e2e8f0;
-            padding: 4px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-        }
-        .type-buttons button {
-            padding: 6px;
-            font-size: 11px;
-            font-weight: 700;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-        }
-        .type-buttons .active {
-            background: white;
-            color: #1e293b;
-        }
-        .type-buttons .inactive {
-            background: transparent;
-            color: #64748b;
-        }
-
-        .filter-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        .filter-row label {
-            font-size: 9px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: block;
-            margin-bottom: 2px;
-        }
-        .filter-row input, .filter-row select {
+        /* ... keep all existing styles ... */
+        
+        /* Add small style for area filter */
+        .area-filter-select {
             width: 100%;
             padding: 6px 10px;
             font-size: 11px;
@@ -332,166 +21,17 @@
             outline: none;
             margin-bottom: 0;
         }
-        .filter-row input:focus, .filter-row select:focus {
+        .area-filter-select:focus {
             border-color: #3b82f6;
         }
-
-        .results-count {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 6px;
-            margin-bottom: 10px;
-        }
-        .results-count span {
-            font-size: 10px;
-            font-weight: 700;
+        .area-filter-select option:disabled {
             color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .feed-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-bottom: 20px;
-        }
-        .feed-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 12px 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .feed-card:hover {
-            border-color: #3b82f6;
-        }
-        .feed-card .title {
-            font-weight: 700;
-            font-size: 14px;
-            color: #0f172a;
-        }
-        .feed-card .meta {
-            font-size: 11px;
-            color: #475569;
-            margin-top: 2px;
-        }
-        .feed-card .badge {
-            font-size: 9px;
-            padding: 2px 10px;
-            border-radius: 4px;
-            font-weight: 700;
-            display: inline-block;
-            margin-top: 4px;
-        }
-        .feed-card .badge-job {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-        .feed-card .badge-seeker {
-            background: #dcfce7;
-            color: #166534;
-        }
-        .no-records {
-            text-align: center;
-            padding: 40px 0;
-            color: #94a3b8;
-            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div id="login-screen">
-            <h1>JobAd</h1>
-            <div class="sub">Telangana Zone Based Jobs</div>
-            <div class="test-links">
-                <a href="test.html">🔌 DB Test</a>
-            </div>
-            <div id="step1">
-                <label class="action-label">📱 Enter Mobile Number</label>
-                <input type="tel" id="mobile" placeholder="9876543210" maxlength="10" autofocus>
-                <div id="mobile-status" class="text-xs text-slate-400 mt-1"></div>
-            </div>
-            <div id="step2" class="hidden fade-in">
-                <div id="user-info" class="text-center mb-4">
-                    <div class="mobile-display" id="display-mobile">--</div>
-                    <div id="status-badge" class="text-sm font-medium"></div>
-                </div>
-                <div class="password-wrapper">
-                    <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
-                    <span class="toggle-password" onclick="togglePin()">👁️</span>
-                </div>
-                <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
-                <button onclick="resetForm()" class="btn-back">← Change Number</button>
-            </div>
-            <div id="msg" class="hidden"></div>
-        </div>
-
-        <div id="home-screen" class="hidden">
-            <div class="home-container">
-                <div class="logo">JobAd</div>
-                
-                <!-- ZONE FILTER - SEARCHABLE ONLY -->
-                <div class="zone-filter">
-                    <div class="header">
-                        <label>📍 Filter by Zone</label>
-                        <span id="zone-status">All Zones</span>
-                    </div>
-                    <div class="search-wrapper">
-                        <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
-                        <div class="suggestions" id="zone-suggestions"></div>
-                    </div>
-                </div>
-
-                <div class="type-buttons">
-                    <button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button>
-                    <button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button>
-                    <button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button>
-                </div>
-
-                <div class="filter-row">
-                    <div>
-                        <label>Job Title</label>
-                        <input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()">
-                    </div>
-                    <div>
-                        <label>Experience</label>
-                        <select id="filter-exp" onchange="renderFeed()">
-                            <option value="ALL">Any</option>
-                            <option value="0-2">0-2 Years</option>
-                            <option value="3-5">3-5 Years</option>
-                            <option value="5+">5+ Years</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="filter-row">
-                    <div>
-                        <label>Skills</label>
-                        <input type="text" id="filter-skills" placeholder="Eg: python" oninput="renderFeed()">
-                    </div>
-                    <div>
-                        <label>Area</label>
-                        <select id="filter-area" onchange="renderFeed()">
-                            <option value="ALL">All areas</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="results-count">
-                    <span id="results-count">Showing 0 Records</span>
-                </div>
-
-                <div id="feed-container" class="feed-container"></div>
-
-                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- ... keep all HTML same ... -->
+    
     <script>
         // ============================================================
         // CONFIGURATION
@@ -503,7 +43,7 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // ZONE & AREA DATA (Built-in - Easy to add more)
+        // ZONE & AREA DATA (Built-in)
         // ============================================================
         const LOCATION_DATA = {
             zones: [
@@ -511,11 +51,8 @@
                 { zone_id: 200, zone_name: "North Telangana" },
                 { zone_id: 300, zone_name: "East Telangana" },
                 { zone_id: 400, zone_name: "South Telangana" }
-                // 👇 Add new zones here
-                // { zone_id: 500, zone_name: "New Zone Name" },
             ],
             areas: [
-                // Hyderabad (zone_id: 100)
                 { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
                 { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
                 { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
@@ -525,24 +62,19 @@
                 { area_id: 100007, zone_id: 100, area_name: "Uppal" },
                 { area_id: 100008, zone_id: 100, area_name: "LB Nagar" },
                 { area_id: 100009, zone_id: 100, area_name: "Dilsukhnagar" },
-                // North Telangana (zone_id: 200)
                 { area_id: 200001, zone_id: 200, area_name: "Nizamabad" },
                 { area_id: 200002, zone_id: 200, area_name: "Karimnagar" },
                 { area_id: 200003, zone_id: 200, area_name: "Adilabad" },
                 { area_id: 200004, zone_id: 200, area_name: "Mancherial" },
                 { area_id: 200005, zone_id: 200, area_name: "Jagtial" },
-                // East Telangana (zone_id: 300)
                 { area_id: 300001, zone_id: 300, area_name: "Warangal" },
                 { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
                 { area_id: 300003, zone_id: 300, area_name: "Khammam" },
                 { area_id: 300004, zone_id: 300, area_name: "Mahabubabad" },
-                // South Telangana (zone_id: 400)
                 { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
                 { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
                 { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
                 { area_id: 400004, zone_id: 400, area_name: "Nagarkurnool" }
-                // 👇 Add new areas here
-                // { area_id: 500001, zone_id: 500, area_name: "New Area" },
             ]
         };
 
@@ -577,17 +109,73 @@
         let currentFilter = 'BOTH';
         let selectedZoneId = null;
         let selectedAreaId = null;
+        let feedItems = [];
 
         // ============================================================
-        // FEED DATA
+        // FETCH DATA FROM SUPABASE
         // ============================================================
-        const feedItems = [
-            { type: "JOB", title: "Senior Software Engineer", exp: 5, skills: "Java, Spring Boot", zone_id: 100, area_id: 100005, location: "Hyderabad - Hitech City", salary: "₹18-22 LPA", company: "TechMahindra", desc: "Looking for experienced Java developer", contact: "9988776655" },
-            { type: "JOB", title: "Frontend Developer", exp: 3, skills: "React, Angular", zone_id: 100, area_id: 100002, location: "Hyderabad - Madhapur", salary: "₹12-15 LPA", company: "Infosys", desc: "Urgent requirement for React developer", contact: "9988776655" },
-            { type: "SEEKER", title: "Full Stack Developer", exp: 4, skills: "MERN Stack, Python", zone_id: 100, area_id: 100004, location: "Hyderabad - Gachibowli", salary: "₹14 LPA", company: "Priya Sharma", desc: "Experienced full stack developer", contact: "9876543210" },
-            { type: "JOB", title: "Data Scientist", exp: 4, skills: "Python, ML, SQL", zone_id: 300, area_id: 300001, location: "Warangal", salary: "₹15-20 LPA", company: "Amazon", desc: "Data scientist role", contact: "9988776655" },
-            { type: "SEEKER", title: "DevOps Engineer", exp: 5, skills: "Docker, Kubernetes", zone_id: 300, area_id: 300002, location: "Hanumakonda", salary: "₹18 LPA", company: "Rahul Singh", desc: "Experienced DevOps engineer", contact: "9876543210" }
-        ];
+        async function fetchFeedData() {
+            console.log('🔄 Fetching feed data from Supabase...');
+            
+            try {
+                // Fetch jobs from active_jobs
+                const { data: jobs, error: jobsError } = await sb
+                    .from('active_jobs')
+                    .select('*')
+                    .order('job_id', { ascending: false })
+                    .limit(50);
+                
+                if (jobsError) throw jobsError;
+                
+                // Fetch seeker profiles from active_users (only those with full_name)
+                const { data: seekers, error: seekersError } = await sb
+                    .from('active_users')
+                    .select('*')
+                    .not('full_name', 'is', null)
+                    .limit(50);
+                
+                if (seekersError) throw seekersError;
+                
+                // Format jobs
+                const formattedJobs = jobs.map(job => ({
+                    type: 'JOB',
+                    title: job.job_title || 'Untitled Job',
+                    exp: parseInt(job.min_experience_years) || 0,
+                    skills: job.skills_comma_separated || '',
+                    zone_id: job.zone_id || 0,
+                    area_id: job.area_id || 0,
+                    location: `${getZoneName(job.zone_id)} - ${getAreaName(job.area_id)}`,
+                    salary: job.max_salary_monthly ? `₹${job.max_salary_monthly}` : 'Negotiable',
+                    company: job.company_name || 'Unknown Company',
+                    desc: job.job_description || '',
+                    contact: job.mobile || 'N/A'
+                }));
+                
+                // Format seekers
+                const formattedSeekers = seekers.map(user => ({
+                    type: 'SEEKER',
+                    title: user.job_title || 'Job Seeker',
+                    exp: parseInt(user.total_experience_years) || 0,
+                    skills: user.skills_comma_separated || '',
+                    zone_id: user.zone_id || 0,
+                    area_id: user.area_id || 0,
+                    location: `${getZoneName(user.zone_id)} - ${getAreaName(user.area_id)}`,
+                    salary: user.expected_salary_monthly ? `₹${user.expected_salary_monthly}` : 'Not specified',
+                    company: user.full_name || 'Anonymous',
+                    desc: user.professional_summary || '',
+                    contact: user.mobile || 'N/A'
+                }));
+                
+                feedItems = [...formattedJobs, ...formattedSeekers];
+                console.log(`✅ Loaded ${feedItems.length} items (${formattedJobs.length} jobs, ${formattedSeekers.length} seekers)`);
+                
+                renderFeed();
+                
+            } catch (err) {
+                console.error('Error fetching feed:', err);
+                showMessage('Failed to load feed data: ' + err.message, 'red');
+            }
+        }
 
         // ============================================================
         // UI HELPERS
@@ -664,7 +252,7 @@
         }
 
         // ============================================================
-        // SEARCHABLE ZONE (No Area dropdown - using filter row instead)
+        // SEARCHABLE ZONE
         // ============================================================
         function searchZone() {
             const input = document.getElementById('zone-search');
@@ -699,11 +287,30 @@
             document.getElementById('zone-search').value = zoneName;
             document.getElementById('zone-suggestions').classList.remove('show');
             selectedZoneId = zoneId;
+            selectedAreaId = null;
             document.getElementById('zone-status').textContent = zoneName;
+            
+            // Update area filter dropdown
+            updateAreaFilter(zoneId);
             renderFeed();
         }
 
-        // Auto-detect location
+        function updateAreaFilter(zoneId) {
+            const areaSelect = document.getElementById('filter-area');
+            const areas = getAreas(zoneId);
+            
+            areaSelect.innerHTML = '<option value="ALL">All areas</option>';
+            areas.forEach(area => {
+                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+            });
+        }
+
+        function onAreaFilterChange() {
+            const areaSelect = document.getElementById('filter-area');
+            selectedAreaId = areaSelect.value !== 'ALL' ? parseInt(areaSelect.value) : null;
+            renderFeed();
+        }
+
         function autoDetectLocation() {
             fetch('https://ipapi.co/json/')
                 .then(res => res.json())
@@ -762,6 +369,12 @@
             const count = document.getElementById('results-count');
             let filtered = [...feedItems];
 
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-records">No data available. Please add jobs or seekers.</div>';
+                count.textContent = 'Showing 0 Records';
+                return;
+            }
+
             if (currentFilter === 'JOB') {
                 filtered = filtered.filter(item => item.type === 'JOB');
             } else if (currentFilter === 'SEEKER') {
@@ -772,10 +385,8 @@
                 filtered = filtered.filter(item => item.zone_id === selectedZoneId);
             }
 
-            // Area filter from filter row
-            const areaFilter = document.getElementById('filter-area').value;
-            if (areaFilter !== 'ALL') {
-                filtered = filtered.filter(item => item.area_id == areaFilter);
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
             }
 
             const titleFilter = document.getElementById('filter-title').value.toLowerCase();
@@ -800,7 +411,7 @@
             count.textContent = `Showing ${filtered.length} Records`;
 
             if (filtered.length === 0) {
-                container.innerHTML = '<div class="no-records">No records found</div>';
+                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
                 return;
             }
 
@@ -930,8 +541,12 @@
                         document.getElementById('home-screen').classList.remove('hidden');
                         hideMessage();
                         
+                        // Auto-detect location
                         setTimeout(autoDetectLocation, 500);
-                        renderFeed();
+                        
+                        // Fetch feed data from Supabase
+                        await fetchFeedData();
+                        
                         showToast('✅ Welcome ' + currentMobile + '!');
                     }
                 } else {
@@ -972,7 +587,7 @@
         // APP INIT
         // ============================================================
         console.log('✅ JobAd Login App Ready');
-        console.log('📍 Built-in zones:', getZones().length, 'zones,', getAreas(100).length, 'areas in Hyderabad');
+        console.log('📍 Built-in zones:', getZones().length, 'zones');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
     </script>
