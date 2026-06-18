@@ -6,6 +6,7 @@
     <title>JobAd - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="locations.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -48,7 +49,7 @@
             text-decoration: none;
             margin: 0 8px;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 14px 16px;
             border: 1px solid #e5e7eb;
@@ -58,7 +59,7 @@
             box-sizing: border-box;
             transition: all 0.3s ease;
         }
-        input:focus {
+        input:focus, select:focus {
             border-color: #2563eb;
             outline: 2px solid #93c5fd;
         }
@@ -149,32 +150,6 @@
             70% { opacity: 1; }
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
         }
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #e5e7eb;
-            border-top: 2px solid #2563eb;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .dot-green { background: #16a34a; }
-        .dot-blue { background: #3b82f6; }
-        .dot-yellow { background: #d97706; }
-        .dot-red { background: #dc2626; }
         .mobile-display {
             font-size: 20px;
             font-weight: bold;
@@ -193,20 +168,9 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .pin-input-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .pin-input-group input {
-            flex: 1;
-            margin-bottom: 0;
-        }
 
-        /* HOME SCREEN - FULL FEED */
-        .home-container {
-            padding-top: 4px;
-        }
+        /* HOME SCREEN */
+        .home-container { padding-top: 4px; }
         .home-container .logo {
             text-align: left;
             width: 100%;
@@ -230,6 +194,8 @@
         .home-container .logout-btn:hover {
             background: #cbd5e1;
         }
+
+        /* ZONE FILTER - SEARCHABLE */
         .zone-filter {
             background: #0f172a;
             border-radius: 12px;
@@ -257,7 +223,10 @@
             border-radius: 4px;
             font-weight: 700;
         }
-        .zone-filter select {
+        .zone-filter .search-wrapper {
+            position: relative;
+        }
+        .zone-filter .search-wrapper input {
             width: 100%;
             background: #1e293b;
             border: 1px solid #334155;
@@ -267,11 +236,56 @@
             color: white;
             font-weight: 600;
             outline: none;
+            margin-bottom: 0;
         }
-        .zone-filter select option {
+        .zone-filter .search-wrapper input::placeholder {
+            color: #64748b;
+        }
+        .zone-filter .search-wrapper input:focus {
+            border-color: #3b82f6;
+        }
+        .zone-filter .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
             background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            margin-top: 4px;
+            max-height: 180px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .zone-filter .suggestions.show {
+            display: block;
+        }
+        .zone-filter .suggestions .item {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .zone-filter .suggestions .item:hover {
+            background: #334155;
+        }
+        .zone-filter .suggestions .item.selected {
+            background: #1e3a5f;
             color: white;
         }
+        .zone-filter .suggestions .item .highlight {
+            color: #60a5fa;
+        }
+        .zone-filter .suggestions .no-result {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /* TYPE BUTTONS */
         .type-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -298,6 +312,8 @@
             background: transparent;
             color: #64748b;
         }
+
+        /* FILTER ROWS */
         .filter-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -327,6 +343,8 @@
         .filter-row input:focus, .filter-row select:focus {
             border-color: #3b82f6;
         }
+
+        /* RESULTS */
         .results-count {
             display: flex;
             justify-content: space-between;
@@ -342,6 +360,8 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
+
+        /* FEED */
         .feed-container {
             display: flex;
             flex-direction: column;
@@ -390,6 +410,40 @@
             color: #94a3b8;
             font-size: 14px;
         }
+
+        /* AREA FILTER - SUBTLE */
+        .area-filter {
+            margin-top: 8px;
+            display: none;
+        }
+        .area-filter.show {
+            display: block;
+        }
+        .area-filter select {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 0;
+        }
+        .area-filter select option {
+            background: #1e293b;
+            color: white;
+        }
+        .area-filter .label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 2px;
+        }
     </style>
 </head>
 <body>
@@ -429,26 +483,31 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- HOME SCREEN - FULL FEED -->
+        <!-- HOME SCREEN - SEARCHABLE ZONE + AREA       -->
         <!-- ========================================== -->
         <div id="home-screen" class="hidden">
             <div class="home-container">
                 <!-- JobAd Logo - Top Left -->
                 <div class="logo">JobAd</div>
                 
-                <!-- FILTER BY ZONE -->
+                <!-- FILTER BY ZONE - SEARCHABLE -->
                 <div class="zone-filter">
                     <div class="header">
                         <label>📍 Filter by Zone</label>
                         <span id="zone-status">All Zones</span>
                     </div>
-                    <select id="zone-select" onchange="onZoneChange()">
-                        <option value="">All Zones</option>
-                        <option value="Hyderabad">Hyderabad</option>
-                        <option value="North Telangana">North Telangana</option>
-                        <option value="East Telangana">East Telangana</option>
-                        <option value="South Telangana">South Telangana</option>
-                    </select>
+                    <div class="search-wrapper">
+                        <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
+                        <div class="suggestions" id="zone-suggestions"></div>
+                    </div>
+                    
+                    <!-- Area Filter - Shows when zone is selected -->
+                    <div class="area-filter" id="area-filter">
+                        <div class="label">📍 Filter by Area</div>
+                        <select id="area-select" onchange="onAreaChange()">
+                            <option value="">All Areas</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- BOTH | JOBS ONLY | PROFILES ONLY -->
@@ -517,19 +576,22 @@
         // STATE
         // ============================================================
         let currentMobile = '';
-        let actionType = ''; // 'login', 'register', 'reactivate'
+        let actionType = '';
         let currentUser = null;
         let isChecking = false;
         let currentFilter = 'BOTH';
-        let selectedZone = '';
+        let selectedZoneId = null;
+        let selectedAreaId = null;
 
         // ============================================================
-        // FEED DATA
+        // FEED DATA (with zone_id and area_id)
         // ============================================================
         const feedItems = [
-            { type: "JOB", title: "Senior Software Engineer", exp: 5, skills: "Java, Spring Boot, Microservices", location: "Hyderabad - Hitech City", salary: "₹18-22 LPA", company: "TechMahindra", desc: "Looking for experienced Java developer for our Hitech City office. Hybrid work mode available.", contact: "9988776655" },
-            { type: "JOB", title: "Frontend Developer", exp: 3, skills: "React, Angular, Vue.js", location: "Hyderabad - Madhapur", salary: "₹12-15 LPA", company: "Infosys", desc: "Urgent requirement for React developer with 3+ years experience. Immediate joiners preferred.", contact: "9988776655" },
-            { type: "SEEKER", title: "Full Stack Developer", exp: 4, skills: "MERN Stack, Python, AWS", location: "Hyderabad - Gachibowli", salary: "₹14 LPA", company: "Priya Sharma", desc: "Experienced full stack developer looking for challenging role in product based company.", contact: "9876543210" }
+            { type: "JOB", title: "Senior Software Engineer", exp: 5, skills: "Java, Spring Boot", zone_id: 100, area_id: 100005, location: "Hyderabad - Hitech City", salary: "₹18-22 LPA", company: "TechMahindra", desc: "Looking for experienced Java developer", contact: "9988776655" },
+            { type: "JOB", title: "Frontend Developer", exp: 3, skills: "React, Angular", zone_id: 100, area_id: 100002, location: "Hyderabad - Madhapur", salary: "₹12-15 LPA", company: "Infosys", desc: "Urgent requirement for React developer", contact: "9988776655" },
+            { type: "SEEKER", title: "Full Stack Developer", exp: 4, skills: "MERN Stack, Python", zone_id: 100, area_id: 100004, location: "Hyderabad - Gachibowli", salary: "₹14 LPA", company: "Priya Sharma", desc: "Experienced full stack developer", contact: "9876543210" },
+            { type: "JOB", title: "Data Scientist", exp: 4, skills: "Python, ML, SQL", zone_id: 300, area_id: 300001, location: "Warangal", salary: "₹15-20 LPA", company: "Amazon", desc: "Data scientist role", contact: "9988776655" },
+            { type: "SEEKER", title: "DevOps Engineer", exp: 5, skills: "Docker, Kubernetes", zone_id: 300, area_id: 300002, location: "Hanumakonda", salary: "₹18 LPA", company: "Rahul Singh", desc: "Experienced DevOps engineer", contact: "9876543210" }
         ];
 
         // ============================================================
@@ -599,7 +661,6 @@
             document.getElementById('submitBtn').textContent = btnText;
             document.getElementById('submitBtn').className = 'btn-' + btnClass;
             document.getElementById('submitBtn').disabled = false;
-            
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.remove('hidden');
             document.getElementById('pin').value = '';
@@ -608,14 +669,87 @@
         }
 
         // ============================================================
-        // ZONE FILTER FUNCTION
+        // SEARCHABLE ZONE + AREA (Using locations.js)
         // ============================================================
-        function onZoneChange() {
-            const select = document.getElementById('zone-select');
-            selectedZone = select.value;
-            document.getElementById('zone-status').textContent = selectedZone || 'All Zones';
+        function searchZone() {
+            const input = document.getElementById('zone-search');
+            const suggestions = document.getElementById('zone-suggestions');
+            const query = input.value.toLowerCase().trim();
+
+            if (!query) {
+                suggestions.classList.remove('show');
+                document.getElementById('area-filter').classList.remove('show');
+                return;
+            }
+
+            // Search in zones from locations.js
+            const zones = window.LOCATION ? window.LOCATION.getZones() : [];
+            const matches = zones.filter(zone => 
+                zone.zone_name.toLowerCase().includes(query)
+            );
+            
+            if (matches.length === 0) {
+                suggestions.innerHTML = '<div class="no-result">No zones found</div>';
+                suggestions.classList.add('show');
+                return;
+            }
+
+            suggestions.innerHTML = matches.map(zone => `
+                <div class="item" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
+                    📍 ${zone.zone_name}
+                </div>
+            `).join('');
+            suggestions.classList.add('show');
+        }
+
+        function selectZone(zoneId, zoneName) {
+            document.getElementById('zone-search').value = zoneName;
+            document.getElementById('zone-suggestions').classList.remove('show');
+            selectedZoneId = zoneId;
+            selectedAreaId = null;
+            document.getElementById('zone-status').textContent = zoneName;
+
+            // Populate area dropdown
+            populateAreas(zoneId);
+            
+            // Show area filter
+            document.getElementById('area-filter').classList.add('show');
             renderFeed();
         }
+
+        function populateAreas(zoneId) {
+            const areaSelect = document.getElementById('area-select');
+            const areas = window.LOCATION ? window.LOCATION.getAreas(zoneId) : [];
+            
+            areaSelect.innerHTML = '<option value="">All Areas</option>';
+            areas.forEach(area => {
+                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+            });
+        }
+
+        function onAreaChange() {
+            const areaSelect = document.getElementById('area-select');
+            selectedAreaId = areaSelect.value ? parseInt(areaSelect.value) : null;
+            renderFeed();
+        }
+
+        // Close suggestions on outside click
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.zone-filter .search-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('zone-suggestions').classList.remove('show');
+            }
+        });
+
+        // Enter key support
+        document.getElementById('zone-search').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const firstItem = document.querySelector('#zone-suggestions .item');
+                if (firstItem) {
+                    firstItem.click();
+                }
+            }
+        });
 
         // ============================================================
         // FEED FUNCTIONS
@@ -625,45 +759,43 @@
             const both = document.getElementById('filter-both');
             const job = document.getElementById('filter-job');
             const seeker = document.getElementById('filter-seeker');
-            
             both.className = type === 'BOTH' ? 'active' : 'inactive';
             job.className = type === 'JOB' ? 'active' : 'inactive';
             seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
-            
             renderFeed();
         }
 
         function renderFeed() {
             const container = document.getElementById('feed-container');
             const count = document.getElementById('results-count');
-            
             let filtered = [...feedItems];
-            
-            // Filter by type
+
             if (currentFilter === 'JOB') {
                 filtered = filtered.filter(item => item.type === 'JOB');
             } else if (currentFilter === 'SEEKER') {
                 filtered = filtered.filter(item => item.type === 'SEEKER');
             }
-            
+
             // Filter by zone
-            if (selectedZone) {
-                filtered = filtered.filter(item => item.location.includes(selectedZone));
+            if (selectedZoneId) {
+                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
             }
-            
-            // Filter by title
+
+            // Filter by area
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            }
+
             const titleFilter = document.getElementById('filter-title').value.toLowerCase();
             if (titleFilter) {
                 filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
             }
-            
-            // Filter by skills
+
             const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
             if (skillsFilter) {
                 filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
             }
-            
-            // Filter by experience
+
             const expFilter = document.getElementById('filter-exp').value;
             if (expFilter === '0-2') {
                 filtered = filtered.filter(item => item.exp <= 2);
@@ -672,21 +804,26 @@
             } else if (expFilter === '5+') {
                 filtered = filtered.filter(item => item.exp > 5);
             }
-            
+
             count.textContent = `Showing ${filtered.length} Records`;
-            
+
             if (filtered.length === 0) {
                 container.innerHTML = '<div class="no-records">No records found</div>';
                 return;
             }
-            
-            container.innerHTML = filtered.map(item => `
-                <div class="feed-card" onclick="openDetail('${item.type}', '${item.title}', ${item.exp}, '${item.skills}', '${item.salary}', '${item.company}', '${item.desc}', '${item.location}', '${item.contact}')">
+
+            container.innerHTML = filtered.map(item => {
+                const zoneName = window.LOCATION ? window.LOCATION.getZoneName(item.zone_id) : item.zone_id;
+                const areaName = window.LOCATION ? window.LOCATION.getAreaName(item.area_id) : '';
+                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                
+                return `
+                <div class="feed-card" onclick="openDetail('${item.type}', '${item.title}', ${item.exp}, '${item.skills}', '${item.salary}', '${item.company}', '${item.desc}', '${locationDisplay}', '${item.contact}')">
                     <div class="title">${item.title}</div>
-                    <div class="meta">${item.exp} yrs | 📍 ${item.location} | ${item.salary}</div>
+                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
                     <span class="badge ${item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job'}">${item.type === 'SEEKER' ? 'SEEKER' : 'JOB'}</span>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function openDetail(type, title, exp, skills, salary, company, desc, location, contact) {
@@ -699,9 +836,7 @@
         document.getElementById('mobile').addEventListener('input', function(e) {
             const mobile = this.value.trim();
             const statusEl = document.getElementById('mobile-status');
-            
             statusEl.textContent = '';
-            
             if (mobile.length === 10) {
                 autoCheckMobile(mobile);
             } else if (mobile.length > 0 && mobile.length < 10) {
@@ -717,7 +852,6 @@
         async function autoCheckMobile(mobile) {
             if (isChecking) return;
             isChecking = true;
-            
             const mobileInput = document.getElementById('mobile');
             mobileInput.disabled = true;
             setStatus('⏳ Checking...', 'blue');
@@ -728,9 +862,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ mobile: mobile })
                 });
-
                 const data = await response.json();
-                console.log('Auto-check response:', data);
 
                 if (data.inActiveUsers) {
                     actionType = 'login';
@@ -745,7 +877,6 @@
                     showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
                     setStatus('✨ New user', 'blue');
                 }
-
             } catch (err) {
                 console.error('Error:', err);
                 setStatus('❌ Error checking', 'red');
@@ -787,7 +918,6 @@
                 });
 
                 const data = await response.json();
-                console.log('Auth response:', data);
 
                 if (data.success) {
                     const { data: userData, error } = await sb
@@ -803,7 +933,6 @@
 
                     if (userData) {
                         currentUser = userData;
-                        // Show home screen
                         document.getElementById('step2').classList.add('hidden');
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('home-screen').classList.remove('hidden');
@@ -848,10 +977,9 @@
         // ============================================================
         // APP INIT
         // ============================================================
-        console.log('✅ JobAd Login App Ready (Auto-detect)');
-        console.log('📱 Just type 10 digits - it auto-checks!');
+        console.log('✅ JobAd Login App Ready');
+        console.log('📍 Using locations.js for zones and areas');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
-        
         document.getElementById('mobile').focus();
     </script>
 </body>
