@@ -640,9 +640,9 @@
                             <span class="section-title">👤 Job Seeker Profile</span>
                             <span class="section-badge" id="seeker-badge">⚠️ Required to Apply</span>
                         </div>
-                        <div class="section-desc" id="seeker-desc">Complete your seeker profile with preferred zone to get matched with relevant jobs.</div>
+                        <div class="section-desc" id="seeker-desc">Complete your job profile to get matched with relevant jobs.</div>
                         <div id="seeker-input-area">
-                            <button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%;">+ Create Seeker Profile</button>
+                            <button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%;">+ Create Job Profile</button>
                         </div>
                         <div id="seeker-active-area" style="display:none;">
                             <div style="background:#f8fafc; border-radius:10px; padding:10px; font-size:12px;">
@@ -712,7 +712,7 @@
         <div id="edit-seeker-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="edit-page-header">
-                    <h2>👤 Complete Seeker Profile</h2>
+                    <h2>👤 Job Profile</h2>
                     <button class="cancel-btn" onclick="goToProfile()">Cancel</button>
                 </div>
 
@@ -748,7 +748,7 @@
                             <input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="0.5">
                         </div>
                         <div class="edit-field">
-                            <label>Expected Salary</label>
+                            <label>Expected Monthly Salary</label>
                             <input type="number" id="edit-seeker-salary" placeholder="Monthly salary" min="0" max="9999999" step="1000">
                         </div>
                     </div>
@@ -756,11 +756,11 @@
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div class="edit-field">
                             <label>Notice (days)</label>
-                            <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1">
+                            <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1" style="width:80px;">
                         </div>
                         <div class="edit-field">
-                            <label>Skills <span style="font-size:9px;color:#94a3b8;">(comma)</span></label>
-                            <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100">
+                            <label>Skills (comma)</label>
+                            <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100" style="width:100%;">
                         </div>
                     </div>
 
@@ -1033,6 +1033,11 @@
         // ============================================================
         // PROFILE FUNCTIONS
         // ============================================================
+        function formatSalary(amount) {
+            if (!amount || amount === 0) return 'Not specified';
+            return '₹' + Number(amount).toLocaleString('en-IN');
+        }
+
         async function loadProfile() {
             if (!currentUser) return;
             document.getElementById('profile-mobile').textContent = currentUser.mobile;
@@ -1040,17 +1045,14 @@
                 document.getElementById('seeker-badge').textContent = '✅ Active';
                 document.getElementById('seeker-badge').style.background = '#dcfce7';
                 document.getElementById('seeker-badge').style.color = '#166534';
-                document.getElementById('seeker-desc').textContent = 'Your seeker profile is active.';
+                document.getElementById('seeker-desc').textContent = 'Your job profile is active.';
                 document.getElementById('seeker-input-area').style.display = 'none';
                 document.getElementById('seeker-active-area').style.display = 'block';
-
-                const salary = currentUser.expected_salary_monthly || 0;
-                const formattedSalary = salary > 0 ? '₹' + salary.toLocaleString('en-IN') : 'Not specified';
 
                 document.getElementById('seeker-display-name').textContent = currentUser.full_name;
                 document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
                 document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
-                document.getElementById('seeker-display-salary').textContent = formattedSalary;
+                document.getElementById('seeker-display-salary').textContent = formatSalary(currentUser.expected_salary_monthly);
                 document.getElementById('seeker-display-notice').textContent = currentUser.notice_period_days || '0';
                 document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
                 document.getElementById('seeker-display-about').textContent = currentUser.professional_summary || '';
@@ -1063,7 +1065,7 @@
                 document.getElementById('seeker-badge').textContent = '⚠️ Required to Apply';
                 document.getElementById('seeker-badge').style.background = '#fef3c7';
                 document.getElementById('seeker-badge').style.color = '#d97706';
-                document.getElementById('seeker-desc').textContent = 'Complete your seeker profile with preferred zone to get matched with relevant jobs.';
+                document.getElementById('seeker-desc').textContent = 'Complete your job profile to get matched with relevant jobs.';
                 document.getElementById('seeker-input-area').style.display = 'block';
                 document.getElementById('seeker-active-area').style.display = 'none';
                 document.getElementById('seeker-section').className = 'profile-section';
@@ -1102,7 +1104,7 @@
             if (!name) { showToast('⚠️ Please enter your full name'); return; }
             if (name.length > 50) { showToast('⚠️ Name must be less than 50 characters'); return; }
             if (title.length > 50) { showToast('⚠️ Job title must be less than 50 characters'); return; }
-            if (exp && (parseInt(exp) > 99 || parseInt(exp) < 0)) { showToast('⚠️ Experience must be between 0-99 years'); return; }
+            if (exp && (parseFloat(exp) > 99 || parseFloat(exp) < 0)) { showToast('⚠️ Experience must be between 0-99 years'); return; }
             if (salary && parseInt(salary) > 9999999) { showToast('⚠️ Salary cannot exceed ₹99,99,999'); return; }
             if (notice > 365 || notice < 0) { showToast('⚠️ Notice period must be between 0-365 days'); return; }
             if (skills.length > 100) { showToast('⚠️ Skills must be less than 100 characters'); return; }
@@ -1111,7 +1113,7 @@
             const updates = {
                 full_name: name,
                 job_title: title || '',
-                total_experience_years: parseInt(exp) || 0,
+                total_experience_years: parseFloat(exp) || 0,
                 expected_salary_monthly: parseInt(salary) || 0,
                 skills_comma_separated: skills || '',
                 professional_summary: about || '',
@@ -1125,7 +1127,7 @@
                 const { error } = await sb.from('active_users').update(updates).eq('mobile', currentUser.mobile);
                 if (error) throw error;
                 currentUser = { ...currentUser, ...updates };
-                showToast('✅ Seeker profile saved!');
+                showToast('✅ Job profile saved!');
                 goToProfile();
             } catch (err) {
                 showToast('❌ Failed to save: ' + err.message);
@@ -1184,7 +1186,7 @@
                 const formattedSeekers = (seekers || []).map(user => ({
                     type: 'SEEKER',
                     title: user.job_title || 'Job Seeker',
-                    exp: parseInt(user.total_experience_years) || 0,
+                    exp: parseFloat(user.total_experience_years) || 0,
                     skills: user.skills_comma_separated || '',
                     zone_id: user.zone_id || 0,
                     area_id: user.area_id || 0,
