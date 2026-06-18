@@ -24,6 +24,7 @@
             border-radius: 24px;
             padding: 32px 24px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
         }
         h1 { font-size: 36px; font-weight: 800; text-align: center; color: #2563eb; margin: 0 0 8px 0; }
         .sub { text-align: center; color: #6b7280; font-size: 13px; margin-bottom: 32px; }
@@ -119,19 +120,79 @@
             color: #2563eb;
             margin-bottom: 16px;
         }
-        .home-container .logout-btn {
-            width: 100%;
-            padding: 10px;
-            background: #e2e8f0;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #475569;
-            cursor: pointer;
-            margin-top: 8px;
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 12px;
+            margin-top: 12px;
         }
-        .home-container .logout-btn:hover { background: #cbd5e1; }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
+        .bottom-nav .nav-item:hover {
+            color: #3b82f6;
+        }
+        .bottom-nav .nav-item.active {
+            color: #2563eb;
+        }
+        .bottom-nav .nav-item .icon {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        .bottom-nav .nav-item .label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Gender Icon - Top Right */
+        .gender-icon {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .gender-icon:hover {
+            border-color: #2563eb;
+            transform: scale(1.05);
+        }
+        .gender-icon.male {
+            color: #2563eb;
+            border-color: #2563eb;
+        }
+        .gender-icon.female {
+            color: #ec4899;
+            border-color: #ec4899;
+        }
+        .gender-icon.other {
+            color: #8b5cf6;
+            border-color: #8b5cf6;
+        }
 
         .zone-filter {
             background: #0f172a;
@@ -275,7 +336,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            padding-bottom: 20px;
+            padding-bottom: 10px;
         }
         .feed-card {
             border: 1px solid #e2e8f0;
@@ -302,6 +363,11 @@
 </head>
 <body>
     <div class="card">
+        <!-- Gender Icon - Top Right -->
+        <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
+            <span id="gender-symbol">👤</span>
+        </div>
+
         <div id="login-screen">
             <h1>JobAd</h1>
             <div class="sub">Telangana Zone Based Jobs</div>
@@ -382,7 +448,21 @@
 
                 <div id="feed-container" class="feed-container"></div>
 
-                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+                <!-- Bottom Navigation -->
+                <div class="bottom-nav">
+                    <div class="nav-item active" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </div>
+                    <div class="nav-item" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </div>
+                    <div class="nav-item" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -457,15 +537,77 @@
         let selectedZoneId = null;
         let selectedAreaId = null;
         let feedItems = [];
+        let currentPage = 'home';
 
         // ============================================================
-        // FETCH DATA FROM SUPABASE (No fallback data)
+        // NAVIGATION FUNCTIONS
+        // ============================================================
+        function goHome() {
+            currentPage = 'home';
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector('.bottom-nav .nav-item:nth-child(1)').classList.add('active');
+            document.getElementById('feed-container').style.display = 'flex';
+            renderFeed();
+            showToast('🏠 Home');
+        }
+
+        function goPostJob() {
+            currentPage = 'postjob';
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector('.bottom-nav .nav-item:nth-child(2)').classList.add('active');
+            document.getElementById('feed-container').style.display = 'none';
+            document.getElementById('results-count').textContent = '📝 Post a Job';
+            // Show job posting form (coming soon)
+            showToast('📝 Job posting coming soon!');
+        }
+
+        function goToProfile() {
+            currentPage = 'profile';
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelector('.bottom-nav .nav-item:nth-child(3)').classList.add('active');
+            document.getElementById('feed-container').style.display = 'none';
+            document.getElementById('results-count').textContent = '👤 My Profile';
+            showToast('👤 Profile coming soon!');
+        }
+
+        // ============================================================
+        // GENDER ICON
+        // ============================================================
+        function updateGenderIcon(user) {
+            const iconContainer = document.getElementById('gender-icon');
+            const symbol = document.getElementById('gender-symbol');
+            
+            if (!user) {
+                iconContainer.style.display = 'none';
+                return;
+            }
+            
+            iconContainer.style.display = 'flex';
+            
+            const gender = user.gender;
+            
+            if (gender === 0) {
+                symbol.textContent = '👤';
+                iconContainer.className = 'gender-icon other';
+            } else if (gender === 1) {
+                symbol.textContent = '♀';
+                iconContainer.className = 'gender-icon female';
+            } else if (gender === 2) {
+                symbol.textContent = '♂';
+                iconContainer.className = 'gender-icon male';
+            } else {
+                symbol.textContent = '👤';
+                iconContainer.className = 'gender-icon other';
+            }
+        }
+
+        // ============================================================
+        // FETCH DATA FROM SUPABASE
         // ============================================================
         async function fetchFeedData() {
             console.log('🔄 Fetching feed data from Supabase...');
             
             try {
-                // Fetch jobs from active_jobs
                 const { data: jobs, error: jobsError } = await sb
                     .from('active_jobs')
                     .select('*')
@@ -473,7 +615,6 @@
                 
                 if (jobsError) throw jobsError;
                 
-                // Fetch seekers from active_users
                 const { data: seekers, error: seekersError } = await sb
                     .from('active_users')
                     .select('*')
@@ -482,7 +623,6 @@
                 
                 if (seekersError) throw seekersError;
                 
-                // Format jobs
                 const formattedJobs = (jobs || []).map(job => ({
                     type: 'JOB',
                     title: job.job_title || 'Untitled Job',
@@ -496,7 +636,6 @@
                     contact: job.mobile || 'N/A'
                 }));
                 
-                // Format seekers
                 const formattedSeekers = (seekers || []).map(user => ({
                     type: 'SEEKER',
                     title: user.job_title || 'Job Seeker',
@@ -511,12 +650,11 @@
                 }));
                 
                 feedItems = [...formattedJobs, ...formattedSeekers];
-                console.log(`✅ Loaded ${feedItems.length} items from Supabase (${formattedJobs.length} jobs, ${formattedSeekers.length} seekers)`);
+                console.log(`✅ Loaded ${feedItems.length} items from Supabase`);
                 
             } catch (err) {
                 console.error('❌ Error fetching from Supabase:', err.message);
                 feedItems = [];
-                showMessage('Failed to load data: ' + err.message, 'red');
             }
             
             renderFeed();
@@ -554,6 +692,7 @@
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('home-screen').classList.add('hidden');
             document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('gender-icon').style.display = 'none';
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('msg').classList.add('hidden');
@@ -626,7 +765,6 @@
             selectedAreaId = null;
             document.getElementById('zone-status').textContent = zoneName;
             
-            // Update area dropdown
             const areaSelect = document.getElementById('filter-area');
             const areas = getAreasByZone(zoneId);
             areaSelect.innerHTML = '<option value="ALL">All areas</option>';
@@ -694,6 +832,10 @@
         }
 
         function renderFeed() {
+            if (currentPage !== 'home') {
+                return;
+            }
+            
             const container = document.getElementById('feed-container');
             const count = document.getElementById('results-count');
             
@@ -869,6 +1011,10 @@
                         document.getElementById('step2').classList.add('hidden');
                         document.getElementById('login-screen').classList.add('hidden');
                         document.getElementById('home-screen').classList.remove('hidden');
+                        
+                        // Update gender icon
+                        updateGenderIcon(userData);
+                        
                         hideMessage();
                         
                         setTimeout(autoDetectLocation, 500);
