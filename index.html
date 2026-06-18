@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd</title>
+    <title>JobAd - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -492,7 +492,7 @@
             font-family: inherit;
         }
         .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
-        .edit-field textarea { resize: vertical; min-height: 60px; }
+        .edit-field textarea { resize: vertical; min-height: 50px; }
 
         .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
         .edit-activate-btn {
@@ -646,10 +646,22 @@
                         </div>
                         <div id="seeker-active-area" style="display:none;">
                             <div style="background:#f8fafc; border-radius:10px; padding:10px; font-size:12px;">
-                                <p><strong id="seeker-display-name">--</strong></p>
-                                <p style="color:#64748b; margin-top:2px;"><span id="seeker-display-title">--</span> • <span id="seeker-display-exp">--</span> yrs</p>
-                                <p style="color:#64748b; margin-top:2px;">Skills: <span id="seeker-display-skills">--</span></p>
-                                <p style="color:#64748b; margin-top:2px;">📍 <span id="seeker-display-location">--</span></p>
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                                    <strong id="seeker-display-name">--</strong>
+                                    <span style="color:#64748b; font-size:11px;" id="seeker-display-title">--</span>
+                                </div>
+                                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:4px; font-size:11px; color:#475569;">
+                                    <span>📅 <span id="seeker-display-exp">--</span> yrs</span>
+                                    <span>💰 <span id="seeker-display-salary">--</span></span>
+                                    <span>📋 <span id="seeker-display-notice">--</span> days</span>
+                                    <span>📍 <span id="seeker-display-location">--</span></span>
+                                </div>
+                                <div style="margin-top:4px; font-size:11px; color:#475569;">
+                                    <span style="font-weight:600;">Skills:</span> <span id="seeker-display-skills">--</span>
+                                </div>
+                                <div style="margin-top:4px; font-size:11px; color:#64748b; border-top:1px solid #e2e8f0; padding-top:4px;">
+                                    <span id="seeker-display-about">--</span>
+                                </div>
                             </div>
                             <button class="section-btn" style="margin-top:6px; width:100%;" onclick="goToEditSeeker()">✏️ Edit Profile</button>
                         </div>
@@ -696,110 +708,105 @@
             </div>
         </div>
 
-        <!-- EDIT SEEKER PROFILE PAGE -->
-<div id="edit-seeker-page" class="hidden-page" style="height:100%;">
-    <div class="home-container">
-        <div class="edit-page-header">
-            <h2>👤 Complete Seeker Profile</h2>
-            <button class="cancel-btn" onclick="goToProfile()">Cancel</button>
-        </div>
-
-        <div class="page-content">
-            <div class="edit-hint">
-                <div class="hint-title">📍 Why select your location?</div>
-                <div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div>
-            </div>
-
-            <!-- Full Name -->
-            <div class="edit-field">
-                <label>Full Name *</label>
-                <input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50">
-            </div>
-
-            <!-- Job Title + Gender (2 columns) -->
-            <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
-                <div class="edit-field">
-                    <label>Job Title *</label>
-                    <input type="text" id="edit-seeker-title" placeholder="Job title" maxlength="50">
+        <!-- EDIT SEEKER PAGE -->
+        <div id="edit-seeker-page" class="hidden-page" style="height:100%;">
+            <div class="home-container">
+                <div class="edit-page-header">
+                    <h2>👤 Complete Seeker Profile</h2>
+                    <button class="cancel-btn" onclick="goToProfile()">Cancel</button>
                 </div>
-                <div class="edit-field">
-                    <label>Gender</label>
-                    <select id="edit-seeker-gender">
-                        <option value="0">Not Specified</option>
-                        <option value="1">Female</option>
-                        <option value="2">Male</option>
-                    </select>
+
+                <div class="page-content">
+                    <div class="edit-hint">
+                        <div class="hint-title">📍 Why select your location?</div>
+                        <div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Full Name *</label>
+                        <input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50">
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Job Title *</label>
+                            <input type="text" id="edit-seeker-title" placeholder="Job title" maxlength="50">
+                        </div>
+                        <div class="edit-field">
+                            <label>Gender</label>
+                            <select id="edit-seeker-gender">
+                                <option value="0">Not Specified</option>
+                                <option value="1">Female</option>
+                                <option value="2">Male</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Experience (Years)</label>
+                            <input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="0.5">
+                        </div>
+                        <div class="edit-field">
+                            <label>Expected Salary</label>
+                            <input type="number" id="edit-seeker-salary" placeholder="Monthly salary" min="0" max="9999999" step="1000">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Notice (days)</label>
+                            <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1">
+                        </div>
+                        <div class="edit-field">
+                            <label>Skills <span style="font-size:9px;color:#94a3b8;">(comma)</span></label>
+                            <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Zone *</label>
+                            <select id="edit-seeker-zone" onchange="updateEditAreas()">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="edit-field">
+                            <label>Area *</label>
+                            <select id="edit-seeker-area">
+                                <option value="">Select zone first</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>About Me <span style="font-size:9px;color:#94a3b8;">(max 200 chars)</span></label>
+                        <textarea id="edit-seeker-about" rows="2" placeholder="Write about yourself..." maxlength="200"></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span> / 200
+                        </div>
+                    </div>
+
+                    <button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button>
+                </div>
+
+                <div class="bottom-nav">
+                    <button class="nav-item" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </button>
+                    <button class="nav-item" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </button>
+                    <button class="nav-item active" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </button>
                 </div>
             </div>
-
-            <!-- Experience + Salary (2 columns) -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div class="edit-field">
-                    <label>Experience (Years)</label>
-                    <input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="1">
-                </div>
-                <div class="edit-field">
-                    <label>Expected Salary (Monthly)</label>
-                    <input type="number" id="edit-seeker-salary" placeholder="e.g., 50000" min="0" max="9999999" step="1000">
-                </div>
-            </div>
-
-            <!-- Notice Period -->
-            <div class="edit-field">
-                <label>Notice Period (days)</label>
-                <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1">
-            </div>
-
-            <!-- Zone + Area (2 columns) -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <div class="edit-field">
-                    <label>📍 Select Zone *</label>
-                    <select id="edit-seeker-zone" onchange="updateEditAreas()">
-                        <option value="">-- Select --</option>
-                    </select>
-                </div>
-                <div class="edit-field">
-                    <label>Select Area *</label>
-                    <select id="edit-seeker-area">
-                        <option value="">Select zone first</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Skills -->
-            <div class="edit-field">
-                <label>Skills <span style="font-size:9px;color:#94a3b8;">(comma separated)</span></label>
-                <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React, AWS" maxlength="100">
-            </div>
-
-            <!-- About Me (with character counter) -->
-            <div class="edit-field">
-                <label>About Me <span style="font-size:9px;color:#94a3b8;">(max 200 chars)</span></label>
-                <textarea id="edit-seeker-about" rows="2" placeholder="Write about yourself..." maxlength="200"></textarea>
-                <div class="char-counter">
-                    <span id="char-count">0</span> / 200
-                </div>
-            </div>
-
-            <button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button>
-        </div>
-
-        <div class="bottom-nav">
-            <button class="nav-item" onclick="goHome()">
-                <span class="icon">🏠</span>
-                <span class="label">Home</span>
-            </button>
-            <button class="nav-item" onclick="goPostJob()">
-                <span class="icon">➕</span>
-                <span class="label">Post Job</span>
-            </button>
-            <button class="nav-item active" onclick="goToProfile()">
-                <span class="icon">👤</span>
-                <span class="label">Profile</span>
-            </button>
         </div>
     </div>
-</div>
 
     <script>
         // ============================================================
@@ -886,7 +893,7 @@
 
         function populateEditZones() {
             const select = document.getElementById('edit-seeker-zone');
-            select.innerHTML = '<option value="">-- Select Zone --</option>';
+            select.innerHTML = '<option value="">-- Select --</option>';
             ZONES.forEach(zone => {
                 select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
             });
@@ -1036,10 +1043,18 @@
                 document.getElementById('seeker-desc').textContent = 'Your seeker profile is active.';
                 document.getElementById('seeker-input-area').style.display = 'none';
                 document.getElementById('seeker-active-area').style.display = 'block';
+
+                const salary = currentUser.expected_salary_monthly || 0;
+                const formattedSalary = salary > 0 ? '₹' + salary.toLocaleString('en-IN') : 'Not specified';
+
                 document.getElementById('seeker-display-name').textContent = currentUser.full_name;
                 document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
                 document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
+                document.getElementById('seeker-display-salary').textContent = formattedSalary;
+                document.getElementById('seeker-display-notice').textContent = currentUser.notice_period_days || '0';
                 document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
+                document.getElementById('seeker-display-about').textContent = currentUser.professional_summary || '';
+
                 const zoneName = getZoneName(currentUser.zone_id);
                 const areaName = getAreaName(currentUser.area_id);
                 document.getElementById('seeker-display-location').textContent = areaName ? `${zoneName} - ${areaName}` : zoneName || 'Not set';
