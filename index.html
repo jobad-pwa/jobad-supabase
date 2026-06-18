@@ -6,7 +6,6 @@
     <title>JobAd - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="locations.js"></script>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -542,6 +541,71 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
+        // ZONE & AREA DATA (Built-in - Easy to add more)
+        // ============================================================
+        const LOCATION_DATA = {
+            zones: [
+                { zone_id: 100, zone_name: "Hyderabad" },
+                { zone_id: 200, zone_name: "North Telangana" },
+                { zone_id: 300, zone_name: "East Telangana" },
+                { zone_id: 400, zone_name: "South Telangana" }
+                // 👇 Add new zones here
+                // { zone_id: 500, zone_name: "New Zone Name" },
+            ],
+            areas: [
+                // Hyderabad (zone_id: 100)
+                { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
+                { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
+                { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
+                { area_id: 100004, zone_id: 100, area_name: "Gachibowli" },
+                { area_id: 100005, zone_id: 100, area_name: "Hitech City" },
+                { area_id: 100006, zone_id: 100, area_name: "Miyapur" },
+                { area_id: 100007, zone_id: 100, area_name: "Uppal" },
+                { area_id: 100008, zone_id: 100, area_name: "LB Nagar" },
+                { area_id: 100009, zone_id: 100, area_name: "Dilsukhnagar" },
+                // North Telangana (zone_id: 200)
+                { area_id: 200001, zone_id: 200, area_name: "Nizamabad" },
+                { area_id: 200002, zone_id: 200, area_name: "Karimnagar" },
+                { area_id: 200003, zone_id: 200, area_name: "Adilabad" },
+                { area_id: 200004, zone_id: 200, area_name: "Mancherial" },
+                { area_id: 200005, zone_id: 200, area_name: "Jagtial" },
+                // East Telangana (zone_id: 300)
+                { area_id: 300001, zone_id: 300, area_name: "Warangal" },
+                { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
+                { area_id: 300003, zone_id: 300, area_name: "Khammam" },
+                { area_id: 300004, zone_id: 300, area_name: "Mahabubabad" },
+                // South Telangana (zone_id: 400)
+                { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
+                { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
+                { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
+                { area_id: 400004, zone_id: 400, area_name: "Nagarkurnool" }
+                // 👇 Add new areas here
+                // { area_id: 500001, zone_id: 500, area_name: "New Area" },
+            ]
+        };
+
+        // ============================================================
+        // Helper Functions
+        // ============================================================
+        function getZones() {
+            return LOCATION_DATA.zones;
+        }
+
+        function getAreas(zoneId) {
+            return LOCATION_DATA.areas.filter(a => a.zone_id === zoneId);
+        }
+
+        function getZoneName(zoneId) {
+            const zone = LOCATION_DATA.zones.find(z => z.zone_id === zoneId);
+            return zone ? zone.zone_name : 'Unknown Zone';
+        }
+
+        function getAreaName(areaId) {
+            const area = LOCATION_DATA.areas.find(a => a.area_id === areaId);
+            return area ? area.area_name : 'Unknown Area';
+        }
+
+        // ============================================================
         // STATE
         // ============================================================
         let currentMobile = '';
@@ -553,7 +617,7 @@
         let selectedAreaId = null;
 
         // ============================================================
-        // FEED DATA (with zone_id and area_id matching your schema)
+        // FEED DATA
         // ============================================================
         const feedItems = [
             { type: "JOB", title: "Senior Software Engineer", exp: 5, skills: "Java, Spring Boot", zone_id: 100, area_id: 100005, location: "Hyderabad - Hitech City", salary: "₹18-22 LPA", company: "TechMahindra", desc: "Looking for experienced Java developer", contact: "9988776655" },
@@ -638,20 +702,12 @@
         }
 
         // ============================================================
-        // SEARCHABLE ZONE + AREA (Using locations.js)
+        // SEARCHABLE ZONE + AREA
         // ============================================================
         function searchZone() {
             const input = document.getElementById('zone-search');
             const suggestions = document.getElementById('zone-suggestions');
             const query = input.value.toLowerCase().trim();
-
-            // Debug: Check if LOCATION is loaded
-            if (!window.LOCATION) {
-                console.error('❌ locations.js not loaded!');
-                suggestions.innerHTML = '<div class="no-result">⚠️ locations.js not loaded</div>';
-                suggestions.classList.add('show');
-                return;
-            }
 
             if (!query) {
                 suggestions.classList.remove('show');
@@ -659,10 +715,7 @@
                 return;
             }
 
-            // Get zones from locations.js
-            const zones = window.LOCATION.getZones();
-            console.log('Zones from locations.js:', zones);
-            
+            const zones = getZones();
             const matches = zones.filter(zone => 
                 zone.zone_name.toLowerCase().includes(query)
             );
@@ -688,7 +741,6 @@
             selectedAreaId = null;
             document.getElementById('zone-status').textContent = zoneName;
 
-            // Populate area dropdown using locations.js
             populateAreas(zoneId);
             document.getElementById('area-filter').classList.add('show');
             renderFeed();
@@ -696,14 +748,7 @@
 
         function populateAreas(zoneId) {
             const areaSelect = document.getElementById('area-select');
-            
-            if (!window.LOCATION) {
-                console.error('❌ locations.js not loaded!');
-                return;
-            }
-            
-            const areas = window.LOCATION.getAreas(zoneId);
-            console.log('Areas for zone', zoneId, ':', areas);
+            const areas = getAreas(zoneId);
             
             areaSelect.innerHTML = '<option value="">All Areas</option>';
             areas.forEach(area => {
@@ -717,34 +762,23 @@
             renderFeed();
         }
 
-        // Auto-detect location on page load
+        // Auto-detect location
         function autoDetectLocation() {
-            if (!window.LOCATION) {
-                console.error('❌ locations.js not loaded for auto-detect');
-                return;
-            }
-            
-            // Try to detect location via IP
             fetch('https://ipapi.co/json/')
                 .then(res => res.json())
                 .then(data => {
                     const city = data.city || '';
-                    console.log('Detected city:', city);
-                    
-                    const zones = window.LOCATION.getZones();
+                    const zones = getZones();
                     const matched = zones.find(zone => 
                         city.toLowerCase().includes(zone.zone_name.toLowerCase()) ||
                         zone.zone_name.toLowerCase().includes(city.toLowerCase())
                     );
-                    
                     if (matched) {
                         selectZone(matched.zone_id, matched.zone_name);
                         document.getElementById('zone-search').value = matched.zone_name + ' (Detected)';
                     }
                 })
-                .catch(err => {
-                    console.log('Auto-detect failed:', err);
-                    // Default to Hyderabad
+                .catch(() => {
                     selectZone(100, 'Hyderabad');
                     document.getElementById('zone-search').value = 'Hyderabad (Default)';
                 });
@@ -828,8 +862,8 @@
             }
 
             container.innerHTML = filtered.map(item => {
-                const zoneName = window.LOCATION ? window.LOCATION.getZoneName(item.zone_id) : item.zone_id;
-                const areaName = window.LOCATION ? window.LOCATION.getAreaName(item.area_id) : '';
+                const zoneName = getZoneName(item.zone_id);
+                const areaName = getAreaName(item.area_id);
                 const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
                 
                 return `
@@ -953,9 +987,7 @@
                         document.getElementById('home-screen').classList.remove('hidden');
                         hideMessage();
                         
-                        // Auto-detect location after login
                         setTimeout(autoDetectLocation, 500);
-                        
                         renderFeed();
                         showToast('✅ Welcome ' + currentMobile + '!');
                     }
@@ -997,16 +1029,7 @@
         // APP INIT
         // ============================================================
         console.log('✅ JobAd Login App Ready');
-        console.log('📍 Checking for locations.js...');
-        console.log('window.LOCATION:', window.LOCATION);
-        
-        if (window.LOCATION) {
-            console.log('✅ locations.js loaded successfully!');
-            console.log('Zones:', window.LOCATION.getZones());
-        } else {
-            console.error('❌ locations.js NOT loaded! Please check the file.');
-        }
-        
+        console.log('📍 Built-in zones:', getZones().length, 'zones,', getAreas(100).length, 'areas in Hyderabad');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
     </script>
