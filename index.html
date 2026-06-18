@@ -459,24 +459,13 @@
         let feedItems = [];
 
         // ============================================================
-        // SAMPLE DATA (Fallback)
-        // ============================================================
-        const sampleData = [
-            { type: "JOB", title: "Senior Software Engineer", exp: 5, skills: "Java, Spring Boot", zone_id: 100, area_id: 100005, salary: "₹18-22 LPA", company: "TechMahindra", desc: "Looking for experienced Java developer", contact: "9988776655" },
-            { type: "JOB", title: "Frontend Developer", exp: 3, skills: "React, Angular", zone_id: 100, area_id: 100002, salary: "₹12-15 LPA", company: "Infosys", desc: "Urgent requirement for React developer", contact: "9988776655" },
-            { type: "SEEKER", title: "Full Stack Developer", exp: 4, skills: "MERN Stack, Python", zone_id: 100, area_id: 100004, salary: "₹14 LPA", company: "Priya Sharma", desc: "Experienced full stack developer", contact: "9876543210" },
-            { type: "JOB", title: "Data Scientist", exp: 4, skills: "Python, ML, SQL", zone_id: 300, area_id: 300001, salary: "₹15-20 LPA", company: "Amazon", desc: "Data scientist role", contact: "9988776655" },
-            { type: "SEEKER", title: "DevOps Engineer", exp: 5, skills: "Docker, Kubernetes", zone_id: 300, area_id: 300002, salary: "₹18 LPA", company: "Rahul Singh", desc: "Experienced DevOps engineer", contact: "9876543210" }
-        ];
-
-        // ============================================================
-        // FETCH DATA FROM SUPABASE
+        // FETCH DATA FROM SUPABASE (No fallback data)
         // ============================================================
         async function fetchFeedData() {
-            console.log('🔄 Fetching feed data...');
+            console.log('🔄 Fetching feed data from Supabase...');
             
             try {
-                // Try to fetch from Supabase
+                // Fetch jobs from active_jobs
                 const { data: jobs, error: jobsError } = await sb
                     .from('active_jobs')
                     .select('*')
@@ -484,6 +473,7 @@
                 
                 if (jobsError) throw jobsError;
                 
+                // Fetch seekers from active_users
                 const { data: seekers, error: seekersError } = await sb
                     .from('active_users')
                     .select('*')
@@ -520,20 +510,13 @@
                     contact: user.mobile || 'N/A'
                 }));
                 
-                const combined = [...formattedJobs, ...formattedSeekers];
-                
-                if (combined.length > 0) {
-                    feedItems = combined;
-                    console.log(`✅ Loaded ${feedItems.length} items from Supabase`);
-                } else {
-                    // Use sample data if Supabase returns empty
-                    feedItems = sampleData;
-                    console.log('📋 Using sample data (Supabase empty)');
-                }
+                feedItems = [...formattedJobs, ...formattedSeekers];
+                console.log(`✅ Loaded ${feedItems.length} items from Supabase (${formattedJobs.length} jobs, ${formattedSeekers.length} seekers)`);
                 
             } catch (err) {
-                console.log('⚠️ Supabase fetch failed, using sample data:', err.message);
-                feedItems = sampleData;
+                console.error('❌ Error fetching from Supabase:', err.message);
+                feedItems = [];
+                showMessage('Failed to load data: ' + err.message, 'red');
             }
             
             renderFeed();
@@ -715,7 +698,7 @@
             const count = document.getElementById('results-count');
             
             if (!feedItems || feedItems.length === 0) {
-                container.innerHTML = '<div class="no-records">No data available</div>';
+                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
                 count.textContent = 'Showing 0 Records';
                 return;
             }
