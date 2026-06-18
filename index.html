@@ -592,32 +592,90 @@
         }
 
         // ============================================================
-        // ZONE FILTER FUNCTIONS (Using locations.js)
-        // ============================================================
-        function initZoneFilter() {
-            // Create the searchable zone input using locations.js
-            if (window.LOCATION && window.LOCATION.createZoneSearchInput) {
-                window.LOCATION.createZoneSearchInput();
-                
-                // Auto-detect location
-                setTimeout(() => {
-                    window.LOCATION.detectLocation();
-                }, 500);
+// ZONE FILTER FUNCTIONS (Using locations.js)
+// ============================================================
+function initZoneFilter() {
+    console.log('initZoneFilter called');
+    console.log('window.LOCATION:', window.LOCATION);
+    
+    // Check if locations.js is loaded
+    if (!window.LOCATION) {
+        console.error('locations.js not loaded!');
+        return;
+    }
+    
+    // Get the container
+    const container = document.getElementById('zone-search-container');
+    if (!container) {
+        console.error('zone-search-container not found!');
+        return;
+    }
+    
+    // Create the searchable zone input using locations.js
+    if (window.LOCATION.createZoneSearchInput) {
+        window.LOCATION.createZoneSearchInput();
+        console.log('Zone search input created');
+        
+        // Auto-detect location
+        setTimeout(() => {
+            if (window.LOCATION.detectLocation) {
+                window.LOCATION.detectLocation();
             }
-            
-            // Listen for zone selection changes
-            document.addEventListener('change', function(e) {
-                if (e.target.id === 'selected-zone-id') {
-                    const zoneId = window.LOCATION.getSelectedZoneId();
-                    if (zoneId) {
-                        selectedZoneId = zoneId;
-                        const zoneName = window.LOCATION.getZoneName(zoneId);
-                        document.getElementById('zone-status').textContent = zoneName;
-                        renderFeed();
-                    }
-                }
-            });
+        }, 500);
+    } else {
+        console.error('createZoneSearchInput not found in LOCATION');
+        // Fallback: create simple zone selector
+        createSimpleZoneSelector();
+    }
+    
+    // Listen for zone selection changes
+    document.addEventListener('change', function(e) {
+        if (e.target.id === 'selected-zone-id') {
+            const zoneId = window.LOCATION.getSelectedZoneId ? window.LOCATION.getSelectedZoneId() : null;
+            if (zoneId) {
+                selectedZoneId = zoneId;
+                const zoneName = window.LOCATION.getZoneName ? window.LOCATION.getZoneName(zoneId) : zoneId;
+                document.getElementById('zone-status').textContent = zoneName;
+                renderFeed();
+            }
         }
+    });
+}
+
+// Fallback: Simple zone selector if locations.js fails
+function createSimpleZoneSelector() {
+    const container = document.getElementById('zone-search-container');
+    if (!container) return;
+    
+    const zones = window.LOCATION ? window.LOCATION.getZones() : [
+        { zone_id: 100, zone_name: "Hyderabad" },
+        { zone_id: 200, zone_name: "North Telangana" },
+        { zone_id: 300, zone_name: "East Telangana" },
+        { zone_id: 400, zone_name: "South Telangana" }
+    ];
+    
+    let html = `<select id="zone-select-simple" style="width:100%; background:#1e293b; border:1px solid #334155; border-radius:10px; padding:8px 12px; font-size:12px; color:white; font-weight:600; outline:none;">`;
+    html += `<option value="">All Zones</option>`;
+    zones.forEach(zone => {
+        html += `<option value="${zone.zone_id}">${zone.zone_name}</option>`;
+    });
+    html += `</select>`;
+    
+    container.innerHTML = html;
+    
+    document.getElementById('zone-select-simple').addEventListener('change', function(e) {
+        const zoneId = parseInt(e.target.value);
+        if (zoneId) {
+            selectedZoneId = zoneId;
+            const zoneName = window.LOCATION ? window.LOCATION.getZoneName(zoneId) : zoneId;
+            document.getElementById('zone-status').textContent = zoneName;
+        } else {
+            selectedZoneId = null;
+            document.getElementById('zone-status').textContent = 'All Zones';
+        }
+        renderFeed();
+    });
+}
 
         // ============================================================
         // FEED FUNCTIONS
