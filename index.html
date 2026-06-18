@@ -463,7 +463,6 @@
             background: #15803d;
         }
 
-        /* Active profile states */
         .profile-active {
             background: #f0fdf4;
             border-color: #bbf7d0;
@@ -471,6 +470,96 @@
         .profile-active .section-badge {
             background: #dcfce7;
             color: #166534;
+        }
+
+        /* ========================================== */
+        /* EDIT SEEKER PROFILE PAGE */
+        /* ========================================== */
+        .edit-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        .edit-page-header h2 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+        }
+        .edit-page-header .cancel-btn {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .edit-page-header .cancel-btn:hover {
+            color: #64748b;
+        }
+
+        .edit-hint {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+        .edit-hint .hint-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1d4ed8;
+        }
+        .edit-hint .hint-desc {
+            font-size: 11px;
+            color: #475569;
+            margin-top: 2px;
+        }
+
+        .edit-field {
+            margin-bottom: 10px;
+        }
+        .edit-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        .edit-field input, .edit-field select, .edit-field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus {
+            border-color: #2563eb;
+        }
+        .edit-field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .edit-activate-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .edit-activate-btn:hover {
+            background: #1d4ed8;
         }
 
         /* ========================================== */
@@ -559,11 +648,10 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- HOME SCREEN (with Filters + Feed)          -->
+        <!-- HOME PAGE                                  -->
         <!-- ========================================== -->
         <div id="home-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
-                <!-- HEADER -->
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
@@ -571,7 +659,6 @@
                     </div>
                 </div>
 
-                <!-- HOME TOP - FIXED -->
                 <div class="home-top">
                     <div class="zone-filter">
                         <div class="header">
@@ -624,12 +711,10 @@
                     </div>
                 </div>
 
-                <!-- FEED - SCROLLS -->
                 <div class="page-content">
                     <div id="feed-container" class="feed-container"></div>
                 </div>
 
-                <!-- FOOTER -->
                 <div class="bottom-nav">
                     <button class="nav-item active" onclick="goHome()">
                         <span class="icon">🏠</span>
@@ -652,7 +737,6 @@
         <!-- ========================================== -->
         <div id="profile-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
-                <!-- HEADER -->
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="gender-icon" id="gender-icon-profile" style="display:none;" onclick="goToProfile()">
@@ -660,9 +744,7 @@
                     </div>
                 </div>
 
-                <!-- PROFILE CONTENT - SCROLLS -->
                 <div class="page-content">
-                    <!-- Profile Header -->
                     <div class="profile-header-card">
                         <div class="welcome">Welcome,</div>
                         <div class="mobile" id="profile-mobile">--</div>
@@ -677,17 +759,7 @@
                         </div>
                         <div class="section-desc" id="seeker-desc">Complete your seeker profile with preferred zone to get matched with relevant jobs.</div>
                         <div id="seeker-input-area">
-                            <div class="section-input">
-                                <input type="text" id="seeker-name" placeholder="Full Name">
-                                <button class="section-btn section-btn-green" onclick="saveSeekerProfile()">+ Create</button>
-                            </div>
-                            <div style="margin-top:6px; display:flex; gap:6px;">
-                                <input type="text" id="seeker-title" placeholder="Job Title" style="flex:1;">
-                                <input type="text" id="seeker-exp" placeholder="Experience" style="flex:1;">
-                            </div>
-                            <div style="margin-top:6px;">
-                                <input type="text" id="seeker-skills" placeholder="Skills (comma separated)" style="width:100%;">
-                            </div>
+                            <button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%;">+ Create Seeker Profile</button>
                         </div>
                         <div id="seeker-active-area" style="display:none;">
                             <div style="background:#f8fafc; border-radius:10px; padding:10px; font-size:12px;">
@@ -695,7 +767,7 @@
                                 <p style="color:#64748b; margin-top:2px;"><span id="seeker-display-title">--</span> • <span id="seeker-display-exp">--</span> yrs</p>
                                 <p style="color:#64748b; margin-top:2px;">Skills: <span id="seeker-display-skills">--</span></p>
                             </div>
-                            <button class="section-btn" style="margin-top:6px; width:100%;" onclick="editSeekerProfile()">✏️ Edit Profile</button>
+                            <button class="section-btn" style="margin-top:6px; width:100%;" onclick="goToEditSeeker()">✏️ Edit Profile</button>
                         </div>
                     </div>
 
@@ -722,7 +794,87 @@
                     </div>
                 </div>
 
-                <!-- FOOTER -->
+                <div class="bottom-nav">
+                    <button class="nav-item" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </button>
+                    <button class="nav-item" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </button>
+                    <button class="nav-item active" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- EDIT SEEKER PROFILE PAGE                   -->
+        <!-- ========================================== -->
+        <div id="edit-seeker-page" class="hidden-page" style="height:100%;">
+            <div class="home-container">
+                <div class="edit-page-header">
+                    <h2>👤 Complete Seeker Profile</h2>
+                    <button class="cancel-btn" onclick="goToProfile()">Cancel</button>
+                </div>
+
+                <div class="page-content">
+                    <div class="edit-hint">
+                        <div class="hint-title">📍 Why select your location?</div>
+                        <div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Full Name *</label>
+                        <input type="text" id="edit-seeker-name" placeholder="Enter your full name">
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Job Title *</label>
+                        <input type="text" id="edit-seeker-title" placeholder="Enter your job title">
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Experience *</label>
+                            <input type="text" id="edit-seeker-exp" placeholder="Years">
+                        </div>
+                        <div class="edit-field">
+                            <label>Expected Salary</label>
+                            <input type="text" id="edit-seeker-salary" placeholder="₹15 LPA">
+                        </div>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>📍 Select Zone *</label>
+                        <select id="edit-seeker-zone" onchange="updateEditAreas()">
+                            <option value="">-- Select Zone --</option>
+                        </select>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Select Area *</label>
+                        <select id="edit-seeker-area">
+                            <option value="">Select zone first</option>
+                        </select>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Skills *</label>
+                        <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React, AWS">
+                    </div>
+
+                    <div class="edit-field">
+                        <label>About Me</label>
+                        <textarea id="edit-seeker-about" rows="3" placeholder="Write about yourself..."></textarea>
+                    </div>
+
+                    <button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button>
+                </div>
+
                 <div class="bottom-nav">
                     <button class="nav-item" onclick="goHome()">
                         <span class="icon">🏠</span>
@@ -820,6 +972,26 @@
             return AREAS.filter(a => a.zone_id === zoneId);
         }
 
+        function populateEditZones() {
+            const select = document.getElementById('edit-seeker-zone');
+            select.innerHTML = '<option value="">-- Select Zone --</option>';
+            ZONES.forEach(zone => {
+                select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
+            });
+        }
+
+        function updateEditAreas() {
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            const areaSelect = document.getElementById('edit-seeker-area');
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (zoneId) {
+                const areas = getAreasByZone(zoneId);
+                areas.forEach(area => {
+                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+                });
+            }
+        }
+
         // ============================================================
         // STATE
         // ============================================================
@@ -842,6 +1014,7 @@
             currentPage = 'home';
             document.getElementById('home-page').classList.remove('hidden-page');
             document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[0].classList.add('active');
             document.getElementById('feed-container').style.display = 'flex';
@@ -859,9 +1032,38 @@
             currentPage = 'profile';
             document.getElementById('home-page').classList.add('hidden-page');
             document.getElementById('profile-page').classList.remove('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[2].classList.add('active');
             loadProfile();
+        }
+
+        function goToEditSeeker() {
+            currentPage = 'edit-seeker';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.remove('hidden-page');
+            
+            // Populate zones
+            populateEditZones();
+            
+            // Fill existing data if any
+            if (currentUser) {
+                document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
+                document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
+                document.getElementById('edit-seeker-exp').value = currentUser.total_experience_years || '';
+                document.getElementById('edit-seeker-salary').value = currentUser.expected_salary_monthly ? `₹${currentUser.expected_salary_monthly}` : '';
+                document.getElementById('edit-seeker-skills').value = currentUser.skills_comma_separated || '';
+                document.getElementById('edit-seeker-about').value = currentUser.professional_summary || '';
+                
+                if (currentUser.zone_id) {
+                    document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
+                    updateEditAreas();
+                    if (currentUser.area_id) {
+                        document.getElementById('edit-seeker-area').value = currentUser.area_id;
+                    }
+                }
+            }
         }
 
         // ============================================================
@@ -966,14 +1168,23 @@
             }
         }
 
-        async function saveSeekerProfile() {
-            const name = document.getElementById('seeker-name').value.trim();
-            const title = document.getElementById('seeker-title').value.trim();
-            const exp = document.getElementById('seeker-exp').value.trim();
-            const skills = document.getElementById('seeker-skills').value.trim();
+        async function saveEditSeeker() {
+            const name = document.getElementById('edit-seeker-name').value.trim();
+            const title = document.getElementById('edit-seeker-title').value.trim();
+            const exp = document.getElementById('edit-seeker-exp').value.trim();
+            const salary = document.getElementById('edit-seeker-salary').value.replace(/[^0-9]/g, '');
+            const skills = document.getElementById('edit-seeker-skills').value.trim();
+            const about = document.getElementById('edit-seeker-about').value.trim();
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            const areaId = parseInt(document.getElementById('edit-seeker-area').value);
             
             if (!name) {
                 showToast('⚠️ Please enter your full name');
+                return;
+            }
+            
+            if (!zoneId) {
+                showToast('⚠️ Please select your zone');
                 return;
             }
             
@@ -981,7 +1192,11 @@
                 full_name: name,
                 job_title: title || '',
                 total_experience_years: parseInt(exp) || 0,
+                expected_salary_monthly: parseInt(salary) || 0,
                 skills_comma_separated: skills || '',
+                professional_summary: about || '',
+                zone_id: zoneId,
+                area_id: areaId || null,
                 last_active: new Date().toISOString()
             };
             
@@ -993,28 +1208,12 @@
                 
                 if (error) throw error;
                 
-                // Update current user
                 currentUser = { ...currentUser, ...updates };
                 showToast('✅ Seeker profile saved!');
-                loadProfile();
+                goToProfile();
             } catch (err) {
                 showToast('❌ Failed to save: ' + err.message);
             }
-        }
-
-        function editSeekerProfile() {
-            document.getElementById('seeker-name').value = currentUser.full_name || '';
-            document.getElementById('seeker-title').value = currentUser.job_title || '';
-            document.getElementById('seeker-exp').value = currentUser.total_experience_years || '';
-            document.getElementById('seeker-skills').value = currentUser.skills_comma_separated || '';
-            document.getElementById('seeker-input-area').style.display = 'block';
-            document.getElementById('seeker-active-area').style.display = 'none';
-            document.getElementById('seeker-section').className = 'profile-section';
-            document.getElementById('seeker-badge').textContent = '✏️ Editing';
-            document.getElementById('seeker-badge').style.background = '#dbeafe';
-            document.getElementById('seeker-badge').style.color = '#1e40af';
-            document.getElementById('seeker-desc').textContent = 'Update your seeker profile.';
-            document.querySelector('#seeker-input-area .section-btn').textContent = '💾 Update';
         }
 
         async function saveRecruiterProfile() {
@@ -1147,6 +1346,7 @@
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('home-page').classList.add('hidden-page');
             document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('gender-icon').style.display = 'none';
             document.getElementById('gender-icon-profile').style.display = 'none';
@@ -1469,6 +1669,7 @@
                         document.getElementById('login-screen').style.display = 'none';
                         document.getElementById('home-page').classList.remove('hidden-page');
                         document.getElementById('profile-page').classList.add('hidden-page');
+                        document.getElementById('edit-seeker-page').classList.add('hidden-page');
                         
                         updateGenderIcon(userData);
                         
@@ -1518,6 +1719,9 @@
         console.log('✅ JobAd Login App Ready');
         console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
+
+        // Pre-populate edit page zones
+        populateEditZones();
     </script>
 </body>
 </html>
