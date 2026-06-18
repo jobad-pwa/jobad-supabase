@@ -279,39 +279,6 @@
             text-align: center;
         }
 
-        .area-filter {
-            margin-top: 8px;
-            display: none;
-        }
-        .area-filter.show {
-            display: block;
-        }
-        .area-filter select {
-            width: 100%;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 12px;
-            color: white;
-            font-weight: 600;
-            outline: none;
-            margin-bottom: 0;
-        }
-        .area-filter select option {
-            background: #1e293b;
-            color: white;
-        }
-        .area-filter .label {
-            font-size: 9px;
-            font-weight: 700;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: block;
-            margin-bottom: 2px;
-        }
-
         .type-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -467,6 +434,7 @@
             <div class="home-container">
                 <div class="logo">JobAd</div>
                 
+                <!-- ZONE FILTER - SEARCHABLE ONLY -->
                 <div class="zone-filter">
                     <div class="header">
                         <label>📍 Filter by Zone</label>
@@ -475,12 +443,6 @@
                     <div class="search-wrapper">
                         <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
                         <div class="suggestions" id="zone-suggestions"></div>
-                    </div>
-                    <div class="area-filter" id="area-filter">
-                        <div class="label">📍 Filter by Area</div>
-                        <select id="area-select" onchange="onAreaChange()">
-                            <option value="">All Areas</option>
-                        </select>
                     </div>
                 </div>
 
@@ -513,7 +475,7 @@
                     </div>
                     <div>
                         <label>Area</label>
-                        <select id="filter-area">
+                        <select id="filter-area" onchange="renderFeed()">
                             <option value="ALL">All areas</option>
                         </select>
                     </div>
@@ -702,7 +664,7 @@
         }
 
         // ============================================================
-        // SEARCHABLE ZONE + AREA
+        // SEARCHABLE ZONE (No Area dropdown - using filter row instead)
         // ============================================================
         function searchZone() {
             const input = document.getElementById('zone-search');
@@ -711,7 +673,6 @@
 
             if (!query) {
                 suggestions.classList.remove('show');
-                document.getElementById('area-filter').classList.remove('show');
                 return;
             }
 
@@ -738,27 +699,7 @@
             document.getElementById('zone-search').value = zoneName;
             document.getElementById('zone-suggestions').classList.remove('show');
             selectedZoneId = zoneId;
-            selectedAreaId = null;
             document.getElementById('zone-status').textContent = zoneName;
-
-            populateAreas(zoneId);
-            document.getElementById('area-filter').classList.add('show');
-            renderFeed();
-        }
-
-        function populateAreas(zoneId) {
-            const areaSelect = document.getElementById('area-select');
-            const areas = getAreas(zoneId);
-            
-            areaSelect.innerHTML = '<option value="">All Areas</option>';
-            areas.forEach(area => {
-                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-            });
-        }
-
-        function onAreaChange() {
-            const areaSelect = document.getElementById('area-select');
-            selectedAreaId = areaSelect.value ? parseInt(areaSelect.value) : null;
             renderFeed();
         }
 
@@ -831,8 +772,10 @@
                 filtered = filtered.filter(item => item.zone_id === selectedZoneId);
             }
 
-            if (selectedAreaId) {
-                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            // Area filter from filter row
+            const areaFilter = document.getElementById('filter-area').value;
+            if (areaFilter !== 'ALL') {
+                filtered = filtered.filter(item => item.area_id == areaFilter);
             }
 
             const titleFilter = document.getElementById('filter-title').value.toLowerCase();
