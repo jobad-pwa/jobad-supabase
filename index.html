@@ -547,6 +547,11 @@
             color: #1e293b;
             margin-bottom: 2px;
         }
+        .edit-field label .limit-hint {
+            font-size: 9px;
+            color: #94a3b8;
+            font-weight: 400;
+        }
         .edit-field input, .edit-field select, .edit-field textarea {
             width: 100%;
             padding: 8px 12px;
@@ -564,6 +569,16 @@
             min-height: 60px;
         }
         .edit-field select option { padding: 4px; }
+
+        .char-counter {
+            text-align: right;
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        .char-counter .over-limit {
+            color: #dc2626;
+        }
 
         .edit-activate-btn {
             width: 100%;
@@ -800,7 +815,7 @@
                         <div class="section-desc" id="recruiter-desc">Create your recruiter profile to post jobs and find candidates.</div>
                         <div id="recruiter-input-area">
                             <div class="section-input">
-                                <input type="text" id="recruiter-company" placeholder="Company Name">
+                                <input type="text" id="recruiter-company" placeholder="Company Name" maxlength="100">
                                 <button class="section-btn section-btn-green" onclick="saveRecruiterProfile()">Save & Activate</button>
                             </div>
                         </div>
@@ -851,23 +866,23 @@
                     </div>
 
                     <div class="edit-field">
-                        <label>Full Name *</label>
-                        <input type="text" id="edit-seeker-name" placeholder="Enter your full name">
+                        <label>Full Name * <span class="limit-hint">(max 50 chars)</span></label>
+                        <input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50">
                     </div>
 
                     <div class="edit-field">
-                        <label>Job Title *</label>
-                        <input type="text" id="edit-seeker-title" placeholder="Enter your job title">
+                        <label>Job Title * <span class="limit-hint">(max 50 chars)</span></label>
+                        <input type="text" id="edit-seeker-title" placeholder="Enter your job title" maxlength="50">
                     </div>
 
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div class="edit-field">
-                            <label>Experience *</label>
-                            <input type="text" id="edit-seeker-exp" placeholder="Years">
+                            <label>Experience (Years) <span class="limit-hint">(0-99)</span></label>
+                            <input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="1">
                         </div>
                         <div class="edit-field">
-                            <label>Expected Salary</label>
-                            <input type="text" id="edit-seeker-salary" placeholder="₹15 LPA">
+                            <label>Expected Salary (Monthly) <span class="limit-hint">(max ₹99,99,999)</span></label>
+                            <input type="number" id="edit-seeker-salary" placeholder="e.g., 50000" min="0" max="9999999" step="1000">
                         </div>
                     </div>
 
@@ -881,8 +896,8 @@
                     </div>
 
                     <div class="edit-field">
-                        <label>Notice Period (days)</label>
-                        <input type="text" id="edit-seeker-notice" placeholder="30">
+                        <label>Notice Period (days) <span class="limit-hint">(0-365)</span></label>
+                        <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1">
                     </div>
 
                     <div class="edit-field">
@@ -900,13 +915,16 @@
                     </div>
 
                     <div class="edit-field">
-                        <label>Skills *</label>
-                        <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React, AWS">
+                        <label>Skills <span class="limit-hint">(max 100 chars, comma separated)</span></label>
+                        <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React, AWS" maxlength="100">
                     </div>
 
                     <div class="edit-field">
-                        <label>About Me</label>
-                        <textarea id="edit-seeker-about" rows="3" placeholder="Write about yourself..."></textarea>
+                        <label>About Me <span class="limit-hint">(max 200 characters)</span></label>
+                        <textarea id="edit-seeker-about" rows="3" placeholder="Write about yourself..." maxlength="200"></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span> / 200
+                        </div>
                     </div>
 
                     <button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button>
@@ -941,7 +959,7 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // ZONE & AREA DATA (with "All Zone" options)
+        // ZONE & AREA DATA
         // ============================================================
         const ZONES = [
             { zone_id: 100, zone_name: "Hyderabad" },
@@ -951,12 +969,10 @@
         ];
 
         const AREAS = [
-            // "All Zone" options for searching entire zone
             { area_id: 100000, zone_id: 100, area_name: "All Hyderabad" },
             { area_id: 200000, zone_id: 200, area_name: "All North Telangana" },
             { area_id: 300000, zone_id: 300, area_name: "All East Telangana" },
             { area_id: 400000, zone_id: 400, area_name: "All South Telangana" },
-            // Hyderabad (zone_id: 100)
             { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
             { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
             { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
@@ -971,7 +987,6 @@
             { area_id: 100997, zone_id: 100, area_name: "Medak" },
             { area_id: 100998, zone_id: 100, area_name: "Sangareddy" },
             { area_id: 100999, zone_id: 100, area_name: "Zahirabad" },
-            // North Telangana (zone_id: 200)
             { area_id: 200001, zone_id: 200, area_name: "Adilabad" },
             { area_id: 200002, zone_id: 200, area_name: "Asifabad" },
             { area_id: 200003, zone_id: 200, area_name: "Mancherial" },
@@ -983,7 +998,6 @@
             { area_id: 200009, zone_id: 200, area_name: "Sircilla" },
             { area_id: 200010, zone_id: 200, area_name: "Kamareddy" },
             { area_id: 200011, zone_id: 200, area_name: "Siddipet" },
-            // East Telangana (zone_id: 300)
             { area_id: 300001, zone_id: 300, area_name: "Warangal" },
             { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
             { area_id: 300003, zone_id: 300, area_name: "Khammam" },
@@ -993,7 +1007,6 @@
             { area_id: 300007, zone_id: 300, area_name: "Kothagudem" },
             { area_id: 300008, zone_id: 300, area_name: "Bhuvanagiri" },
             { area_id: 300009, zone_id: 300, area_name: "Jangaon" },
-            // South Telangana (zone_id: 400)
             { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
             { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
             { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
@@ -1050,8 +1063,20 @@
         let selectedAreaId = null;
         let feedItems = [];
         let currentPage = 'home';
-        let isSeekerProfileActive = false;
-        let isRecruiterProfileActive = false;
+
+        // ============================================================
+        // CHARACTER COUNTER
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            
+            if (aboutTextarea && charCount) {
+                aboutTextarea.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+        });
 
         // ============================================================
         // NAVIGATION FUNCTIONS
@@ -1096,7 +1121,7 @@
                 document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
                 document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
                 document.getElementById('edit-seeker-exp').value = currentUser.total_experience_years || '';
-                document.getElementById('edit-seeker-salary').value = currentUser.expected_salary_monthly ? `₹${currentUser.expected_salary_monthly}` : '';
+                document.getElementById('edit-seeker-salary').value = currentUser.expected_salary_monthly || '';
                 document.getElementById('edit-seeker-skills').value = currentUser.skills_comma_separated || '';
                 document.getElementById('edit-seeker-about').value = currentUser.professional_summary || '';
                 document.getElementById('edit-seeker-gender').value = currentUser.gender || 0;
@@ -1109,6 +1134,13 @@
                         document.getElementById('edit-seeker-area').value = currentUser.area_id;
                     }
                 }
+            }
+            
+            // Reset char counter
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            if (aboutTextarea && charCount) {
+                charCount.textContent = aboutTextarea.value.length;
             }
         }
 
@@ -1164,7 +1196,6 @@
             
             // Check seeker profile
             if (currentUser.full_name && currentUser.full_name.trim() !== '') {
-                isSeekerProfileActive = true;
                 document.getElementById('seeker-badge').textContent = '✅ Active';
                 document.getElementById('seeker-badge').className = 'section-badge';
                 document.getElementById('seeker-badge').style.background = '#dcfce7';
@@ -1181,7 +1212,6 @@
                 document.getElementById('seeker-display-location').textContent = areaName ? `${zoneName} - ${areaName}` : zoneName || 'Not set';
                 document.getElementById('seeker-section').className = 'profile-section profile-active';
             } else {
-                isSeekerProfileActive = false;
                 document.getElementById('seeker-badge').textContent = '⚠️ Required to Apply';
                 document.getElementById('seeker-badge').className = 'section-badge';
                 document.getElementById('seeker-badge').style.background = '#fef3c7';
@@ -1194,7 +1224,6 @@
             
             // Check recruiter profile
             if (currentUser.company_name && currentUser.company_name.trim() !== '') {
-                isRecruiterProfileActive = true;
                 document.getElementById('recruiter-badge').textContent = '✅ Active';
                 document.getElementById('recruiter-badge').className = 'section-badge';
                 document.getElementById('recruiter-badge').style.background = '#dcfce7';
@@ -1205,7 +1234,6 @@
                 document.getElementById('recruiter-display-company').textContent = currentUser.company_name;
                 document.getElementById('recruiter-section').className = 'profile-section profile-active';
             } else {
-                isRecruiterProfileActive = false;
                 document.getElementById('recruiter-badge').textContent = '⚠️ Required to Post Jobs';
                 document.getElementById('recruiter-badge').className = 'section-badge';
                 document.getElementById('recruiter-badge').style.background = '#fef3c7';
@@ -1221,7 +1249,7 @@
             const name = document.getElementById('edit-seeker-name').value.trim();
             const title = document.getElementById('edit-seeker-title').value.trim();
             const exp = document.getElementById('edit-seeker-exp').value.trim();
-            const salary = document.getElementById('edit-seeker-salary').value.replace(/[^0-9]/g, '');
+            const salary = document.getElementById('edit-seeker-salary').value.trim();
             const skills = document.getElementById('edit-seeker-skills').value.trim();
             const about = document.getElementById('edit-seeker-about').value.trim();
             const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
@@ -1229,11 +1257,39 @@
             const gender = parseInt(document.getElementById('edit-seeker-gender').value);
             const notice = parseInt(document.getElementById('edit-seeker-notice').value) || 0;
             
+            // Validation
             if (!name) {
                 showToast('⚠️ Please enter your full name');
                 return;
             }
-            
+            if (name.length > 50) {
+                showToast('⚠️ Name must be less than 50 characters');
+                return;
+            }
+            if (title.length > 50) {
+                showToast('⚠️ Job title must be less than 50 characters');
+                return;
+            }
+            if (exp && (parseInt(exp) > 99 || parseInt(exp) < 0)) {
+                showToast('⚠️ Experience must be between 0-99 years');
+                return;
+            }
+            if (salary && parseInt(salary) > 9999999) {
+                showToast('⚠️ Salary cannot exceed ₹99,99,999');
+                return;
+            }
+            if (notice > 365 || notice < 0) {
+                showToast('⚠️ Notice period must be between 0-365 days');
+                return;
+            }
+            if (skills.length > 100) {
+                showToast('⚠️ Skills must be less than 100 characters');
+                return;
+            }
+            if (about.length > 200) {
+                showToast('⚠️ About Me must be less than 200 characters');
+                return;
+            }
             if (!zoneId) {
                 showToast('⚠️ Please select your zone');
                 return;
@@ -1274,6 +1330,10 @@
             
             if (!company) {
                 showToast('⚠️ Please enter company name');
+                return;
+            }
+            if (company.length > 100) {
+                showToast('⚠️ Company name must be less than 100 characters');
                 return;
             }
             
@@ -1608,7 +1668,7 @@
                     <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
                     <span class="badge ${item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job'}">${item.type === 'SEEKER' ? 'SEEKER' : 'JOB'}</span>
                 </div>
-            `}).join('');
+            `).join('');
         }
 
         function openDetail(type, title, exp, skills, salary, company, desc, location, contact) {
