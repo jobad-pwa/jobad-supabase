@@ -494,6 +494,25 @@
         .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
         .edit-field textarea { resize: vertical; min-height: 50px; }
 
+        /* Salary input with currency display */
+        .salary-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .salary-input-wrapper .currency-symbol {
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            pointer-events: none;
+        }
+        .salary-input-wrapper input {
+            padding-left: 28px;
+            text-align: left;
+        }
+
         .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
         .edit-activate-btn {
             width: 100%;
@@ -712,7 +731,7 @@
         <div id="edit-seeker-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="edit-page-header">
-                    <h2>👤 Job Profile</h2>
+                    <h2>👤 Job Seeker Profile</h2>
                     <button class="cancel-btn" onclick="goToProfile()">Cancel</button>
                 </div>
 
@@ -749,18 +768,21 @@
                         </div>
                         <div class="edit-field">
                             <label>Expected Monthly Salary</label>
-                            <input type="number" id="edit-seeker-salary" placeholder="Monthly salary" min="0" max="9999999" step="1000">
+                            <div class="salary-input-wrapper">
+                                <span class="currency-symbol">₹</span>
+                                <input type="text" id="edit-seeker-salary" placeholder="50,000" inputmode="numeric">
+                            </div>
                         </div>
                     </div>
 
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div class="edit-field">
                             <label>Notice (days)</label>
-                            <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1" style="width:80px;">
+                            <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1">
                         </div>
                         <div class="edit-field">
                             <label>Skills (comma)</label>
-                            <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100" style="width:100%;">
+                            <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100">
                         </div>
                     </div>
 
@@ -912,6 +934,22 @@
         }
 
         // ============================================================
+        // SALARY FORMATTER
+        // ============================================================
+        function formatSalaryDisplay(value) {
+            if (!value) return '';
+            // Remove all non-digit characters
+            const num = value.toString().replace(/[^0-9]/g, '');
+            if (!num) return '';
+            return Number(num).toLocaleString('en-IN');
+        }
+
+        function parseSalaryValue(value) {
+            if (!value) return '';
+            return value.toString().replace(/[^0-9]/g, '');
+        }
+
+        // ============================================================
         // STATE
         // ============================================================
         let currentMobile = '';
@@ -935,6 +973,22 @@
                     charCount.textContent = this.value.length;
                 });
             }
+
+            // Salary input formatter
+            const salaryInput = document.getElementById('edit-seeker-salary');
+            if (salaryInput) {
+                salaryInput.addEventListener('input', function() {
+                    const cursorPos = this.selectionStart;
+                    const rawValue = parseSalaryValue(this.value);
+                    if (rawValue) {
+                        const formatted = formatSalaryDisplay(rawValue);
+                        this.value = formatted;
+                        // Keep cursor at end
+                        this.setSelectionRange(this.value.length, this.value.length);
+                    }
+                });
+            }
+
             populateEditZones();
         });
 
@@ -979,7 +1033,8 @@
                 document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
                 document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
                 document.getElementById('edit-seeker-exp').value = currentUser.total_experience_years || '';
-                document.getElementById('edit-seeker-salary').value = currentUser.expected_salary_monthly || '';
+                const salaryVal = currentUser.expected_salary_monthly || '';
+                document.getElementById('edit-seeker-salary').value = salaryVal ? formatSalaryDisplay(salaryVal) : '';
                 document.getElementById('edit-seeker-skills').value = currentUser.skills_comma_separated || '';
                 document.getElementById('edit-seeker-about').value = currentUser.professional_summary || '';
                 document.getElementById('edit-seeker-gender').value = currentUser.gender || 0;
@@ -1094,7 +1149,8 @@
             const name = document.getElementById('edit-seeker-name').value.trim();
             const title = document.getElementById('edit-seeker-title').value.trim();
             const exp = document.getElementById('edit-seeker-exp').value.trim();
-            const salary = document.getElementById('edit-seeker-salary').value.trim();
+            const salaryRaw = document.getElementById('edit-seeker-salary').value;
+            const salary = parseSalaryValue(salaryRaw);
             const skills = document.getElementById('edit-seeker-skills').value.trim();
             const about = document.getElementById('edit-seeker-about').value.trim();
             const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
