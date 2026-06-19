@@ -190,6 +190,7 @@
             padding-bottom: 8px;
             flex-shrink: 0;
             border-bottom: 1px solid #f1f5f9;
+            position: relative;
         }
         .home-header .logo {
             font-size: 22px;
@@ -201,39 +202,66 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            position: relative;
         }
-        .home-header .gender-icon {
-            width: 32px;
-            height: 32px;
+        .home-header .avatar-btn {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            font-weight: 700;
             border: 2px solid #e2e8f0;
             background: #f8fafc;
             cursor: pointer;
-            flex-shrink: 0;
-        }
-        .home-header .gender-icon.male { color: #2563eb; border-color: #2563eb; }
-        .home-header .gender-icon.female { color: #ec4899; border-color: #ec4899; }
-        .home-header .gender-icon.other { color: #8b5cf6; border-color: #8b5cf6; }
-        .home-header .logout-icon {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 8px;
-            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
             transition: 0.2s;
-            width: auto;
+            padding: 0;
         }
-        .home-header .logout-icon:hover { 
-            color: #dc2626; 
-            background: #fee2e2;
+        .home-header .avatar-btn:hover { border-color: #2563eb; background: #eff6ff; }
+        .home-header .avatar-btn.male { color: #2563eb; border-color: #2563eb; }
+        .home-header .avatar-btn.female { color: #ec4899; border-color: #ec4899; }
+        .home-header .avatar-btn.other { color: #8b5cf6; border-color: #8b5cf6; }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            min-width: 180px;
+            z-index: 100;
+            display: none;
+            overflow: hidden;
         }
+        .profile-dropdown.show { display: block; }
+        .profile-dropdown .dropdown-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: 0.15s;
+        }
+        .profile-dropdown .dropdown-item:hover { background: #f8fafc; }
+        .profile-dropdown .dropdown-item .icon { font-size: 16px; }
+        .profile-dropdown .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 4px 12px;
+        }
+        .profile-dropdown .dropdown-item.danger { color: #dc2626; }
+        .profile-dropdown .dropdown-item.danger:hover { background: #fef2f2; }
 
         .page-content {
             flex: 1;
@@ -489,19 +517,33 @@
         .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
         .profile-active .section-badge { background: #dcfce7; color: #166534; }
 
-        .logout-btn {
-            width: 100%;
-            padding: 10px;
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fca5a5;
+        /* Action Required Banner */
+        .action-required {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
             border-radius: 10px;
-            font-size: 13px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-required .icon { font-size: 20px; }
+        .action-required .text { font-size: 12px; color: #92400e; }
+        .action-required .text strong { display: block; font-size: 13px; }
+        .action-required .btn-action {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 4px;
+            width: auto;
+            flex-shrink: 0;
         }
-        .logout-btn:hover { background: #fecaca; }
+        .action-required .btn-action:hover { background: #1d4ed8; }
 
         /* EDIT SEEKER */
         .edit-page-header {
@@ -792,11 +834,15 @@
             border: none;
         }
         .detail-actions .btn-call { background: #16a34a; color: white; }
-        .detail-actions .btn-call:hover { background: #15803d; }
+        .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
         .detail-actions .btn-whatsapp { background: #25D366; color: white; }
-        .detail-actions .btn-whatsapp:hover { background: #1da851; }
+        .detail-actions .btn-whatsapp:hover:not(:disabled) { background: #1da851; }
         .detail-actions .btn-close { background: #6b7280; color: white; }
         .detail-actions .btn-close:hover { background: #4b5563; }
+        .detail-actions button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .type-badge {
             display: inline-block;
             padding: 2px 12px;
@@ -806,6 +852,43 @@
         }
         .type-badge.job { background: #dbeafe; color: #1e40af; }
         .type-badge.seeker { background: #dcfce7; color: #166534; }
+
+        /* Modal */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            border-radius: 24px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: #1e293b; }
+        .modal-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
+        .modal-box input { text-align: left; margin-bottom: 8px; }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .modal-box .modal-actions button { flex: 1; padding: 10px; font-size: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; }
+        .modal-box .modal-actions .btn-cancel { background: #f1f5f9; color: #475569; }
+        .modal-box .modal-actions .btn-cancel:hover { background: #e2e8f0; }
+        .modal-box .modal-actions .btn-save { background: #2563eb; color: white; }
+        .modal-box .modal-actions .btn-save:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
@@ -872,9 +955,20 @@
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="header-right">
-                        <button class="logout-icon" onclick="logout()" title="Logout">🚪</button>
-                        <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
-                            <span id="gender-symbol">👤</span>
+                        <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
+                            <span id="avatar-symbol">👤</span>
+                        </button>
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <button class="dropdown-item" onclick="closeDropdown(); goToProfile();">
+                                <span class="icon">👤</span> View Profile
+                            </button>
+                            <button class="dropdown-item" onclick="closeDropdown(); openChangePin();">
+                                <span class="icon">🔑</span> Change PIN
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item danger" onclick="closeDropdown(); logout();">
+                                <span class="icon">🚪</span> Logout
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -958,9 +1052,20 @@
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="header-right">
-                        <button class="logout-icon" onclick="logout()" title="Logout">🚪</button>
-                        <div class="gender-icon" id="gender-icon-profile" style="display:none;" onclick="goToProfile()">
-                            <span id="gender-symbol-profile">👤</span>
+                        <button class="avatar-btn" id="avatar-btn-profile" onclick="toggleDropdown()">
+                            <span id="avatar-symbol-profile">👤</span>
+                        </button>
+                        <div class="profile-dropdown" id="profile-dropdown-profile">
+                            <button class="dropdown-item" onclick="closeDropdown(); goToProfile();">
+                                <span class="icon">👤</span> View Profile
+                            </button>
+                            <button class="dropdown-item" onclick="closeDropdown(); openChangePin();">
+                                <span class="icon">🔑</span> Change PIN
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item danger" onclick="closeDropdown(); logout();">
+                                <span class="icon">🚪</span> Logout
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1158,6 +1263,16 @@
                 </div>
 
                 <div class="postjob-scroll">
+                    <!-- Recruiter Warning -->
+                    <div id="recruiter-warning" class="action-required" style="display:none;">
+                        <span class="icon">⚠️</span>
+                        <div class="text">
+                            <strong>Recruiter Profile Required</strong>
+                            Please set your company name in the profile to post jobs.
+                        </div>
+                        <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
+                    </div>
+
                     <div class="form-group">
                         <label class="form-label">Company <span class="required">*</span></label>
                         <input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100">
@@ -1270,6 +1385,26 @@
                         <span id="detail-type-badge"></span>
                     </div>
 
+                    <!-- Recruiter Warning for Job View -->
+                    <div id="detail-job-warning" class="action-required" style="display:none;">
+                        <span class="icon">⚠️</span>
+                        <div class="text">
+                            <strong>Recruiter Profile Required</strong>
+                            Please set your company name to contact job seekers.
+                        </div>
+                        <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
+                    </div>
+
+                    <!-- Seeker Warning for Seeker View -->
+                    <div id="detail-seeker-warning" class="action-required" style="display:none;">
+                        <span class="icon">⚠️</span>
+                        <div class="text">
+                            <strong>Job Seeker Profile Required</strong>
+                            Please complete your job seeker profile to apply/contact for jobs.
+                        </div>
+                        <button class="btn-action" onclick="goToEditSeeker()">Create Profile</button>
+                    </div>
+
                     <div class="grid-2" style="gap:8px;">
                         <div class="detail-field">
                             <label>Experience</label>
@@ -1343,8 +1478,8 @@
                     </div>
 
                     <div class="detail-actions">
-                        <button class="btn-call" onclick="makeCall()">📞 Call</button>
-                        <button class="btn-whatsapp" onclick="sendWhatsApp()">💬 WhatsApp</button>
+                        <button class="btn-call" id="detail-call-btn" onclick="makeCall()">📞 Call</button>
+                        <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">💬 WhatsApp</button>
                         <button class="btn-close" onclick="closeDetail()">Close</button>
                     </div>
                     <div class="bottom-spacer"></div>
@@ -1366,6 +1501,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- CHANGE PIN MODAL -->
+        <div class="modal-overlay" id="change-pin-modal">
+            <div class="modal-box">
+                <h3>🔑 Change PIN</h3>
+                <p>Enter your new 4-digit PIN</p>
+                <input type="password" id="new-pin" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric">
+                <input type="password" id="confirm-pin" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeChangePin()">Cancel</button>
+                    <button class="btn-save" onclick="saveNewPin()">Save PIN</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1379,7 +1528,7 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // ZONE & AREA DATA
+        // ZONE & AREA DATA (same as before)
         // ============================================================
         const ZONES = [
             { zone_id: 100, zone_name: "Hyderabad" },
@@ -1607,6 +1756,13 @@
             document.getElementById('reg-pin-confirm').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     registerUser();
+                }
+            });
+
+            // Click outside dropdown
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.header-right')) {
+                    closeDropdown();
                 }
             });
 
@@ -1953,9 +2109,83 @@
             document.getElementById('step4').classList.add('hidden');
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('home-page').classList.remove('hidden-page');
-            updateGenderIcon(currentUser);
+            updateAvatar();
             setTimeout(autoDetectLocation, 500);
             await fetchFeedData();
+        }
+
+        // ============================================================
+        // AVATAR & DROPDOWN
+        // ============================================================
+        function updateAvatar() {
+            if (!currentUser) return;
+            const gender = currentUser.gender || 0;
+            let symbol = '👤';
+            let cls = '';
+            if (gender === 1) { symbol = '♀'; cls = 'female'; }
+            else if (gender === 2) { symbol = '♂'; cls = 'male'; }
+            else { cls = 'other'; }
+            
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                btn.className = `avatar-btn ${cls}`;
+                btn.querySelector('span').textContent = symbol;
+            });
+        }
+
+        function toggleDropdown() {
+            const dropdowns = document.querySelectorAll('.profile-dropdown');
+            dropdowns.forEach(d => d.classList.toggle('show'));
+        }
+
+        function closeDropdown() {
+            document.querySelectorAll('.profile-dropdown').forEach(d => d.classList.remove('show'));
+        }
+
+        // ============================================================
+        // CHANGE PIN
+        // ============================================================
+        function openChangePin() {
+            document.getElementById('change-pin-modal').classList.add('show');
+            document.getElementById('new-pin').value = '';
+            document.getElementById('confirm-pin').value = '';
+            document.getElementById('new-pin').focus();
+        }
+
+        function closeChangePin() {
+            document.getElementById('change-pin-modal').classList.remove('show');
+        }
+
+        async function saveNewPin() {
+            const newPin = document.getElementById('new-pin').value.trim();
+            const confirmPin = document.getElementById('confirm-pin').value.trim();
+
+            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                showToast('⚠️ Enter a valid 4-digit PIN');
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                showToast('⚠️ PINs do not match');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentUser.mobile, new_pin: newPin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✅ PIN changed successfully!');
+                    closeChangePin();
+                } else {
+                    showToast('❌ Failed to change PIN: ' + data.error);
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            }
         }
 
         // ============================================================
@@ -1989,7 +2219,6 @@
                 startOTPTimer();
                 document.getElementById('resend-otp').disabled = true;
                 document.getElementById('resend-otp').onclick = function() {
-                    // Re-send reset OTP
                     const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
                     sessionStorage.setItem('reset_otp_' + mobile, newOtp);
                     sessionStorage.setItem('reset_otp_expiry_' + mobile, Date.now() + 300000);
@@ -2031,7 +2260,6 @@
             sessionStorage.removeItem('reset_otp_' + mobile);
             sessionStorage.removeItem('reset_otp_expiry_' + mobile);
 
-            // Show PIN reset
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
             document.getElementById('reg-display-mobile').textContent = mobile;
@@ -2128,6 +2356,13 @@
         async function publishJob() {
             if (!currentUser) {
                 showToast('⚠️ Please login first');
+                return;
+            }
+
+            // Check recruiter profile
+            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                showToast('⚠️ Please set your company name in profile first');
+                goToProfile();
                 return;
             }
 
@@ -2342,6 +2577,46 @@
             document.getElementById('detail-views').textContent = data.views || 0;
             document.getElementById('detail-calls').textContent = data.calls || 0;
             document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
+
+            // ACCESS CONTROL: Check permissions for Call/WhatsApp
+            const callBtn = document.getElementById('detail-call-btn');
+            const waBtn = document.getElementById('detail-wa-btn');
+            const jobWarning = document.getElementById('detail-job-warning');
+            const seekerWarning = document.getElementById('detail-seeker-warning');
+
+            // Hide warnings initially
+            jobWarning.style.display = 'none';
+            seekerWarning.style.display = 'none';
+
+            if (isJob) {
+                // Viewing a JOB - need recruiter profile to contact
+                if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                    jobWarning.style.display = 'flex';
+                    callBtn.disabled = true;
+                    waBtn.disabled = true;
+                    callBtn.className = 'btn-call btn-disabled';
+                    waBtn.className = 'btn-whatsapp btn-disabled';
+                } else {
+                    callBtn.disabled = false;
+                    waBtn.disabled = false;
+                    callBtn.className = 'btn-call';
+                    waBtn.className = 'btn-whatsapp';
+                }
+            } else {
+                // Viewing a SEEKER - need job seeker profile to contact
+                if (!currentUser.full_name || currentUser.full_name.trim() === '') {
+                    seekerWarning.style.display = 'flex';
+                    callBtn.disabled = true;
+                    waBtn.disabled = true;
+                    callBtn.className = 'btn-call btn-disabled';
+                    waBtn.className = 'btn-whatsapp btn-disabled';
+                } else {
+                    callBtn.disabled = false;
+                    waBtn.disabled = false;
+                    callBtn.className = 'btn-call';
+                    waBtn.className = 'btn-whatsapp';
+                }
+            }
         }
 
         function closeDetail() {
@@ -2354,8 +2629,20 @@
 
         function makeCall() {
             const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A') {
+            if (!contact || contact === 'N/A' || contact === '') {
                 showToast('⚠️ No contact number available');
+                return;
+            }
+            // Check permissions based on type
+            const isJob = currentDetailType === 'JOB';
+            if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
+                showToast('⚠️ Please set your company name to contact job seekers');
+                goToProfile();
+                return;
+            }
+            if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
+                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
+                goToEditSeeker();
                 return;
             }
             window.location.href = `tel:${contact}`;
@@ -2363,8 +2650,20 @@
 
         function sendWhatsApp() {
             const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A') {
+            if (!contact || contact === 'N/A' || contact === '') {
                 showToast('⚠️ No contact number available');
+                return;
+            }
+            // Check permissions based on type
+            const isJob = currentDetailType === 'JOB';
+            if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
+                showToast('⚠️ Please set your company name to contact job seekers');
+                goToProfile();
+                return;
+            }
+            if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
+                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
+                goToEditSeeker();
                 return;
             }
             const title = document.getElementById('detail-title').textContent;
@@ -2393,24 +2692,40 @@
                 showToast('⚠️ Please login first');
                 return;
             }
-            document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+
+            // Check recruiter profile
+            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                document.getElementById('recruiter-warning').style.display = 'flex';
+                document.getElementById('pj-company').value = '';
+                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = true);
+                document.getElementById('pj-publish-btn').disabled = true;
+                document.getElementById('pj-publish-btn').textContent = '⚠️ Complete Recruiter Profile First';
+            } else {
+                document.getElementById('recruiter-warning').style.display = 'none';
+                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = false);
+                document.getElementById('pj-publish-btn').disabled = false;
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+                document.getElementById('pj-company').value = currentUser.company_name;
+            }
+
             document.getElementById('pj-publish-btn').dataset.editing = 'false';
             document.getElementById('pj-publish-btn').dataset.jobid = '';
-            document.getElementById('pj-title').value = '';
-            document.getElementById('pj-skills').value = '';
-            document.getElementById('pj-description').value = '';
-            document.getElementById('pj-salary').value = '';
-            document.getElementById('pj-experience').value = '3.5';
-            document.getElementById('pj-company').value = currentUser.company_name || '';
-            document.getElementById('pj-gender').value = '0';
-            document.getElementById('pj-zone').value = '100';
-            updatePostAreas();
-            const d = new Date();
-            d.setDate(d.getDate() + 30);
-            document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
-            document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
-                el.dispatchEvent(new Event('input'));
-            });
+            if (!document.getElementById('recruiter-warning').style.display || document.getElementById('recruiter-warning').style.display === 'none') {
+                document.getElementById('pj-title').value = '';
+                document.getElementById('pj-skills').value = '';
+                document.getElementById('pj-description').value = '';
+                document.getElementById('pj-salary').value = '';
+                document.getElementById('pj-experience').value = '3.5';
+                document.getElementById('pj-gender').value = '0';
+                document.getElementById('pj-zone').value = '100';
+                updatePostAreas();
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
+                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                    el.dispatchEvent(new Event('input'));
+                });
+            }
 
             currentPage = 'postjob';
             document.getElementById('home-page').classList.add('hidden-page');
@@ -2420,10 +2735,6 @@
             document.getElementById('detail-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
-            if (currentUser && currentUser.company_name) {
-                document.getElementById('pj-company').value = currentUser.company_name;
-            }
-            updatePostAreas();
         }
 
         function goToProfile() {
@@ -2479,37 +2790,6 @@
                 }
             } else if (confirm('Cancel posting this job?')) {
                 goHome();
-            }
-        }
-
-        // ============================================================
-        // GENDER ICON
-        // ============================================================
-        function updateGenderIcon(user) {
-            const iconContainer = document.getElementById('gender-icon');
-            const symbol = document.getElementById('gender-symbol');
-            const iconContainerProfile = document.getElementById('gender-icon-profile');
-            const symbolProfile = document.getElementById('gender-symbol-profile');
-            if (!user) {
-                if (iconContainer) iconContainer.style.display = 'none';
-                if (iconContainerProfile) iconContainerProfile.style.display = 'none';
-                return;
-            }
-            const gender = user.gender;
-            let icon = '👤';
-            let cls = 'gender-icon other';
-            if (gender === 0) { icon = '👤'; cls = 'gender-icon other'; }
-            else if (gender === 1) { icon = '♀'; cls = 'gender-icon female'; }
-            else if (gender === 2) { icon = '♂'; cls = 'gender-icon male'; }
-            if (iconContainer) {
-                iconContainer.style.display = 'flex';
-                iconContainer.className = cls;
-                if (symbol) symbol.textContent = icon;
-            }
-            if (iconContainerProfile) {
-                iconContainerProfile.style.display = 'flex';
-                iconContainerProfile.className = cls;
-                if (symbolProfile) symbolProfile.textContent = icon;
             }
         }
 
@@ -2736,8 +3016,9 @@
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('detail-page').classList.add('hidden-page');
             document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('gender-icon').style.display = 'none';
-            document.getElementById('gender-icon-profile').style.display = 'none';
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                btn.style.display = 'none';
+            });
             document.getElementById('mobile').value = '';
             document.getElementById('pin').value = '';
             document.getElementById('reg-pin').value = '';
