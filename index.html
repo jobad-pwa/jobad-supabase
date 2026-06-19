@@ -66,6 +66,8 @@
         .btn-yellow:hover { background: #b45309; }
         .btn-red { background: #dc2626; }
         .btn-red:hover { background: #b91c1c; }
+        .btn-outline { background: transparent; color: #2563eb; border: 2px solid #2563eb; }
+        .btn-outline:hover { background: #2563eb; color: white; }
         .msg {
             margin-top: 16px;
             padding: 12px;
@@ -355,7 +357,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .feed-card:hover { border-color: #3b82f6; }
+        .feed-card:hover { border-color: #3b82f6; background: #f8faff; }
         .feed-card .title { font-weight: 700; font-size: 13px; color: #0f172a; }
         .feed-card .meta { font-size: 10px; color: #475569; margin-top: 1px; }
         .feed-card .badge {
@@ -700,14 +702,14 @@
             display: inline-block;
         }
 
-        /* ===== VIEW JOB PAGE (read-only) ===== */
-        .viewjob-container {
+        /* ===== DETAIL VIEW PAGE (for jobs & seekers) ===== */
+        .detail-container {
             display: flex;
             flex-direction: column;
             height: 100%;
             width: 100%;
         }
-        .viewjob-header {
+        .detail-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -715,13 +717,13 @@
             flex-shrink: 0;
             border-bottom: 1px solid #f1f5f9;
         }
-        .viewjob-header .logo {
+        .detail-header .logo {
             font-size: 22px;
             font-weight: 900;
             color: #2563eb;
             cursor: pointer;
         }
-        .viewjob-header .cancel-btn {
+        .detail-header .cancel-btn {
             font-size: 14px;
             font-weight: 600;
             color: #6b7280;
@@ -732,20 +734,20 @@
             border-radius: 20px;
             transition: 0.2s;
         }
-        .viewjob-header .cancel-btn:hover { background: #f3f4f6; }
-        .viewjob-scroll {
+        .detail-header .cancel-btn:hover { background: #f3f4f6; }
+        .detail-scroll {
             flex: 1;
             overflow-y: auto;
             padding: 12px 0 8px 0;
             min-height: 0;
         }
-        .viewjob-scroll::-webkit-scrollbar { width: 3px; }
-        .viewjob-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .detail-scroll::-webkit-scrollbar { width: 3px; }
+        .detail-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        .view-field {
+        .detail-field {
             margin-bottom: 10px;
         }
-        .view-field label {
+        .detail-field label {
             font-size: 9px;
             font-weight: 700;
             color: #94a3b8;
@@ -754,14 +756,14 @@
             display: block;
             margin-bottom: 1px;
         }
-        .view-field .value {
+        .detail-field .value {
             font-size: 14px;
             font-weight: 500;
             color: #1e293b;
             padding: 4px 0;
             border-bottom: 1px solid #f1f5f9;
         }
-        .view-field .value-multiline {
+        .detail-field .value-multiline {
             font-size: 14px;
             font-weight: 500;
             color: #1e293b;
@@ -770,35 +772,35 @@
             white-space: pre-wrap;
             word-break: break-word;
         }
-        .view-stats {
+        .detail-stats {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
             margin-top: 4px;
         }
-        .view-stats .stat-item {
+        .detail-stats .stat-item {
             text-align: center;
             padding: 8px;
             background: #f8fafc;
             border-radius: 8px;
         }
-        .view-stats .stat-item .number {
+        .detail-stats .stat-item .number {
             font-size: 18px;
             font-weight: 700;
             color: #2563eb;
         }
-        .view-stats .stat-item .label {
+        .detail-stats .stat-item .label {
             font-size: 8px;
             color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .viewjob-actions {
+        .detail-actions {
             display: flex;
             gap: 8px;
             margin-top: 12px;
         }
-        .viewjob-actions button {
+        .detail-actions button {
             flex: 1;
             padding: 10px;
             font-size: 13px;
@@ -807,23 +809,21 @@
             cursor: pointer;
             border: none;
         }
-        .viewjob-actions .btn-edit { background: #2563eb; color: white; }
-        .viewjob-actions .btn-edit:hover { background: #1d4ed8; }
-        .viewjob-actions .btn-edit:disabled { opacity: 0.5; cursor: not-allowed; }
-        .viewjob-actions .btn-delete { background: #dc2626; color: white; }
-        .viewjob-actions .btn-delete:hover { background: #b91c1c; }
-        .viewjob-actions .btn-delete:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* Expired badge in view */
-        .expired-badge {
-            background: #fee2e2;
-            color: #dc2626;
+        .detail-actions .btn-call { background: #16a34a; color: white; }
+        .detail-actions .btn-call:hover { background: #15803d; }
+        .detail-actions .btn-whatsapp { background: #25D366; color: white; }
+        .detail-actions .btn-whatsapp:hover { background: #1da851; }
+        .detail-actions .btn-close { background: #6b7280; color: white; }
+        .detail-actions .btn-close:hover { background: #4b5563; }
+        .type-badge {
+            display: inline-block;
             padding: 2px 12px;
             border-radius: 12px;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 700;
-            display: inline-block;
         }
+        .type-badge.job { background: #dbeafe; color: #1e40af; }
+        .type-badge.seeker { background: #dcfce7; color: #166534; }
     </style>
 </head>
 <body>
@@ -1007,7 +1007,6 @@
                                 <p style="color:#64748b; margin-top:2px;">✅ Recruiter profile active</p>
                             </div>
                             <button class="section-btn" style="margin-top:6px; width:100%;" onclick="editRecruiterProfile()">✏️ Edit Company</button>
-                            <!-- My Jobs List -->
                             <div id="my-jobs-container" style="margin-top:10px; border-top:1px solid #e2e8f0; padding-top:10px;">
                                 <p style="font-size:11px; font-weight:600; color:#1e293b;">📋 My Posted Jobs</p>
                                 <div id="my-jobs-list"></div>
@@ -1135,7 +1134,7 @@
             </div>
         </div>
 
-        <!-- POST JOB PAGE (also used for editing) -->
+        <!-- POST JOB PAGE -->
         <div id="postjob-page" class="hidden-page" style="height:100%;">
             <div class="postjob-container">
                 <div class="postjob-header">
@@ -1239,88 +1238,99 @@
             </div>
         </div>
 
-        <!-- ===== VIEW JOB PAGE (read-only) ===== -->
-        <div id="viewjob-page" class="hidden-page" style="height:100%;">
-            <div class="viewjob-container">
-                <div class="viewjob-header">
+        <!-- ===== DETAIL VIEW PAGE ===== -->
+        <div id="detail-page" class="hidden-page" style="height:100%;">
+            <div class="detail-container">
+                <div class="detail-header">
                     <span class="logo" onclick="goHome()">JobAd</span>
-                    <button class="cancel-btn" onclick="closeViewJob()">Close</button>
+                    <button class="cancel-btn" onclick="closeDetail()">Close</button>
                 </div>
 
-                <div class="viewjob-scroll" id="viewjob-scroll">
+                <div class="detail-scroll" id="detail-scroll">
                     <div style="margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
                         <div>
-                            <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin:0;" id="view-job-title">Job Title</h3>
-                            <p style="font-size:11px; color:#64748b; margin:2px 0 0 0;" id="view-job-company">Company</p>
+                            <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin:0;" id="detail-title">Title</h3>
+                            <p style="font-size:11px; color:#64748b; margin:2px 0 0 0;" id="detail-company">Company</p>
                         </div>
-                        <span id="view-job-status"></span>
+                        <span id="detail-type-badge"></span>
                     </div>
 
                     <div class="grid-2" style="gap:8px;">
-                        <div class="view-field">
-                            <label>Min Experience</label>
-                            <div class="value" id="view-job-exp">--</div>
+                        <div class="detail-field">
+                            <label>Experience</label>
+                            <div class="value" id="detail-exp">--</div>
                         </div>
-                        <div class="view-field">
-                            <label>Max Salary (₹)</label>
-                            <div class="value" id="view-job-salary">--</div>
+                        <div class="detail-field">
+                            <label>Salary</label>
+                            <div class="value" id="detail-salary">--</div>
                         </div>
                     </div>
 
-                    <div class="view-field">
+                    <div class="detail-field" id="detail-gender-field">
                         <label>Gender Preference</label>
-                        <div class="value" id="view-job-gender">--</div>
+                        <div class="value" id="detail-gender">--</div>
                     </div>
 
                     <div class="grid-2" style="gap:8px;">
-                        <div class="view-field">
+                        <div class="detail-field">
                             <label>Zone</label>
-                            <div class="value" id="view-job-zone">--</div>
+                            <div class="value" id="detail-zone">--</div>
                         </div>
-                        <div class="view-field">
+                        <div class="detail-field">
                             <label>Area</label>
-                            <div class="value" id="view-job-area">--</div>
+                            <div class="value" id="detail-area">--</div>
                         </div>
                     </div>
 
-                    <div class="view-field">
+                    <div class="detail-field">
                         <label>Skills</label>
-                        <div class="value" id="view-job-skills">--</div>
+                        <div class="value" id="detail-skills">--</div>
                     </div>
 
-                    <div class="view-field">
+                    <div class="detail-field" id="detail-expiry-field">
                         <label>Expiry Date</label>
-                        <div class="value" id="view-job-expiry">--</div>
+                        <div class="value" id="detail-expiry">--</div>
                     </div>
 
-                    <div class="view-field">
-                        <label>Description</label>
-                        <div class="value-multiline" id="view-job-desc">--</div>
+                    <div class="detail-field" id="detail-notice-field">
+                        <label>Notice Period</label>
+                        <div class="value" id="detail-notice">--</div>
                     </div>
 
-                    <div class="view-field">
-                        <label>Posted Date</label>
-                        <div class="value" id="view-job-posted">--</div>
+                    <div class="detail-field">
+                        <label>Description / About</label>
+                        <div class="value-multiline" id="detail-desc">--</div>
                     </div>
 
-                    <div class="view-stats">
+                    <div class="detail-field">
+                        <label>Posted / Active Since</label>
+                        <div class="value" id="detail-posted">--</div>
+                    </div>
+
+                    <div class="detail-field">
+                        <label>Contact</label>
+                        <div class="value" id="detail-contact">--</div>
+                    </div>
+
+                    <div class="detail-stats">
                         <div class="stat-item">
-                            <div class="number" id="view-job-views">0</div>
+                            <div class="number" id="detail-views">0</div>
                             <div class="label">Views</div>
                         </div>
                         <div class="stat-item">
-                            <div class="number" id="view-job-calls">0</div>
+                            <div class="number" id="detail-calls">0</div>
                             <div class="label">Calls</div>
                         </div>
                         <div class="stat-item">
-                            <div class="number" id="view-job-whatsapp">0</div>
+                            <div class="number" id="detail-whatsapp">0</div>
                             <div class="label">WhatsApp</div>
                         </div>
                     </div>
 
-                    <div class="viewjob-actions" id="view-job-actions">
-                        <button class="btn-edit" id="view-edit-btn" onclick="openEditJob()">✏️ Edit</button>
-                        <button class="btn-delete" id="view-delete-btn" onclick="deleteJob()">🗑️ Delete</button>
+                    <div class="detail-actions">
+                        <button class="btn-call" onclick="makeCall()">📞 Call</button>
+                        <button class="btn-whatsapp" onclick="sendWhatsApp()">💬 WhatsApp</button>
+                        <button class="btn-close" onclick="closeDetail()">Close</button>
                     </div>
                     <div class="bottom-spacer"></div>
                 </div>
@@ -1480,6 +1490,8 @@
         let currentPage = 'home';
         let viewingJobId = null;
         let isEditingMode = false;
+        let currentDetailData = null;
+        let currentDetailType = null;
 
         // ============================================================
         // INIT
@@ -1671,7 +1683,6 @@
 
             try {
                 if (isEditing && editJobId) {
-                    // Update existing job
                     const { error } = await sb
                         .from('active_jobs')
                         .update(jobData)
@@ -1679,7 +1690,6 @@
                     if (error) throw error;
                     showToast('✅ Job updated successfully!');
                 } else {
-                    // New job
                     jobData.views = 0;
                     jobData.calls = 0;
                     jobData.whatsapp = 0;
@@ -1689,7 +1699,6 @@
                     showToast('✅ Job published successfully!');
                 }
 
-                // Reset form
                 document.getElementById('pj-publish-btn').dataset.editing = 'false';
                 document.getElementById('pj-publish-btn').dataset.jobid = '';
                 document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
@@ -1725,7 +1734,6 @@
             const container = document.getElementById('my-jobs-list');
             if (!container) return;
             try {
-                // Auto clean expired first
                 await autoCleanExpiredJobs();
 
                 const { data, error } = await sb
@@ -1754,18 +1762,9 @@
         }
 
         // ============================================================
-        // VIEW JOB (read-only)
+        // VIEW JOB (for profile)
         // ============================================================
-        let viewingJobData = null;
-
         async function viewJob(jobId) {
-            viewingJobId = jobId;
-            document.getElementById('viewjob-page').classList.remove('hidden-page');
-            document.getElementById('profile-page').classList.add('hidden-page');
-            document.getElementById('home-page').classList.add('hidden-page');
-            document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('edit-seeker-page').classList.add('hidden-page');
-
             try {
                 const { data, error } = await sb
                     .from('active_jobs')
@@ -1773,127 +1772,132 @@
                     .eq('job_id', jobId)
                     .single();
                 if (error) throw error;
-                viewingJobData = data;
-                populateViewJob(data);
+                openDetail(data, 'JOB');
             } catch (err) {
                 showToast('❌ Error loading job: ' + err.message);
-                closeViewJob();
             }
         }
 
-        function populateViewJob(job) {
-            const isExpired = new Date(job.expiry_date) < new Date();
-            document.getElementById('view-job-title').textContent = job.job_title || 'Untitled';
-            document.getElementById('view-job-company').textContent = job.company_name || 'Unknown';
-            document.getElementById('view-job-status').innerHTML = isExpired ? '<span class="expired-badge">⚠️ Expired</span>' : '';
-            document.getElementById('view-job-exp').textContent = job.min_experience_years || 0;
-            document.getElementById('view-job-salary').textContent = '₹' + (job.max_salary_monthly || 0).toLocaleString('en-IN');
+        // ============================================================
+        // OPEN DETAIL (from feed click)
+        // ============================================================
+        function openDetailFromFeed(item) {
+            if (item.type === 'JOB') {
+                // Fetch full job data from DB
+                const jobTitle = item.title;
+                const company = item.company;
+                // Try to find in feedItems with matching title and company
+                const fullJob = feedItems.find(f => f.type === 'JOB' && f.title === jobTitle && f.company === company);
+                if (fullJob && fullJob._raw) {
+                    openDetail(fullJob._raw, 'JOB');
+                } else {
+                    // Fallback: use the feed item data
+                    openDetail(item, 'JOB');
+                }
+            } else if (item.type === 'SEEKER') {
+                // Fetch full seeker data from DB
+                const seekerName = item.company;
+                const seekerTitle = item.title;
+                const fullSeeker = feedItems.find(f => f.type === 'SEEKER' && f.company === seekerName && f.title === seekerTitle);
+                if (fullSeeker && fullSeeker._raw) {
+                    openDetail(fullSeeker._raw, 'SEEKER');
+                } else {
+                    openDetail(item, 'SEEKER');
+                }
+            }
+        }
+
+        function openDetail(data, type) {
+            currentDetailData = data;
+            currentDetailType = type;
+            document.getElementById('detail-page').classList.remove('hidden-page');
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+
+            const isJob = type === 'JOB';
             const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
-            document.getElementById('view-job-gender').textContent = genderMap[job.preferred_gender] || 'No Preference';
-            document.getElementById('view-job-zone').textContent = getZoneName(job.zone_id);
-            document.getElementById('view-job-area').textContent = getAreaName(job.area_id);
-            document.getElementById('view-job-skills').textContent = job.skills_comma_separated || '—';
-            document.getElementById('view-job-expiry').textContent = job.expiry_date ? new Date(job.expiry_date).toLocaleDateString('en-IN') : '—';
-            document.getElementById('view-job-desc').textContent = job.job_description || '—';
-            document.getElementById('view-job-posted').textContent = job.posted_date ? new Date(job.posted_date).toLocaleString('en-IN') : '—';
-            document.getElementById('view-job-views').textContent = job.views || 0;
-            document.getElementById('view-job-calls').textContent = job.calls || 0;
-            document.getElementById('view-job-whatsapp').textContent = job.whatsapp || 0;
 
-            // Disable edit/delete if expired
-            document.getElementById('view-edit-btn').disabled = isExpired;
-            document.getElementById('view-delete-btn').disabled = isExpired;
-            document.getElementById('view-edit-btn').style.opacity = isExpired ? '0.5' : '1';
-            document.getElementById('view-delete-btn').style.opacity = isExpired ? '0.5' : '1';
+            document.getElementById('detail-title').textContent = data.job_title || data.title || 'Untitled';
+            document.getElementById('detail-company').textContent = data.company_name || data.company || 'Unknown';
+            document.getElementById('detail-type-badge').innerHTML = `<span class="type-badge ${isJob ? 'job' : 'seeker'}">${isJob ? 'JOB' : 'SEEKER'}</span>`;
+
+            document.getElementById('detail-exp').textContent = (data.min_experience_years || data.exp || 0) + ' yrs';
+            document.getElementById('detail-salary').textContent = data.max_salary_monthly ? '₹' + Number(data.max_salary_monthly).toLocaleString('en-IN') : (data.salary || 'Not specified');
+
+            if (isJob) {
+                document.getElementById('detail-gender-field').style.display = 'block';
+                document.getElementById('detail-gender').textContent = genderMap[data.preferred_gender] || 'No Preference';
+            } else {
+                document.getElementById('detail-gender-field').style.display = 'block';
+                document.getElementById('detail-gender').textContent = genderMap[data.gender] || 'Not Specified';
+            }
+
+            const zoneId = data.zone_id || 0;
+            const areaId = data.area_id || 0;
+            document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
+            document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
+
+            document.getElementById('detail-skills').textContent = data.skills_comma_separated || data.skills || '—';
+
+            if (isJob) {
+                document.getElementById('detail-expiry-field').style.display = 'block';
+                document.getElementById('detail-expiry').textContent = data.expiry_date ? new Date(data.expiry_date).toLocaleDateString('en-IN') : '—';
+                document.getElementById('detail-notice-field').style.display = 'none';
+            } else {
+                document.getElementById('detail-expiry-field').style.display = 'none';
+                document.getElementById('detail-notice-field').style.display = 'block';
+                document.getElementById('detail-notice').textContent = (data.notice_period_days || '—') + ' days';
+            }
+
+            document.getElementById('detail-desc').textContent = data.job_description || data.professional_summary || data.desc || '—';
+
+            const postedDate = data.posted_date || data.created_at || data.last_active;
+            document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
+
+            document.getElementById('detail-contact').textContent = data.mobile || data.contact || 'N/A';
+
+            document.getElementById('detail-views').textContent = data.views || 0;
+            document.getElementById('detail-calls').textContent = data.calls || 0;
+            document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
+
+            // Store contact for call/whatsapp
+            document.getElementById('detail-contact').dataset.contact = data.mobile || data.contact || '';
         }
 
         // ============================================================
-        // OPEN EDIT (reuse post job page)
+        // CLOSE DETAIL
         // ============================================================
-        function openEditJob() {
-            if (!viewingJobData) return;
-            if (new Date(viewingJobData.expiry_date) < new Date()) {
-                showToast('⚠️ Cannot edit expired job');
+        function closeDetail() {
+            currentDetailData = null;
+            currentDetailType = null;
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.getElementById('home-page').classList.remove('hidden-page');
+            goHome();
+        }
+
+        // ============================================================
+        // CALL & WHATSAPP ACTIONS
+        // ============================================================
+        function makeCall() {
+            const contact = document.getElementById('detail-contact').dataset.contact;
+            if (!contact || contact === 'N/A') {
+                showToast('⚠️ No contact number available');
                 return;
             }
-
-            // Switch to post job page with edit mode
-            document.getElementById('viewjob-page').classList.add('hidden-page');
-            document.getElementById('postjob-page').classList.remove('hidden-page');
-
-            // Fill form with job data
-            document.getElementById('pj-company').value = viewingJobData.company_name || '';
-            document.getElementById('pj-title').value = viewingJobData.job_title || '';
-            document.getElementById('pj-experience').value = viewingJobData.min_experience_years || 0;
-            document.getElementById('pj-salary').value = (viewingJobData.max_salary_monthly || 0).toLocaleString('en-IN');
-            document.getElementById('pj-gender').value = viewingJobData.preferred_gender || 0;
-            document.getElementById('pj-skills').value = viewingJobData.skills_comma_separated || '';
-            document.getElementById('pj-description').value = viewingJobData.job_description || '';
-            if (viewingJobData.expiry_date) {
-                document.getElementById('pj-expiry').value = viewingJobData.expiry_date.split('T')[0];
-            }
-
-            // Set zone and area
-            const zoneId = viewingJobData.zone_id || 100;
-            document.getElementById('pj-zone').value = zoneId;
-            updatePostAreas();
-            if (viewingJobData.area_id) {
-                document.getElementById('pj-area').value = viewingJobData.area_id;
-            }
-
-            // Set edit mode
-            document.getElementById('pj-publish-btn').textContent = '💾 Update Job';
-            document.getElementById('pj-publish-btn').dataset.editing = 'true';
-            document.getElementById('pj-publish-btn').dataset.jobid = viewingJobData.job_id;
-
-            // Update counters
-            document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
-                el.dispatchEvent(new Event('input'));
-            });
-
-            // Update nav
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
-
-            showToast('✏️ Edit mode: Update and click "Update Job"');
+            window.location.href = `tel:${contact}`;
         }
 
-        // ============================================================
-        // DELETE JOB
-        // ============================================================
-        async function deleteJob() {
-            if (!viewingJobId) return;
-            if (new Date(viewingJobData.expiry_date) < new Date()) {
-                showToast('⚠️ Job already expired, auto-deleted');
-                closeViewJob();
-                loadMyJobs();
+        function sendWhatsApp() {
+            const contact = document.getElementById('detail-contact').dataset.contact;
+            if (!contact || contact === 'N/A') {
+                showToast('⚠️ No contact number available');
                 return;
             }
-            if (!confirm('Are you sure you want to delete this job posting?')) return;
-            try {
-                const { error } = await sb
-                    .from('active_jobs')
-                    .delete()
-                    .eq('job_id', viewingJobId);
-                if (error) throw error;
-                showToast('🗑️ Job deleted');
-                closeViewJob();
-                loadMyJobs();
-                fetchFeedData();
-            } catch (err) {
-                showToast('❌ Failed to delete: ' + err.message);
-            }
-        }
-
-        // ============================================================
-        // CLOSE VIEW
-        // ============================================================
-        function closeViewJob() {
-            viewingJobId = null;
-            viewingJobData = null;
-            document.getElementById('viewjob-page').classList.add('hidden-page');
-            document.getElementById('profile-page').classList.remove('hidden-page');
-            goToProfile();
+            const title = document.getElementById('detail-title').textContent;
+            const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
+            window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
         }
 
         // ============================================================
@@ -1905,7 +1909,7 @@
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('viewjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[0].classList.add('active');
             document.getElementById('feed-container').style.display = 'flex';
@@ -1917,7 +1921,6 @@
                 showToast('⚠️ Please login first');
                 return;
             }
-            // Reset edit mode if coming from view
             document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
             document.getElementById('pj-publish-btn').dataset.editing = 'false';
             document.getElementById('pj-publish-btn').dataset.jobid = '';
@@ -1942,7 +1945,7 @@
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.getElementById('postjob-page').classList.remove('hidden-page');
-            document.getElementById('viewjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
             if (currentUser && currentUser.company_name) {
@@ -1957,7 +1960,7 @@
             document.getElementById('profile-page').classList.remove('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('viewjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[2].classList.add('active');
             loadProfile();
@@ -1970,7 +1973,7 @@
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.remove('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('viewjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
             populateEditZones();
             if (currentUser) {
                 document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
@@ -2000,7 +2003,7 @@
         function cancelPostJob() {
             if (document.getElementById('pj-publish-btn').dataset.editing === 'true') {
                 if (confirm('Cancel editing this job?')) {
-                    closeViewJob();
+                    closeDetail();
                 }
             } else if (confirm('Cancel posting this job?')) {
                 goHome();
@@ -2192,7 +2195,8 @@
                     salary: job.max_salary_monthly ? `₹${job.max_salary_monthly}` : 'Negotiable',
                     company: job.company_name || 'Unknown',
                     desc: job.job_description || '',
-                    contact: job.mobile || 'N/A'
+                    contact: job.mobile || 'N/A',
+                    _raw: job
                 }));
                 const formattedSeekers = (seekers || []).map(user => ({
                     type: 'SEEKER',
@@ -2204,7 +2208,8 @@
                     salary: user.expected_salary_monthly ? `₹${user.expected_salary_monthly}` : 'Not specified',
                     company: user.full_name || 'Anonymous',
                     desc: user.professional_summary || '',
-                    contact: user.mobile || 'N/A'
+                    contact: user.mobile || 'N/A',
+                    _raw: user
                 }));
                 feedItems = [...formattedJobs, ...formattedSeekers];
                 console.log(`✅ Loaded ${feedItems.length} items from Supabase`);
@@ -2247,7 +2252,7 @@
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('viewjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
             document.getElementById('login-screen').style.display = 'flex';
             document.getElementById('gender-icon').style.display = 'none';
             document.getElementById('gender-icon-profile').style.display = 'none';
@@ -2395,7 +2400,7 @@
                         document.getElementById('profile-page').classList.add('hidden-page');
                         document.getElementById('edit-seeker-page').classList.add('hidden-page');
                         document.getElementById('postjob-page').classList.add('hidden-page');
-                        document.getElementById('viewjob-page').classList.add('hidden-page');
+                        document.getElementById('detail-page').classList.add('hidden-page');
                         updateGenderIcon(userData);
                         hideMessage();
                         setTimeout(autoDetectLocation, 500);
@@ -2559,17 +2564,17 @@
                 const zoneName = getZoneName(item.zone_id);
                 const areaName = getAreaName(item.area_id);
                 const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
+                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
+                // Store the item data for click handler
+                const dataAttr = encodeURIComponent(JSON.stringify(item));
                 return `
-                <div class="feed-card" onclick="openDetail('${item.type}', '${item.title}', ${item.exp}, '${item.skills}', '${item.salary}', '${item.company}', '${item.desc}', '${locationDisplay}', '${item.contact}')">
+                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
                     <div class="title">${item.title}</div>
                     <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
-                    <span class="badge ${item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job'}">${item.type === 'SEEKER' ? 'SEEKER' : 'JOB'}</span>
+                    <span class="badge ${typeClass}">${typeLabel}</span>
                 </div>
             `}).join('');
-        }
-
-        function openDetail(type, title, exp, skills, salary, company, desc, location, contact) {
-            alert(`📋 ${title}\n🏢 ${company}\n📍 ${location}\n💰 ${salary}\n📝 ${desc}`);
         }
 
         // ============================================================
