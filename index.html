@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd - Login</title>
+    <title>JobAd - WhatsApp Auth</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -64,10 +64,10 @@
         .btn-green:hover { background: #15803d; }
         .btn-yellow { background: #d97706; }
         .btn-yellow:hover { background: #b45309; }
+        .btn-whatsapp { background: #25D366; }
+        .btn-whatsapp:hover { background: #1da851; }
         .btn-red { background: #dc2626; }
         .btn-red:hover { background: #b91c1c; }
-        .btn-outline { background: transparent; color: #2563eb; border: 2px solid #2563eb; }
-        .btn-outline:hover { background: #2563eb; color: white; }
         .msg {
             margin-top: 16px;
             padding: 12px;
@@ -100,9 +100,6 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
         }
         .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
-        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
-        .fade-in { animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* LOGIN SCREEN */
         #login-screen {
@@ -119,29 +116,50 @@
             color: #2563eb;
             margin: 0 0 4px 0;
         }
-        #login-screen .test-links {
-            margin-bottom: 24px;
-            font-size: 12px;
+        .wa-icon { font-size: 32px; margin-bottom: 8px; }
+
+        /* OTP input styling */
+        .otp-input-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 12px 0;
         }
-        #login-screen .test-links a {
-            color: #3b82f6;
-            text-decoration: none;
+        .otp-input-group input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            padding: 0;
+            margin: 0;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
         }
-        #login-screen .password-wrapper { position: relative; }
-        #login-screen .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+        .otp-input-group input:focus {
+            border-color: #2563eb;
+            outline: none;
+        }
+        .otp-input-group input.filled {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .timer-text { font-size: 13px; color: #64748b; margin-top: 8px; }
+        .resend-btn {
+            background: none;
+            border: none;
+            color: #2563eb;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 14px;
-            user-select: none;
             padding: 4px;
+            font-size: 14px;
         }
-        .mobile-status { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+        .resend-btn:hover { text-decoration: underline; }
+        .resend-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* HOME SCREEN */
-        .home-container {
+        .home-container, .profile-container, .postjob-container, .detail-container {
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -154,6 +172,7 @@
             padding-bottom: 8px;
             flex-shrink: 0;
             border-bottom: 1px solid #f1f5f9;
+            position: relative;
         }
         .home-header .logo {
             font-size: 22px;
@@ -165,40 +184,69 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            position: relative;
         }
-        .home-header .gender-icon {
-            width: 32px;
-            height: 32px;
+        .home-header .avatar-btn {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            font-weight: 700;
             border: 2px solid #e2e8f0;
             background: #f8fafc;
             cursor: pointer;
-            flex-shrink: 0;
-        }
-        .home-header .gender-icon.male { color: #2563eb; border-color: #2563eb; }
-        .home-header .gender-icon.female { color: #ec4899; border-color: #ec4899; }
-        .home-header .gender-icon.other { color: #8b5cf6; border-color: #8b5cf6; }
-        .home-header .logout-icon {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 8px;
-            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
             transition: 0.2s;
-            width: auto;
+            padding: 0;
         }
-        .home-header .logout-icon:hover { 
-            color: #dc2626; 
-            background: #fee2e2;
-        }
+        .home-header .avatar-btn:hover { border-color: #2563eb; background: #eff6ff; }
+        .home-header .avatar-btn.male { color: #2563eb; border-color: #2563eb; }
+        .home-header .avatar-btn.female { color: #ec4899; border-color: #ec4899; }
+        .home-header .avatar-btn.other { color: #8b5cf6; border-color: #8b5cf6; }
 
+        /* Profile Dropdown */
+        .profile-dropdown {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            min-width: 180px;
+            z-index: 100;
+            display: none;
+            overflow: hidden;
+        }
+        .profile-dropdown.show { display: block; }
+        .profile-dropdown .dropdown-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: 0.15s;
+        }
+        .profile-dropdown .dropdown-item:hover { background: #f8fafc; }
+        .profile-dropdown .dropdown-item .icon { font-size: 16px; }
+        .profile-dropdown .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 4px 12px;
+        }
+        .profile-dropdown .dropdown-item.danger { color: #dc2626; }
+        .profile-dropdown .dropdown-item.danger:hover { background: #fef2f2; }
+
+        /* PAGE CONTENT */
         .page-content {
             flex: 1;
             overflow-y: auto;
@@ -453,20 +501,6 @@
         .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
         .profile-active .section-badge { background: #dcfce7; color: #166534; }
 
-        .logout-btn {
-            width: 100%;
-            padding: 10px;
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fca5a5;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 4px;
-        }
-        .logout-btn:hover { background: #fecaca; }
-
         /* EDIT SEEKER */
         .edit-page-header {
             display: flex;
@@ -494,9 +528,7 @@
             flex-shrink: 0;
             margin-left: 8px;
         }
-        .edit-page-header .cancel-btn:hover {
-            color: #64748b;
-        }
+        .edit-page-header .cancel-btn:hover { color: #64748b; }
 
         .edit-hint {
             background: #eff6ff;
@@ -516,7 +548,6 @@
             color: #1e293b;
             margin-bottom: 2px;
         }
-        .edit-field label .limit-hint { font-size: 9px; color: #94a3b8; font-weight: 400; }
         .edit-field input, .edit-field select, .edit-field textarea {
             width: 100%;
             padding: 8px 12px;
@@ -529,7 +560,6 @@
         .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
         .edit-field textarea { resize: vertical; min-height: 50px; }
 
-        /* Salary input with currency display */
         .salary-input-wrapper {
             position: relative;
             display: flex;
@@ -543,10 +573,7 @@
             color: #1e293b;
             pointer-events: none;
         }
-        .salary-input-wrapper input {
-            padding-left: 28px;
-            text-align: left;
-        }
+        .salary-input-wrapper input { padding-left: 28px; text-align: left; }
 
         .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
         .edit-activate-btn {
@@ -563,14 +590,8 @@
         }
         .edit-activate-btn:hover { background: #1d4ed8; }
 
-        /* ===== POST JOB PAGE ===== */
-        .postjob-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
-        .postjob-header {
+        /* POST JOB */
+        .postjob-header, .detail-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -578,13 +599,13 @@
             flex-shrink: 0;
             border-bottom: 1px solid #f1f5f9;
         }
-        .postjob-header .logo {
+        .postjob-header .logo, .detail-header .logo {
             font-size: 22px;
             font-weight: 900;
             color: #2563eb;
             cursor: pointer;
         }
-        .postjob-header .cancel-btn {
+        .postjob-header .cancel-btn, .detail-header .cancel-btn {
             font-size: 14px;
             font-weight: 600;
             color: #6b7280;
@@ -595,16 +616,16 @@
             border-radius: 20px;
             transition: 0.2s;
         }
-        .postjob-header .cancel-btn:hover { background: #f3f4f6; }
+        .postjob-header .cancel-btn:hover, .detail-header .cancel-btn:hover { background: #f3f4f6; }
 
-        .postjob-scroll {
+        .postjob-scroll, .detail-scroll {
             flex: 1;
             overflow-y: auto;
             padding: 12px 0 8px 0;
             min-height: 0;
         }
-        .postjob-scroll::-webkit-scrollbar { width: 3px; }
-        .postjob-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .postjob-scroll::-webkit-scrollbar, .detail-scroll::-webkit-scrollbar { width: 3px; }
+        .postjob-scroll::-webkit-scrollbar-thumb, .detail-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .form-group { margin-bottom: 12px; }
         .form-label {
@@ -676,77 +697,10 @@
         .publish-btn:hover { background: #1d4ed8; }
         .publish-btn:active { transform: scale(0.98); }
         .bottom-spacer { height: 4px; }
-
         input[type="date"] { text-align: left; padding: 10px 12px; }
 
-        /* My Jobs list in recruiter profile */
-        .my-job-item {
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-            background: #fafbfc;
-        }
-        .my-job-item:hover { border-color: #3b82f6; background: #f0f7ff; }
-        .my-job-item .job-title { font-weight: 600; font-size: 13px; color: #0f172a; }
-        .my-job-item .job-meta { font-size: 10px; color: #64748b; }
-        .my-job-item .expired {
-            color: #dc2626;
-            font-size: 9px;
-            font-weight: 600;
-            background: #fee2e2;
-            padding: 1px 8px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-
-        /* ===== DETAIL VIEW PAGE (for jobs & seekers) ===== */
-        .detail-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
-        .detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 8px;
-            flex-shrink: 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        .detail-header .logo {
-            font-size: 22px;
-            font-weight: 900;
-            color: #2563eb;
-            cursor: pointer;
-        }
-        .detail-header .cancel-btn {
-            font-size: 14px;
-            font-weight: 600;
-            color: #6b7280;
-            background: none;
-            border: none;
-            padding: 6px 12px;
-            cursor: pointer;
-            border-radius: 20px;
-            transition: 0.2s;
-        }
-        .detail-header .cancel-btn:hover { background: #f3f4f6; }
-        .detail-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px 0 8px 0;
-            min-height: 0;
-        }
-        .detail-scroll::-webkit-scrollbar { width: 3px; }
-        .detail-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        .detail-field {
-            margin-bottom: 10px;
-        }
+        /* Detail View */
+        .detail-field { margin-bottom: 10px; }
         .detail-field label {
             font-size: 9px;
             font-weight: 700;
@@ -824,6 +778,66 @@
         }
         .type-badge.job { background: #dbeafe; color: #1e40af; }
         .type-badge.seeker { background: #dcfce7; color: #166534; }
+
+        /* My Jobs */
+        .my-job-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fafbfc;
+        }
+        .my-job-item:hover { border-color: #3b82f6; background: #f0f7ff; }
+        .my-job-item .job-title { font-weight: 600; font-size: 13px; color: #0f172a; }
+        .my-job-item .job-meta { font-size: 10px; color: #64748b; }
+        .my-job-item .expired {
+            color: #dc2626;
+            font-size: 9px;
+            font-weight: 600;
+            background: #fee2e2;
+            padding: 1px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Change PIN Modal */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            border-radius: 24px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: #1e293b; }
+        .modal-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
+        .modal-box input { text-align: left; margin-bottom: 8px; }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .modal-box .modal-actions button { flex: 1; padding: 10px; font-size: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; }
+        .modal-box .modal-actions .btn-cancel { background: #f1f5f9; color: #475569; }
+        .modal-box .modal-actions .btn-cancel:hover { background: #e2e8f0; }
+        .modal-box .modal-actions .btn-save { background: #2563eb; color: white; }
+        .modal-box .modal-actions .btn-save:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
@@ -831,21 +845,35 @@
         <!-- LOGIN SCREEN -->
         <div id="login-screen">
             <h1>JobAd</h1>
-            <div class="test-links"><a href="test.html">🔌 DB Test</a></div>
+            <div class="wa-icon">💬</div>
+            <p style="font-size:13px; color:#64748b; margin:-4px 0 16px 0;">Verify via WhatsApp</p>
+            
             <div id="step1" style="width:100%;">
                 <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10" autofocus>
                 <div class="mobile-status" id="mobile-status"></div>
+                <button onclick="sendWhatsAppOTP()" class="btn-whatsapp" id="send-otp-btn">
+                    💬 Send OTP via WhatsApp
+                </button>
             </div>
+            
             <div id="step2" class="hidden fade-in" style="width:100%;">
                 <div class="text-center mb-4">
                     <div class="mobile-display" id="display-mobile">--</div>
-                    <div id="status-badge" class="text-sm font-medium"></div>
+                    <p style="font-size:12px; color:#64748b; margin:0;">Enter OTP sent via WhatsApp</p>
                 </div>
-                <div class="password-wrapper">
-                    <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
-                    <span class="toggle-password" onclick="togglePin()">👁️</span>
+                <div class="otp-input-group" id="otp-group">
+                    <input type="text" maxlength="1" class="otp-input" data-index="0" inputmode="numeric">
+                    <input type="text" maxlength="1" class="otp-input" data-index="1" inputmode="numeric">
+                    <input type="text" maxlength="1" class="otp-input" data-index="2" inputmode="numeric">
+                    <input type="text" maxlength="1" class="otp-input" data-index="3" inputmode="numeric">
+                    <input type="text" maxlength="1" class="otp-input" data-index="4" inputmode="numeric">
+                    <input type="text" maxlength="1" class="otp-input" data-index="5" inputmode="numeric">
                 </div>
-                <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
+                <div class="timer-text">⏳ OTP expires in: <span id="otp-timer">5:00</span></div>
+                <div style="margin-top:4px;">
+                    <button class="resend-btn" id="resend-otp" onclick="resendOTP()" disabled>Resend OTP</button>
+                </div>
+                <button onclick="verifyOTP()" id="verify-btn" class="btn-green">✅ Verify & Continue</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
             <div id="msg" class="hidden"></div>
@@ -857,9 +885,21 @@
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="header-right">
-                        <button class="logout-icon" onclick="logout()" title="Logout">🚪</button>
-                        <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
-                            <span id="gender-symbol">👤</span>
+                        <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
+                            <span id="avatar-symbol">👤</span>
+                        </button>
+                        <!-- Dropdown -->
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <button class="dropdown-item" onclick="closeDropdown(); goToProfile();">
+                                <span class="icon">👤</span> View Profile
+                            </button>
+                            <button class="dropdown-item" onclick="closeDropdown(); openChangePin();">
+                                <span class="icon">🔑</span> Change PIN
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item danger" onclick="closeDropdown(); logout();">
+                                <span class="icon">🚪</span> Logout
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -943,9 +983,20 @@
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="header-right">
-                        <button class="logout-icon" onclick="logout()" title="Logout">🚪</button>
-                        <div class="gender-icon" id="gender-icon-profile" style="display:none;" onclick="goToProfile()">
-                            <span id="gender-symbol-profile">👤</span>
+                        <button class="avatar-btn" id="avatar-btn-profile" onclick="toggleDropdown()">
+                            <span id="avatar-symbol-profile">👤</span>
+                        </button>
+                        <div class="profile-dropdown" id="profile-dropdown-profile">
+                            <button class="dropdown-item" onclick="closeDropdown(); goToProfile();">
+                                <span class="icon">👤</span> View Profile
+                            </button>
+                            <button class="dropdown-item" onclick="closeDropdown(); openChangePin();">
+                                <span class="icon">🔑</span> Change PIN
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button class="dropdown-item danger" onclick="closeDropdown(); logout();">
+                                <span class="icon">🚪</span> Logout
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1238,7 +1289,7 @@
             </div>
         </div>
 
-        <!-- ===== DETAIL VIEW PAGE ===== -->
+        <!-- DETAIL VIEW PAGE -->
         <div id="detail-page" class="hidden-page" style="height:100%;">
             <div class="detail-container">
                 <div class="detail-header">
@@ -1351,6 +1402,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- CHANGE PIN MODAL -->
+        <div class="modal-overlay" id="change-pin-modal">
+            <div class="modal-box">
+                <h3>🔑 Change PIN</h3>
+                <p>Enter your new 4-digit PIN</p>
+                <input type="password" id="new-pin" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric">
+                <input type="password" id="confirm-pin" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeChangePin()">Cancel</button>
+                    <button class="btn-save" onclick="saveNewPin()">Save PIN</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1436,11 +1501,6 @@
             return AREAS.filter(a => a.zone_id === zoneId);
         }
 
-        function getZoneIdByName(name) {
-            const z = ZONES.find(z => z.zone_name === name);
-            return z ? z.zone_id : null;
-        }
-
         function populateEditZones() {
             const select = document.getElementById('edit-seeker-zone');
             select.innerHTML = '<option value="">-- Select --</option>';
@@ -1462,6 +1522,396 @@
         }
 
         // ============================================================
+        // STATE
+        // ============================================================
+        let currentMobile = '';
+        let currentUser = null;
+        let isChecking = false;
+        let currentFilter = 'BOTH';
+        let selectedZoneId = null;
+        let selectedAreaId = null;
+        let feedItems = [];
+        let currentPage = 'home';
+        let otpTimerInterval = null;
+        let otpExpiryTime = 300; // 5 minutes
+
+        // ============================================================
+        // WHATSAPP OTP AUTHENTICATION
+        // ============================================================
+        function formatMobileForWA(mobile) {
+            return `91${mobile}`; // India country code
+        }
+
+        async function sendWhatsAppOTP() {
+            const mobile = document.getElementById('mobile').value.trim();
+            if (mobile.length !== 10) {
+                showToast('⚠️ Enter 10-digit mobile number');
+                return;
+            }
+
+            // Check if mobile already registered
+            const { data, error } = await sb
+                .from('all_users')
+                .select('mobile')
+                .eq('mobile', mobile)
+                .single();
+
+            if (data) {
+                showToast('⚠️ This number is already registered. Please login.');
+                return;
+            }
+
+            setStatus('⏳ Sending OTP via WhatsApp...', 'blue');
+            document.getElementById('send-otp-btn').disabled = true;
+
+            // Generate 6-digit OTP
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // Store OTP in session (in production, store in database with expiry)
+            sessionStorage.setItem('otp_' + mobile, otp);
+            sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+
+            // Send via WhatsApp (simulated - in production, use WhatsApp Business API)
+            const waNumber = formatMobileForWA(mobile);
+            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
+            const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            
+            // Open WhatsApp with pre-filled message
+            window.open(waUrl, '_blank');
+
+            // Show OTP input
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('display-mobile').textContent = mobile;
+            currentMobile = mobile;
+            setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
+            
+            // Reset OTP inputs
+            document.querySelectorAll('.otp-input').forEach(el => el.value = '');
+            document.querySelector('.otp-input').focus();
+            
+            // Start timer
+            startOTPTimer();
+            
+            showToast('💬 OTP sent via WhatsApp!');
+        }
+
+        // OTP Input handling
+        document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
+            input.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length === 1) {
+                    this.classList.add('filled');
+                    if (index < arr.length - 1) {
+                        arr[index + 1].focus();
+                    } else {
+                        // Auto-submit when all filled
+                        const allFilled = Array.from(arr).every(el => el.value.length === 1);
+                        if (allFilled) {
+                            verifyOTP();
+                        }
+                    }
+                } else {
+                    this.classList.remove('filled');
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    arr[index - 1].focus();
+                    arr[index - 1].classList.remove('filled');
+                }
+                if (e.key === 'Enter') {
+                    const allFilled = Array.from(arr).every(el => el.value.length === 1);
+                    if (allFilled) {
+                        verifyOTP();
+                    } else {
+                        const firstEmpty = Array.from(arr).find(el => el.value.length === 0);
+                        if (firstEmpty) firstEmpty.focus();
+                    }
+                }
+            });
+
+            input.addEventListener('focus', function() {
+                this.select();
+            });
+        });
+
+        function getOTP() {
+            return Array.from(document.querySelectorAll('.otp-input'))
+                .map(el => el.value)
+                .join('');
+        }
+
+        function startOTPTimer() {
+            let timeLeft = otpExpiryTime;
+            const timerEl = document.getElementById('otp-timer');
+            const resendBtn = document.getElementById('resend-otp');
+            
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            
+            otpTimerInterval = setInterval(() => {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(otpTimerInterval);
+                    timerEl.textContent = 'Expired';
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        async function verifyOTP() {
+            const otp = getOTP();
+            if (otp.length !== 6) {
+                showToast('⚠️ Enter complete 6-digit OTP');
+                return;
+            }
+
+            const storedOtp = sessionStorage.getItem('otp_' + currentMobile);
+            const storedExpiry = sessionStorage.getItem('otp_expiry_' + currentMobile);
+
+            if (!storedOtp) {
+                showToast('❌ OTP expired. Please request again.');
+                return;
+            }
+
+            if (Date.now() > parseInt(storedExpiry)) {
+                showToast('❌ OTP expired. Please request again.');
+                sessionStorage.removeItem('otp_' + currentMobile);
+                document.getElementById('resend-otp').disabled = false;
+                return;
+            }
+
+            if (otp !== storedOtp) {
+                showToast('❌ Invalid OTP. Please try again.');
+                document.querySelectorAll('.otp-input').forEach(el => {
+                    el.value = '';
+                    el.classList.remove('filled');
+                });
+                document.querySelector('.otp-input').focus();
+                return;
+            }
+
+            // OTP Verified! Proceed with registration/login
+            setStatus('✅ Verified!', 'green');
+            showToast('✅ Phone verified successfully!');
+            
+            // Clear OTP from session
+            sessionStorage.removeItem('otp_' + currentMobile);
+            sessionStorage.removeItem('otp_expiry_' + currentMobile);
+            
+            // Check if user exists in all_users
+            const { data: userData, error } = await sb
+                .from('all_users')
+                .select('*')
+                .eq('mobile', currentMobile)
+                .single();
+
+            if (userData) {
+                // Existing user - login flow
+                await completeLogin(userData);
+            } else {
+                // New user - registration flow
+                await completeRegistration();
+            }
+        }
+
+        async function resendOTP() {
+            const mobile = currentMobile;
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            sessionStorage.setItem('otp_' + mobile, otp);
+            sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+            
+            // Send via WhatsApp
+            const waNumber = formatMobileForWA(mobile);
+            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
+            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            
+            document.getElementById('resend-otp').disabled = true;
+            startOTPTimer();
+            showToast('🔄 OTP resent via WhatsApp!');
+        }
+
+        // ============================================================
+        // REGISTRATION / LOGIN
+        // ============================================================
+        async function completeRegistration() {
+            // Show PIN setup for new user
+            showToast('📝 New user! Set up your PIN');
+            
+            // Redirect to PIN setup (simplified - just ask for PIN)
+            const pin = prompt('Set your 4-digit PIN for login:');
+            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                showToast('⚠️ Please enter a valid 4-digit PIN');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    await fetchUserData(currentMobile);
+                    showToast('✅ Registration successful!');
+                } else {
+                    showToast('❌ Registration failed: ' + data.error);
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            }
+        }
+
+        async function completeLogin(userData) {
+            // Ask for PIN
+            const pin = prompt('Enter your 4-digit PIN:');
+            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                showToast('⚠️ Please enter a valid 4-digit PIN');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    await fetchUserData(currentMobile);
+                    showToast('✅ Welcome back!');
+                } else {
+                    showToast('❌ Invalid PIN. Please try again.');
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            }
+        }
+
+        async function fetchUserData(mobile) {
+            const { data, error } = await sb
+                .from('active_users')
+                .select('*')
+                .eq('mobile', mobile)
+                .single();
+
+            if (error) {
+                // User not in active_users, create entry
+                const { data: newUser, error: insertError } = await sb
+                    .from('active_users')
+                    .insert([{ mobile: mobile, last_active: new Date().toISOString() }])
+                    .select()
+                    .single();
+                    
+                if (insertError) {
+                    showToast('❌ Error creating user: ' + insertError.message);
+                    return;
+                }
+                currentUser = newUser;
+            } else {
+                currentUser = data;
+            }
+
+            // Enter app
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('home-page').classList.remove('hidden-page');
+            updateAvatar();
+            setTimeout(autoDetectLocation, 500);
+            await fetchFeedData();
+        }
+
+        // ============================================================
+        // AVATAR & DROPDOWN
+        // ============================================================
+        function updateAvatar() {
+            if (!currentUser) return;
+            const gender = currentUser.gender || 0;
+            let symbol = '👤';
+            let cls = '';
+            if (gender === 1) { symbol = '♀'; cls = 'female'; }
+            else if (gender === 2) { symbol = '♂'; cls = 'male'; }
+            else { cls = 'other'; }
+            
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                btn.className = `avatar-btn ${cls}`;
+                btn.querySelector('span').textContent = symbol;
+            });
+        }
+
+        function toggleDropdown() {
+            const dropdowns = document.querySelectorAll('.profile-dropdown');
+            dropdowns.forEach(d => d.classList.toggle('show'));
+        }
+
+        function closeDropdown() {
+            document.querySelectorAll('.profile-dropdown').forEach(d => d.classList.remove('show'));
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.header-right')) {
+                closeDropdown();
+            }
+        });
+
+        // ============================================================
+        // CHANGE PIN
+        // ============================================================
+        function openChangePin() {
+            document.getElementById('change-pin-modal').classList.add('show');
+            document.getElementById('new-pin').value = '';
+            document.getElementById('confirm-pin').value = '';
+            document.getElementById('new-pin').focus();
+        }
+
+        function closeChangePin() {
+            document.getElementById('change-pin-modal').classList.remove('show');
+        }
+
+        async function saveNewPin() {
+            const newPin = document.getElementById('new-pin').value.trim();
+            const confirmPin = document.getElementById('confirm-pin').value.trim();
+
+            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                showToast('⚠️ Enter a valid 4-digit PIN');
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                showToast('⚠️ PINs do not match');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentUser.mobile, new_pin: newPin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✅ PIN changed successfully!');
+                    closeChangePin();
+                } else {
+                    showToast('❌ Failed to change PIN: ' + data.error);
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            }
+        }
+
+        // ============================================================
         // SALARY FORMATTER
         // ============================================================
         function formatSalaryDisplay(value) {
@@ -1474,430 +1924,6 @@
         function parseSalaryValue(value) {
             if (!value) return '';
             return value.toString().replace(/[^0-9]/g, '');
-        }
-
-        // ============================================================
-        // STATE
-        // ============================================================
-        let currentMobile = '';
-        let actionType = '';
-        let currentUser = null;
-        let isChecking = false;
-        let currentFilter = 'BOTH';
-        let selectedZoneId = null;
-        let selectedAreaId = null;
-        let feedItems = [];
-        let currentPage = 'home';
-        let viewingJobId = null;
-        let isEditingMode = false;
-        let currentDetailData = null;
-        let currentDetailType = null;
-
-        // ============================================================
-        // INIT
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const aboutTextarea = document.getElementById('edit-seeker-about');
-            const charCount = document.getElementById('char-count');
-            if (aboutTextarea && charCount) {
-                aboutTextarea.addEventListener('input', function() {
-                    charCount.textContent = this.value.length;
-                });
-            }
-
-            const salaryInput = document.getElementById('edit-seeker-salary');
-            if (salaryInput) {
-                salaryInput.addEventListener('input', function() {
-                    const rawValue = parseSalaryValue(this.value);
-                    if (rawValue) {
-                        const formatted = formatSalaryDisplay(rawValue);
-                        this.value = formatted;
-                        this.setSelectionRange(this.value.length, this.value.length);
-                    }
-                });
-            }
-
-            populateEditZones();
-
-            setupCounter('pj-title', 'pj-title-counter', 60);
-            setupCounter('pj-skills', 'pj-skills-counter', 200);
-            setupCounter('pj-description', 'pj-desc-counter', 500);
-
-            const pjSalary = document.getElementById('pj-salary');
-            if (pjSalary) {
-                pjSalary.addEventListener('input', function() {
-                    const raw = this.value.replace(/[^0-9]/g, '');
-                    if (raw) {
-                        const formatted = Number(raw).toLocaleString('en-IN');
-                        this.value = formatted;
-                    } else {
-                        this.value = '';
-                    }
-                });
-            }
-
-            const expiryInput = document.getElementById('pj-expiry');
-            if (expiryInput) {
-                const d = new Date();
-                d.setDate(d.getDate() + 30);
-                expiryInput.value = d.toISOString().split('T')[0];
-                expiryInput.max = new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0];
-                expiryInput.min = new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0];
-                expiryInput.addEventListener('change', function() {
-                    const selected = new Date(this.value);
-                    const maxDate = new Date(Date.now() + 45*24*60*60*1000);
-                    if (selected > maxDate) {
-                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
-                        this.value = maxDate.toISOString().split('T')[0];
-                    }
-                });
-            }
-
-            const zoneSelect = document.getElementById('pj-zone');
-            zoneSelect.value = '100';
-            updatePostAreas();
-
-            // Auto-clean expired jobs on load
-            autoCleanExpiredJobs();
-
-            console.log('✅ JobAd Ready');
-        });
-
-        // ============================================================
-        // AUTO CLEAN EXPIRED JOBS
-        // ============================================================
-        async function autoCleanExpiredJobs() {
-            try {
-                const now = new Date().toISOString();
-                const { error } = await sb
-                    .from('active_jobs')
-                    .delete()
-                    .lt('expiry_date', now);
-                if (error) console.error('Error cleaning expired jobs:', error);
-                else console.log('✅ Cleaned expired jobs');
-            } catch (err) {
-                console.error('Auto-clean error:', err);
-            }
-        }
-
-        // ============================================================
-        // POST JOB: COUNTER HELPER
-        // ============================================================
-        function setupCounter(inputId, counterId, maxLen) {
-            const input = document.getElementById(inputId);
-            const counter = document.getElementById(counterId);
-            if (!input || !counter) return;
-            const update = () => {
-                const len = input.value.length;
-                counter.textContent = `${len}/${maxLen}`;
-                if (len > maxLen) {
-                    input.value = input.value.slice(0, maxLen);
-                    counter.textContent = `${maxLen}/${maxLen}`;
-                }
-            };
-            input.addEventListener('input', update);
-            update();
-        }
-
-        // ============================================================
-        // POST JOB: AREA UPDATE
-        // ============================================================
-        function updatePostAreas() {
-            const zoneSelect = document.getElementById('pj-zone');
-            const areaSelect = document.getElementById('pj-area');
-            const areaHint = document.getElementById('pj-area-hint');
-            const zoneId = parseInt(zoneSelect.value);
-            areaSelect.innerHTML = '<option value="">Select zone first</option>';
-            if (!zoneId) {
-                areaHint.textContent = '⬆️ Choose zone first';
-                return;
-            }
-            const areas = getAreasByZone(zoneId);
-            if (areas.length === 0) {
-                areaSelect.innerHTML = '<option value="">No areas</option>';
-                areaHint.textContent = '⚠️ No areas for this zone';
-                return;
-            }
-            areas.forEach(area => {
-                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-            });
-            areaHint.textContent = `✅ ${areas.length} areas available`;
-            if (areas.length > 0) areaSelect.value = areas[0].area_id;
-        }
-
-        // ============================================================
-        // PUBLISH JOB
-        // ============================================================
-        async function publishJob() {
-            if (!currentUser) {
-                showToast('⚠️ Please login first');
-                return;
-            }
-
-            const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
-            const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
-
-            const company = document.getElementById('pj-company').value.trim();
-            const jobTitle = document.getElementById('pj-title').value.trim();
-            const expRaw = document.getElementById('pj-experience').value.trim();
-            const salaryRaw = document.getElementById('pj-salary').value.replace(/,/g, '');
-            const gender = parseInt(document.getElementById('pj-gender').value);
-            const zone = document.getElementById('pj-zone').value;
-            const area = document.getElementById('pj-area').value;
-            const skills = document.getElementById('pj-skills').value.trim();
-            const description = document.getElementById('pj-description').value.trim();
-            const expiryDate = document.getElementById('pj-expiry').value;
-
-            if (!company) { showToast('⚠️ Company name is required'); return; }
-            if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
-            if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
-            if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('⚠️ Enter valid min experience'); return; }
-            if (!salaryRaw || isNaN(parseInt(salaryRaw)) || parseInt(salaryRaw) <= 0) { showToast('⚠️ Enter valid salary'); return; }
-            if (!zone) { showToast('⚠️ Please select Job Location Zone'); return; }
-            if (!area) { showToast('⚠️ Please select Specific Area'); return; }
-            if (!skills) { showToast('⚠️ Skills are required'); return; }
-            if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
-            if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
-            if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
-
-            const selectedDate = new Date(expiryDate);
-            const maxDate = new Date(Date.now() + 45*24*60*60*1000);
-            if (selectedDate > maxDate) {
-                showToast('⚠️ Expiry date cannot exceed 45 days from today');
-                return;
-            }
-
-            const jobData = {
-                mobile: currentUser.mobile,
-                job_title: jobTitle,
-                company_name: company,
-                min_experience_years: parseFloat(expRaw),
-                max_salary_monthly: parseInt(salaryRaw),
-                preferred_gender: gender,
-                skills_comma_separated: skills,
-                job_description: description || '',
-                zone_id: parseInt(zone),
-                area_id: parseInt(area),
-                expiry_date: new Date(expiryDate).toISOString()
-            };
-
-            try {
-                if (isEditing && editJobId) {
-                    const { error } = await sb
-                        .from('active_jobs')
-                        .update(jobData)
-                        .eq('job_id', parseInt(editJobId));
-                    if (error) throw error;
-                    showToast('✅ Job updated successfully!');
-                } else {
-                    jobData.views = 0;
-                    jobData.calls = 0;
-                    jobData.whatsapp = 0;
-                    jobData.posted_date = new Date().toISOString();
-                    const { error } = await sb.from('active_jobs').insert([jobData]);
-                    if (error) throw error;
-                    showToast('✅ Job published successfully!');
-                }
-
-                document.getElementById('pj-publish-btn').dataset.editing = 'false';
-                document.getElementById('pj-publish-btn').dataset.jobid = '';
-                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
-                document.getElementById('pj-title').value = '';
-                document.getElementById('pj-skills').value = '';
-                document.getElementById('pj-description').value = '';
-                document.getElementById('pj-salary').value = '';
-                document.getElementById('pj-experience').value = '3.5';
-                document.getElementById('pj-company').value = currentUser.company_name || '';
-                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
-                    el.dispatchEvent(new Event('input'));
-                });
-                const d = new Date();
-                d.setDate(d.getDate() + 30);
-                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
-                document.getElementById('pj-gender').value = '0';
-                document.getElementById('pj-zone').value = '100';
-                updatePostAreas();
-
-                fetchFeedData();
-                goToProfile();
-                loadMyJobs();
-            } catch (err) {
-                showToast('❌ Failed: ' + err.message);
-            }
-        }
-
-        // ============================================================
-        // LOAD MY JOBS
-        // ============================================================
-        async function loadMyJobs() {
-            if (!currentUser) return;
-            const container = document.getElementById('my-jobs-list');
-            if (!container) return;
-            try {
-                await autoCleanExpiredJobs();
-
-                const { data, error } = await sb
-                    .from('active_jobs')
-                    .select('*')
-                    .eq('mobile', currentUser.mobile)
-                    .order('posted_date', { ascending: false });
-                if (error) throw error;
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="font-size:11px; color:#94a3b8;">No jobs posted yet.</p>';
-                    return;
-                }
-                container.innerHTML = data.map(job => {
-                    const isExpired = new Date(job.expiry_date) < new Date();
-                    return `
-                    <div class="my-job-item" onclick="viewJob(${job.job_id})">
-                        <div class="job-title">${job.job_title || 'Untitled'} ${isExpired ? '<span class="expired">Expired</span>' : ''}</div>
-                        <div class="job-meta">${job.company_name} · ${job.min_experience_years || 0} yrs · ₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}</div>
-                        <div class="job-meta" style="font-size:9px; color:#94a3b8;">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div>
-                    </div>
-                `}).join('');
-            } catch (err) {
-                console.error('Error loading my jobs:', err);
-                container.innerHTML = '<p style="font-size:11px; color:#ef4444;">Error loading jobs</p>';
-            }
-        }
-
-        // ============================================================
-        // VIEW JOB (for profile)
-        // ============================================================
-        async function viewJob(jobId) {
-            try {
-                const { data, error } = await sb
-                    .from('active_jobs')
-                    .select('*')
-                    .eq('job_id', jobId)
-                    .single();
-                if (error) throw error;
-                openDetail(data, 'JOB');
-            } catch (err) {
-                showToast('❌ Error loading job: ' + err.message);
-            }
-        }
-
-        // ============================================================
-        // OPEN DETAIL (from feed click)
-        // ============================================================
-        function openDetailFromFeed(item) {
-            if (item.type === 'JOB') {
-                // Fetch full job data from DB
-                const jobTitle = item.title;
-                const company = item.company;
-                // Try to find in feedItems with matching title and company
-                const fullJob = feedItems.find(f => f.type === 'JOB' && f.title === jobTitle && f.company === company);
-                if (fullJob && fullJob._raw) {
-                    openDetail(fullJob._raw, 'JOB');
-                } else {
-                    // Fallback: use the feed item data
-                    openDetail(item, 'JOB');
-                }
-            } else if (item.type === 'SEEKER') {
-                // Fetch full seeker data from DB
-                const seekerName = item.company;
-                const seekerTitle = item.title;
-                const fullSeeker = feedItems.find(f => f.type === 'SEEKER' && f.company === seekerName && f.title === seekerTitle);
-                if (fullSeeker && fullSeeker._raw) {
-                    openDetail(fullSeeker._raw, 'SEEKER');
-                } else {
-                    openDetail(item, 'SEEKER');
-                }
-            }
-        }
-
-        function openDetail(data, type) {
-            currentDetailData = data;
-            currentDetailType = type;
-            document.getElementById('detail-page').classList.remove('hidden-page');
-            document.getElementById('home-page').classList.add('hidden-page');
-            document.getElementById('profile-page').classList.add('hidden-page');
-            document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('edit-seeker-page').classList.add('hidden-page');
-
-            const isJob = type === 'JOB';
-            const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
-
-            document.getElementById('detail-title').textContent = data.job_title || data.title || 'Untitled';
-            document.getElementById('detail-company').textContent = data.company_name || data.company || 'Unknown';
-            document.getElementById('detail-type-badge').innerHTML = `<span class="type-badge ${isJob ? 'job' : 'seeker'}">${isJob ? 'JOB' : 'SEEKER'}</span>`;
-
-            document.getElementById('detail-exp').textContent = (data.min_experience_years || data.exp || 0) + ' yrs';
-            document.getElementById('detail-salary').textContent = data.max_salary_monthly ? '₹' + Number(data.max_salary_monthly).toLocaleString('en-IN') : (data.salary || 'Not specified');
-
-            if (isJob) {
-                document.getElementById('detail-gender-field').style.display = 'block';
-                document.getElementById('detail-gender').textContent = genderMap[data.preferred_gender] || 'No Preference';
-            } else {
-                document.getElementById('detail-gender-field').style.display = 'block';
-                document.getElementById('detail-gender').textContent = genderMap[data.gender] || 'Not Specified';
-            }
-
-            const zoneId = data.zone_id || 0;
-            const areaId = data.area_id || 0;
-            document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
-            document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
-
-            document.getElementById('detail-skills').textContent = data.skills_comma_separated || data.skills || '—';
-
-            if (isJob) {
-                document.getElementById('detail-expiry-field').style.display = 'block';
-                document.getElementById('detail-expiry').textContent = data.expiry_date ? new Date(data.expiry_date).toLocaleDateString('en-IN') : '—';
-                document.getElementById('detail-notice-field').style.display = 'none';
-            } else {
-                document.getElementById('detail-expiry-field').style.display = 'none';
-                document.getElementById('detail-notice-field').style.display = 'block';
-                document.getElementById('detail-notice').textContent = (data.notice_period_days || '—') + ' days';
-            }
-
-            document.getElementById('detail-desc').textContent = data.job_description || data.professional_summary || data.desc || '—';
-
-            const postedDate = data.posted_date || data.created_at || data.last_active;
-            document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
-
-            document.getElementById('detail-contact').textContent = data.mobile || data.contact || 'N/A';
-
-            document.getElementById('detail-views').textContent = data.views || 0;
-            document.getElementById('detail-calls').textContent = data.calls || 0;
-            document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
-
-            // Store contact for call/whatsapp
-            document.getElementById('detail-contact').dataset.contact = data.mobile || data.contact || '';
-        }
-
-        // ============================================================
-        // CLOSE DETAIL
-        // ============================================================
-        function closeDetail() {
-            currentDetailData = null;
-            currentDetailType = null;
-            document.getElementById('detail-page').classList.add('hidden-page');
-            document.getElementById('home-page').classList.remove('hidden-page');
-            goHome();
-        }
-
-        // ============================================================
-        // CALL & WHATSAPP ACTIONS
-        // ============================================================
-        function makeCall() {
-            const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A') {
-                showToast('⚠️ No contact number available');
-                return;
-            }
-            window.location.href = `tel:${contact}`;
-        }
-
-        function sendWhatsApp() {
-            const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A') {
-                showToast('⚠️ No contact number available');
-                return;
-            }
-            const title = document.getElementById('detail-title').textContent;
-            const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
-            window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
         }
 
         // ============================================================
@@ -2007,37 +2033,6 @@
                 }
             } else if (confirm('Cancel posting this job?')) {
                 goHome();
-            }
-        }
-
-        // ============================================================
-        // GENDER ICON
-        // ============================================================
-        function updateGenderIcon(user) {
-            const iconContainer = document.getElementById('gender-icon');
-            const symbol = document.getElementById('gender-symbol');
-            const iconContainerProfile = document.getElementById('gender-icon-profile');
-            const symbolProfile = document.getElementById('gender-symbol-profile');
-            if (!user) {
-                if (iconContainer) iconContainer.style.display = 'none';
-                if (iconContainerProfile) iconContainerProfile.style.display = 'none';
-                return;
-            }
-            const gender = user.gender;
-            let icon = '👤';
-            let cls = 'gender-icon other';
-            if (gender === 0) { icon = '👤'; cls = 'gender-icon other'; }
-            else if (gender === 1) { icon = '♀'; cls = 'gender-icon female'; }
-            else if (gender === 2) { icon = '♂'; cls = 'gender-icon male'; }
-            if (iconContainer) {
-                iconContainer.style.display = 'flex';
-                iconContainer.className = cls;
-                if (symbol) symbol.textContent = icon;
-            }
-            if (iconContainerProfile) {
-                iconContainerProfile.style.display = 'flex';
-                iconContainerProfile.className = cls;
-                if (symbolProfile) symbolProfile.textContent = icon;
             }
         }
 
@@ -2175,8 +2170,310 @@
         }
 
         // ============================================================
-        // FETCH DATA FROM SUPABASE
+        // LOAD MY JOBS
         // ============================================================
+        async function loadMyJobs() {
+            if (!currentUser) return;
+            const container = document.getElementById('my-jobs-list');
+            if (!container) return;
+            try {
+                await autoCleanExpiredJobs();
+
+                const { data, error } = await sb
+                    .from('active_jobs')
+                    .select('*')
+                    .eq('mobile', currentUser.mobile)
+                    .order('posted_date', { ascending: false });
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:11px; color:#94a3b8;">No jobs posted yet.</p>';
+                    return;
+                }
+                container.innerHTML = data.map(job => {
+                    const isExpired = new Date(job.expiry_date) < new Date();
+                    return `
+                    <div class="my-job-item" onclick="viewJob(${job.job_id})">
+                        <div class="job-title">${job.job_title || 'Untitled'} ${isExpired ? '<span class="expired">Expired</span>' : ''}</div>
+                        <div class="job-meta">${job.company_name} · ${job.min_experience_years || 0} yrs · ₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}</div>
+                        <div class="job-meta" style="font-size:9px; color:#94a3b8;">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div>
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error('Error loading my jobs:', err);
+                container.innerHTML = '<p style="font-size:11px; color:#ef4444;">Error loading jobs</p>';
+            }
+        }
+
+        // ============================================================
+        // POST JOB FUNCTIONS
+        // ============================================================
+        function setupCounter(inputId, counterId, maxLen) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
+            if (!input || !counter) return;
+            const update = () => {
+                const len = input.value.length;
+                counter.textContent = `${len}/${maxLen}`;
+                if (len > maxLen) {
+                    input.value = input.value.slice(0, maxLen);
+                    counter.textContent = `${maxLen}/${maxLen}`;
+                }
+            };
+            input.addEventListener('input', update);
+            update();
+        }
+
+        function updatePostAreas() {
+            const zoneSelect = document.getElementById('pj-zone');
+            const areaSelect = document.getElementById('pj-area');
+            const areaHint = document.getElementById('pj-area-hint');
+            const zoneId = parseInt(zoneSelect.value);
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (!zoneId) {
+                areaHint.textContent = '⬆️ Choose zone first';
+                return;
+            }
+            const areas = getAreasByZone(zoneId);
+            if (areas.length === 0) {
+                areaSelect.innerHTML = '<option value="">No areas</option>';
+                areaHint.textContent = '⚠️ No areas for this zone';
+                return;
+            }
+            areas.forEach(area => {
+                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+            });
+            areaHint.textContent = `✅ ${areas.length} areas available`;
+            if (areas.length > 0) areaSelect.value = areas[0].area_id;
+        }
+
+        async function publishJob() {
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                return;
+            }
+
+            const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
+            const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
+
+            const company = document.getElementById('pj-company').value.trim();
+            const jobTitle = document.getElementById('pj-title').value.trim();
+            const expRaw = document.getElementById('pj-experience').value.trim();
+            const salaryRaw = document.getElementById('pj-salary').value.replace(/,/g, '');
+            const gender = parseInt(document.getElementById('pj-gender').value);
+            const zone = document.getElementById('pj-zone').value;
+            const area = document.getElementById('pj-area').value;
+            const skills = document.getElementById('pj-skills').value.trim();
+            const description = document.getElementById('pj-description').value.trim();
+            const expiryDate = document.getElementById('pj-expiry').value;
+
+            if (!company) { showToast('⚠️ Company name is required'); return; }
+            if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
+            if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
+            if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('⚠️ Enter valid min experience'); return; }
+            if (!salaryRaw || isNaN(parseInt(salaryRaw)) || parseInt(salaryRaw) <= 0) { showToast('⚠️ Enter valid salary'); return; }
+            if (!zone) { showToast('⚠️ Please select Job Location Zone'); return; }
+            if (!area) { showToast('⚠️ Please select Specific Area'); return; }
+            if (!skills) { showToast('⚠️ Skills are required'); return; }
+            if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
+            if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
+            if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
+
+            const selectedDate = new Date(expiryDate);
+            const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+            if (selectedDate > maxDate) {
+                showToast('⚠️ Expiry date cannot exceed 45 days from today');
+                return;
+            }
+
+            const jobData = {
+                mobile: currentUser.mobile,
+                job_title: jobTitle,
+                company_name: company,
+                min_experience_years: parseFloat(expRaw),
+                max_salary_monthly: parseInt(salaryRaw),
+                preferred_gender: gender,
+                skills_comma_separated: skills,
+                job_description: description || '',
+                zone_id: parseInt(zone),
+                area_id: parseInt(area),
+                expiry_date: new Date(expiryDate).toISOString()
+            };
+
+            try {
+                if (isEditing && editJobId) {
+                    const { error } = await sb
+                        .from('active_jobs')
+                        .update(jobData)
+                        .eq('job_id', parseInt(editJobId));
+                    if (error) throw error;
+                    showToast('✅ Job updated successfully!');
+                } else {
+                    jobData.views = 0;
+                    jobData.calls = 0;
+                    jobData.whatsapp = 0;
+                    jobData.posted_date = new Date().toISOString();
+                    const { error } = await sb.from('active_jobs').insert([jobData]);
+                    if (error) throw error;
+                    showToast('✅ Job published successfully!');
+                }
+
+                document.getElementById('pj-publish-btn').dataset.editing = 'false';
+                document.getElementById('pj-publish-btn').dataset.jobid = '';
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+                document.getElementById('pj-title').value = '';
+                document.getElementById('pj-skills').value = '';
+                document.getElementById('pj-description').value = '';
+                document.getElementById('pj-salary').value = '';
+                document.getElementById('pj-experience').value = '3.5';
+                document.getElementById('pj-company').value = currentUser.company_name || '';
+                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                    el.dispatchEvent(new Event('input'));
+                });
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
+                document.getElementById('pj-gender').value = '0';
+                document.getElementById('pj-zone').value = '100';
+                updatePostAreas();
+
+                fetchFeedData();
+                goToProfile();
+                loadMyJobs();
+            } catch (err) {
+                showToast('❌ Failed: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // VIEW JOB (for profile)
+        // ============================================================
+        async function viewJob(jobId) {
+            try {
+                const { data, error } = await sb
+                    .from('active_jobs')
+                    .select('*')
+                    .eq('job_id', jobId)
+                    .single();
+                if (error) throw error;
+                openDetail(data, 'JOB');
+            } catch (err) {
+                showToast('❌ Error loading job: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // DETAIL VIEW
+        // ============================================================
+        function openDetailFromFeed(item) {
+            if (item._raw) {
+                openDetail(item._raw, item.type);
+            } else {
+                openDetail(item, item.type);
+            }
+        }
+
+        function openDetail(data, type) {
+            currentDetailData = data;
+            currentDetailType = type;
+            document.getElementById('detail-page').classList.remove('hidden-page');
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+
+            const isJob = type === 'JOB';
+            const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
+
+            document.getElementById('detail-title').textContent = data.job_title || data.title || 'Untitled';
+            document.getElementById('detail-company').textContent = data.company_name || data.company || 'Unknown';
+            document.getElementById('detail-type-badge').innerHTML = `<span class="type-badge ${isJob ? 'job' : 'seeker'}">${isJob ? 'JOB' : 'SEEKER'}</span>`;
+
+            document.getElementById('detail-exp').textContent = (data.min_experience_years || data.exp || 0) + ' yrs';
+            document.getElementById('detail-salary').textContent = data.max_salary_monthly ? '₹' + Number(data.max_salary_monthly).toLocaleString('en-IN') : (data.salary || 'Not specified');
+
+            if (isJob) {
+                document.getElementById('detail-gender-field').style.display = 'block';
+                document.getElementById('detail-gender').textContent = genderMap[data.preferred_gender] || 'No Preference';
+            } else {
+                document.getElementById('detail-gender-field').style.display = 'block';
+                document.getElementById('detail-gender').textContent = genderMap[data.gender] || 'Not Specified';
+            }
+
+            const zoneId = data.zone_id || 0;
+            const areaId = data.area_id || 0;
+            document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
+            document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
+
+            document.getElementById('detail-skills').textContent = data.skills_comma_separated || data.skills || '—';
+
+            if (isJob) {
+                document.getElementById('detail-expiry-field').style.display = 'block';
+                document.getElementById('detail-expiry').textContent = data.expiry_date ? new Date(data.expiry_date).toLocaleDateString('en-IN') : '—';
+                document.getElementById('detail-notice-field').style.display = 'none';
+            } else {
+                document.getElementById('detail-expiry-field').style.display = 'none';
+                document.getElementById('detail-notice-field').style.display = 'block';
+                document.getElementById('detail-notice').textContent = (data.notice_period_days || '—') + ' days';
+            }
+
+            document.getElementById('detail-desc').textContent = data.job_description || data.professional_summary || data.desc || '—';
+
+            const postedDate = data.posted_date || data.created_at || data.last_active;
+            document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
+
+            document.getElementById('detail-contact').textContent = data.mobile || data.contact || 'N/A';
+
+            document.getElementById('detail-views').textContent = data.views || 0;
+            document.getElementById('detail-calls').textContent = data.calls || 0;
+            document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
+
+            document.getElementById('detail-contact').dataset.contact = data.mobile || data.contact || '';
+        }
+
+        function closeDetail() {
+            currentDetailData = null;
+            currentDetailType = null;
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.getElementById('home-page').classList.remove('hidden-page');
+            goHome();
+        }
+
+        function makeCall() {
+            const contact = document.getElementById('detail-contact').dataset.contact;
+            if (!contact || contact === 'N/A') {
+                showToast('⚠️ No contact number available');
+                return;
+            }
+            window.location.href = `tel:${contact}`;
+        }
+
+        function sendWhatsApp() {
+            const contact = document.getElementById('detail-contact').dataset.contact;
+            if (!contact || contact === 'N/A') {
+                showToast('⚠️ No contact number available');
+                return;
+            }
+            const title = document.getElementById('detail-title').textContent;
+            const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
+            window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
+        }
+
+        // ============================================================
+        // FETCH FEED DATA
+        // ============================================================
+        async function autoCleanExpiredJobs() {
+            try {
+                const now = new Date().toISOString();
+                const { error } = await sb
+                    .from('active_jobs')
+                    .delete()
+                    .lt('expiry_date', now);
+                if (error) console.error('Error cleaning expired jobs:', error);
+            } catch (err) {
+                console.error('Auto-clean error:', err);
+            }
+        }
+
         async function fetchFeedData() {
             console.log('🔄 Fetching feed data from Supabase...');
             try {
@@ -2223,15 +2520,6 @@
         // ============================================================
         // UI HELPERS
         // ============================================================
-        function showMessage(msg, type) {
-            const el = document.getElementById('msg');
-            el.textContent = msg;
-            el.className = 'msg msg-' + type;
-            el.classList.remove('hidden');
-        }
-
-        function hideMessage() { document.getElementById('msg').classList.add('hidden'); }
-
         function showToast(msg) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -2240,9 +2528,11 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
-        function togglePin() {
-            const input = document.getElementById('pin');
-            input.type = input.type === 'password' ? 'text' : 'password';
+        function setStatus(text, type) {
+            const el = document.getElementById('mobile-status');
+            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
+            el.textContent = text;
+            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
         }
 
         function resetForm() {
@@ -2254,173 +2544,97 @@
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('detail-page').classList.add('hidden-page');
             document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('gender-icon').style.display = 'none';
-            document.getElementById('gender-icon-profile').style.display = 'none';
             document.getElementById('mobile').value = '';
-            document.getElementById('pin').value = '';
-            document.getElementById('msg').classList.add('hidden');
+            document.getElementById('send-otp-btn').disabled = false;
             document.getElementById('mobile-status').textContent = '';
-            document.getElementById('submitBtn').textContent = 'Submit';
-            document.getElementById('submitBtn').className = 'btn-green';
-            document.getElementById('submitBtn').disabled = false;
+            document.querySelectorAll('.otp-input').forEach(el => {
+                el.value = '';
+                el.classList.remove('filled');
+            });
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            document.getElementById('resend-otp').disabled = true;
             currentMobile = '';
-            actionType = '';
             currentUser = null;
-            isChecking = false;
             document.getElementById('mobile').focus();
         }
 
-        function setStatus(text, type) {
-            const el = document.getElementById('mobile-status');
-            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
-            el.textContent = text;
-            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
-        }
-
-        function showPinScreen(mobile, status, statusType, btnText, btnClass) {
-            currentMobile = mobile;
-            document.getElementById('display-mobile').textContent = mobile;
-            document.getElementById('status-badge').textContent = status;
-            document.getElementById('status-badge').className = 'text-sm font-medium text-' + statusType + '-600';
-            document.getElementById('submitBtn').textContent = btnText;
-            document.getElementById('submitBtn').className = 'btn-' + btnClass;
-            document.getElementById('submitBtn').disabled = false;
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').classList.remove('hidden');
-            document.getElementById('pin').value = '';
-            document.getElementById('pin').focus();
-            hideMessage();
-        }
-
-        // ============================================================
-        // MOBILE CHECK
-        // ============================================================
-        document.getElementById('mobile').addEventListener('input', function(e) {
-            const mobile = this.value.trim();
-            const statusEl = document.getElementById('mobile-status');
-            statusEl.textContent = '';
-            if (mobile.length === 10) {
-                autoCheckMobile(mobile);
-            } else if (mobile.length > 0 && mobile.length < 10) {
-                setStatus('Enter 10 digits', 'gray');
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step1').style.display = 'block';
-            } else {
-                document.getElementById('step2').classList.add('hidden');
-                document.getElementById('step1').style.display = 'block';
-            }
-        });
-
-        async function autoCheckMobile(mobile) {
-            if (isChecking) return;
-            isChecking = true;
-            const mobileInput = document.getElementById('mobile');
-            mobileInput.disabled = true;
-            setStatus('⏳ Checking...', 'blue');
-
-            try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: mobile })
-                });
-                const data = await response.json();
-                console.log('Check response:', data);
-
-                if (data.inActiveUsers) {
-                    actionType = 'login';
-                    showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
-                    setStatus('✓ User found', 'green');
-                } else if (data.inAllUsers) {
-                    actionType = 'reactivate';
-                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
-                    setStatus('📋 Archived', 'yellow');
-                } else {
-                    actionType = 'register';
-                    showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
-                    setStatus('✨ New user', 'blue');
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                setStatus('❌ Error checking: ' + err.message, 'red');
-                showMessage('Error: ' + err.message, 'red');
-            } finally {
-                isChecking = false;
-                mobileInput.disabled = false;
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                resetForm();
+                showToast('👋 Logged out');
             }
         }
 
         // ============================================================
-        // SUBMIT PIN
+        // FEED FUNCTIONS
         // ============================================================
-        window.submitPin = async function() {
-            console.log('submitPin called');
-            const pin = document.getElementById('pin').value.trim();
-            if (!pin || pin.length !== 4) {
-                showMessage('Enter 4-digit PIN', 'red');
-                document.getElementById('pin').focus();
+        function setFilter(type) {
+            currentFilter = type;
+            const both = document.getElementById('filter-both');
+            const job = document.getElementById('filter-job');
+            const seeker = document.getElementById('filter-seeker');
+            both.className = type === 'BOTH' ? 'active' : 'inactive';
+            job.className = type === 'JOB' ? 'active' : 'inactive';
+            seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
+            renderFeed();
+        }
+
+        function renderFeed() {
+            if (currentPage !== 'home') return;
+            const container = document.getElementById('feed-container');
+            const count = document.getElementById('results-count');
+            if (!feedItems || feedItems.length === 0) {
+                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
+                count.textContent = 'Showing 0 Records';
                 return;
             }
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Processing...';
-            showMessage('Processing...', 'blue');
-
-            try {
-                let endpoint = '';
-                if (actionType === 'login') endpoint = '/login-user';
-                else if (actionType === 'reactivate') endpoint = '/reactivate-user';
-                else endpoint = '/register-user';
-
-                const response = await fetch(`${EDGE_FUNCTION_URL}${endpoint}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
-                });
-                const data = await response.json();
-                console.log('Auth response:', data);
-
-                if (data.success) {
-                    const { data: userData, error } = await sb
-                        .from('active_users')
-                        .select('*')
-                        .eq('mobile', currentMobile)
-                        .single();
-
-                    if (error) {
-                        showMessage('Error fetching user data', 'red');
-                        return;
-                    }
-
-                    if (userData) {
-                        currentUser = userData;
-                        document.getElementById('step2').classList.add('hidden');
-                        document.getElementById('login-screen').style.display = 'none';
-                        document.getElementById('home-page').classList.remove('hidden-page');
-                        document.getElementById('profile-page').classList.add('hidden-page');
-                        document.getElementById('edit-seeker-page').classList.add('hidden-page');
-                        document.getElementById('postjob-page').classList.add('hidden-page');
-                        document.getElementById('detail-page').classList.add('hidden-page');
-                        updateGenderIcon(userData);
-                        hideMessage();
-                        setTimeout(autoDetectLocation, 500);
-                        await fetchFeedData();
-                        showToast('✅ Welcome ' + currentMobile + '!');
-                    }
-                } else {
-                    showMessage('❌ ' + data.error, 'red');
-                    document.getElementById('pin').value = '';
-                    document.getElementById('pin').focus();
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                showMessage('Error: ' + err.message, 'red');
-            } finally {
-                submitBtn.disabled = false;
-                const btnText = actionType === 'login' ? '🔐 Login' : actionType === 'reactivate' ? '🔄 Reactivate' : '📝 Register';
-                submitBtn.textContent = btnText;
+            let filtered = [...feedItems];
+            if (currentFilter === 'JOB') {
+                filtered = filtered.filter(item => item.type === 'JOB');
+            } else if (currentFilter === 'SEEKER') {
+                filtered = filtered.filter(item => item.type === 'SEEKER');
             }
-        };
+            if (selectedZoneId) {
+                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
+            }
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            }
+            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
+            if (titleFilter) {
+                filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
+            }
+            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
+            if (skillsFilter) {
+                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
+            }
+            const expFilter = document.getElementById('filter-exp').value;
+            if (expFilter === '0-2') {
+                filtered = filtered.filter(item => item.exp <= 2);
+            } else if (expFilter === '3-5') {
+                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
+            } else if (expFilter === '5+') {
+                filtered = filtered.filter(item => item.exp > 5);
+            }
+            count.textContent = `Showing ${filtered.length} Records`;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(item => {
+                const zoneName = getZoneName(item.zone_id);
+                const areaName = getAreaName(item.area_id);
+                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
+                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
+                return `
+                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                    <div class="title">${item.title}</div>
+                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
+                    <span class="badge ${typeClass}">${typeLabel}</span>
+                </div>
+            `}).join('');
+        }
 
         // ============================================================
         // SEARCHABLE ZONE
@@ -2505,97 +2719,81 @@
         });
 
         // ============================================================
-        // FEED FUNCTIONS
+        // INIT
         // ============================================================
-        function setFilter(type) {
-            currentFilter = type;
-            const both = document.getElementById('filter-both');
-            const job = document.getElementById('filter-job');
-            const seeker = document.getElementById('filter-seeker');
-            both.className = type === 'BOTH' ? 'active' : 'inactive';
-            job.className = type === 'JOB' ? 'active' : 'inactive';
-            seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
-            renderFeed();
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Edit seeker counters
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            if (aboutTextarea && charCount) {
+                aboutTextarea.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
 
-        function renderFeed() {
-            if (currentPage !== 'home') return;
-            const container = document.getElementById('feed-container');
-            const count = document.getElementById('results-count');
-            if (!feedItems || feedItems.length === 0) {
-                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
-                count.textContent = 'Showing 0 Records';
-                return;
+            const salaryInput = document.getElementById('edit-seeker-salary');
+            if (salaryInput) {
+                salaryInput.addEventListener('input', function() {
+                    const rawValue = parseSalaryValue(this.value);
+                    if (rawValue) {
+                        const formatted = formatSalaryDisplay(rawValue);
+                        this.value = formatted;
+                        this.setSelectionRange(this.value.length, this.value.length);
+                    }
+                });
             }
-            let filtered = [...feedItems];
-            if (currentFilter === 'JOB') {
-                filtered = filtered.filter(item => item.type === 'JOB');
-            } else if (currentFilter === 'SEEKER') {
-                filtered = filtered.filter(item => item.type === 'SEEKER');
-            }
-            if (selectedZoneId) {
-                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
-            }
-            if (selectedAreaId) {
-                filtered = filtered.filter(item => item.area_id === selectedAreaId);
-            }
-            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
-            if (titleFilter) {
-                filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
-            }
-            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
-            if (skillsFilter) {
-                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
-            }
-            const expFilter = document.getElementById('filter-exp').value;
-            if (expFilter === '0-2') {
-                filtered = filtered.filter(item => item.exp <= 2);
-            } else if (expFilter === '3-5') {
-                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
-            } else if (expFilter === '5+') {
-                filtered = filtered.filter(item => item.exp > 5);
-            }
-            count.textContent = `Showing ${filtered.length} Records`;
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
-                return;
-            }
-            container.innerHTML = filtered.map(item => {
-                const zoneName = getZoneName(item.zone_id);
-                const areaName = getAreaName(item.area_id);
-                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
-                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
-                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
-                // Store the item data for click handler
-                const dataAttr = encodeURIComponent(JSON.stringify(item));
-                return `
-                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                    <div class="title">${item.title}</div>
-                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
-                    <span class="badge ${typeClass}">${typeLabel}</span>
-                </div>
-            `}).join('');
-        }
 
-        // ============================================================
-        // LOGOUT
-        // ============================================================
-        window.logout = function() {
-            if (confirm('Are you sure you want to logout?')) {
-                resetForm();
-                showToast('👋 Logged out');
-            }
-        };
+            populateEditZones();
 
-        document.getElementById('pin').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                window.submitPin();
+            // Post Job counters
+            setupCounter('pj-title', 'pj-title-counter', 60);
+            setupCounter('pj-skills', 'pj-skills-counter', 200);
+            setupCounter('pj-description', 'pj-desc-counter', 500);
+
+            const pjSalary = document.getElementById('pj-salary');
+            if (pjSalary) {
+                pjSalary.addEventListener('input', function() {
+                    const raw = this.value.replace(/[^0-9]/g, '');
+                    if (raw) {
+                        const formatted = Number(raw).toLocaleString('en-IN');
+                        this.value = formatted;
+                    } else {
+                        this.value = '';
+                    }
+                });
             }
+
+            const expiryInput = document.getElementById('pj-expiry');
+            if (expiryInput) {
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                expiryInput.value = d.toISOString().split('T')[0];
+                expiryInput.max = new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.min = new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.addEventListener('change', function() {
+                    const selected = new Date(this.value);
+                    const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+                    if (selected > maxDate) {
+                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
+                        this.value = maxDate.toISOString().split('T')[0];
+                    }
+                });
+            }
+
+            const zoneSelect = document.getElementById('pj-zone');
+            zoneSelect.value = '100';
+            updatePostAreas();
+
+            // Enter key on mobile
+            document.getElementById('mobile').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    sendWhatsAppOTP();
+                }
+            });
+
+            console.log('✅ JobAd with WhatsApp Auth Ready');
+            document.getElementById('mobile').focus();
         });
-
-        console.log('✅ JobAd App Ready');
-        console.log('📱 Test users: 9876543210 (PIN: 1234)');
-        document.getElementById('mobile').focus();
     </script>
 </body>
 </html>
