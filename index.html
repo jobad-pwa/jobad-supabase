@@ -2,51 +2,565 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JobAd · Post Job</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobAd - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; }
         body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background: #f3f4f6;
             margin: 0;
-            min-height: 100vh;
+            padding: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 12px;
+            min-height: 100vh;
         }
-        .phone-frame {
-            max-width: 420px;
+        .card {
+            max-width: 400px;
             width: 100%;
             background: white;
-            border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 6px 12px rgba(0,0,0,0.05);
-            overflow: hidden;
-            height: 95vh;
-            max-height: 800px;
+            border-radius: 24px;
+            padding: 20px 18px 10px 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
+            height: 95vh;
+            max-height: 780px;
             position: relative;
+            overflow: hidden;
         }
-        /* fixed header */
-        .app-header {
-            flex-shrink: 0;
-            padding: 16px 18px 10px 18px;
-            background: white;
-            border-bottom: 1px solid #f0f2f5;
+        .hidden { display: none; }
+        .hidden-page { display: none; }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        input:focus { border-color: #2563eb; outline: 2px solid #93c5fd; }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        button:hover { background: #1d4ed8; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-back { background: #6b7280; margin-top: 8px; }
+        .btn-back:hover { background: #4b5563; }
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #15803d; }
+        .btn-yellow { background: #d97706; }
+        .btn-yellow:hover { background: #b45309; }
+        .msg {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .msg-green { background: #dcfce7; color: #166534; }
+        .msg-red { background: #fee2e2; color: #991b1b; }
+        .msg-blue { background: #dbeafe; color: #1e40af; }
+        .msg-yellow { background: #fef3c7; color: #92400e; }
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: fadeOut 2s ease forwards;
+            white-space: nowrap;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
+        }
+        .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
+        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* LOGIN SCREEN */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+        #login-screen h1 {
+            font-size: 40px;
+            font-weight: 900;
+            color: #2563eb;
+            margin: 0 0 4px 0;
+        }
+        #login-screen .test-links {
+            margin-bottom: 24px;
+            font-size: 12px;
+        }
+        #login-screen .test-links a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        #login-screen .password-wrapper { position: relative; }
+        #login-screen .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 14px;
+            user-select: none;
+            padding: 4px;
+        }
+        .mobile-status { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+        /* HOME SCREEN */
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        .home-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-bottom: 8px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #f1f5f9;
         }
-        .app-header .logo {
+        .home-header .logo {
             font-size: 22px;
-            font-weight: 800;
+            font-weight: 900;
             color: #2563eb;
-            letter-spacing: -0.3px;
+            cursor: pointer;
         }
-        .app-header .cancel-btn {
+        .home-header .gender-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .home-header .gender-icon.male { color: #2563eb; border-color: #2563eb; }
+        .home-header .gender-icon.female { color: #ec4899; border-color: #ec4899; }
+        .home-header .gender-icon.other { color: #8b5cf6; border-color: #8b5cf6; }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding: 8px 0;
+        }
+        .page-content::-webkit-scrollbar { width: 3px; }
+        .page-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .home-top { flex-shrink: 0; padding-bottom: 6px; }
+        .zone-filter {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+        .zone-filter .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .zone-filter .header label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .zone-filter .header span {
+            font-size: 8px;
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+        .zone-filter .search-wrapper { position: relative; }
+        .zone-filter .search-wrapper input {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 5px 12px;
+            font-size: 11px;
+            color: white;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 0;
+        }
+        .zone-filter .search-wrapper input::placeholder { color: #64748b; }
+        .zone-filter .search-wrapper input:focus { border-color: #3b82f6; }
+        .zone-filter .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            margin-top: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .zone-filter .suggestions.show { display: block; }
+        .zone-filter .suggestions .item {
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #e2e8f0;
+            cursor: pointer;
+        }
+        .zone-filter .suggestions .item:hover { background: #334155; }
+        .zone-filter .suggestions .no-result {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .type-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            background: #e2e8f0;
+            padding: 3px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .type-buttons button {
+            padding: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .type-buttons .active { background: white; color: #1e293b; }
+        .type-buttons .inactive { background: transparent; color: #64748b; }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .filter-row label {
+            font-size: 8px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 1px;
+        }
+        .filter-row input, .filter-row select {
+            width: 100%;
+            padding: 4px 8px;
+            font-size: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 0;
+        }
+
+        .results-count {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 3px;
+            margin-bottom: 6px;
+        }
+        .results-count span {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-bottom: 4px;
+        }
+        .feed-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .feed-card:hover { border-color: #3b82f6; }
+        .feed-card .title { font-weight: 700; font-size: 13px; color: #0f172a; }
+        .feed-card .meta { font-size: 10px; color: #475569; margin-top: 1px; }
+        .feed-card .badge {
+            font-size: 8px;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 3px;
+        }
+        .feed-card .badge-job { background: #dbeafe; color: #1e40af; }
+        .feed-card .badge-seeker { background: #dcfce7; color: #166534; }
+        .no-records { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 13px; }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
+            margin-top: 4px;
+            flex-shrink: 0;
+            background: white;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #94a3b8;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 3px 12px;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            width: auto;
+        }
+        .bottom-nav .nav-item:hover { color: #3b82f6; }
+        .bottom-nav .nav-item.active { color: #2563eb; }
+        .bottom-nav .nav-item .icon { font-size: 18px; margin-bottom: 1px; }
+        .bottom-nav .nav-item .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* PROFILE PAGE */
+        .profile-header-card {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 16px;
+            padding: 16px 20px;
+            color: white;
+            margin-bottom: 16px;
+        }
+        .profile-header-card .welcome { font-size: 11px; opacity: 0.8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+        .profile-header-card .mobile { font-size: 22px; font-weight: 700; margin: 2px 0; }
+        .profile-header-card .badge { font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 12px; border-radius: 12px; display: inline-block; }
+
+        .profile-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .profile-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .profile-section .section-title { font-size: 14px; font-weight: 700; color: #1e293b; }
+        .profile-section .section-badge {
+            font-size: 9px;
+            background: #fef3c7;
+            color: #d97706;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+        .profile-section .section-desc { font-size: 12px; color: #64748b; margin-bottom: 10px; }
+        .profile-section .section-btn {
+            padding: 8px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .profile-section .section-btn:hover { background: #1d4ed8; }
+        .profile-section .section-btn-green { background: #16a34a; }
+        .profile-section .section-btn-green:hover { background: #15803d; }
+        .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
+        .profile-active .section-badge { background: #dcfce7; color: #166534; }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .logout-btn:hover { background: #fecaca; }
+
+        /* EDIT SEEKER */
+        .edit-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        .edit-page-header h2 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .edit-page-header .cancel-btn {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+        .edit-page-header .cancel-btn:hover {
+            color: #64748b;
+        }
+
+        .edit-hint {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+        .edit-hint .hint-title { font-size: 12px; font-weight: 700; color: #1d4ed8; }
+        .edit-hint .hint-desc { font-size: 11px; color: #475569; margin-top: 2px; }
+
+        .edit-field { margin-bottom: 10px; }
+        .edit-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        .edit-field label .limit-hint { font-size: 9px; color: #94a3b8; font-weight: 400; }
+        .edit-field input, .edit-field select, .edit-field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
+        .edit-field textarea { resize: vertical; min-height: 50px; }
+
+        /* Salary input with currency display */
+        .salary-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .salary-input-wrapper .currency-symbol {
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            pointer-events: none;
+        }
+        .salary-input-wrapper input {
+            padding-left: 28px;
+            text-align: left;
+        }
+
+        .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
+        .edit-activate-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .edit-activate-btn:hover { background: #1d4ed8; }
+
+        /* ===== POST JOB PAGE (fixed header/footer, scroll middle) ===== */
+        .postjob-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        .postjob-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .postjob-header .logo {
+            font-size: 22px;
+            font-weight: 900;
+            color: #2563eb;
+            cursor: pointer;
+        }
+        .postjob-header .cancel-btn {
             font-size: 14px;
             font-weight: 600;
             color: #6b7280;
@@ -57,46 +571,18 @@
             border-radius: 20px;
             transition: 0.2s;
         }
-        .app-header .cancel-btn:hover { background: #f3f4f6; }
-        /* scrollable middle */
-        .scroll-area {
+        .postjob-header .cancel-btn:hover { background: #f3f4f6; }
+
+        .postjob-scroll {
             flex: 1;
             overflow-y: auto;
-            padding: 12px 18px 20px 18px;
-            background: #fafbfc;
+            padding: 12px 0 8px 0;
+            min-height: 0;
         }
-        .scroll-area::-webkit-scrollbar { width: 3px; }
-        .scroll-area::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .postjob-scroll::-webkit-scrollbar { width: 3px; }
+        .postjob-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* bottom nav fixed */
-        .bottom-nav {
-            flex-shrink: 0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 8px 12px 10px 12px;
-            background: white;
-            border-top: 1px solid #f0f2f5;
-        }
-        .bottom-nav .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: none;
-            border: none;
-            color: #9ca3af;
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 4px 12px;
-            border-radius: 12px;
-            transition: 0.2s;
-        }
-        .bottom-nav .nav-item .icon { font-size: 20px; margin-bottom: 2px; }
-        .bottom-nav .nav-item.active { color: #2563eb; }
-        .bottom-nav .nav-item:hover { color: #1e293b; }
-
-        /* form styling */
+        .form-group { margin-bottom: 12px; }
         .form-label {
             font-size: 11px;
             font-weight: 700;
@@ -116,6 +602,7 @@
             transition: 0.15s;
             outline: none;
             font-family: inherit;
+            text-align: left;
         }
         .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
         .form-control::placeholder { color: #b0b8c4; font-weight: 400; }
@@ -127,15 +614,28 @@
             grid-template-columns: 1fr 1fr;
             gap: 12px;
         }
-        .field-group { margin-bottom: 14px; }
-
-        .char-counter {
-            text-align: right;
-            font-size: 10px;
-            color: #94a3b8;
-            margin-top: 4px;
+        .inline-hint {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+            display: flex;
+            justify-content: space-between;
         }
-
+        .salary-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .salary-wrap .rupee {
+            position: absolute;
+            left: 12px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 15px;
+            pointer-events: none;
+        }
+        .salary-wrap .form-control { padding-left: 28px; }
+        .select-hint { font-size: 10px; color: #94a3b8; margin-top: 2px; }
         .publish-btn {
             width: 100%;
             padding: 14px;
@@ -151,343 +651,1378 @@
         }
         .publish-btn:hover { background: #1d4ed8; }
         .publish-btn:active { transform: scale(0.98); }
-
-        .inline-hint {
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 2px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* salary adornment */
-        .salary-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .salary-wrap .rupee {
-            position: absolute;
-            left: 12px;
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 15px;
-            pointer-events: none;
-        }
-        .salary-wrap .form-control { padding-left: 28px; }
-
-        /* zone / area selects */
-        .select-hint { font-size: 10px; color: #94a3b8; margin-top: 2px; }
-
-        /* bottom spacer */
         .bottom-spacer { height: 4px; }
     </style>
 </head>
 <body>
-<div class="phone-frame">
-
-    <!-- ========== FIXED HEADER ========== -->
-    <div class="app-header">
-        <span class="logo">JobAd</span>
-        <button class="cancel-btn" onclick="handleCancel()">Cancel</button>
-    </div>
-
-    <!-- ========== SCROLLABLE MIDDLE ========== -->
-    <div class="scroll-area" id="scrollArea">
-
-        <!-- company -->
-        <div class="field-group">
-            <label class="form-label">Company</label>
-            <input class="form-control" type="text" id="company" placeholder="abc corp" value="abc corp">
+    <div class="card">
+        <!-- LOGIN SCREEN -->
+        <div id="login-screen">
+            <h1>JobAd</h1>
+            <div class="test-links"><a href="test.html">🔌 DB Test</a></div>
+            <div id="step1" style="width:100%;">
+                <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10" autofocus>
+                <div class="mobile-status" id="mobile-status"></div>
+            </div>
+            <div id="step2" class="hidden fade-in" style="width:100%;">
+                <div class="text-center mb-4">
+                    <div class="mobile-display" id="display-mobile">--</div>
+                    <div id="status-badge" class="text-sm font-medium"></div>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
+                    <span class="toggle-password" onclick="togglePin()">👁️</span>
+                </div>
+                <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
+                <button onclick="resetForm()" class="btn-back">← Change Number</button>
+            </div>
+            <div id="msg" class="hidden"></div>
         </div>
 
-        <!-- job title + experience row -->
-        <div class="grid-2">
-            <div class="field-group">
-                <label class="form-label">Job Title <span class="required">*</span></label>
-                <input class="form-control" type="text" id="jobTitle" placeholder="e.g., Senior Developer" maxlength="60" value="Senior Developer">
-                <div class="inline-hint"><span></span><span id="titleCounter">0/60</span></div>
-            </div>
-            <div class="field-group">
-                <label class="form-label">Experience <span class="required">*</span></label>
-                <select class="form-control" id="experience">
-                    <option value="0-1">0-1 Years</option>
-                    <option value="1-3">1-3 Years</option>
-                    <option value="3-5" selected>3-5 Years</option>
-                    <option value="5-8">5-8 Years</option>
-                    <option value="8+">8+ Years</option>
-                </select>
-            </div>
-        </div>
+        <!-- HOME PAGE -->
+        <div id="home-page" class="hidden-page" style="height:100%;">
+            <div class="home-container">
+                <div class="home-header">
+                    <div class="logo" onclick="goHome()">JobAd</div>
+                    <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
+                        <span id="gender-symbol">👤</span>
+                    </div>
+                </div>
 
-        <!-- salary + zone row -->
-        <div class="grid-2">
-            <div class="field-group">
-                <label class="form-label">Salary <span class="required">*</span></label>
-                <div class="salary-wrap">
-                    <span class="rupee">₹</span>
-                    <input class="form-control" type="text" id="salary" placeholder="15 LPA" value="15 LPA" maxlength="20">
+                <div class="home-top">
+                    <div class="zone-filter">
+                        <div class="header">
+                            <label>📍 Filter by Zone</label>
+                            <span id="zone-status">All Zones</span>
+                        </div>
+                        <div class="search-wrapper">
+                            <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
+                            <div class="suggestions" id="zone-suggestions"></div>
+                        </div>
+                    </div>
+
+                    <div class="type-buttons">
+                        <button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button>
+                        <button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button>
+                        <button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button>
+                    </div>
+
+                    <div class="filter-row">
+                        <div>
+                            <label>Job Title</label>
+                            <input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()">
+                        </div>
+                        <div>
+                            <label>Experience</label>
+                            <select id="filter-exp" onchange="renderFeed()">
+                                <option value="ALL">Any</option>
+                                <option value="0-2">0-2 Years</option>
+                                <option value="3-5">3-5 Years</option>
+                                <option value="5+">5+ Years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="filter-row">
+                        <div>
+                            <label>Skills</label>
+                            <input type="text" id="filter-skills" placeholder="Eg: python" oninput="renderFeed()">
+                        </div>
+                        <div>
+                            <label>Area</label>
+                            <select id="filter-area" onchange="onAreaFilterChange()">
+                                <option value="ALL">All areas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="results-count">
+                        <span id="results-count">Showing 0 Records</span>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <div id="feed-container" class="feed-container"></div>
+                </div>
+
+                <div class="bottom-nav">
+                    <button class="nav-item active" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </button>
+                    <button class="nav-item" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </button>
+                    <button class="nav-item" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </button>
                 </div>
             </div>
-            <div class="field-group">
-                <label class="form-label">Job Location Zone <span class="required">*</span></label>
-                <select class="form-control" id="jobZone" onchange="updateAreas()">
-                    <option value="">-- Select Zone --</option>
-                    <option value="100" selected>Hyderabad</option>
-                    <option value="200">North Telangana</option>
-                    <option value="300">East Telangana</option>
-                    <option value="400">South Telangana</option>
-                </select>
+        </div>
+
+        <!-- PROFILE PAGE -->
+        <div id="profile-page" class="hidden-page" style="height:100%;">
+            <div class="home-container">
+                <div class="home-header">
+                    <div class="logo" onclick="goHome()">JobAd</div>
+                    <div class="gender-icon" id="gender-icon-profile" style="display:none;" onclick="goToProfile()">
+                        <span id="gender-symbol-profile">👤</span>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <div class="profile-header-card">
+                        <div class="welcome">Welcome,</div>
+                        <div class="mobile" id="profile-mobile">--</div>
+                        <span class="badge" id="profile-badge">⭐ Member</span>
+                    </div>
+
+                    <div class="profile-section" id="seeker-section">
+                        <div class="section-header">
+                            <span class="section-title">👤 Job Seeker Profile</span>
+                            <span class="section-badge" id="seeker-badge">⚠️ Required to Apply</span>
+                        </div>
+                        <div class="section-desc" id="seeker-desc">Complete your job profile to get matched with relevant jobs.</div>
+                        <div id="seeker-input-area">
+                            <button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%;">+ Create Job Profile</button>
+                        </div>
+                        <div id="seeker-active-area" style="display:none;">
+                            <div style="background:#f8fafc; border-radius:10px; padding:10px; font-size:12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+                                    <strong id="seeker-display-name">--</strong>
+                                    <span style="color:#64748b; font-size:11px;" id="seeker-display-title">--</span>
+                                </div>
+                                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:4px; font-size:11px; color:#475569;">
+                                    <span>📅 <span id="seeker-display-exp">--</span> yrs</span>
+                                    <span>💰 <span id="seeker-display-salary">--</span></span>
+                                    <span>📋 <span id="seeker-display-notice">--</span> days</span>
+                                    <span>📍 <span id="seeker-display-location">--</span></span>
+                                </div>
+                                <div style="margin-top:4px; font-size:11px; color:#475569;">
+                                    <span style="font-weight:600;">Skills:</span> <span id="seeker-display-skills">--</span>
+                                </div>
+                                <div style="margin-top:4px; font-size:11px; color:#64748b; border-top:1px solid #e2e8f0; padding-top:4px;">
+                                    <span id="seeker-display-about">--</span>
+                                </div>
+                            </div>
+                            <button class="section-btn" style="margin-top:6px; width:100%;" onclick="goToEditSeeker()">✏️ Edit Profile</button>
+                        </div>
+                    </div>
+
+                    <div class="profile-section" id="recruiter-section">
+                        <div class="section-header">
+                            <span class="section-title">🏢 Recruiter Profile</span>
+                            <span class="section-badge" id="recruiter-badge">⚠️ Required to Post Jobs</span>
+                        </div>
+                        <div class="section-desc" id="recruiter-desc">Create your recruiter profile to post jobs and find candidates.</div>
+                        <div id="recruiter-input-area">
+                            <div class="section-input">
+                                <input type="text" id="recruiter-company" placeholder="Company Name" maxlength="100">
+                                <button class="section-btn section-btn-green" onclick="saveRecruiterProfile()">Save & Activate</button>
+                            </div>
+                        </div>
+                        <div id="recruiter-active-area" style="display:none;">
+                            <div style="background:#f8fafc; border-radius:10px; padding:10px; font-size:12px;">
+                                <p><strong id="recruiter-display-company">--</strong></p>
+                                <p style="color:#64748b; margin-top:2px;">✅ Recruiter profile active</p>
+                            </div>
+                            <button class="section-btn" style="margin-top:6px; width:100%;" onclick="editRecruiterProfile()">✏️ Edit Company</button>
+                        </div>
+                    </div>
+
+                    <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+                </div>
+
+                <div class="bottom-nav">
+                    <button class="nav-item" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </button>
+                    <button class="nav-item" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </button>
+                    <button class="nav-item active" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- specific area + skills row -->
-        <div class="grid-2">
-            <div class="field-group">
-                <label class="form-label">Specific Area <span class="required">*</span></label>
-                <select class="form-control" id="specificArea">
-                    <option value="">Select zone first</option>
-                </select>
-                <div class="select-hint" id="areaHint">⬆️ Choose zone first</div>
-            </div>
-            <div class="field-group">
-                <label class="form-label">Skills <span class="required">*</span></label>
-                <input class="form-control" type="text" id="skills" placeholder="Python, AWS, Docker" value="Python, AWS, Docker" maxlength="120">
-                <div class="inline-hint"><span></span><span id="skillsCounter">0/120</span></div>
+        <!-- EDIT SEEKER PAGE -->
+        <div id="edit-seeker-page" class="hidden-page" style="height:100%;">
+            <div class="home-container">
+                <div class="edit-page-header">
+                    <h2>👤 Job Seeker Profile</h2>
+                    <button class="cancel-btn" onclick="goToProfile()">Cancel</button>
+                </div>
+
+                <div class="page-content">
+                    <div class="edit-hint">
+                        <div class="hint-title">📍 Why select your location?</div>
+                        <div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>Full Name *</label>
+                        <input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50">
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Job Title *</label>
+                            <input type="text" id="edit-seeker-title" placeholder="Job title" maxlength="50">
+                        </div>
+                        <div class="edit-field">
+                            <label>Gender</label>
+                            <select id="edit-seeker-gender">
+                                <option value="0">Not Specified</option>
+                                <option value="1">Female</option>
+                                <option value="2">Male</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Experience (Years)</label>
+                            <input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="0.5">
+                        </div>
+                        <div class="edit-field">
+                            <label>Expected Monthly Salary</label>
+                            <div class="salary-input-wrapper">
+                                <span class="currency-symbol">₹</span>
+                                <input type="text" id="edit-seeker-salary" placeholder="50,000" inputmode="numeric">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Notice (days)</label>
+                            <input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1">
+                        </div>
+                        <div class="edit-field">
+                            <label>Skills (comma)</label>
+                            <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100">
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="edit-field">
+                            <label>Zone *</label>
+                            <select id="edit-seeker-zone" onchange="updateEditAreas()">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                        <div class="edit-field">
+                            <label>Area *</label>
+                            <select id="edit-seeker-area">
+                                <option value="">Select zone first</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="edit-field">
+                        <label>About Me <span style="font-size:9px;color:#94a3b8;">(max 200 chars)</span></label>
+                        <textarea id="edit-seeker-about" rows="2" placeholder="Write about yourself..." maxlength="200"></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span> / 200
+                        </div>
+                    </div>
+
+                    <button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button>
+                </div>
+
+                <div class="bottom-nav">
+                    <button class="nav-item" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </button>
+                    <button class="nav-item" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </button>
+                    <button class="nav-item active" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- description (full width) -->
-        <div class="field-group">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" id="description" rows="3" placeholder="Job details..." maxlength="300">Job details...</textarea>
-            <div class="inline-hint"><span></span><span id="descCounter">0/300</span></div>
-        </div>
+        <!-- ========== POST JOB PAGE (fixed header/footer, scroll middle) ========== -->
+        <div id="postjob-page" class="hidden-page" style="height:100%;">
+            <div class="postjob-container">
+                <!-- fixed header -->
+                <div class="postjob-header">
+                    <span class="logo" onclick="goHome()">JobAd</span>
+                    <button class="cancel-btn" onclick="cancelPostJob()">Cancel</button>
+                </div>
 
-        <!-- publish button -->
-        <button class="publish-btn" onclick="publishJob()">📤 Publish Job</button>
-        <div class="bottom-spacer"></div>
+                <!-- scrollable middle -->
+                <div class="postjob-scroll">
+                    <!-- Company -->
+                    <div class="form-group">
+                        <label class="form-label">Company</label>
+                        <input class="form-control" type="text" id="pj-company" placeholder="abc corp" value="abc corp">
+                    </div>
+
+                    <!-- Job Title + Experience (2 cols) -->
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Job Title <span class="required">*</span></label>
+                            <input class="form-control" type="text" id="pj-title" placeholder="e.g., Senior Developer" maxlength="60" value="Senior Developer">
+                            <div class="inline-hint"><span></span><span id="pj-title-counter">0/60</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Experience <span class="required">*</span></label>
+                            <select class="form-control" id="pj-experience">
+                                <option value="0-1">0-1 Years</option>
+                                <option value="1-3">1-3 Years</option>
+                                <option value="3-5" selected>3-5 Years</option>
+                                <option value="5-8">5-8 Years</option>
+                                <option value="8+">8+ Years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Salary + Zone (2 cols) -->
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Salary <span class="required">*</span></label>
+                            <div class="salary-wrap">
+                                <span class="rupee">₹</span>
+                                <input class="form-control" type="text" id="pj-salary" placeholder="15 LPA" value="15 LPA" maxlength="20">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Job Location Zone <span class="required">*</span></label>
+                            <select class="form-control" id="pj-zone" onchange="updatePostAreas()">
+                                <option value="">-- Select Zone --</option>
+                                <option value="100" selected>Hyderabad</option>
+                                <option value="200">North Telangana</option>
+                                <option value="300">East Telangana</option>
+                                <option value="400">South Telangana</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Specific Area + Skills (2 cols) -->
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Specific Area <span class="required">*</span></label>
+                            <select class="form-control" id="pj-area">
+                                <option value="">Select zone first</option>
+                            </select>
+                            <div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Skills <span class="required">*</span></label>
+                            <input class="form-control" type="text" id="pj-skills" placeholder="Python, AWS, Docker" value="Python, AWS, Docker" maxlength="120">
+                            <div class="inline-hint"><span></span><span id="pj-skills-counter">0/120</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Description (full width) -->
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="pj-description" rows="3" placeholder="Job details..." maxlength="300">Job details...</textarea>
+                        <div class="inline-hint"><span></span><span id="pj-desc-counter">0/300</span></div>
+                    </div>
+
+                    <button class="publish-btn" onclick="publishJob()">📤 Publish Job</button>
+                    <div class="bottom-spacer"></div>
+                </div>
+
+                <!-- fixed bottom nav -->
+                <div class="bottom-nav">
+                    <button class="nav-item" onclick="goHome()">
+                        <span class="icon">🏠</span>
+                        <span class="label">Home</span>
+                    </button>
+                    <button class="nav-item active" onclick="goPostJob()">
+                        <span class="icon">➕</span>
+                        <span class="label">Post Job</span>
+                    </button>
+                    <button class="nav-item" onclick="goToProfile()">
+                        <span class="icon">👤</span>
+                        <span class="label">Profile</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- ========== FIXED BOTTOM NAV ========== -->
-    <div class="bottom-nav">
-        <button class="nav-item" onclick="goHome()">
-            <span class="icon">🏠</span>
-            <span class="label">Home</span>
-        </button>
-        <button class="nav-item active" onclick="goPostJob()">
-            <span class="icon">➕</span>
-            <span class="label">Post Job</span>
-        </button>
-        <button class="nav-item" onclick="goProfile()">
-            <span class="icon">👤</span>
-            <span class="label">Profile</span>
-        </button>
-    </div>
-</div>
+    <script>
+        // ============================================================
+        // CONFIGURATION
+        // ============================================================
+        const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
+        const EDGE_FUNCTION_URL = 'https://njhioapckeupxrcixmdh.supabase.co/functions/v1';
 
-<script>
-    // ============================================================
-    // ZONE & AREA DATA (same as original)
-    // ============================================================
-    const ZONES = [
-        { zone_id: 100, zone_name: "Hyderabad" },
-        { zone_id: 200, zone_name: "North Telangana" },
-        { zone_id: 300, zone_name: "East Telangana" },
-        { zone_id: 400, zone_name: "South Telangana" }
-    ];
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const AREAS = [
-        { area_id: 100000, zone_id: 100, area_name: "All Hyderabad" },
-        { area_id: 200000, zone_id: 200, area_name: "All North Telangana" },
-        { area_id: 300000, zone_id: 300, area_name: "All East Telangana" },
-        { area_id: 400000, zone_id: 400, area_name: "All South Telangana" },
-        { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
-        { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
-        { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
-        { area_id: 100004, zone_id: 100, area_name: "Gachibowli" },
-        { area_id: 100005, zone_id: 100, area_name: "Hitech City" },
-        { area_id: 100006, zone_id: 100, area_name: "Miyapur" },
-        { area_id: 100007, zone_id: 100, area_name: "Uppal" },
-        { area_id: 100008, zone_id: 100, area_name: "LB Nagar" },
-        { area_id: 100009, zone_id: 100, area_name: "Dilsukhnagar" },
-        { area_id: 100995, zone_id: 100, area_name: "Shamshabad" },
-        { area_id: 100996, zone_id: 100, area_name: "Jadcharla" },
-        { area_id: 100997, zone_id: 100, area_name: "Medak" },
-        { area_id: 100998, zone_id: 100, area_name: "Sangareddy" },
-        { area_id: 100999, zone_id: 100, area_name: "Zahirabad" },
-        { area_id: 200001, zone_id: 200, area_name: "Adilabad" },
-        { area_id: 200002, zone_id: 200, area_name: "Asifabad" },
-        { area_id: 200003, zone_id: 200, area_name: "Mancherial" },
-        { area_id: 200004, zone_id: 200, area_name: "Nirmal" },
-        { area_id: 200005, zone_id: 200, area_name: "Nizamabad" },
-        { area_id: 200006, zone_id: 200, area_name: "Jagtial" },
-        { area_id: 200007, zone_id: 200, area_name: "Peddapalli" },
-        { area_id: 200008, zone_id: 200, area_name: "Karimnagar" },
-        { area_id: 200009, zone_id: 200, area_name: "Sircilla" },
-        { area_id: 200010, zone_id: 200, area_name: "Kamareddy" },
-        { area_id: 200011, zone_id: 200, area_name: "Siddipet" },
-        { area_id: 300001, zone_id: 300, area_name: "Warangal" },
-        { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
-        { area_id: 300003, zone_id: 300, area_name: "Khammam" },
-        { area_id: 300004, zone_id: 300, area_name: "Bhupalpally" },
-        { area_id: 300005, zone_id: 300, area_name: "Mulugu" },
-        { area_id: 300006, zone_id: 300, area_name: "Mahabubabad" },
-        { area_id: 300007, zone_id: 300, area_name: "Kothagudem" },
-        { area_id: 300008, zone_id: 300, area_name: "Bhuvanagiri" },
-        { area_id: 300009, zone_id: 300, area_name: "Jangaon" },
-        { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
-        { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
-        { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
-        { area_id: 400004, zone_id: 400, area_name: "Nagarkurnool" },
-        { area_id: 400005, zone_id: 400, area_name: "Vikarabad" },
-        { area_id: 400006, zone_id: 400, area_name: "Narayanpet" },
-        { area_id: 400007, zone_id: 400, area_name: "Wanaparthy" },
-        { area_id: 400008, zone_id: 400, area_name: "Gadwal" }
-    ];
+        // ============================================================
+        // ZONE & AREA DATA
+        // ============================================================
+        const ZONES = [
+            { zone_id: 100, zone_name: "Hyderabad" },
+            { zone_id: 200, zone_name: "North Telangana" },
+            { zone_id: 300, zone_name: "East Telangana" },
+            { zone_id: 400, zone_name: "South Telangana" }
+        ];
 
-    function getAreasByZone(zoneId) {
-        return AREAS.filter(a => a.zone_id === zoneId);
-    }
+        const AREAS = [
+            { area_id: 100000, zone_id: 100, area_name: "All Hyderabad" },
+            { area_id: 200000, zone_id: 200, area_name: "All North Telangana" },
+            { area_id: 300000, zone_id: 300, area_name: "All East Telangana" },
+            { area_id: 400000, zone_id: 400, area_name: "All South Telangana" },
+            { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
+            { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
+            { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
+            { area_id: 100004, zone_id: 100, area_name: "Gachibowli" },
+            { area_id: 100005, zone_id: 100, area_name: "Hitech City" },
+            { area_id: 100006, zone_id: 100, area_name: "Miyapur" },
+            { area_id: 100007, zone_id: 100, area_name: "Uppal" },
+            { area_id: 100008, zone_id: 100, area_name: "LB Nagar" },
+            { area_id: 100009, zone_id: 100, area_name: "Dilsukhnagar" },
+            { area_id: 100995, zone_id: 100, area_name: "Shamshabad" },
+            { area_id: 100996, zone_id: 100, area_name: "Jadcharla" },
+            { area_id: 100997, zone_id: 100, area_name: "Medak" },
+            { area_id: 100998, zone_id: 100, area_name: "Sangareddy" },
+            { area_id: 100999, zone_id: 100, area_name: "Zahirabad" },
+            { area_id: 200001, zone_id: 200, area_name: "Adilabad" },
+            { area_id: 200002, zone_id: 200, area_name: "Asifabad" },
+            { area_id: 200003, zone_id: 200, area_name: "Mancherial" },
+            { area_id: 200004, zone_id: 200, area_name: "Nirmal" },
+            { area_id: 200005, zone_id: 200, area_name: "Nizamabad" },
+            { area_id: 200006, zone_id: 200, area_name: "Jagtial" },
+            { area_id: 200007, zone_id: 200, area_name: "Peddapalli" },
+            { area_id: 200008, zone_id: 200, area_name: "Karimnagar" },
+            { area_id: 200009, zone_id: 200, area_name: "Sircilla" },
+            { area_id: 200010, zone_id: 200, area_name: "Kamareddy" },
+            { area_id: 200011, zone_id: 200, area_name: "Siddipet" },
+            { area_id: 300001, zone_id: 300, area_name: "Warangal" },
+            { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
+            { area_id: 300003, zone_id: 300, area_name: "Khammam" },
+            { area_id: 300004, zone_id: 300, area_name: "Bhupalpally" },
+            { area_id: 300005, zone_id: 300, area_name: "Mulugu" },
+            { area_id: 300006, zone_id: 300, area_name: "Mahabubabad" },
+            { area_id: 300007, zone_id: 300, area_name: "Kothagudem" },
+            { area_id: 300008, zone_id: 300, area_name: "Bhuvanagiri" },
+            { area_id: 300009, zone_id: 300, area_name: "Jangaon" },
+            { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
+            { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
+            { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
+            { area_id: 400004, zone_id: 400, area_name: "Nagarkurnool" },
+            { area_id: 400005, zone_id: 400, area_name: "Vikarabad" },
+            { area_id: 400006, zone_id: 400, area_name: "Narayanpet" },
+            { area_id: 400007, zone_id: 400, area_name: "Wanaparthy" },
+            { area_id: 400008, zone_id: 400, area_name: "Gadwal" }
+        ];
 
-    // ============================================================
-    // CHARACTER COUNTERS & VALIDATION
-    // ============================================================
-    function setupCounter(inputId, counterId, maxLen) {
-        const input = document.getElementById(inputId);
-        const counter = document.getElementById(counterId);
-        if (!input || !counter) return;
-        const update = () => {
-            const len = input.value.length;
-            counter.textContent = `${len}/${maxLen}`;
-            if (len > maxLen) {
-                input.value = input.value.slice(0, maxLen);
-                counter.textContent = `${maxLen}/${maxLen}`;
+        function getZoneName(id) {
+            const z = ZONES.find(z => z.zone_id === id);
+            return z ? z.zone_name : 'Unknown';
+        }
+
+        function getAreaName(id) {
+            const a = AREAS.find(a => a.area_id === id);
+            return a ? a.area_name : '';
+        }
+
+        function getAreasByZone(zoneId) {
+            return AREAS.filter(a => a.zone_id === zoneId);
+        }
+
+        function populateEditZones() {
+            const select = document.getElementById('edit-seeker-zone');
+            select.innerHTML = '<option value="">-- Select --</option>';
+            ZONES.forEach(zone => {
+                select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
+            });
+        }
+
+        function updateEditAreas() {
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            const areaSelect = document.getElementById('edit-seeker-area');
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (zoneId) {
+                const areas = getAreasByZone(zoneId);
+                areas.forEach(area => {
+                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+                });
+            }
+        }
+
+        // ============================================================
+        // SALARY FORMATTER
+        // ============================================================
+        function formatSalaryDisplay(value) {
+            if (!value) return '';
+            const num = value.toString().replace(/[^0-9]/g, '');
+            if (!num) return '';
+            return Number(num).toLocaleString('en-IN');
+        }
+
+        function parseSalaryValue(value) {
+            if (!value) return '';
+            return value.toString().replace(/[^0-9]/g, '');
+        }
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let currentMobile = '';
+        let actionType = '';
+        let currentUser = null;
+        let isChecking = false;
+        let currentFilter = 'BOTH';
+        let selectedZoneId = null;
+        let selectedAreaId = null;
+        let feedItems = [];
+        let currentPage = 'home';
+
+        // ============================================================
+        // CHARACTER COUNTER (edit seeker)
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            if (aboutTextarea && charCount) {
+                aboutTextarea.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+
+            const salaryInput = document.getElementById('edit-seeker-salary');
+            if (salaryInput) {
+                salaryInput.addEventListener('input', function() {
+                    const rawValue = parseSalaryValue(this.value);
+                    if (rawValue) {
+                        const formatted = formatSalaryDisplay(rawValue);
+                        this.value = formatted;
+                        this.setSelectionRange(this.value.length, this.value.length);
+                    }
+                });
+            }
+
+            populateEditZones();
+
+            // Post Job counters
+            setupCounter('pj-title', 'pj-title-counter', 60);
+            setupCounter('pj-skills', 'pj-skills-counter', 120);
+            setupCounter('pj-description', 'pj-desc-counter', 300);
+
+            // set default zone & area for post job
+            const zoneSelect = document.getElementById('pj-zone');
+            zoneSelect.value = '100';
+            updatePostAreas();
+
+            // post job salary input
+            const pjSalary = document.getElementById('pj-salary');
+            if (pjSalary) {
+                pjSalary.addEventListener('input', function() {
+                    // keep as typed, no auto-format to allow "LPA"
+                });
+            }
+        });
+
+        // ============================================================
+        // POST JOB: AREA UPDATE
+        // ============================================================
+        function updatePostAreas() {
+            const zoneSelect = document.getElementById('pj-zone');
+            const areaSelect = document.getElementById('pj-area');
+            const areaHint = document.getElementById('pj-area-hint');
+            const zoneId = parseInt(zoneSelect.value);
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (!zoneId) {
+                areaHint.textContent = '⬆️ Choose zone first';
+                return;
+            }
+            const areas = getAreasByZone(zoneId);
+            if (areas.length === 0) {
+                areaSelect.innerHTML = '<option value="">No areas</option>';
+                areaHint.textContent = '⚠️ No areas for this zone';
+                return;
+            }
+            areas.forEach(area => {
+                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+            });
+            areaHint.textContent = `✅ ${areas.length} areas available`;
+            if (areas.length > 0) areaSelect.value = areas[0].area_id;
+        }
+
+        // ============================================================
+        // POST JOB: COUNTER HELPER
+        // ============================================================
+        function setupCounter(inputId, counterId, maxLen) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
+            if (!input || !counter) return;
+            const update = () => {
+                const len = input.value.length;
+                counter.textContent = `${len}/${maxLen}`;
+                if (len > maxLen) {
+                    input.value = input.value.slice(0, maxLen);
+                    counter.textContent = `${maxLen}/${maxLen}`;
+                }
+            };
+            input.addEventListener('input', update);
+            update();
+        }
+
+        // ============================================================
+        // PUBLISH JOB (with Supabase insert)
+        // ============================================================
+        async function publishJob() {
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                return;
+            }
+            // check recruiter profile
+            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                showToast('⚠️ Please set company name in profile first');
+                return;
+            }
+
+            const company = document.getElementById('pj-company').value.trim();
+            const jobTitle = document.getElementById('pj-title').value.trim();
+            const experience = document.getElementById('pj-experience').value;
+            const salaryRaw = document.getElementById('pj-salary').value.trim();
+            const zone = document.getElementById('pj-zone').value;
+            const area = document.getElementById('pj-area').value;
+            const skills = document.getElementById('pj-skills').value.trim();
+            const description = document.getElementById('pj-description').value.trim();
+
+            // validation
+            if (!company) { showToast('⚠️ Please enter company name'); return; }
+            if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
+            if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
+            if (!salaryRaw) { showToast('⚠️ Salary is required'); return; }
+            if (!zone) { showToast('⚠️ Please select Job Location Zone'); return; }
+            if (!area) { showToast('⚠️ Please select Specific Area'); return; }
+            if (!skills) { showToast('⚠️ Skills are required'); return; }
+            if (skills.length > 120) { showToast('⚠️ Skills max 120 characters'); return; }
+            if (description.length > 300) { showToast('⚠️ Description max 300 characters'); return; }
+
+            // parse experience
+            let minExp = 0;
+            if (experience === '0-1') minExp = 0;
+            else if (experience === '1-3') minExp = 1;
+            else if (experience === '3-5') minExp = 3;
+            else if (experience === '5-8') minExp = 5;
+            else if (experience === '8+') minExp = 8;
+
+            // parse salary: try to extract number
+            let salaryNum = 0;
+            const salaryClean = salaryRaw.replace(/[^0-9]/g, '');
+            if (salaryClean) salaryNum = parseInt(salaryClean);
+            // if LPA, multiply by 100000 (rough)
+            if (salaryRaw.toLowerCase().includes('lpa') && salaryNum < 100) {
+                salaryNum = salaryNum * 100000;
+            }
+
+            const jobData = {
+                mobile: currentUser.mobile,
+                job_title: jobTitle,
+                company_name: company,
+                min_experience_years: minExp,
+                max_salary_monthly: salaryNum || 0,
+                skills_comma_separated: skills,
+                job_description: description || '',
+                zone_id: parseInt(zone),
+                area_id: parseInt(area),
+                posted_date: new Date().toISOString(),
+                expiry_date: new Date(Date.now() + 30*24*60*60*1000).toISOString()
+            };
+
+            try {
+                const { data, error } = await sb.from('active_jobs').insert([jobData]);
+                if (error) throw error;
+                showToast('✅ Job published successfully!');
+                // clear form
+                document.getElementById('pj-title').value = '';
+                document.getElementById('pj-skills').value = '';
+                document.getElementById('pj-description').value = '';
+                document.getElementById('pj-salary').value = '';
+                // reset counters
+                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                    el.dispatchEvent(new Event('input'));
+                });
+                // refresh feed
+                fetchFeedData();
+            } catch (err) {
+                showToast('❌ Failed to publish: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // NAVIGATION FUNCTIONS
+        // ============================================================
+        function goHome() {
+            currentPage = 'home';
+            document.getElementById('home-page').classList.remove('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav .nav-item')[0].classList.add('active');
+            document.getElementById('feed-container').style.display = 'flex';
+            renderFeed();
+        }
+
+        function goPostJob() {
+            currentPage = 'postjob';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.remove('hidden-page');
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
+            // set company from currentUser
+            if (currentUser && currentUser.company_name) {
+                document.getElementById('pj-company').value = currentUser.company_name;
+            }
+            // ensure zone/area populated
+            updatePostAreas();
+        }
+
+        function goToProfile() {
+            currentPage = 'profile';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.remove('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav .nav-item')[2].classList.add('active');
+            loadProfile();
+        }
+
+        function goToEditSeeker() {
+            currentPage = 'edit-seeker';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.remove('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            populateEditZones();
+            if (currentUser) {
+                document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
+                document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
+                document.getElementById('edit-seeker-exp').value = currentUser.total_experience_years || '';
+                const salaryVal = currentUser.expected_salary_monthly || '';
+                document.getElementById('edit-seeker-salary').value = salaryVal ? formatSalaryDisplay(salaryVal) : '';
+                document.getElementById('edit-seeker-skills').value = currentUser.skills_comma_separated || '';
+                document.getElementById('edit-seeker-about').value = currentUser.professional_summary || '';
+                document.getElementById('edit-seeker-gender').value = currentUser.gender || 0;
+                document.getElementById('edit-seeker-notice').value = currentUser.notice_period_days || '';
+                if (currentUser.zone_id) {
+                    document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
+                    updateEditAreas();
+                    if (currentUser.area_id) {
+                        document.getElementById('edit-seeker-area').value = currentUser.area_id;
+                    }
+                }
+            }
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            if (aboutTextarea && charCount) {
+                charCount.textContent = aboutTextarea.value.length;
+            }
+        }
+
+        function cancelPostJob() {
+            if (confirm('Cancel posting this job?')) {
+                goHome();
+            }
+        }
+
+        // ============================================================
+        // GENDER ICON
+        // ============================================================
+        function updateGenderIcon(user) {
+            const iconContainer = document.getElementById('gender-icon');
+            const symbol = document.getElementById('gender-symbol');
+            const iconContainerProfile = document.getElementById('gender-icon-profile');
+            const symbolProfile = document.getElementById('gender-symbol-profile');
+            if (!user) {
+                if (iconContainer) iconContainer.style.display = 'none';
+                if (iconContainerProfile) iconContainerProfile.style.display = 'none';
+                return;
+            }
+            const gender = user.gender;
+            let icon = '👤';
+            let cls = 'gender-icon other';
+            if (gender === 0) { icon = '👤'; cls = 'gender-icon other'; }
+            else if (gender === 1) { icon = '♀'; cls = 'gender-icon female'; }
+            else if (gender === 2) { icon = '♂'; cls = 'gender-icon male'; }
+            if (iconContainer) {
+                iconContainer.style.display = 'flex';
+                iconContainer.className = cls;
+                if (symbol) symbol.textContent = icon;
+            }
+            if (iconContainerProfile) {
+                iconContainerProfile.style.display = 'flex';
+                iconContainerProfile.className = cls;
+                if (symbolProfile) symbolProfile.textContent = icon;
+            }
+        }
+
+        // ============================================================
+        // PROFILE FUNCTIONS
+        // ============================================================
+        function formatSalary(amount) {
+            if (!amount || amount === 0) return 'Not specified';
+            return '₹' + Number(amount).toLocaleString('en-IN');
+        }
+
+        async function loadProfile() {
+            if (!currentUser) return;
+            document.getElementById('profile-mobile').textContent = currentUser.mobile;
+            if (currentUser.full_name && currentUser.full_name.trim() !== '') {
+                document.getElementById('seeker-badge').textContent = '✅ Active';
+                document.getElementById('seeker-badge').style.background = '#dcfce7';
+                document.getElementById('seeker-badge').style.color = '#166534';
+                document.getElementById('seeker-desc').textContent = 'Your job profile is active.';
+                document.getElementById('seeker-input-area').style.display = 'none';
+                document.getElementById('seeker-active-area').style.display = 'block';
+
+                document.getElementById('seeker-display-name').textContent = currentUser.full_name;
+                document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
+                document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
+                document.getElementById('seeker-display-salary').textContent = formatSalary(currentUser.expected_salary_monthly);
+                document.getElementById('seeker-display-notice').textContent = currentUser.notice_period_days || '0';
+                document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
+                document.getElementById('seeker-display-about').textContent = currentUser.professional_summary || '';
+
+                const zoneName = getZoneName(currentUser.zone_id);
+                const areaName = getAreaName(currentUser.area_id);
+                document.getElementById('seeker-display-location').textContent = areaName ? `${zoneName} - ${areaName}` : zoneName || 'Not set';
+                document.getElementById('seeker-section').className = 'profile-section profile-active';
+            } else {
+                document.getElementById('seeker-badge').textContent = '⚠️ Required to Apply';
+                document.getElementById('seeker-badge').style.background = '#fef3c7';
+                document.getElementById('seeker-badge').style.color = '#d97706';
+                document.getElementById('seeker-desc').textContent = 'Complete your job profile to get matched with relevant jobs.';
+                document.getElementById('seeker-input-area').style.display = 'block';
+                document.getElementById('seeker-active-area').style.display = 'none';
+                document.getElementById('seeker-section').className = 'profile-section';
+            }
+            if (currentUser.company_name && currentUser.company_name.trim() !== '') {
+                document.getElementById('recruiter-badge').textContent = '✅ Active';
+                document.getElementById('recruiter-badge').style.background = '#dcfce7';
+                document.getElementById('recruiter-badge').style.color = '#166534';
+                document.getElementById('recruiter-desc').textContent = 'Your recruiter profile is active.';
+                document.getElementById('recruiter-input-area').style.display = 'none';
+                document.getElementById('recruiter-active-area').style.display = 'block';
+                document.getElementById('recruiter-display-company').textContent = currentUser.company_name;
+                document.getElementById('recruiter-section').className = 'profile-section profile-active';
+            } else {
+                document.getElementById('recruiter-badge').textContent = '⚠️ Required to Post Jobs';
+                document.getElementById('recruiter-badge').style.background = '#fef3c7';
+                document.getElementById('recruiter-badge').style.color = '#d97706';
+                document.getElementById('recruiter-desc').textContent = 'Create your recruiter profile to post jobs and find candidates.';
+                document.getElementById('recruiter-input-area').style.display = 'block';
+                document.getElementById('recruiter-active-area').style.display = 'none';
+                document.getElementById('recruiter-section').className = 'profile-section';
+            }
+        }
+
+        async function saveEditSeeker() {
+            const name = document.getElementById('edit-seeker-name').value.trim();
+            const title = document.getElementById('edit-seeker-title').value.trim();
+            const exp = document.getElementById('edit-seeker-exp').value.trim();
+            const salaryRaw = document.getElementById('edit-seeker-salary').value;
+            const salary = parseSalaryValue(salaryRaw);
+            const skills = document.getElementById('edit-seeker-skills').value.trim();
+            const about = document.getElementById('edit-seeker-about').value.trim();
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            const areaId = parseInt(document.getElementById('edit-seeker-area').value);
+            const gender = parseInt(document.getElementById('edit-seeker-gender').value);
+            const notice = parseInt(document.getElementById('edit-seeker-notice').value) || 0;
+            if (!name) { showToast('⚠️ Please enter your full name'); return; }
+            if (name.length > 50) { showToast('⚠️ Name must be less than 50 characters'); return; }
+            if (title.length > 50) { showToast('⚠️ Job title must be less than 50 characters'); return; }
+            if (exp && (parseFloat(exp) > 99 || parseFloat(exp) < 0)) { showToast('⚠️ Experience must be between 0-99 years'); return; }
+            if (salary && parseInt(salary) > 9999999) { showToast('⚠️ Salary cannot exceed ₹99,99,999'); return; }
+            if (notice > 365 || notice < 0) { showToast('⚠️ Notice period must be between 0-365 days'); return; }
+            if (skills.length > 100) { showToast('⚠️ Skills must be less than 100 characters'); return; }
+            if (about.length > 200) { showToast('⚠️ About Me must be less than 200 characters'); return; }
+            if (!zoneId) { showToast('⚠️ Please select your zone'); return; }
+            const updates = {
+                full_name: name,
+                job_title: title || '',
+                total_experience_years: parseFloat(exp) || 0,
+                expected_salary_monthly: parseInt(salary) || 0,
+                skills_comma_separated: skills || '',
+                professional_summary: about || '',
+                zone_id: zoneId,
+                area_id: areaId || null,
+                gender: gender || 0,
+                notice_period_days: notice,
+                last_active: new Date().toISOString()
+            };
+            try {
+                const { error } = await sb.from('active_users').update(updates).eq('mobile', currentUser.mobile);
+                if (error) throw error;
+                currentUser = { ...currentUser, ...updates };
+                showToast('✅ Job profile saved!');
+                goToProfile();
+            } catch (err) {
+                showToast('❌ Failed to save: ' + err.message);
+            }
+        }
+
+        async function saveRecruiterProfile() {
+            const company = document.getElementById('recruiter-company').value.trim();
+            if (!company) { showToast('⚠️ Please enter company name'); return; }
+            if (company.length > 100) { showToast('⚠️ Company name must be less than 100 characters'); return; }
+            try {
+                const { error } = await sb.from('active_users').update({ company_name: company, last_active: new Date().toISOString() }).eq('mobile', currentUser.mobile);
+                if (error) throw error;
+                currentUser.company_name = company;
+                showToast('✅ Recruiter profile activated!');
+                loadProfile();
+            } catch (err) {
+                showToast('❌ Failed to save: ' + err.message);
+            }
+        }
+
+        function editRecruiterProfile() {
+            document.getElementById('recruiter-company').value = currentUser.company_name || '';
+            document.getElementById('recruiter-input-area').style.display = 'block';
+            document.getElementById('recruiter-active-area').style.display = 'none';
+            document.getElementById('recruiter-section').className = 'profile-section';
+            document.getElementById('recruiter-badge').textContent = '✏️ Editing';
+            document.getElementById('recruiter-badge').style.background = '#dbeafe';
+            document.getElementById('recruiter-badge').style.color = '#1e40af';
+            document.getElementById('recruiter-desc').textContent = 'Update your company name.';
+            document.querySelector('#recruiter-input-area .section-btn').textContent = '💾 Update';
+        }
+
+        // ============================================================
+        // FETCH DATA FROM SUPABASE
+        // ============================================================
+        async function fetchFeedData() {
+            console.log('🔄 Fetching feed data from Supabase...');
+            try {
+                const { data: jobs, error: jobsError } = await sb.from('active_jobs').select('*').limit(50);
+                if (jobsError) throw jobsError;
+                const { data: seekers, error: seekersError } = await sb.from('active_users').select('*').not('full_name', 'is', null).limit(50);
+                if (seekersError) throw seekersError;
+                const formattedJobs = (jobs || []).map(job => ({
+                    type: 'JOB',
+                    title: job.job_title || 'Untitled Job',
+                    exp: parseInt(job.min_experience_years) || 0,
+                    skills: job.skills_comma_separated || '',
+                    zone_id: job.zone_id || 0,
+                    area_id: job.area_id || 0,
+                    salary: job.max_salary_monthly ? `₹${job.max_salary_monthly}` : 'Negotiable',
+                    company: job.company_name || 'Unknown',
+                    desc: job.job_description || '',
+                    contact: job.mobile || 'N/A'
+                }));
+                const formattedSeekers = (seekers || []).map(user => ({
+                    type: 'SEEKER',
+                    title: user.job_title || 'Job Seeker',
+                    exp: parseFloat(user.total_experience_years) || 0,
+                    skills: user.skills_comma_separated || '',
+                    zone_id: user.zone_id || 0,
+                    area_id: user.area_id || 0,
+                    salary: user.expected_salary_monthly ? `₹${user.expected_salary_monthly}` : 'Not specified',
+                    company: user.full_name || 'Anonymous',
+                    desc: user.professional_summary || '',
+                    contact: user.mobile || 'N/A'
+                }));
+                feedItems = [...formattedJobs, ...formattedSeekers];
+                console.log(`✅ Loaded ${feedItems.length} items from Supabase`);
+            } catch (err) {
+                console.error('❌ Error fetching from Supabase:', err.message);
+                feedItems = [];
+            }
+            renderFeed();
+        }
+
+        // ============================================================
+        // UI HELPERS
+        // ============================================================
+        function showMessage(msg, type) {
+            const el = document.getElementById('msg');
+            el.textContent = msg;
+            el.className = 'msg msg-' + type;
+            el.classList.remove('hidden');
+        }
+
+        function hideMessage() { document.getElementById('msg').classList.add('hidden'); }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function togglePin() {
+            const input = document.getElementById('pin');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function resetForm() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('gender-icon').style.display = 'none';
+            document.getElementById('gender-icon-profile').style.display = 'none';
+            document.getElementById('mobile').value = '';
+            document.getElementById('pin').value = '';
+            document.getElementById('msg').classList.add('hidden');
+            document.getElementById('mobile-status').textContent = '';
+            document.getElementById('submitBtn').textContent = 'Submit';
+            document.getElementById('submitBtn').className = 'btn-green';
+            document.getElementById('submitBtn').disabled = false;
+            currentMobile = '';
+            actionType = '';
+            currentUser = null;
+            isChecking = false;
+            document.getElementById('mobile').focus();
+        }
+
+        function setStatus(text, type) {
+            const el = document.getElementById('mobile-status');
+            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
+            el.textContent = text;
+            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
+        }
+
+        function showPinScreen(mobile, status, statusType, btnText, btnClass) {
+            currentMobile = mobile;
+            document.getElementById('display-mobile').textContent = mobile;
+            document.getElementById('status-badge').textContent = status;
+            document.getElementById('status-badge').className = 'text-sm font-medium text-' + statusType + '-600';
+            document.getElementById('submitBtn').textContent = btnText;
+            document.getElementById('submitBtn').className = 'btn-' + btnClass;
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('pin').value = '';
+            document.getElementById('pin').focus();
+            hideMessage();
+        }
+
+        // ============================================================
+        // MOBILE CHECK
+        // ============================================================
+        document.getElementById('mobile').addEventListener('input', function(e) {
+            const mobile = this.value.trim();
+            const statusEl = document.getElementById('mobile-status');
+            statusEl.textContent = '';
+            if (mobile.length === 10) {
+                autoCheckMobile(mobile);
+            } else if (mobile.length > 0 && mobile.length < 10) {
+                setStatus('Enter 10 digits', 'gray');
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').style.display = 'block';
+            } else {
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step1').style.display = 'block';
+            }
+        });
+
+        async function autoCheckMobile(mobile) {
+            if (isChecking) return;
+            isChecking = true;
+            const mobileInput = document.getElementById('mobile');
+            mobileInput.disabled = true;
+            setStatus('⏳ Checking...', 'blue');
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/check-mobile`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: mobile })
+                });
+                const data = await response.json();
+                console.log('Check response:', data);
+
+                if (data.inActiveUsers) {
+                    actionType = 'login';
+                    showPinScreen(mobile, '✅ Existing user', 'green', '🔐 Login', 'green');
+                    setStatus('✓ User found', 'green');
+                } else if (data.inAllUsers) {
+                    actionType = 'reactivate';
+                    showPinScreen(mobile, '📋 Archived account', 'yellow', '🔄 Reactivate', 'yellow');
+                    setStatus('📋 Archived', 'yellow');
+                } else {
+                    actionType = 'register';
+                    showPinScreen(mobile, '📱 New user', 'blue', '📝 Register', 'green');
+                    setStatus('✨ New user', 'blue');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                setStatus('❌ Error checking: ' + err.message, 'red');
+                showMessage('Error: ' + err.message, 'red');
+            } finally {
+                isChecking = false;
+                mobileInput.disabled = false;
+            }
+        }
+
+        // ============================================================
+        // SUBMIT PIN
+        // ============================================================
+        window.submitPin = async function() {
+            console.log('submitPin called');
+            const pin = document.getElementById('pin').value.trim();
+            if (!pin || pin.length !== 4) {
+                showMessage('Enter 4-digit PIN', 'red');
+                document.getElementById('pin').focus();
+                return;
+            }
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Processing...';
+            showMessage('Processing...', 'blue');
+
+            try {
+                let endpoint = '';
+                if (actionType === 'login') endpoint = '/login-user';
+                else if (actionType === 'reactivate') endpoint = '/reactivate-user';
+                else endpoint = '/register-user';
+
+                const response = await fetch(`${EDGE_FUNCTION_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
+                });
+                const data = await response.json();
+                console.log('Auth response:', data);
+
+                if (data.success) {
+                    const { data: userData, error } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', currentMobile)
+                        .single();
+
+                    if (error) {
+                        showMessage('Error fetching user data', 'red');
+                        return;
+                    }
+
+                    if (userData) {
+                        currentUser = userData;
+                        document.getElementById('step2').classList.add('hidden');
+                        document.getElementById('login-screen').style.display = 'none';
+                        document.getElementById('home-page').classList.remove('hidden-page');
+                        document.getElementById('profile-page').classList.add('hidden-page');
+                        document.getElementById('edit-seeker-page').classList.add('hidden-page');
+                        document.getElementById('postjob-page').classList.add('hidden-page');
+                        updateGenderIcon(userData);
+                        hideMessage();
+                        setTimeout(autoDetectLocation, 500);
+                        await fetchFeedData();
+                        showToast('✅ Welcome ' + currentMobile + '!');
+                    }
+                } else {
+                    showMessage('❌ ' + data.error, 'red');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showMessage('Error: ' + err.message, 'red');
+            } finally {
+                submitBtn.disabled = false;
+                const btnText = actionType === 'login' ? '🔐 Login' : actionType === 'reactivate' ? '🔄 Reactivate' : '📝 Register';
+                submitBtn.textContent = btnText;
             }
         };
-        input.addEventListener('input', update);
-        update(); // initial
-    }
 
-    // Salary formatting (allow LPA / numeric)
-    function formatSalaryInput(e) {
-        // keep as is, but we'll validate later
-    }
-
-    // ============================================================
-    // AREA DROPDOWN UPDATE
-    // ============================================================
-    function updateAreas() {
-        const zoneSelect = document.getElementById('jobZone');
-        const areaSelect = document.getElementById('specificArea');
-        const areaHint = document.getElementById('areaHint');
-        const zoneId = parseInt(zoneSelect.value);
-        areaSelect.innerHTML = '<option value="">Select zone first</option>';
-        if (!zoneId) {
-            areaHint.textContent = '⬆️ Choose zone first';
-            return;
+        // ============================================================
+        // SEARCHABLE ZONE
+        // ============================================================
+        function searchZone() {
+            const input = document.getElementById('zone-search');
+            const suggestions = document.getElementById('zone-suggestions');
+            const query = input.value.toLowerCase().trim();
+            if (!query) {
+                suggestions.classList.remove('show');
+                return;
+            }
+            const matches = ZONES.filter(zone => zone.zone_name.toLowerCase().includes(query));
+            if (matches.length === 0) {
+                suggestions.innerHTML = '<div class="no-result">No zones found</div>';
+                suggestions.classList.add('show');
+                return;
+            }
+            suggestions.innerHTML = matches.map(zone => `
+                <div class="item" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
+                    📍 ${zone.zone_name}
+                </div>
+            `).join('');
+            suggestions.classList.add('show');
         }
-        const areas = getAreasByZone(zoneId);
-        if (areas.length === 0) {
-            areaSelect.innerHTML = '<option value="">No areas</option>';
-            areaHint.textContent = '⚠️ No areas for this zone';
-            return;
-        }
-        areas.forEach(area => {
-            areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-        });
-        areaHint.textContent = `✅ ${areas.length} areas available`;
-        // auto-select first
-        if (areas.length > 0) areaSelect.value = areas[0].area_id;
-    }
 
-    // ============================================================
-    // PUBLISH JOB (mock + validation)
-    // ============================================================
-    function publishJob() {
-        const company = document.getElementById('company').value.trim();
-        const jobTitle = document.getElementById('jobTitle').value.trim();
-        const experience = document.getElementById('experience').value;
-        const salary = document.getElementById('salary').value.trim();
-        const zone = document.getElementById('jobZone').value;
-        const area = document.getElementById('specificArea').value;
-        const skills = document.getElementById('skills').value.trim();
-        const description = document.getElementById('description').value.trim();
-
-        // validation
-        if (!company) { alert('Please enter company name'); return; }
-        if (!jobTitle) { alert('Job Title is required'); return; }
-        if (jobTitle.length > 60) { alert('Job Title max 60 characters'); return; }
-        if (!salary) { alert('Salary is required'); return; }
-        if (!zone) { alert('Please select Job Location Zone'); return; }
-        if (!area) { alert('Please select Specific Area'); return; }
-        if (!skills) { alert('Skills are required'); return; }
-        if (skills.length > 120) { alert('Skills max 120 characters'); return; }
-        if (description.length > 300) { alert('Description max 300 characters'); return; }
-
-        // mock success
-        alert(`✅ Job Published!\n\nCompany: ${company}\nTitle: ${jobTitle}\nExperience: ${experience}\nSalary: ${salary}\nZone: ${zone}\nArea: ${area}\nSkills: ${skills}\nDescription: ${description.substring(0,60)}...`);
-        // reset? optional
-    }
-
-    // ============================================================
-    // NAVIGATION (mock)
-    // ============================================================
-    function goHome() {
-        alert('🏠 Go to Home (mock)');
-    }
-    function goPostJob() {
-        // already here
-        document.querySelector('.bottom-nav .nav-item.active')?.classList.remove('active');
-        document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
-    }
-    function goProfile() {
-        alert('👤 Go to Profile (mock)');
-    }
-    function handleCancel() {
-        if (confirm('Cancel posting this job?')) {
-            // reset fields (optional)
-            document.getElementById('jobTitle').value = '';
-            document.getElementById('company').value = '';
-            document.getElementById('salary').value = '';
-            document.getElementById('skills').value = '';
-            document.getElementById('description').value = '';
-            // reset counters via events
-            document.querySelectorAll('input, textarea').forEach(el => {
-                el.dispatchEvent(new Event('input'));
+        function selectZone(zoneId, zoneName) {
+            document.getElementById('zone-search').value = zoneName;
+            document.getElementById('zone-suggestions').classList.remove('show');
+            selectedZoneId = zoneId;
+            selectedAreaId = null;
+            document.getElementById('zone-status').textContent = zoneName;
+            const areaSelect = document.getElementById('filter-area');
+            const areas = getAreasByZone(zoneId);
+            areaSelect.innerHTML = '<option value="ALL">All areas</option>';
+            areas.forEach(area => {
+                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
             });
-            alert('Form cleared.');
+            renderFeed();
         }
-    }
 
-    // ============================================================
-    // INIT
-    // ============================================================
-    document.addEventListener('DOMContentLoaded', function() {
-        // setup counters
-        setupCounter('jobTitle', 'titleCounter', 60);
-        setupCounter('skills', 'skillsCounter', 120);
-        setupCounter('description', 'descCounter', 300);
+        function onAreaFilterChange() {
+            const areaSelect = document.getElementById('filter-area');
+            selectedAreaId = areaSelect.value !== 'ALL' ? parseInt(areaSelect.value) : null;
+            renderFeed();
+        }
 
-        // salary input: allow alphanumeric + LPA
-        const salaryInput = document.getElementById('salary');
-        salaryInput.addEventListener('input', function() {
-            // just keep as typed, but we can sanitize if needed
+        function autoDetectLocation() {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    const city = data.city || '';
+                    const matched = ZONES.find(zone => 
+                        city.toLowerCase().includes(zone.zone_name.toLowerCase()) ||
+                        zone.zone_name.toLowerCase().includes(city.toLowerCase())
+                    );
+                    if (matched) {
+                        selectZone(matched.zone_id, matched.zone_name);
+                        document.getElementById('zone-search').value = matched.zone_name + ' (Detected)';
+                    }
+                })
+                .catch(() => {
+                    selectZone(100, 'Hyderabad');
+                    document.getElementById('zone-search').value = 'Hyderabad (Default)';
+                });
+        }
+
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.zone-filter .search-wrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('zone-suggestions').classList.remove('show');
+            }
         });
 
-        // set default zone & area
-        const zoneSelect = document.getElementById('jobZone');
-        zoneSelect.value = '100'; // Hyderabad
-        updateAreas();
-
-        // highlight active nav
-        document.querySelectorAll('.bottom-nav .nav-item').forEach((el, idx) => {
-            el.classList.toggle('active', idx === 1);
+        document.getElementById('zone-search').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const firstItem = document.querySelector('#zone-suggestions .item');
+                if (firstItem) {
+                    firstItem.click();
+                }
+            }
         });
 
-        console.log('✅ Post Job page ready (fixed header/footer, scrollable middle, 2-col grid, char counters)');
-    });
-</script>
+        // ============================================================
+        // FEED FUNCTIONS
+        // ============================================================
+        function setFilter(type) {
+            currentFilter = type;
+            const both = document.getElementById('filter-both');
+            const job = document.getElementById('filter-job');
+            const seeker = document.getElementById('filter-seeker');
+            both.className = type === 'BOTH' ? 'active' : 'inactive';
+            job.className = type === 'JOB' ? 'active' : 'inactive';
+            seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
+            renderFeed();
+        }
 
+        function renderFeed() {
+            if (currentPage !== 'home') return;
+            const container = document.getElementById('feed-container');
+            const count = document.getElementById('results-count');
+            if (!feedItems || feedItems.length === 0) {
+                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
+                count.textContent = 'Showing 0 Records';
+                return;
+            }
+            let filtered = [...feedItems];
+            if (currentFilter === 'JOB') {
+                filtered = filtered.filter(item => item.type === 'JOB');
+            } else if (currentFilter === 'SEEKER') {
+                filtered = filtered.filter(item => item.type === 'SEEKER');
+            }
+            if (selectedZoneId) {
+                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
+            }
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            }
+            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
+            if (titleFilter) {
+                filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
+            }
+            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
+            if (skillsFilter) {
+                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
+            }
+            const expFilter = document.getElementById('filter-exp').value;
+            if (expFilter === '0-2') {
+                filtered = filtered.filter(item => item.exp <= 2);
+            } else if (expFilter === '3-5') {
+                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
+            } else if (expFilter === '5+') {
+                filtered = filtered.filter(item => item.exp > 5);
+            }
+            count.textContent = `Showing ${filtered.length} Records`;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(item => {
+                const zoneName = getZoneName(item.zone_id);
+                const areaName = getAreaName(item.area_id);
+                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                return `
+                <div class="feed-card" onclick="openDetail('${item.type}', '${item.title}', ${item.exp}, '${item.skills}', '${item.salary}', '${item.company}', '${item.desc}', '${locationDisplay}', '${item.contact}')">
+                    <div class="title">${item.title}</div>
+                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
+                    <span class="badge ${item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job'}">${item.type === 'SEEKER' ? 'SEEKER' : 'JOB'}</span>
+                </div>
+            `}).join('');
+        }
+
+        function openDetail(type, title, exp, skills, salary, company, desc, location, contact) {
+            alert(`📋 ${title}\n🏢 ${company}\n📍 ${location}\n💰 ${salary}\n📝 ${desc}`);
+        }
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        window.logout = function() {
+            if (confirm('Are you sure you want to logout?')) {
+                resetForm();
+                showToast('👋 Logged out');
+            }
+        };
+
+        document.getElementById('pin').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                window.submitPin();
+            }
+        });
+
+        console.log('✅ JobAd Login App Ready');
+        console.log('📱 Test users: 9876543210 (PIN: 1234)');
+        document.getElementById('mobile').focus();
+    </script>
 </body>
 </html>
