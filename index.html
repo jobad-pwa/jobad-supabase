@@ -653,8 +653,21 @@
         .publish-btn:active { transform: scale(0.98); }
         .bottom-spacer { height: 4px; }
 
-        /* Expiry date picker */
         input[type="date"] { text-align: left; padding: 10px 12px; }
+
+        /* My Jobs list in recruiter profile */
+        .my-job-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fafbfc;
+        }
+        .my-job-item:hover { border-color: #3b82f6; background: #f0f7ff; }
+        .my-job-item .job-title { font-weight: 600; font-size: 13px; color: #0f172a; }
+        .my-job-item .job-meta { font-size: 10px; color: #64748b; }
     </style>
 </head>
 <body>
@@ -832,6 +845,11 @@
                                 <p style="color:#64748b; margin-top:2px;">✅ Recruiter profile active</p>
                             </div>
                             <button class="section-btn" style="margin-top:6px; width:100%;" onclick="editRecruiterProfile()">✏️ Edit Company</button>
+                            <!-- My Jobs List -->
+                            <div id="my-jobs-container" style="margin-top:10px; border-top:1px solid #e2e8f0; padding-top:10px;">
+                                <p style="font-size:11px; font-weight:600; color:#1e293b;">📋 My Posted Jobs</p>
+                                <div id="my-jobs-list"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -960,21 +978,18 @@
         <!-- ========== POST JOB PAGE ========== -->
         <div id="postjob-page" class="hidden-page" style="height:100%;">
             <div class="postjob-container">
-                <!-- fixed header: logo left, Cancel right (like profile page) -->
                 <div class="postjob-header">
                     <span class="logo" onclick="goHome()">JobAd</span>
                     <button class="cancel-btn" onclick="cancelPostJob()">Cancel</button>
                 </div>
 
-                <!-- scrollable middle -->
                 <div class="postjob-scroll">
-                    <!-- Company (auto from active_user) -->
+                    <!-- Company (editable) -->
                     <div class="form-group">
-                        <label class="form-label">Company</label>
-                        <input class="form-control" type="text" id="pj-company" placeholder="Company name" readonly style="background:#f3f4f6; cursor:default;">
+                        <label class="form-label">Company <span class="required">*</span></label>
+                        <input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100">
                     </div>
 
-                    <!-- Job Title + Experience (min) row -->
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Job Title <span class="required">*</span></label>
@@ -987,7 +1002,6 @@
                         </div>
                     </div>
 
-                    <!-- Salary (max monthly) + Gender Preference row -->
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Max Monthly Salary (₹) <span class="required">*</span></label>
@@ -1006,7 +1020,6 @@
                         </div>
                     </div>
 
-                    <!-- Zone + Area (same row) -->
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Job Location Zone <span class="required">*</span></label>
@@ -1027,7 +1040,6 @@
                         </div>
                     </div>
 
-                    <!-- Skills + Expiry Date row -->
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Skills (comma separated) <span class="required">*</span></label>
@@ -1037,10 +1049,10 @@
                         <div class="form-group">
                             <label class="form-label">Expiry Date <span class="required">*</span></label>
                             <input class="form-control" type="date" id="pj-expiry">
+                            <div class="inline-hint"><span>⏳ Auto: +30 days</span><span id="expiry-hint">max 45 days</span></div>
                         </div>
                     </div>
 
-                    <!-- Description (full width) -->
                     <div class="form-group">
                         <label class="form-label">Description</label>
                         <textarea class="form-control" id="pj-description" rows="3" placeholder="Job details..." maxlength="500"></textarea>
@@ -1051,7 +1063,6 @@
                     <div class="bottom-spacer"></div>
                 </div>
 
-                <!-- fixed bottom nav -->
                 <div class="bottom-nav">
                     <button class="nav-item" onclick="goHome()">
                         <span class="icon">🏠</span>
@@ -1174,7 +1185,7 @@
         }
 
         // ============================================================
-        // SALARY FORMATTER (for edit seeker)
+        // SALARY FORMATTER
         // ============================================================
         function formatSalaryDisplay(value) {
             if (!value) return '';
@@ -1202,7 +1213,7 @@
         let currentPage = 'home';
 
         // ============================================================
-        // CHARACTER COUNTER
+        // INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
             // Edit seeker counters
@@ -1233,7 +1244,7 @@
             setupCounter('pj-skills', 'pj-skills-counter', 200);
             setupCounter('pj-description', 'pj-desc-counter', 500);
 
-            // Post Job salary formatting (with ₹ symbol)
+            // Post Job salary formatting
             const pjSalary = document.getElementById('pj-salary');
             if (pjSalary) {
                 pjSalary.addEventListener('input', function() {
@@ -1247,12 +1258,22 @@
                 });
             }
 
-            // Set default expiry date (30 days from now)
+            // Set default expiry: 30 days from now, max 45 days
             const expiryInput = document.getElementById('pj-expiry');
             if (expiryInput) {
                 const d = new Date();
                 d.setDate(d.getDate() + 30);
                 expiryInput.value = d.toISOString().split('T')[0];
+                expiryInput.max = new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.min = new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.addEventListener('change', function() {
+                    const selected = new Date(this.value);
+                    const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+                    if (selected > maxDate) {
+                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
+                        this.value = maxDate.toISOString().split('T')[0];
+                    }
+                });
             }
 
             // set default zone & area for post job
@@ -1309,19 +1330,15 @@
         }
 
         // ============================================================
-        // PUBLISH JOB (with all fields)
+        // PUBLISH JOB
         // ============================================================
         async function publishJob() {
             if (!currentUser) {
                 showToast('⚠️ Please login first');
                 return;
             }
-            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
-                showToast('⚠️ Please set company name in profile first');
-                return;
-            }
 
-            const company = currentUser.company_name;
+            const company = document.getElementById('pj-company').value.trim();
             const jobTitle = document.getElementById('pj-title').value.trim();
             const expRaw = document.getElementById('pj-experience').value.trim();
             const salaryRaw = document.getElementById('pj-salary').value.replace(/,/g, '');
@@ -1332,7 +1349,7 @@
             const description = document.getElementById('pj-description').value.trim();
             const expiryDate = document.getElementById('pj-expiry').value;
 
-            // validation
+            if (!company) { showToast('⚠️ Company name is required'); return; }
             if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
             if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
             if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('⚠️ Enter valid min experience'); return; }
@@ -1343,6 +1360,14 @@
             if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
             if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
             if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
+
+            // Validate expiry date (max 45 days)
+            const selectedDate = new Date(expiryDate);
+            const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+            if (selectedDate > maxDate) {
+                showToast('⚠️ Expiry date cannot exceed 45 days from today');
+                return;
+            }
 
             const jobData = {
                 mobile: currentUser.mobile,
@@ -1372,19 +1397,62 @@
                 document.getElementById('pj-description').value = '';
                 document.getElementById('pj-salary').value = '';
                 document.getElementById('pj-experience').value = '3.5';
+                document.getElementById('pj-company').value = currentUser.company_name || '';
                 // Reset counters
                 document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
                     el.dispatchEvent(new Event('input'));
                 });
-                // Set default expiry again
+                // Reset expiry
                 const d = new Date();
                 d.setDate(d.getDate() + 30);
                 document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
-                // Refresh feed
+                // Refresh feed & profile jobs
                 fetchFeedData();
+                // Navigate to profile page
+                goToProfile();
+                // Reload my jobs
+                loadMyJobs();
             } catch (err) {
                 showToast('❌ Failed to publish: ' + err.message);
             }
+        }
+
+        // ============================================================
+        // LOAD MY JOBS (for recruiter profile)
+        // ============================================================
+        async function loadMyJobs() {
+            if (!currentUser) return;
+            const container = document.getElementById('my-jobs-list');
+            if (!container) return;
+            try {
+                const { data, error } = await sb
+                    .from('active_jobs')
+                    .select('*')
+                    .eq('mobile', currentUser.mobile)
+                    .order('posted_date', { ascending: false });
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:11px; color:#94a3b8;">No jobs posted yet.</p>';
+                    return;
+                }
+                container.innerHTML = data.map(job => `
+                    <div class="my-job-item" onclick="viewEditJob(${job.job_id})">
+                        <div class="job-title">${job.job_title || 'Untitled'}</div>
+                        <div class="job-meta">${job.company_name} · ${job.min_experience_years || 0} yrs · ₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}</div>
+                        <div class="job-meta" style="font-size:9px; color:#94a3b8;">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading my jobs:', err);
+                container.innerHTML = '<p style="font-size:11px; color:#ef4444;">Error loading jobs</p>';
+            }
+        }
+
+        // ============================================================
+        // VIEW/EDIT JOB (mock for now)
+        // ============================================================
+        function viewEditJob(jobId) {
+            alert(`📋 View/Edit Job ID: ${jobId}\n(Edit functionality coming soon)`);
         }
 
         // ============================================================
@@ -1418,7 +1486,6 @@
             if (currentUser && currentUser.company_name) {
                 document.getElementById('pj-company').value = currentUser.company_name;
             }
-            // ensure zone/area populated
             updatePostAreas();
         }
 
@@ -1431,6 +1498,7 @@
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[2].classList.add('active');
             loadProfile();
+            loadMyJobs();
         }
 
         function goToEditSeeker() {
@@ -1617,6 +1685,7 @@
                 currentUser.company_name = company;
                 showToast('✅ Recruiter profile activated!');
                 loadProfile();
+                loadMyJobs();
             } catch (err) {
                 showToast('❌ Failed to save: ' + err.message);
             }
