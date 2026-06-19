@@ -499,19 +499,32 @@
         .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
         .profile-active .section-badge { background: #dcfce7; color: #166534; }
 
-        .warning-banner {
+        .action-required {
             background: #fef3c7;
             border: 1px solid #f59e0b;
             border-radius: 10px;
-            padding: 10px 14px;
-            margin-bottom: 10px;
-            font-size: 12px;
-            color: #92400e;
+            padding: 12px 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
-        .warning-banner .icon { font-size: 18px; }
+        .action-required .icon { font-size: 20px; }
+        .action-required .text { font-size: 12px; color: #92400e; }
+        .action-required .text strong { display: block; font-size: 13px; }
+        .action-required .btn-action {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: auto;
+            flex-shrink: 0;
+        }
+        .action-required .btn-action:hover { background: #1d4ed8; }
 
         /* EDIT SEEKER */
         .edit-page-header {
@@ -854,33 +867,17 @@
         .modal-box .modal-actions .btn-save { background: #2563eb; color: white; }
         .modal-box .modal-actions .btn-save:hover { background: #1d4ed8; }
 
-        /* Action Required Banner */
-        .action-required {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .pin-login-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 8px;
+            margin: 8px 0;
         }
-        .action-required .icon { font-size: 20px; }
-        .action-required .text { font-size: 12px; color: #92400e; }
-        .action-required .text strong { display: block; font-size: 13px; }
-        .action-required .btn-action {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            width: auto;
-            flex-shrink: 0;
-        }
-        .action-required .btn-action:hover { background: #1d4ed8; }
+        .pin-login-input:focus { border-color: #2563eb; outline: none; }
     </style>
 </head>
 <body>
@@ -902,7 +899,7 @@
             <div id="step2" class="hidden fade-in" style="width:100%;">
                 <div class="text-center mb-4">
                     <div class="mobile-display" id="display-mobile">--</div>
-                    <p style="font-size:12px; color:#64748b; margin:0;">Enter OTP sent via WhatsApp</p>
+                    <div id="status-badge" class="text-sm font-medium text-blue-600"></div>
                 </div>
                 <div class="otp-input-group" id="otp-group">
                     <input type="text" maxlength="1" class="otp-input" data-index="0" inputmode="numeric">
@@ -912,7 +909,7 @@
                     <input type="text" maxlength="1" class="otp-input" data-index="4" inputmode="numeric">
                     <input type="text" maxlength="1" class="otp-input" data-index="5" inputmode="numeric">
                 </div>
-                <div class="timer-text">⏳ OTP expires in: <span id="otp-timer">5:00</span></div>
+                <div class="timer-text" id="timer-text">⏳ OTP expires in: <span id="otp-timer">5:00</span></div>
                 <div style="margin-top:4px;">
                     <button class="resend-btn" id="resend-otp" onclick="resendOTP()" disabled>Resend OTP</button>
                 </div>
@@ -1236,7 +1233,6 @@
                 </div>
 
                 <div class="postjob-scroll">
-                    <!-- Recruiter Check Warning -->
                     <div id="recruiter-warning" class="action-required" style="display:none;">
                         <span class="icon">⚠️</span>
                         <div class="text">
@@ -1358,7 +1354,6 @@
                         <span id="detail-type-badge"></span>
                     </div>
 
-                    <!-- Action Required Warning for Job View -->
                     <div id="detail-job-warning" class="action-required" style="display:none;">
                         <span class="icon">⚠️</span>
                         <div class="text">
@@ -1368,7 +1363,6 @@
                         <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
                     </div>
 
-                    <!-- Action Required Warning for Seeker View -->
                     <div id="detail-seeker-warning" class="action-required" style="display:none;">
                         <span class="icon">⚠️</span>
                         <div class="text">
@@ -1598,7 +1592,6 @@
         // ============================================================
         let currentMobile = '';
         let currentUser = null;
-        let isChecking = false;
         let currentFilter = 'BOTH';
         let selectedZoneId = null;
         let selectedAreaId = null;
@@ -1608,6 +1601,7 @@
         let otpExpiryTime = 300;
         let currentDetailData = null;
         let currentDetailType = null;
+        let isLoginFlow = false;
 
         // ============================================================
         // WHATSAPP OTP AUTHENTICATION
@@ -1623,42 +1617,135 @@
                 return;
             }
 
-            const { data, error } = await sb
-                .from('all_users')
-                .select('mobile')
-                .eq('mobile', mobile)
-                .single();
-
-            if (data) {
-                showToast('⚠️ This number is already registered. Please login.');
-                return;
-            }
-
-            setStatus('⏳ Sending OTP via WhatsApp...', 'blue');
+            setStatus('⏳ Checking...', 'blue');
             document.getElementById('send-otp-btn').disabled = true;
 
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            sessionStorage.setItem('otp_' + mobile, otp);
-            sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+            try {
+                // Check if user exists in all_users
+                const { data: existingUser, error } = await sb
+                    .from('all_users')
+                    .select('*')
+                    .eq('mobile', mobile)
+                    .single();
 
-            const waNumber = formatMobileForWA(mobile);
-            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
-            const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-            
-            window.open(waUrl, '_blank');
+                if (existingUser) {
+                    // User already registered - Show PIN login screen
+                    setStatus('✅ Existing user. Enter your PIN.', 'green');
+                    showToast('📱 This number is already registered. Please login with PIN.');
+                    
+                    // Show PIN login UI
+                    document.getElementById('step1').style.display = 'none';
+                    document.getElementById('step2').classList.remove('hidden');
+                    document.getElementById('display-mobile').textContent = mobile;
+                    currentMobile = mobile;
+                    isLoginFlow = true;
+                    
+                    // Show PIN login specific UI
+                    document.getElementById('status-badge').textContent = '✅ Existing user - Enter PIN';
+                    document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
+                    document.getElementById('verify-btn').textContent = '🔐 Login with PIN';
+                    document.getElementById('verify-btn').className = 'btn-green';
+                    document.getElementById('verify-btn').onclick = function() {
+                        verifyExistingUser(mobile);
+                    };
+                    
+                    // Hide OTP input and show PIN input
+                    document.querySelector('.otp-input-group').style.display = 'none';
+                    document.querySelector('.timer-text').style.display = 'none';
+                    document.getElementById('resend-otp').style.display = 'none';
+                    
+                    // Remove any existing PIN input
+                    const oldPinGroup = document.getElementById('pin-input-group');
+                    if (oldPinGroup) oldPinGroup.remove();
+                    
+                    // Create PIN input
+                    const pinInput = document.createElement('div');
+                    pinInput.id = 'pin-input-group';
+                    pinInput.innerHTML = `
+                        <div style="margin:12px 0;">
+                            <input type="password" id="login-pin" class="pin-login-input" placeholder="Enter 4-digit PIN" maxlength="4" inputmode="numeric">
+                            <div style="margin:4px 0; font-size:12px; color:#64748b;">
+                                Forgot PIN? <span style="color:#2563eb; cursor:pointer; font-weight:600;" onclick="resetPIN()">Reset PIN</span>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('otp-group').parentNode.insertBefore(pinInput, document.getElementById('otp-group'));
+                    
+                    // Focus PIN input
+                    setTimeout(() => document.getElementById('login-pin').focus(), 300);
+                    
+                    // Enter key on PIN input
+                    document.getElementById('login-pin').addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            verifyExistingUser(mobile);
+                        }
+                    });
+                    
+                    document.getElementById('send-otp-btn').disabled = false;
+                    return;
+                }
 
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').classList.remove('hidden');
-            document.getElementById('display-mobile').textContent = mobile;
-            currentMobile = mobile;
-            setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
+                // New user - Send OTP via WhatsApp
+                setStatus('📱 New user. Sending OTP...', 'blue');
+                isLoginFlow = false;
+                
+                // Reset to OTP flow
+                resetOTPFlow();
+                
+                const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                sessionStorage.setItem('otp_' + mobile, otp);
+                sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+
+                const waNumber = formatMobileForWA(mobile);
+                const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
+                const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+                
+                window.open(waUrl, '_blank');
+
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('display-mobile').textContent = mobile;
+                currentMobile = mobile;
+                
+                document.getElementById('status-badge').textContent = '📱 New user - Enter OTP';
+                document.getElementById('status-badge').className = 'text-sm font-medium text-blue-600';
+                document.getElementById('verify-btn').textContent = '✅ Verify & Continue';
+                document.getElementById('verify-btn').className = 'btn-green';
+                document.getElementById('verify-btn').onclick = verifyOTP;
+                
+                document.querySelector('.otp-input-group').style.display = 'flex';
+                document.querySelector('.timer-text').style.display = 'block';
+                document.getElementById('resend-otp').style.display = 'block';
+                
+                document.querySelectorAll('.otp-input').forEach(el => el.value = '');
+                document.querySelector('.otp-input').focus();
+                
+                startOTPTimer();
+                setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
+                showToast('💬 OTP sent via WhatsApp!');
+
+            } catch (err) {
+                console.error('Error checking user:', err);
+                setStatus('❌ Error checking user', 'red');
+                showToast('❌ Error: ' + err.message);
+            } finally {
+                document.getElementById('send-otp-btn').disabled = false;
+            }
+        }
+
+        function resetOTPFlow() {
+            // Reset to OTP flow
+            document.querySelector('.otp-input-group').style.display = 'flex';
+            document.querySelector('.timer-text').style.display = 'block';
+            document.getElementById('resend-otp').style.display = 'block';
+            document.querySelectorAll('.otp-input').forEach(el => {
+                el.value = '';
+                el.classList.remove('filled');
+            });
             
-            document.querySelectorAll('.otp-input').forEach(el => el.value = '');
-            document.querySelector('.otp-input').focus();
-            
-            startOTPTimer();
-            showToast('💬 OTP sent via WhatsApp!');
+            const pinGroup = document.getElementById('pin-input-group');
+            if (pinGroup) pinGroup.remove();
         }
 
         document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
@@ -1794,8 +1881,186 @@
             showToast('🔄 OTP resent via WhatsApp!');
         }
 
+        async function verifyExistingUser(mobile) {
+            const pin = document.getElementById('login-pin').value.trim();
+            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                showToast('⚠️ Please enter a valid 4-digit PIN');
+                return;
+            }
+
+            setStatus('⏳ Verifying...', 'blue');
+            document.getElementById('verify-btn').disabled = true;
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: mobile, pin: pin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    await fetchUserData(mobile);
+                    showToast('✅ Welcome back!');
+                } else {
+                    showToast('❌ Invalid PIN. Please try again.');
+                    document.getElementById('login-pin').value = '';
+                    document.getElementById('login-pin').focus();
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            } finally {
+                document.getElementById('verify-btn').disabled = false;
+            }
+        }
+
         // ============================================================
-        // REGISTRATION / LOGIN
+        // PIN RESET
+        // ============================================================
+        function resetPIN() {
+            if (confirm('Forgot your PIN? We\'ll send an OTP to reset it.')) {
+                const mobile = currentMobile;
+                const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                sessionStorage.setItem('reset_otp_' + mobile, otp);
+                sessionStorage.setItem('reset_otp_expiry_' + mobile, Date.now() + 300000);
+                
+                const waNumber = formatMobileForWA(mobile);
+                const message = `Your JobAd PIN reset code is: *${otp}*\n\nEnter this code to reset your PIN.`;
+                window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                
+                showToast('📱 PIN reset OTP sent via WhatsApp!');
+                
+                // Show OTP input for reset
+                const pinGroup = document.getElementById('pin-input-group');
+                if (pinGroup) {
+                    pinGroup.innerHTML = `
+                        <div style="margin:12px 0;">
+                            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">Enter OTP sent via WhatsApp</p>
+                            <div style="display:flex; gap:8px; justify-content:center; margin-bottom:8px;">
+                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
+                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
+                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
+                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
+                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
+                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
+                            </div>
+                            <button onclick="verifyResetOTP()" class="btn-green" style="padding:10px; font-size:14px;">Verify & Reset PIN</button>
+                        </div>
+                    `;
+                    
+                    // Auto-focus and move between reset OTP inputs
+                    document.querySelectorAll('.reset-otp-input').forEach((input, index, arr) => {
+                        input.addEventListener('input', function(e) {
+                            this.value = this.value.replace(/[^0-9]/g, '');
+                            if (this.value.length === 1 && index < arr.length - 1) {
+                                arr[index + 1].focus();
+                            }
+                        });
+                        input.addEventListener('keydown', function(e) {
+                            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                                arr[index - 1].focus();
+                            }
+                            if (e.key === 'Enter') {
+                                verifyResetOTP();
+                            }
+                        });
+                    });
+                    document.querySelector('.reset-otp-input').focus();
+                }
+            }
+        }
+
+        async function verifyResetOTP() {
+            const otp = Array.from(document.querySelectorAll('.reset-otp-input'))
+                .map(el => el.value)
+                .join('');
+            
+            if (otp.length !== 6) {
+                showToast('⚠️ Enter complete 6-digit OTP');
+                return;
+            }
+
+            const mobile = currentMobile;
+            const storedOtp = sessionStorage.getItem('reset_otp_' + mobile);
+            const storedExpiry = sessionStorage.getItem('reset_otp_expiry_' + mobile);
+
+            if (!storedOtp || Date.now() > parseInt(storedExpiry)) {
+                showToast('❌ OTP expired. Please try again.');
+                resetPIN();
+                return;
+            }
+
+            if (otp !== storedOtp) {
+                showToast('❌ Invalid OTP. Please try again.');
+                document.querySelectorAll('.reset-otp-input').forEach(el => el.value = '');
+                document.querySelector('.reset-otp-input').focus();
+                return;
+            }
+
+            // OTP verified - Show new PIN setup
+            sessionStorage.removeItem('reset_otp_' + mobile);
+            sessionStorage.removeItem('reset_otp_expiry_' + mobile);
+            
+            showToast('✅ OTP verified! Set your new PIN.');
+            
+            const pinGroup = document.getElementById('pin-input-group');
+            if (pinGroup) {
+                pinGroup.innerHTML = `
+                    <div style="margin:12px 0;">
+                        <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">Set your new 4-digit PIN</p>
+                        <input type="password" id="new-pin-reset" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px;font-size:18px;text-align:center;letter-spacing:8px;margin-bottom:8px;">
+                        <input type="password" id="confirm-pin-reset" placeholder="Confirm PIN" maxlength="4" inputmode="numeric" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px;font-size:18px;text-align:center;letter-spacing:8px;margin-bottom:8px;">
+                        <button onclick="saveResetPIN()" class="btn-green" style="padding:10px; font-size:14px;">💾 Save New PIN</button>
+                    </div>
+                `;
+                document.getElementById('new-pin-reset').focus();
+            }
+        }
+
+        async function saveResetPIN() {
+            const newPin = document.getElementById('new-pin-reset').value.trim();
+            const confirmPin = document.getElementById('confirm-pin-reset').value.trim();
+
+            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                showToast('⚠️ Enter a valid 4-digit PIN');
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                showToast('⚠️ PINs do not match');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, new_pin: newPin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✅ PIN reset successfully! Please login with your new PIN.');
+                    // Reset to login screen
+                    document.getElementById('step1').style.display = 'block';
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('mobile').value = currentMobile;
+                    document.getElementById('send-otp-btn').disabled = false;
+                    setStatus('✅ PIN reset! Please login again.', 'green');
+                    // Remove PIN group
+                    const pinGroup = document.getElementById('pin-input-group');
+                    if (pinGroup) pinGroup.remove();
+                } else {
+                    showToast('❌ Failed to reset PIN: ' + data.error);
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // REGISTRATION
         // ============================================================
         async function completeRegistration() {
             const pin = prompt('Set your 4-digit PIN for login:');
@@ -1824,29 +2089,7 @@
         }
 
         async function completeLogin(userData) {
-            const pin = prompt('Enter your 4-digit PIN:');
-            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                showToast('⚠️ Please enter a valid 4-digit PIN');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    await fetchUserData(currentMobile);
-                    showToast('✅ Welcome back!');
-                } else {
-                    showToast('❌ Invalid PIN. Please try again.');
-                }
-            } catch (err) {
-                showToast('❌ Error: ' + err.message);
-            }
+            // Already handled via verifyExistingUser
         }
 
         async function fetchUserData(mobile) {
@@ -1997,11 +2240,9 @@
                 return;
             }
 
-            // Check if recruiter profile exists (company name set)
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 document.getElementById('recruiter-warning').style.display = 'flex';
                 document.getElementById('pj-company').value = '';
-                // Disable form fields
                 document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = true);
                 document.getElementById('pj-publish-btn').disabled = true;
                 document.getElementById('pj-publish-btn').textContent = '⚠️ Complete Recruiter Profile First';
@@ -2314,7 +2555,6 @@
                 return;
             }
 
-            // Check recruiter profile
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 showToast('⚠️ Please set your company name in profile first');
                 goToProfile();
@@ -2414,7 +2654,7 @@
         }
 
         // ============================================================
-        // VIEW JOB (for profile)
+        // VIEW JOB
         // ============================================================
         async function viewJob(jobId) {
             try {
@@ -2498,18 +2738,15 @@
             document.getElementById('detail-calls').textContent = data.calls || 0;
             document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
 
-            // Check permissions for Call/WhatsApp actions
             const callBtn = document.getElementById('detail-call-btn');
             const waBtn = document.getElementById('detail-wa-btn');
             const jobWarning = document.getElementById('detail-job-warning');
             const seekerWarning = document.getElementById('detail-seeker-warning');
 
-            // Hide warnings initially
             jobWarning.style.display = 'none';
             seekerWarning.style.display = 'none';
 
             if (isJob) {
-                // Viewing a JOB - need recruiter profile to contact
                 if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                     jobWarning.style.display = 'flex';
                     callBtn.disabled = true;
@@ -2523,7 +2760,6 @@
                     waBtn.className = 'btn-whatsapp';
                 }
             } else {
-                // Viewing a SEEKER - need job seeker profile to contact
                 if (!currentUser.full_name || currentUser.full_name.trim() === '') {
                     seekerWarning.style.display = 'flex';
                     callBtn.disabled = true;
@@ -2553,7 +2789,6 @@
                 showToast('⚠️ No contact number available');
                 return;
             }
-            // Check permissions based on type
             const isJob = currentDetailType === 'JOB';
             if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
                 showToast('⚠️ Please set your company name to contact job seekers');
@@ -2574,7 +2809,6 @@
                 showToast('⚠️ No contact number available');
                 return;
             }
-            // Check permissions based on type
             const isJob = currentDetailType === 'JOB';
             if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
                 showToast('⚠️ Please set your company name to contact job seekers');
@@ -2686,8 +2920,11 @@
             });
             if (otpTimerInterval) clearInterval(otpTimerInterval);
             document.getElementById('resend-otp').disabled = true;
+            const pinGroup = document.getElementById('pin-input-group');
+            if (pinGroup) pinGroup.remove();
             currentMobile = '';
             currentUser = null;
+            isLoginFlow = false;
             document.getElementById('mobile').focus();
         }
 
