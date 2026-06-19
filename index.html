@@ -1604,7 +1604,7 @@
         let isLoginFlow = false;
 
         // ============================================================
-        // WHATSAPP OTP AUTHENTICATION
+        // WHATSAPP OTP AUTHENTICATION - FIXED FOR EXISTING USERS
         // ============================================================
         function formatMobileForWA(mobile) {
             return `91${mobile}`;
@@ -1617,19 +1617,29 @@
                 return;
             }
 
-            setStatus('⏳ Checking...', 'blue');
+            setStatus('⏳ Checking registration...', 'blue');
             document.getElementById('send-otp-btn').disabled = true;
 
             try {
-                // Check if user exists in all_users
-                const { data: existingUser, error } = await sb
+                console.log(`🔍 Checking if ${mobile} is registered...`);
+                
+                // Check in all_users
+                const { data: allUser, error: allError } = await sb
                     .from('all_users')
-                    .select('*')
+                    .select('mobile')
+                    .eq('mobile', mobile)
+                    .single();
+                
+                // Check in active_users
+                const { data: activeUser, error: activeError } = await sb
+                    .from('active_users')
+                    .select('mobile')
                     .eq('mobile', mobile)
                     .single();
 
-                if (existingUser) {
-                    // User already registered - Show PIN login screen
+                // User exists in either table
+                if (allUser || activeUser) {
+                    console.log(`✅ ${mobile} is already registered. Showing PIN login.`);
                     setStatus('✅ Existing user. Enter your PIN.', 'green');
                     showToast('📱 This number is already registered. Please login with PIN.');
                     
@@ -1686,6 +1696,7 @@
                 }
 
                 // New user - Send OTP via WhatsApp
+                console.log(`📱 ${mobile} is NEW. Sending OTP via WhatsApp.`);
                 setStatus('📱 New user. Sending OTP...', 'blue');
                 isLoginFlow = false;
                 
@@ -1726,7 +1737,7 @@
                 showToast('💬 OTP sent via WhatsApp!');
 
             } catch (err) {
-                console.error('Error checking user:', err);
+                console.error('❌ Error checking user:', err);
                 setStatus('❌ Error checking user', 'red');
                 showToast('❌ Error: ' + err.message);
             } finally {
@@ -2060,7 +2071,7 @@
         }
 
         // ============================================================
-        // REGISTRATION
+        // REGISTRATION & LOGIN
         // ============================================================
         async function completeRegistration() {
             const pin = prompt('Set your 4-digit PIN for login:');
