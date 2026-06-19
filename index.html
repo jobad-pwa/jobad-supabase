@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobAd - WhatsApp Auth</title>
+    <title>JobAd - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -64,12 +64,10 @@
         .btn-green:hover { background: #15803d; }
         .btn-yellow { background: #d97706; }
         .btn-yellow:hover { background: #b45309; }
-        .btn-whatsapp { background: #25D366; }
-        .btn-whatsapp:hover { background: #1da851; }
         .btn-red { background: #dc2626; }
         .btn-red:hover { background: #b91c1c; }
-        .btn-disabled { background: #94a3b8; cursor: not-allowed; }
-        .btn-disabled:hover { background: #94a3b8; }
+        .btn-outline { background: transparent; color: #2563eb; border: 2px solid #2563eb; }
+        .btn-outline:hover { background: #2563eb; color: white; }
         .msg {
             margin-top: 16px;
             padding: 12px;
@@ -102,6 +100,9 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
         }
         .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
+        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* LOGIN SCREEN */
         #login-screen {
@@ -118,48 +119,29 @@
             color: #2563eb;
             margin: 0 0 4px 0;
         }
-        .wa-icon { font-size: 32px; margin-bottom: 8px; }
-
-        .otp-input-group {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin: 12px 0;
+        #login-screen .test-links {
+            margin-bottom: 24px;
+            font-size: 12px;
         }
-        .otp-input-group input {
-            width: 48px;
-            height: 56px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: 700;
-            padding: 0;
-            margin: 0;
-            border-radius: 12px;
-            border: 2px solid #e2e8f0;
+        #login-screen .test-links a {
+            color: #3b82f6;
+            text-decoration: none;
         }
-        .otp-input-group input:focus {
-            border-color: #2563eb;
-            outline: none;
-        }
-        .otp-input-group input.filled {
-            border-color: #16a34a;
-            background: #f0fdf4;
-        }
-        .timer-text { font-size: 13px; color: #64748b; margin-top: 8px; }
-        .resend-btn {
-            background: none;
-            border: none;
-            color: #2563eb;
-            font-weight: 600;
+        #login-screen .password-wrapper { position: relative; }
+        #login-screen .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             cursor: pointer;
-            padding: 4px;
             font-size: 14px;
+            user-select: none;
+            padding: 4px;
         }
-        .resend-btn:hover { text-decoration: underline; }
-        .resend-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .mobile-status { font-size: 12px; color: #94a3b8; margin-top: 4px; }
 
         /* HOME SCREEN */
-        .home-container, .profile-container, .postjob-container, .detail-container {
+        .home-container {
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -172,7 +154,6 @@
             padding-bottom: 8px;
             flex-shrink: 0;
             border-bottom: 1px solid #f1f5f9;
-            position: relative;
         }
         .home-header .logo {
             font-size: 22px;
@@ -184,66 +165,39 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            position: relative;
         }
-        .home-header .avatar-btn {
-            width: 36px;
-            height: 36px;
+        .home-header .gender-icon {
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            border: 2px solid #e2e8f0;
-            background: #f8fafc;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            transition: 0.2s;
-            padding: 0;
-        }
-        .home-header .avatar-btn:hover { border-color: #2563eb; background: #eff6ff; }
-        .home-header .avatar-btn.male { color: #2563eb; border-color: #2563eb; }
-        .home-header .avatar-btn.female { color: #ec4899; border-color: #ec4899; }
-        .home-header .avatar-btn.other { color: #8b5cf6; border-color: #8b5cf6; }
-
-        .profile-dropdown {
-            position: absolute;
-            top: 44px;
-            right: 0;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            min-width: 180px;
-            z-index: 100;
-            display: none;
-            overflow: hidden;
-        }
-        .profile-dropdown.show { display: block; }
-        .profile-dropdown .dropdown-item {
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            font-weight: 500;
-            color: #1e293b;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
             cursor: pointer;
-            border: none;
+            flex-shrink: 0;
+        }
+        .home-header .gender-icon.male { color: #2563eb; border-color: #2563eb; }
+        .home-header .gender-icon.female { color: #ec4899; border-color: #ec4899; }
+        .home-header .gender-icon.other { color: #8b5cf6; border-color: #8b5cf6; }
+        .home-header .logout-icon {
             background: none;
-            width: 100%;
-            text-align: left;
-            transition: 0.15s;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 8px;
+            color: #94a3b8;
+            transition: 0.2s;
+            width: auto;
         }
-        .profile-dropdown .dropdown-item:hover { background: #f8fafc; }
-        .profile-dropdown .dropdown-item .icon { font-size: 16px; }
-        .profile-dropdown .dropdown-divider {
-            height: 1px;
-            background: #e2e8f0;
-            margin: 4px 12px;
+        .home-header .logout-icon:hover { 
+            color: #dc2626; 
+            background: #fee2e2;
         }
-        .profile-dropdown .dropdown-item.danger { color: #dc2626; }
-        .profile-dropdown .dropdown-item.danger:hover { background: #fef2f2; }
 
         .page-content {
             flex: 1;
@@ -499,32 +453,19 @@
         .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
         .profile-active .section-badge { background: #dcfce7; color: #166534; }
 
-        .action-required {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
             border-radius: 10px;
-            padding: 12px 16px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .action-required .icon { font-size: 20px; }
-        .action-required .text { font-size: 12px; color: #92400e; }
-        .action-required .text strong { display: block; font-size: 13px; }
-        .action-required .btn-action {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            width: auto;
-            flex-shrink: 0;
+            margin-top: 4px;
         }
-        .action-required .btn-action:hover { background: #1d4ed8; }
+        .logout-btn:hover { background: #fecaca; }
 
         /* EDIT SEEKER */
         .edit-page-header {
@@ -553,7 +494,9 @@
             flex-shrink: 0;
             margin-left: 8px;
         }
-        .edit-page-header .cancel-btn:hover { color: #64748b; }
+        .edit-page-header .cancel-btn:hover {
+            color: #64748b;
+        }
 
         .edit-hint {
             background: #eff6ff;
@@ -573,6 +516,7 @@
             color: #1e293b;
             margin-bottom: 2px;
         }
+        .edit-field label .limit-hint { font-size: 9px; color: #94a3b8; font-weight: 400; }
         .edit-field input, .edit-field select, .edit-field textarea {
             width: 100%;
             padding: 8px 12px;
@@ -585,6 +529,7 @@
         .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
         .edit-field textarea { resize: vertical; min-height: 50px; }
 
+        /* Salary input with currency display */
         .salary-input-wrapper {
             position: relative;
             display: flex;
@@ -598,7 +543,10 @@
             color: #1e293b;
             pointer-events: none;
         }
-        .salary-input-wrapper input { padding-left: 28px; text-align: left; }
+        .salary-input-wrapper input {
+            padding-left: 28px;
+            text-align: left;
+        }
 
         .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
         .edit-activate-btn {
@@ -615,8 +563,14 @@
         }
         .edit-activate-btn:hover { background: #1d4ed8; }
 
-        /* POST JOB */
-        .postjob-header, .detail-header {
+        /* ===== POST JOB PAGE ===== */
+        .postjob-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        .postjob-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -624,13 +578,13 @@
             flex-shrink: 0;
             border-bottom: 1px solid #f1f5f9;
         }
-        .postjob-header .logo, .detail-header .logo {
+        .postjob-header .logo {
             font-size: 22px;
             font-weight: 900;
             color: #2563eb;
             cursor: pointer;
         }
-        .postjob-header .cancel-btn, .detail-header .cancel-btn {
+        .postjob-header .cancel-btn {
             font-size: 14px;
             font-weight: 600;
             color: #6b7280;
@@ -641,16 +595,16 @@
             border-radius: 20px;
             transition: 0.2s;
         }
-        .postjob-header .cancel-btn:hover, .detail-header .cancel-btn:hover { background: #f3f4f6; }
+        .postjob-header .cancel-btn:hover { background: #f3f4f6; }
 
-        .postjob-scroll, .detail-scroll {
+        .postjob-scroll {
             flex: 1;
             overflow-y: auto;
             padding: 12px 0 8px 0;
             min-height: 0;
         }
-        .postjob-scroll::-webkit-scrollbar, .detail-scroll::-webkit-scrollbar { width: 3px; }
-        .postjob-scroll::-webkit-scrollbar-thumb, .detail-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .postjob-scroll::-webkit-scrollbar { width: 3px; }
+        .postjob-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .form-group { margin-bottom: 12px; }
         .form-label {
@@ -722,10 +676,77 @@
         .publish-btn:hover { background: #1d4ed8; }
         .publish-btn:active { transform: scale(0.98); }
         .bottom-spacer { height: 4px; }
+
         input[type="date"] { text-align: left; padding: 10px 12px; }
 
-        /* Detail View */
-        .detail-field { margin-bottom: 10px; }
+        /* My Jobs list in recruiter profile */
+        .my-job-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fafbfc;
+        }
+        .my-job-item:hover { border-color: #3b82f6; background: #f0f7ff; }
+        .my-job-item .job-title { font-weight: 600; font-size: 13px; color: #0f172a; }
+        .my-job-item .job-meta { font-size: 10px; color: #64748b; }
+        .my-job-item .expired {
+            color: #dc2626;
+            font-size: 9px;
+            font-weight: 600;
+            background: #fee2e2;
+            padding: 1px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* ===== DETAIL VIEW PAGE (for jobs & seekers) ===== */
+        .detail-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .detail-header .logo {
+            font-size: 22px;
+            font-weight: 900;
+            color: #2563eb;
+            cursor: pointer;
+        }
+        .detail-header .cancel-btn {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            background: none;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+        .detail-header .cancel-btn:hover { background: #f3f4f6; }
+        .detail-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0 8px 0;
+            min-height: 0;
+        }
+        .detail-scroll::-webkit-scrollbar { width: 3px; }
+        .detail-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .detail-field {
+            margin-bottom: 10px;
+        }
         .detail-field label {
             font-size: 9px;
             font-weight: 700;
@@ -789,15 +810,11 @@
             border: none;
         }
         .detail-actions .btn-call { background: #16a34a; color: white; }
-        .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
+        .detail-actions .btn-call:hover { background: #15803d; }
         .detail-actions .btn-whatsapp { background: #25D366; color: white; }
-        .detail-actions .btn-whatsapp:hover:not(:disabled) { background: #1da851; }
+        .detail-actions .btn-whatsapp:hover { background: #1da851; }
         .detail-actions .btn-close { background: #6b7280; color: white; }
         .detail-actions .btn-close:hover { background: #4b5563; }
-        .detail-actions button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
         .type-badge {
             display: inline-block;
             padding: 2px 12px;
@@ -808,66 +825,8 @@
         .type-badge.job { background: #dbeafe; color: #1e40af; }
         .type-badge.seeker { background: #dcfce7; color: #166534; }
 
-        /* My Jobs */
-        .my-job-item {
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-            background: #fafbfc;
-        }
-        .my-job-item:hover { border-color: #3b82f6; background: #f0f7ff; }
-        .my-job-item .job-title { font-weight: 600; font-size: 13px; color: #0f172a; }
-        .my-job-item .job-meta { font-size: 10px; color: #64748b; }
-        .my-job-item .expired {
-            color: #dc2626;
-            font-size: 9px;
-            font-weight: 600;
-            background: #fee2e2;
-            padding: 1px 8px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-
-        .modal-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-            border-radius: 24px;
-        }
-        .modal-overlay.show { display: flex; }
-        .modal-box {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            max-width: 320px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: #1e293b; }
-        .modal-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
-        .modal-box input { text-align: left; margin-bottom: 8px; }
-        .modal-box .modal-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .modal-box .modal-actions button { flex: 1; padding: 10px; font-size: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; }
-        .modal-box .modal-actions .btn-cancel { background: #f1f5f9; color: #475569; }
-        .modal-box .modal-actions .btn-cancel:hover { background: #e2e8f0; }
-        .modal-box .modal-actions .btn-save { background: #2563eb; color: white; }
-        .modal-box .modal-actions .btn-save:hover { background: #1d4ed8; }
-
-        .pin-login-input {
+        /* Registration PIN Setup */
+        .pin-setup-input {
             width: 100%;
             padding: 14px;
             border: 2px solid #e2e8f0;
@@ -877,7 +836,7 @@
             letter-spacing: 8px;
             margin: 8px 0;
         }
-        .pin-login-input:focus { border-color: #2563eb; outline: none; }
+        .pin-setup-input:focus { border-color: #2563eb; outline: none; }
     </style>
 </head>
 <body>
@@ -885,35 +844,33 @@
         <!-- LOGIN SCREEN -->
         <div id="login-screen">
             <h1>JobAd</h1>
-            <div class="wa-icon">💬</div>
-            <p style="font-size:13px; color:#64748b; margin:-4px 0 16px 0;">Verify via WhatsApp</p>
-            
+            <div class="test-links"><a href="test.html">🔌 DB Test</a></div>
             <div id="step1" style="width:100%;">
                 <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10" autofocus>
                 <div class="mobile-status" id="mobile-status"></div>
-                <button onclick="sendWhatsAppOTP()" class="btn-whatsapp" id="send-otp-btn">
-                    💬 Send OTP via WhatsApp
-                </button>
+                <button onclick="checkMobile()" id="check-btn" class="btn-green">Continue</button>
             </div>
-            
             <div id="step2" class="hidden fade-in" style="width:100%;">
                 <div class="text-center mb-4">
                     <div class="mobile-display" id="display-mobile">--</div>
-                    <div id="status-badge" class="text-sm font-medium text-blue-600"></div>
+                    <div id="status-badge" class="text-sm font-medium"></div>
                 </div>
-                <div class="otp-input-group" id="otp-group">
-                    <input type="text" maxlength="1" class="otp-input" data-index="0" inputmode="numeric">
-                    <input type="text" maxlength="1" class="otp-input" data-index="1" inputmode="numeric">
-                    <input type="text" maxlength="1" class="otp-input" data-index="2" inputmode="numeric">
-                    <input type="text" maxlength="1" class="otp-input" data-index="3" inputmode="numeric">
-                    <input type="text" maxlength="1" class="otp-input" data-index="4" inputmode="numeric">
-                    <input type="text" maxlength="1" class="otp-input" data-index="5" inputmode="numeric">
+                <div class="password-wrapper">
+                    <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4">
+                    <span class="toggle-password" onclick="togglePin()">👁️</span>
                 </div>
-                <div class="timer-text" id="timer-text">⏳ OTP expires in: <span id="otp-timer">5:00</span></div>
-                <div style="margin-top:4px;">
-                    <button class="resend-btn" id="resend-otp" onclick="resendOTP()" disabled>Resend OTP</button>
+                <button onclick="submitPin()" id="submitBtn" class="btn-green">Submit</button>
+                <button onclick="resetForm()" class="btn-back">← Change Number</button>
+            </div>
+            <!-- Registration PIN Setup -->
+            <div id="step3" class="hidden fade-in" style="width:100%;">
+                <div class="text-center mb-4">
+                    <div class="mobile-display" id="reg-display-mobile">--</div>
+                    <p style="font-size:13px; color:#64748b; margin:0;">Set your 4-digit PIN for login</p>
                 </div>
-                <button onclick="verifyOTP()" id="verify-btn" class="btn-green">✅ Verify & Continue</button>
+                <input type="password" id="reg-pin" class="pin-setup-input" placeholder="New PIN" maxlength="4" inputmode="numeric">
+                <input type="password" id="reg-pin-confirm" class="pin-setup-input" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
+                <button onclick="registerUser()" id="register-btn" class="btn-green">✅ Create Account</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
             <div id="msg" class="hidden"></div>
@@ -925,20 +882,9 @@
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="header-right">
-                        <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
-                            <span id="avatar-symbol">👤</span>
-                        </button>
-                        <div class="profile-dropdown" id="profile-dropdown">
-                            <button class="dropdown-item" onclick="closeDropdown(); goToProfile();">
-                                <span class="icon">👤</span> View Profile
-                            </button>
-                            <button class="dropdown-item" onclick="closeDropdown(); openChangePin();">
-                                <span class="icon">🔑</span> Change PIN
-                            </button>
-                            <div class="dropdown-divider"></div>
-                            <button class="dropdown-item danger" onclick="closeDropdown(); logout();">
-                                <span class="icon">🚪</span> Logout
-                            </button>
+                        <button class="logout-icon" onclick="logout()" title="Logout">🚪</button>
+                        <div class="gender-icon" id="gender-icon" style="display:none;" onclick="goToProfile()">
+                            <span id="gender-symbol">👤</span>
                         </div>
                     </div>
                 </div>
@@ -1022,20 +968,9 @@
                 <div class="home-header">
                     <div class="logo" onclick="goHome()">JobAd</div>
                     <div class="header-right">
-                        <button class="avatar-btn" id="avatar-btn-profile" onclick="toggleDropdown()">
-                            <span id="avatar-symbol-profile">👤</span>
-                        </button>
-                        <div class="profile-dropdown" id="profile-dropdown-profile">
-                            <button class="dropdown-item" onclick="closeDropdown(); goToProfile();">
-                                <span class="icon">👤</span> View Profile
-                            </button>
-                            <button class="dropdown-item" onclick="closeDropdown(); openChangePin();">
-                                <span class="icon">🔑</span> Change PIN
-                            </button>
-                            <div class="dropdown-divider"></div>
-                            <button class="dropdown-item danger" onclick="closeDropdown(); logout();">
-                                <span class="icon">🚪</span> Logout
-                            </button>
+                        <button class="logout-icon" onclick="logout()" title="Logout">🚪</button>
+                        <div class="gender-icon" id="gender-icon-profile" style="display:none;" onclick="goToProfile()">
+                            <span id="gender-symbol-profile">👤</span>
                         </div>
                     </div>
                 </div>
@@ -1233,15 +1168,6 @@
                 </div>
 
                 <div class="postjob-scroll">
-                    <div id="recruiter-warning" class="action-required" style="display:none;">
-                        <span class="icon">⚠️</span>
-                        <div class="text">
-                            <strong>Recruiter Profile Required</strong>
-                            Please set your company name in the profile to post jobs.
-                        </div>
-                        <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
-                    </div>
-
                     <div class="form-group">
                         <label class="form-label">Company <span class="required">*</span></label>
                         <input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100">
@@ -1337,7 +1263,7 @@
             </div>
         </div>
 
-        <!-- DETAIL VIEW PAGE -->
+        <!-- ===== DETAIL VIEW PAGE ===== -->
         <div id="detail-page" class="hidden-page" style="height:100%;">
             <div class="detail-container">
                 <div class="detail-header">
@@ -1352,24 +1278,6 @@
                             <p style="font-size:11px; color:#64748b; margin:2px 0 0 0;" id="detail-company">Company</p>
                         </div>
                         <span id="detail-type-badge"></span>
-                    </div>
-
-                    <div id="detail-job-warning" class="action-required" style="display:none;">
-                        <span class="icon">⚠️</span>
-                        <div class="text">
-                            <strong>Recruiter Profile Required</strong>
-                            Please set your company name to contact job seekers.
-                        </div>
-                        <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
-                    </div>
-
-                    <div id="detail-seeker-warning" class="action-required" style="display:none;">
-                        <span class="icon">⚠️</span>
-                        <div class="text">
-                            <strong>Job Seeker Profile Required</strong>
-                            Please complete your job seeker profile to apply/contact for jobs.
-                        </div>
-                        <button class="btn-action" onclick="goToEditSeeker()">Create Profile</button>
                     </div>
 
                     <div class="grid-2" style="gap:8px;">
@@ -1445,8 +1353,8 @@
                     </div>
 
                     <div class="detail-actions">
-                        <button class="btn-call" id="detail-call-btn" onclick="makeCall()">📞 Call</button>
-                        <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">💬 WhatsApp</button>
+                        <button class="btn-call" onclick="makeCall()">📞 Call</button>
+                        <button class="btn-whatsapp" onclick="sendWhatsApp()">💬 WhatsApp</button>
                         <button class="btn-close" onclick="closeDetail()">Close</button>
                     </div>
                     <div class="bottom-spacer"></div>
@@ -1465,20 +1373,6 @@
                         <span class="icon">👤</span>
                         <span class="label">Profile</span>
                     </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- CHANGE PIN MODAL -->
-        <div class="modal-overlay" id="change-pin-modal">
-            <div class="modal-box">
-                <h3>🔑 Change PIN</h3>
-                <p>Enter your new 4-digit PIN</p>
-                <input type="password" id="new-pin" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric">
-                <input type="password" id="confirm-pin" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
-                <div class="modal-actions">
-                    <button class="btn-cancel" onclick="closeChangePin()">Cancel</button>
-                    <button class="btn-save" onclick="saveNewPin()">Save PIN</button>
                 </div>
             </div>
         </div>
@@ -1567,6 +1461,11 @@
             return AREAS.filter(a => a.zone_id === zoneId);
         }
 
+        function getZoneIdByName(name) {
+            const z = ZONES.find(z => z.zone_name === name);
+            return z ? z.zone_id : null;
+        }
+
         function populateEditZones() {
             const select = document.getElementById('edit-seeker-zone');
             select.innerHTML = '<option value="">-- Select --</option>';
@@ -1588,497 +1487,275 @@
         }
 
         // ============================================================
+        // SALARY FORMATTER
+        // ============================================================
+        function formatSalaryDisplay(value) {
+            if (!value) return '';
+            const num = value.toString().replace(/[^0-9]/g, '');
+            if (!num) return '';
+            return Number(num).toLocaleString('en-IN');
+        }
+
+        function parseSalaryValue(value) {
+            if (!value) return '';
+            return value.toString().replace(/[^0-9]/g, '');
+        }
+
+        // ============================================================
         // STATE
         // ============================================================
         let currentMobile = '';
+        let actionType = '';
         let currentUser = null;
+        let isChecking = false;
         let currentFilter = 'BOTH';
         let selectedZoneId = null;
         let selectedAreaId = null;
         let feedItems = [];
         let currentPage = 'home';
-        let otpTimerInterval = null;
-        let otpExpiryTime = 300;
+        let viewingJobId = null;
+        let isEditingMode = false;
         let currentDetailData = null;
         let currentDetailType = null;
-        let isLoginFlow = false;
 
         // ============================================================
-        // WHATSAPP OTP AUTHENTICATION - FIXED FOR EXISTING USERS
+        // INIT
         // ============================================================
-        function formatMobileForWA(mobile) {
-            return `91${mobile}`;
+        document.addEventListener('DOMContentLoaded', function() {
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            if (aboutTextarea && charCount) {
+                aboutTextarea.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+
+            const salaryInput = document.getElementById('edit-seeker-salary');
+            if (salaryInput) {
+                salaryInput.addEventListener('input', function() {
+                    const rawValue = parseSalaryValue(this.value);
+                    if (rawValue) {
+                        const formatted = formatSalaryDisplay(rawValue);
+                        this.value = formatted;
+                        this.setSelectionRange(this.value.length, this.value.length);
+                    }
+                });
+            }
+
+            populateEditZones();
+
+            setupCounter('pj-title', 'pj-title-counter', 60);
+            setupCounter('pj-skills', 'pj-skills-counter', 200);
+            setupCounter('pj-description', 'pj-desc-counter', 500);
+
+            const pjSalary = document.getElementById('pj-salary');
+            if (pjSalary) {
+                pjSalary.addEventListener('input', function() {
+                    const raw = this.value.replace(/[^0-9]/g, '');
+                    if (raw) {
+                        const formatted = Number(raw).toLocaleString('en-IN');
+                        this.value = formatted;
+                    } else {
+                        this.value = '';
+                    }
+                });
+            }
+
+            const expiryInput = document.getElementById('pj-expiry');
+            if (expiryInput) {
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                expiryInput.value = d.toISOString().split('T')[0];
+                expiryInput.max = new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.min = new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.addEventListener('change', function() {
+                    const selected = new Date(this.value);
+                    const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+                    if (selected > maxDate) {
+                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
+                        this.value = maxDate.toISOString().split('T')[0];
+                    }
+                });
+            }
+
+            const zoneSelect = document.getElementById('pj-zone');
+            zoneSelect.value = '100';
+            updatePostAreas();
+
+            // Auto-clean expired jobs on load
+            autoCleanExpiredJobs();
+
+            // Enter key on mobile
+            document.getElementById('mobile').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    checkMobile();
+                }
+            });
+
+            console.log('✅ JobAd Ready');
+        });
+
+        // ============================================================
+        // AUTO CLEAN EXPIRED JOBS
+        // ============================================================
+        async function autoCleanExpiredJobs() {
+            try {
+                const now = new Date().toISOString();
+                const { error } = await sb
+                    .from('active_jobs')
+                    .delete()
+                    .lt('expiry_date', now);
+                if (error) console.error('Error cleaning expired jobs:', error);
+                else console.log('✅ Cleaned expired jobs');
+            } catch (err) {
+                console.error('Auto-clean error:', err);
+            }
         }
 
-        async function sendWhatsAppOTP() {
+        // ============================================================
+        // POST JOB: COUNTER HELPER
+        // ============================================================
+        function setupCounter(inputId, counterId, maxLen) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
+            if (!input || !counter) return;
+            const update = () => {
+                const len = input.value.length;
+                counter.textContent = `${len}/${maxLen}`;
+                if (len > maxLen) {
+                    input.value = input.value.slice(0, maxLen);
+                    counter.textContent = `${maxLen}/${maxLen}`;
+                }
+            };
+            input.addEventListener('input', update);
+            update();
+        }
+
+        // ============================================================
+        // POST JOB: AREA UPDATE
+        // ============================================================
+        function updatePostAreas() {
+            const zoneSelect = document.getElementById('pj-zone');
+            const areaSelect = document.getElementById('pj-area');
+            const areaHint = document.getElementById('pj-area-hint');
+            const zoneId = parseInt(zoneSelect.value);
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (!zoneId) {
+                areaHint.textContent = '⬆️ Choose zone first';
+                return;
+            }
+            const areas = getAreasByZone(zoneId);
+            if (areas.length === 0) {
+                areaSelect.innerHTML = '<option value="">No areas</option>';
+                areaHint.textContent = '⚠️ No areas for this zone';
+                return;
+            }
+            areas.forEach(area => {
+                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+            });
+            areaHint.textContent = `✅ ${areas.length} areas available`;
+            if (areas.length > 0) areaSelect.value = areas[0].area_id;
+        }
+
+        // ============================================================
+        // CHECK MOBILE - NO WHATSAPP OTP, JUST CHECK USER EXISTS
+        // ============================================================
+        async function checkMobile() {
             const mobile = document.getElementById('mobile').value.trim();
             if (mobile.length !== 10) {
                 showToast('⚠️ Enter 10-digit mobile number');
                 return;
             }
 
-            setStatus('⏳ Checking registration...', 'blue');
-            document.getElementById('send-otp-btn').disabled = true;
+            setStatus('⏳ Checking...', 'blue');
+            document.getElementById('check-btn').disabled = true;
 
             try {
-                console.log(`🔍 Checking if ${mobile} is registered...`);
-                
-                // Check in all_users
-                const { data: allUser, error: allError } = await sb
-                    .from('all_users')
-                    .select('mobile')
+                // Check in archive_users first (as per your screenshot)
+                const { data: archiveUser, error: archiveError } = await sb
+                    .from('archive_users')
+                    .select('*')
                     .eq('mobile', mobile)
                     .single();
                 
-                // Check in active_users
+                // Also check in active_users
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
-                    .select('mobile')
+                    .select('*')
                     .eq('mobile', mobile)
                     .single();
 
-                // User exists in either table
-                if (allUser || activeUser) {
-                    console.log(`✅ ${mobile} is already registered. Showing PIN login.`);
-                    setStatus('✅ Existing user. Enter your PIN.', 'green');
-                    showToast('📱 This number is already registered. Please login with PIN.');
-                    
-                    // Show PIN login UI
-                    document.getElementById('step1').style.display = 'none';
-                    document.getElementById('step2').classList.remove('hidden');
-                    document.getElementById('display-mobile').textContent = mobile;
+                if (archiveUser || activeUser) {
+                    // User exists - Show PIN login
+                    const userData = archiveUser || activeUser;
+                    actionType = 'login';
                     currentMobile = mobile;
-                    isLoginFlow = true;
-                    
-                    // Show PIN login specific UI
+                    document.getElementById('display-mobile').textContent = mobile;
                     document.getElementById('status-badge').textContent = '✅ Existing user - Enter PIN';
                     document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
-                    document.getElementById('verify-btn').textContent = '🔐 Login with PIN';
-                    document.getElementById('verify-btn').className = 'btn-green';
-                    document.getElementById('verify-btn').onclick = function() {
-                        verifyExistingUser(mobile);
-                    };
-                    
-                    // Hide OTP input and show PIN input
-                    document.querySelector('.otp-input-group').style.display = 'none';
-                    document.querySelector('.timer-text').style.display = 'none';
-                    document.getElementById('resend-otp').style.display = 'none';
-                    
-                    // Remove any existing PIN input
-                    const oldPinGroup = document.getElementById('pin-input-group');
-                    if (oldPinGroup) oldPinGroup.remove();
-                    
-                    // Create PIN input
-                    const pinInput = document.createElement('div');
-                    pinInput.id = 'pin-input-group';
-                    pinInput.innerHTML = `
-                        <div style="margin:12px 0;">
-                            <input type="password" id="login-pin" class="pin-login-input" placeholder="Enter 4-digit PIN" maxlength="4" inputmode="numeric">
-                            <div style="margin:4px 0; font-size:12px; color:#64748b;">
-                                Forgot PIN? <span style="color:#2563eb; cursor:pointer; font-weight:600;" onclick="resetPIN()">Reset PIN</span>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('otp-group').parentNode.insertBefore(pinInput, document.getElementById('otp-group'));
-                    
-                    // Focus PIN input
-                    setTimeout(() => document.getElementById('login-pin').focus(), 300);
-                    
-                    // Enter key on PIN input
-                    document.getElementById('login-pin').addEventListener('keydown', function(e) {
-                        if (e.key === 'Enter') {
-                            verifyExistingUser(mobile);
-                        }
-                    });
-                    
-                    document.getElementById('send-otp-btn').disabled = false;
-                    return;
-                }
-
-                // New user - Send OTP via WhatsApp
-                console.log(`📱 ${mobile} is NEW. Sending OTP via WhatsApp.`);
-                setStatus('📱 New user. Sending OTP...', 'blue');
-                isLoginFlow = false;
-                
-                // Reset to OTP flow
-                resetOTPFlow();
-                
-                const otp = Math.floor(100000 + Math.random() * 900000).toString();
-                
-                sessionStorage.setItem('otp_' + mobile, otp);
-                sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
-
-                const waNumber = formatMobileForWA(mobile);
-                const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
-                const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-                
-                window.open(waUrl, '_blank');
-
-                document.getElementById('step1').style.display = 'none';
-                document.getElementById('step2').classList.remove('hidden');
-                document.getElementById('display-mobile').textContent = mobile;
-                currentMobile = mobile;
-                
-                document.getElementById('status-badge').textContent = '📱 New user - Enter OTP';
-                document.getElementById('status-badge').className = 'text-sm font-medium text-blue-600';
-                document.getElementById('verify-btn').textContent = '✅ Verify & Continue';
-                document.getElementById('verify-btn').className = 'btn-green';
-                document.getElementById('verify-btn').onclick = verifyOTP;
-                
-                document.querySelector('.otp-input-group').style.display = 'flex';
-                document.querySelector('.timer-text').style.display = 'block';
-                document.getElementById('resend-otp').style.display = 'block';
-                
-                document.querySelectorAll('.otp-input').forEach(el => el.value = '');
-                document.querySelector('.otp-input').focus();
-                
-                startOTPTimer();
-                setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
-                showToast('💬 OTP sent via WhatsApp!');
-
-            } catch (err) {
-                console.error('❌ Error checking user:', err);
-                setStatus('❌ Error checking user', 'red');
-                showToast('❌ Error: ' + err.message);
-            } finally {
-                document.getElementById('send-otp-btn').disabled = false;
-            }
-        }
-
-        function resetOTPFlow() {
-            // Reset to OTP flow
-            document.querySelector('.otp-input-group').style.display = 'flex';
-            document.querySelector('.timer-text').style.display = 'block';
-            document.getElementById('resend-otp').style.display = 'block';
-            document.querySelectorAll('.otp-input').forEach(el => {
-                el.value = '';
-                el.classList.remove('filled');
-            });
-            
-            const pinGroup = document.getElementById('pin-input-group');
-            if (pinGroup) pinGroup.remove();
-        }
-
-        document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
-            input.addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^0-9]/g, '');
-                if (this.value.length === 1) {
-                    this.classList.add('filled');
-                    if (index < arr.length - 1) {
-                        arr[index + 1].focus();
-                    } else {
-                        const allFilled = Array.from(arr).every(el => el.value.length === 1);
-                        if (allFilled) {
-                            verifyOTP();
-                        }
-                    }
+                    document.getElementById('submitBtn').textContent = '🔐 Login';
+                    document.getElementById('submitBtn').className = 'btn-green';
+                    document.getElementById('step1').style.display = 'none';
+                    document.getElementById('step2').classList.remove('hidden');
+                    document.getElementById('step3').classList.add('hidden');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
+                    setStatus('✅ Existing user. Enter your PIN.', 'green');
+                    showToast('📱 Existing user - Enter PIN');
                 } else {
-                    this.classList.remove('filled');
-                }
-            });
-
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-                    arr[index - 1].focus();
-                    arr[index - 1].classList.remove('filled');
-                }
-                if (e.key === 'Enter') {
-                    const allFilled = Array.from(arr).every(el => el.value.length === 1);
-                    if (allFilled) {
-                        verifyOTP();
-                    } else {
-                        const firstEmpty = Array.from(arr).find(el => el.value.length === 0);
-                        if (firstEmpty) firstEmpty.focus();
-                    }
-                }
-            });
-
-            input.addEventListener('focus', function() {
-                this.select();
-            });
-        });
-
-        function getOTP() {
-            return Array.from(document.querySelectorAll('.otp-input'))
-                .map(el => el.value)
-                .join('');
-        }
-
-        function startOTPTimer() {
-            let timeLeft = otpExpiryTime;
-            const timerEl = document.getElementById('otp-timer');
-            const resendBtn = document.getElementById('resend-otp');
-            
-            if (otpTimerInterval) clearInterval(otpTimerInterval);
-            
-            otpTimerInterval = setInterval(() => {
-                const mins = Math.floor(timeLeft / 60);
-                const secs = timeLeft % 60;
-                timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-                timeLeft--;
-                
-                if (timeLeft < 0) {
-                    clearInterval(otpTimerInterval);
-                    timerEl.textContent = 'Expired';
-                    resendBtn.disabled = false;
-                }
-            }, 1000);
-        }
-
-        async function verifyOTP() {
-            const otp = getOTP();
-            if (otp.length !== 6) {
-                showToast('⚠️ Enter complete 6-digit OTP');
-                return;
-            }
-
-            const storedOtp = sessionStorage.getItem('otp_' + currentMobile);
-            const storedExpiry = sessionStorage.getItem('otp_expiry_' + currentMobile);
-
-            if (!storedOtp) {
-                showToast('❌ OTP expired. Please request again.');
-                return;
-            }
-
-            if (Date.now() > parseInt(storedExpiry)) {
-                showToast('❌ OTP expired. Please request again.');
-                sessionStorage.removeItem('otp_' + currentMobile);
-                document.getElementById('resend-otp').disabled = false;
-                return;
-            }
-
-            if (otp !== storedOtp) {
-                showToast('❌ Invalid OTP. Please try again.');
-                document.querySelectorAll('.otp-input').forEach(el => {
-                    el.value = '';
-                    el.classList.remove('filled');
-                });
-                document.querySelector('.otp-input').focus();
-                return;
-            }
-
-            setStatus('✅ Verified!', 'green');
-            showToast('✅ Phone verified successfully!');
-            
-            sessionStorage.removeItem('otp_' + currentMobile);
-            sessionStorage.removeItem('otp_expiry_' + currentMobile);
-            
-            const { data: userData, error } = await sb
-                .from('all_users')
-                .select('*')
-                .eq('mobile', currentMobile)
-                .single();
-
-            if (userData) {
-                await completeLogin(userData);
-            } else {
-                await completeRegistration();
-            }
-        }
-
-        async function resendOTP() {
-            const mobile = currentMobile;
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            sessionStorage.setItem('otp_' + mobile, otp);
-            sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
-            
-            const waNumber = formatMobileForWA(mobile);
-            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
-            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
-            
-            document.getElementById('resend-otp').disabled = true;
-            startOTPTimer();
-            showToast('🔄 OTP resent via WhatsApp!');
-        }
-
-        async function verifyExistingUser(mobile) {
-            const pin = document.getElementById('login-pin').value.trim();
-            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                showToast('⚠️ Please enter a valid 4-digit PIN');
-                return;
-            }
-
-            setStatus('⏳ Verifying...', 'blue');
-            document.getElementById('verify-btn').disabled = true;
-
-            try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: mobile, pin: pin })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    await fetchUserData(mobile);
-                    showToast('✅ Welcome back!');
-                } else {
-                    showToast('❌ Invalid PIN. Please try again.');
-                    document.getElementById('login-pin').value = '';
-                    document.getElementById('login-pin').focus();
-                }
-            } catch (err) {
-                showToast('❌ Error: ' + err.message);
-            } finally {
-                document.getElementById('verify-btn').disabled = false;
-            }
-        }
-
-        // ============================================================
-        // PIN RESET
-        // ============================================================
-        function resetPIN() {
-            if (confirm('Forgot your PIN? We\'ll send an OTP to reset it.')) {
-                const mobile = currentMobile;
-                const otp = Math.floor(100000 + Math.random() * 900000).toString();
-                
-                sessionStorage.setItem('reset_otp_' + mobile, otp);
-                sessionStorage.setItem('reset_otp_expiry_' + mobile, Date.now() + 300000);
-                
-                const waNumber = formatMobileForWA(mobile);
-                const message = `Your JobAd PIN reset code is: *${otp}*\n\nEnter this code to reset your PIN.`;
-                window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
-                
-                showToast('📱 PIN reset OTP sent via WhatsApp!');
-                
-                // Show OTP input for reset
-                const pinGroup = document.getElementById('pin-input-group');
-                if (pinGroup) {
-                    pinGroup.innerHTML = `
-                        <div style="margin:12px 0;">
-                            <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">Enter OTP sent via WhatsApp</p>
-                            <div style="display:flex; gap:8px; justify-content:center; margin-bottom:8px;">
-                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
-                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
-                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
-                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
-                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
-                                <input type="text" maxlength="1" class="reset-otp-input" style="width:44px;height:50px;text-align:center;font-size:22px;font-weight:700;border:2px solid #e2e8f0;border-radius:10px;" inputmode="numeric">
-                            </div>
-                            <button onclick="verifyResetOTP()" class="btn-green" style="padding:10px; font-size:14px;">Verify & Reset PIN</button>
-                        </div>
-                    `;
-                    
-                    // Auto-focus and move between reset OTP inputs
-                    document.querySelectorAll('.reset-otp-input').forEach((input, index, arr) => {
-                        input.addEventListener('input', function(e) {
-                            this.value = this.value.replace(/[^0-9]/g, '');
-                            if (this.value.length === 1 && index < arr.length - 1) {
-                                arr[index + 1].focus();
-                            }
-                        });
-                        input.addEventListener('keydown', function(e) {
-                            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-                                arr[index - 1].focus();
-                            }
-                            if (e.key === 'Enter') {
-                                verifyResetOTP();
-                            }
-                        });
-                    });
-                    document.querySelector('.reset-otp-input').focus();
-                }
-            }
-        }
-
-        async function verifyResetOTP() {
-            const otp = Array.from(document.querySelectorAll('.reset-otp-input'))
-                .map(el => el.value)
-                .join('');
-            
-            if (otp.length !== 6) {
-                showToast('⚠️ Enter complete 6-digit OTP');
-                return;
-            }
-
-            const mobile = currentMobile;
-            const storedOtp = sessionStorage.getItem('reset_otp_' + mobile);
-            const storedExpiry = sessionStorage.getItem('reset_otp_expiry_' + mobile);
-
-            if (!storedOtp || Date.now() > parseInt(storedExpiry)) {
-                showToast('❌ OTP expired. Please try again.');
-                resetPIN();
-                return;
-            }
-
-            if (otp !== storedOtp) {
-                showToast('❌ Invalid OTP. Please try again.');
-                document.querySelectorAll('.reset-otp-input').forEach(el => el.value = '');
-                document.querySelector('.reset-otp-input').focus();
-                return;
-            }
-
-            // OTP verified - Show new PIN setup
-            sessionStorage.removeItem('reset_otp_' + mobile);
-            sessionStorage.removeItem('reset_otp_expiry_' + mobile);
-            
-            showToast('✅ OTP verified! Set your new PIN.');
-            
-            const pinGroup = document.getElementById('pin-input-group');
-            if (pinGroup) {
-                pinGroup.innerHTML = `
-                    <div style="margin:12px 0;">
-                        <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">Set your new 4-digit PIN</p>
-                        <input type="password" id="new-pin-reset" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px;font-size:18px;text-align:center;letter-spacing:8px;margin-bottom:8px;">
-                        <input type="password" id="confirm-pin-reset" placeholder="Confirm PIN" maxlength="4" inputmode="numeric" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:10px;font-size:18px;text-align:center;letter-spacing:8px;margin-bottom:8px;">
-                        <button onclick="saveResetPIN()" class="btn-green" style="padding:10px; font-size:14px;">💾 Save New PIN</button>
-                    </div>
-                `;
-                document.getElementById('new-pin-reset').focus();
-            }
-        }
-
-        async function saveResetPIN() {
-            const newPin = document.getElementById('new-pin-reset').value.trim();
-            const confirmPin = document.getElementById('confirm-pin-reset').value.trim();
-
-            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
-                showToast('⚠️ Enter a valid 4-digit PIN');
-                return;
-            }
-
-            if (newPin !== confirmPin) {
-                showToast('⚠️ PINs do not match');
-                return;
-            }
-
-            try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: currentMobile, new_pin: newPin })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    showToast('✅ PIN reset successfully! Please login with your new PIN.');
-                    // Reset to login screen
-                    document.getElementById('step1').style.display = 'block';
+                    // New user - Show PIN registration
+                    actionType = 'register';
+                    currentMobile = mobile;
+                    document.getElementById('reg-display-mobile').textContent = mobile;
+                    document.getElementById('step1').style.display = 'none';
                     document.getElementById('step2').classList.add('hidden');
-                    document.getElementById('mobile').value = currentMobile;
-                    document.getElementById('send-otp-btn').disabled = false;
-                    setStatus('✅ PIN reset! Please login again.', 'green');
-                    // Remove PIN group
-                    const pinGroup = document.getElementById('pin-input-group');
-                    if (pinGroup) pinGroup.remove();
-                } else {
-                    showToast('❌ Failed to reset PIN: ' + data.error);
+                    document.getElementById('step3').classList.remove('hidden');
+                    document.getElementById('reg-pin').value = '';
+                    document.getElementById('reg-pin-confirm').value = '';
+                    document.getElementById('reg-pin').focus();
+                    setStatus('📱 New user - Set your PIN', 'blue');
+                    showToast('📱 New user - Create your account');
                 }
             } catch (err) {
-                showToast('❌ Error: ' + err.message);
+                console.error('Error checking user:', err);
+                // If error, assume new user
+                actionType = 'register';
+                currentMobile = mobile;
+                document.getElementById('reg-display-mobile').textContent = mobile;
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+                document.getElementById('reg-pin').value = '';
+                document.getElementById('reg-pin-confirm').value = '';
+                document.getElementById('reg-pin').focus();
+                setStatus('📱 Set your PIN', 'blue');
+            } finally {
+                document.getElementById('check-btn').disabled = false;
             }
         }
 
         // ============================================================
-        // REGISTRATION & LOGIN
+        // REGISTER USER
         // ============================================================
-        async function completeRegistration() {
-            const pin = prompt('Set your 4-digit PIN for login:');
+        async function registerUser() {
+            const pin = document.getElementById('reg-pin').value.trim();
+            const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
+
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                showToast('⚠️ Please enter a valid 4-digit PIN');
+                showToast('⚠️ Enter a valid 4-digit PIN');
+                document.getElementById('reg-pin').focus();
                 return;
             }
+
+            if (pin !== confirmPin) {
+                showToast('⚠️ PINs do not match');
+                document.getElementById('reg-pin-confirm').value = '';
+                document.getElementById('reg-pin-confirm').focus();
+                return;
+            }
+
+            document.getElementById('register-btn').disabled = true;
+            document.getElementById('register-btn').textContent = '⏳ Creating...';
 
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
@@ -2089,20 +1766,63 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    await fetchUserData(currentMobile);
                     showToast('✅ Registration successful!');
+                    // Also add to archive_users
+                    await sb.from('archive_users').insert([{ mobile: currentMobile, pin_hash: pin }]);
+                    await fetchUserData(currentMobile);
                 } else {
                     showToast('❌ Registration failed: ' + data.error);
+                    document.getElementById('register-btn').disabled = false;
+                    document.getElementById('register-btn').textContent = '✅ Create Account';
                 }
             } catch (err) {
                 showToast('❌ Error: ' + err.message);
+                document.getElementById('register-btn').disabled = false;
+                document.getElementById('register-btn').textContent = '✅ Create Account';
             }
         }
 
-        async function completeLogin(userData) {
-            // Already handled via verifyExistingUser
-        }
+        // ============================================================
+        // SUBMIT PIN
+        // ============================================================
+        window.submitPin = async function() {
+            const pin = document.getElementById('pin').value.trim();
+            if (!pin || pin.length !== 4) {
+                showMessage('Enter 4-digit PIN', 'red');
+                document.getElementById('pin').focus();
+                return;
+            }
 
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '⏳ Verifying...';
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    await fetchUserData(currentMobile);
+                    showToast('✅ Welcome back!');
+                } else {
+                    showToast('❌ Invalid PIN. Please try again.');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            } finally {
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = '🔐 Login';
+            }
+        };
+
+        // ============================================================
+        // FETCH USER DATA
+        // ============================================================
         async function fetchUserData(mobile) {
             const { data, error } = await sb
                 .from('active_users')
@@ -2127,106 +1847,148 @@
             }
 
             document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('home-page').classList.remove('hidden-page');
-            updateAvatar();
+            updateGenderIcon(currentUser);
             setTimeout(autoDetectLocation, 500);
             await fetchFeedData();
         }
 
         // ============================================================
-        // AVATAR & DROPDOWN
+        // PUBLISH JOB
         // ============================================================
-        function updateAvatar() {
-            if (!currentUser) return;
-            const gender = currentUser.gender || 0;
-            let symbol = '👤';
-            let cls = '';
-            if (gender === 1) { symbol = '♀'; cls = 'female'; }
-            else if (gender === 2) { symbol = '♂'; cls = 'male'; }
-            else { cls = 'other'; }
-            
-            document.querySelectorAll('.avatar-btn').forEach(btn => {
-                btn.className = `avatar-btn ${cls}`;
-                btn.querySelector('span').textContent = symbol;
-            });
-        }
-
-        function toggleDropdown() {
-            const dropdowns = document.querySelectorAll('.profile-dropdown');
-            dropdowns.forEach(d => d.classList.toggle('show'));
-        }
-
-        function closeDropdown() {
-            document.querySelectorAll('.profile-dropdown').forEach(d => d.classList.remove('show'));
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.header-right')) {
-                closeDropdown();
-            }
-        });
-
-        // ============================================================
-        // CHANGE PIN
-        // ============================================================
-        function openChangePin() {
-            document.getElementById('change-pin-modal').classList.add('show');
-            document.getElementById('new-pin').value = '';
-            document.getElementById('confirm-pin').value = '';
-            document.getElementById('new-pin').focus();
-        }
-
-        function closeChangePin() {
-            document.getElementById('change-pin-modal').classList.remove('show');
-        }
-
-        async function saveNewPin() {
-            const newPin = document.getElementById('new-pin').value.trim();
-            const confirmPin = document.getElementById('confirm-pin').value.trim();
-
-            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
-                showToast('⚠️ Enter a valid 4-digit PIN');
+        async function publishJob() {
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
                 return;
             }
 
-            if (newPin !== confirmPin) {
-                showToast('⚠️ PINs do not match');
+            const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
+            const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
+
+            const company = document.getElementById('pj-company').value.trim();
+            const jobTitle = document.getElementById('pj-title').value.trim();
+            const expRaw = document.getElementById('pj-experience').value.trim();
+            const salaryRaw = document.getElementById('pj-salary').value.replace(/,/g, '');
+            const gender = parseInt(document.getElementById('pj-gender').value);
+            const zone = document.getElementById('pj-zone').value;
+            const area = document.getElementById('pj-area').value;
+            const skills = document.getElementById('pj-skills').value.trim();
+            const description = document.getElementById('pj-description').value.trim();
+            const expiryDate = document.getElementById('pj-expiry').value;
+
+            if (!company) { showToast('⚠️ Company name is required'); return; }
+            if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
+            if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
+            if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('⚠️ Enter valid min experience'); return; }
+            if (!salaryRaw || isNaN(parseInt(salaryRaw)) || parseInt(salaryRaw) <= 0) { showToast('⚠️ Enter valid salary'); return; }
+            if (!zone) { showToast('⚠️ Please select Job Location Zone'); return; }
+            if (!area) { showToast('⚠️ Please select Specific Area'); return; }
+            if (!skills) { showToast('⚠️ Skills are required'); return; }
+            if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
+            if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
+            if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
+
+            const selectedDate = new Date(expiryDate);
+            const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+            if (selectedDate > maxDate) {
+                showToast('⚠️ Expiry date cannot exceed 45 days from today');
                 return;
             }
+
+            const jobData = {
+                mobile: currentUser.mobile,
+                job_title: jobTitle,
+                company_name: company,
+                min_experience_years: parseFloat(expRaw),
+                max_salary_monthly: parseInt(salaryRaw),
+                preferred_gender: gender,
+                skills_comma_separated: skills,
+                job_description: description || '',
+                zone_id: parseInt(zone),
+                area_id: parseInt(area),
+                expiry_date: new Date(expiryDate).toISOString()
+            };
 
             try {
-                const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mobile: currentUser.mobile, new_pin: newPin })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    showToast('✅ PIN changed successfully!');
-                    closeChangePin();
+                if (isEditing && editJobId) {
+                    const { error } = await sb
+                        .from('active_jobs')
+                        .update(jobData)
+                        .eq('job_id', parseInt(editJobId));
+                    if (error) throw error;
+                    showToast('✅ Job updated successfully!');
                 } else {
-                    showToast('❌ Failed to change PIN: ' + data.error);
+                    jobData.views = 0;
+                    jobData.calls = 0;
+                    jobData.whatsapp = 0;
+                    jobData.posted_date = new Date().toISOString();
+                    const { error } = await sb.from('active_jobs').insert([jobData]);
+                    if (error) throw error;
+                    showToast('✅ Job published successfully!');
                 }
+
+                document.getElementById('pj-publish-btn').dataset.editing = 'false';
+                document.getElementById('pj-publish-btn').dataset.jobid = '';
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+                document.getElementById('pj-title').value = '';
+                document.getElementById('pj-skills').value = '';
+                document.getElementById('pj-description').value = '';
+                document.getElementById('pj-salary').value = '';
+                document.getElementById('pj-experience').value = '3.5';
+                document.getElementById('pj-company').value = currentUser.company_name || '';
+                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                    el.dispatchEvent(new Event('input'));
+                });
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
+                document.getElementById('pj-gender').value = '0';
+                document.getElementById('pj-zone').value = '100';
+                updatePostAreas();
+
+                fetchFeedData();
+                goToProfile();
+                loadMyJobs();
             } catch (err) {
-                showToast('❌ Error: ' + err.message);
+                showToast('❌ Failed: ' + err.message);
             }
         }
 
         // ============================================================
-        // SALARY FORMATTER
+        // LOAD MY JOBS
         // ============================================================
-        function formatSalaryDisplay(value) {
-            if (!value) return '';
-            const num = value.toString().replace(/[^0-9]/g, '');
-            if (!num) return '';
-            return Number(num).toLocaleString('en-IN');
-        }
+        async function loadMyJobs() {
+            if (!currentUser) return;
+            const container = document.getElementById('my-jobs-list');
+            if (!container) return;
+            try {
+                await autoCleanExpiredJobs();
 
-        function parseSalaryValue(value) {
-            if (!value) return '';
-            return value.toString().replace(/[^0-9]/g, '');
+                const { data, error } = await sb
+                    .from('active_jobs')
+                    .select('*')
+                    .eq('mobile', currentUser.mobile)
+                    .order('posted_date', { ascending: false });
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:11px; color:#94a3b8;">No jobs posted yet.</p>';
+                    return;
+                }
+                container.innerHTML = data.map(job => {
+                    const isExpired = new Date(job.expiry_date) < new Date();
+                    return `
+                    <div class="my-job-item" onclick="viewJob(${job.job_id})">
+                        <div class="job-title">${job.job_title || 'Untitled'} ${isExpired ? '<span class="expired">Expired</span>' : ''}</div>
+                        <div class="job-meta">${job.company_name} · ${job.min_experience_years || 0} yrs · ₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}</div>
+                        <div class="job-meta" style="font-size:9px; color:#94a3b8;">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div>
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error('Error loading my jobs:', err);
+                container.innerHTML = '<p style="font-size:11px; color:#ef4444;">Error loading jobs</p>';
+            }
         }
 
         // ============================================================
@@ -2250,39 +2012,24 @@
                 showToast('⚠️ Please login first');
                 return;
             }
-
-            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
-                document.getElementById('recruiter-warning').style.display = 'flex';
-                document.getElementById('pj-company').value = '';
-                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = true);
-                document.getElementById('pj-publish-btn').disabled = true;
-                document.getElementById('pj-publish-btn').textContent = '⚠️ Complete Recruiter Profile First';
-            } else {
-                document.getElementById('recruiter-warning').style.display = 'none';
-                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = false);
-                document.getElementById('pj-publish-btn').disabled = false;
-                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
-                document.getElementById('pj-company').value = currentUser.company_name;
-            }
-
+            document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
             document.getElementById('pj-publish-btn').dataset.editing = 'false';
             document.getElementById('pj-publish-btn').dataset.jobid = '';
-            if (!document.getElementById('recruiter-warning').style.display || document.getElementById('recruiter-warning').style.display === 'none') {
-                document.getElementById('pj-title').value = '';
-                document.getElementById('pj-skills').value = '';
-                document.getElementById('pj-description').value = '';
-                document.getElementById('pj-salary').value = '';
-                document.getElementById('pj-experience').value = '3.5';
-                document.getElementById('pj-gender').value = '0';
-                document.getElementById('pj-zone').value = '100';
-                updatePostAreas();
-                const d = new Date();
-                d.setDate(d.getDate() + 30);
-                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
-                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
-                    el.dispatchEvent(new Event('input'));
-                });
-            }
+            document.getElementById('pj-title').value = '';
+            document.getElementById('pj-skills').value = '';
+            document.getElementById('pj-description').value = '';
+            document.getElementById('pj-salary').value = '';
+            document.getElementById('pj-experience').value = '3.5';
+            document.getElementById('pj-company').value = currentUser.company_name || '';
+            document.getElementById('pj-gender').value = '0';
+            document.getElementById('pj-zone').value = '100';
+            updatePostAreas();
+            const d = new Date();
+            d.setDate(d.getDate() + 30);
+            document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
+            document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                el.dispatchEvent(new Event('input'));
+            });
 
             currentPage = 'postjob';
             document.getElementById('home-page').classList.add('hidden-page');
@@ -2292,6 +2039,10 @@
             document.getElementById('detail-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
+            if (currentUser && currentUser.company_name) {
+                document.getElementById('pj-company').value = currentUser.company_name;
+            }
+            updatePostAreas();
         }
 
         function goToProfile() {
@@ -2347,6 +2098,37 @@
                 }
             } else if (confirm('Cancel posting this job?')) {
                 goHome();
+            }
+        }
+
+        // ============================================================
+        // GENDER ICON
+        // ============================================================
+        function updateGenderIcon(user) {
+            const iconContainer = document.getElementById('gender-icon');
+            const symbol = document.getElementById('gender-symbol');
+            const iconContainerProfile = document.getElementById('gender-icon-profile');
+            const symbolProfile = document.getElementById('gender-symbol-profile');
+            if (!user) {
+                if (iconContainer) iconContainer.style.display = 'none';
+                if (iconContainerProfile) iconContainerProfile.style.display = 'none';
+                return;
+            }
+            const gender = user.gender;
+            let icon = '👤';
+            let cls = 'gender-icon other';
+            if (gender === 0) { icon = '👤'; cls = 'gender-icon other'; }
+            else if (gender === 1) { icon = '♀'; cls = 'gender-icon female'; }
+            else if (gender === 2) { icon = '♂'; cls = 'gender-icon male'; }
+            if (iconContainer) {
+                iconContainer.style.display = 'flex';
+                iconContainer.className = cls;
+                if (symbol) symbol.textContent = icon;
+            }
+            if (iconContainerProfile) {
+                iconContainerProfile.style.display = 'flex';
+                iconContainerProfile.className = cls;
+                if (symbolProfile) symbolProfile.textContent = icon;
             }
         }
 
@@ -2484,374 +2266,8 @@
         }
 
         // ============================================================
-        // LOAD MY JOBS
+        // FETCH DATA FROM SUPABASE
         // ============================================================
-        async function loadMyJobs() {
-            if (!currentUser) return;
-            const container = document.getElementById('my-jobs-list');
-            if (!container) return;
-            try {
-                await autoCleanExpiredJobs();
-
-                const { data, error } = await sb
-                    .from('active_jobs')
-                    .select('*')
-                    .eq('mobile', currentUser.mobile)
-                    .order('posted_date', { ascending: false });
-                if (error) throw error;
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="font-size:11px; color:#94a3b8;">No jobs posted yet.</p>';
-                    return;
-                }
-                container.innerHTML = data.map(job => {
-                    const isExpired = new Date(job.expiry_date) < new Date();
-                    return `
-                    <div class="my-job-item" onclick="viewJob(${job.job_id})">
-                        <div class="job-title">${job.job_title || 'Untitled'} ${isExpired ? '<span class="expired">Expired</span>' : ''}</div>
-                        <div class="job-meta">${job.company_name} · ${job.min_experience_years || 0} yrs · ₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}</div>
-                        <div class="job-meta" style="font-size:9px; color:#94a3b8;">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div>
-                    </div>
-                `}).join('');
-            } catch (err) {
-                console.error('Error loading my jobs:', err);
-                container.innerHTML = '<p style="font-size:11px; color:#ef4444;">Error loading jobs</p>';
-            }
-        }
-
-        // ============================================================
-        // POST JOB FUNCTIONS
-        // ============================================================
-        function setupCounter(inputId, counterId, maxLen) {
-            const input = document.getElementById(inputId);
-            const counter = document.getElementById(counterId);
-            if (!input || !counter) return;
-            const update = () => {
-                const len = input.value.length;
-                counter.textContent = `${len}/${maxLen}`;
-                if (len > maxLen) {
-                    input.value = input.value.slice(0, maxLen);
-                    counter.textContent = `${maxLen}/${maxLen}`;
-                }
-            };
-            input.addEventListener('input', update);
-            update();
-        }
-
-        function updatePostAreas() {
-            const zoneSelect = document.getElementById('pj-zone');
-            const areaSelect = document.getElementById('pj-area');
-            const areaHint = document.getElementById('pj-area-hint');
-            const zoneId = parseInt(zoneSelect.value);
-            areaSelect.innerHTML = '<option value="">Select zone first</option>';
-            if (!zoneId) {
-                areaHint.textContent = '⬆️ Choose zone first';
-                return;
-            }
-            const areas = getAreasByZone(zoneId);
-            if (areas.length === 0) {
-                areaSelect.innerHTML = '<option value="">No areas</option>';
-                areaHint.textContent = '⚠️ No areas for this zone';
-                return;
-            }
-            areas.forEach(area => {
-                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-            });
-            areaHint.textContent = `✅ ${areas.length} areas available`;
-            if (areas.length > 0) areaSelect.value = areas[0].area_id;
-        }
-
-        async function publishJob() {
-            if (!currentUser) {
-                showToast('⚠️ Please login first');
-                return;
-            }
-
-            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
-                showToast('⚠️ Please set your company name in profile first');
-                goToProfile();
-                return;
-            }
-
-            const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
-            const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
-
-            const company = document.getElementById('pj-company').value.trim();
-            const jobTitle = document.getElementById('pj-title').value.trim();
-            const expRaw = document.getElementById('pj-experience').value.trim();
-            const salaryRaw = document.getElementById('pj-salary').value.replace(/,/g, '');
-            const gender = parseInt(document.getElementById('pj-gender').value);
-            const zone = document.getElementById('pj-zone').value;
-            const area = document.getElementById('pj-area').value;
-            const skills = document.getElementById('pj-skills').value.trim();
-            const description = document.getElementById('pj-description').value.trim();
-            const expiryDate = document.getElementById('pj-expiry').value;
-
-            if (!company) { showToast('⚠️ Company name is required'); return; }
-            if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
-            if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
-            if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('⚠️ Enter valid min experience'); return; }
-            if (!salaryRaw || isNaN(parseInt(salaryRaw)) || parseInt(salaryRaw) <= 0) { showToast('⚠️ Enter valid salary'); return; }
-            if (!zone) { showToast('⚠️ Please select Job Location Zone'); return; }
-            if (!area) { showToast('⚠️ Please select Specific Area'); return; }
-            if (!skills) { showToast('⚠️ Skills are required'); return; }
-            if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
-            if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
-            if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
-
-            const selectedDate = new Date(expiryDate);
-            const maxDate = new Date(Date.now() + 45*24*60*60*1000);
-            if (selectedDate > maxDate) {
-                showToast('⚠️ Expiry date cannot exceed 45 days from today');
-                return;
-            }
-
-            const jobData = {
-                mobile: currentUser.mobile,
-                job_title: jobTitle,
-                company_name: company,
-                min_experience_years: parseFloat(expRaw),
-                max_salary_monthly: parseInt(salaryRaw),
-                preferred_gender: gender,
-                skills_comma_separated: skills,
-                job_description: description || '',
-                zone_id: parseInt(zone),
-                area_id: parseInt(area),
-                expiry_date: new Date(expiryDate).toISOString()
-            };
-
-            try {
-                if (isEditing && editJobId) {
-                    const { error } = await sb
-                        .from('active_jobs')
-                        .update(jobData)
-                        .eq('job_id', parseInt(editJobId));
-                    if (error) throw error;
-                    showToast('✅ Job updated successfully!');
-                } else {
-                    jobData.views = 0;
-                    jobData.calls = 0;
-                    jobData.whatsapp = 0;
-                    jobData.posted_date = new Date().toISOString();
-                    const { error } = await sb.from('active_jobs').insert([jobData]);
-                    if (error) throw error;
-                    showToast('✅ Job published successfully!');
-                }
-
-                document.getElementById('pj-publish-btn').dataset.editing = 'false';
-                document.getElementById('pj-publish-btn').dataset.jobid = '';
-                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
-                document.getElementById('pj-title').value = '';
-                document.getElementById('pj-skills').value = '';
-                document.getElementById('pj-description').value = '';
-                document.getElementById('pj-salary').value = '';
-                document.getElementById('pj-experience').value = '3.5';
-                document.getElementById('pj-company').value = currentUser.company_name || '';
-                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
-                    el.dispatchEvent(new Event('input'));
-                });
-                const d = new Date();
-                d.setDate(d.getDate() + 30);
-                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
-                document.getElementById('pj-gender').value = '0';
-                document.getElementById('pj-zone').value = '100';
-                updatePostAreas();
-
-                fetchFeedData();
-                goToProfile();
-                loadMyJobs();
-            } catch (err) {
-                showToast('❌ Failed: ' + err.message);
-            }
-        }
-
-        // ============================================================
-        // VIEW JOB
-        // ============================================================
-        async function viewJob(jobId) {
-            try {
-                const { data, error } = await sb
-                    .from('active_jobs')
-                    .select('*')
-                    .eq('job_id', jobId)
-                    .single();
-                if (error) throw error;
-                openDetail(data, 'JOB');
-            } catch (err) {
-                showToast('❌ Error loading job: ' + err.message);
-            }
-        }
-
-        // ============================================================
-        // DETAIL VIEW
-        // ============================================================
-        function openDetailFromFeed(item) {
-            if (item._raw) {
-                openDetail(item._raw, item.type);
-            } else {
-                openDetail(item, item.type);
-            }
-        }
-
-        function openDetail(data, type) {
-            currentDetailData = data;
-            currentDetailType = type;
-            document.getElementById('detail-page').classList.remove('hidden-page');
-            document.getElementById('home-page').classList.add('hidden-page');
-            document.getElementById('profile-page').classList.add('hidden-page');
-            document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('edit-seeker-page').classList.add('hidden-page');
-
-            const isJob = type === 'JOB';
-            const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
-
-            document.getElementById('detail-title').textContent = data.job_title || data.title || 'Untitled';
-            document.getElementById('detail-company').textContent = data.company_name || data.company || 'Unknown';
-            document.getElementById('detail-type-badge').innerHTML = `<span class="type-badge ${isJob ? 'job' : 'seeker'}">${isJob ? 'JOB' : 'SEEKER'}</span>`;
-
-            document.getElementById('detail-exp').textContent = (data.min_experience_years || data.exp || 0) + ' yrs';
-            document.getElementById('detail-salary').textContent = data.max_salary_monthly ? '₹' + Number(data.max_salary_monthly).toLocaleString('en-IN') : (data.salary || 'Not specified');
-
-            if (isJob) {
-                document.getElementById('detail-gender-field').style.display = 'block';
-                document.getElementById('detail-gender').textContent = genderMap[data.preferred_gender] || 'No Preference';
-            } else {
-                document.getElementById('detail-gender-field').style.display = 'block';
-                document.getElementById('detail-gender').textContent = genderMap[data.gender] || 'Not Specified';
-            }
-
-            const zoneId = data.zone_id || 0;
-            const areaId = data.area_id || 0;
-            document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
-            document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
-
-            document.getElementById('detail-skills').textContent = data.skills_comma_separated || data.skills || '—';
-
-            if (isJob) {
-                document.getElementById('detail-expiry-field').style.display = 'block';
-                document.getElementById('detail-expiry').textContent = data.expiry_date ? new Date(data.expiry_date).toLocaleDateString('en-IN') : '—';
-                document.getElementById('detail-notice-field').style.display = 'none';
-            } else {
-                document.getElementById('detail-expiry-field').style.display = 'none';
-                document.getElementById('detail-notice-field').style.display = 'block';
-                document.getElementById('detail-notice').textContent = (data.notice_period_days || '—') + ' days';
-            }
-
-            document.getElementById('detail-desc').textContent = data.job_description || data.professional_summary || data.desc || '—';
-
-            const postedDate = data.posted_date || data.created_at || data.last_active;
-            document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
-
-            const contact = data.mobile || data.contact || 'N/A';
-            document.getElementById('detail-contact').textContent = contact;
-            document.getElementById('detail-contact').dataset.contact = contact;
-
-            document.getElementById('detail-views').textContent = data.views || 0;
-            document.getElementById('detail-calls').textContent = data.calls || 0;
-            document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
-
-            const callBtn = document.getElementById('detail-call-btn');
-            const waBtn = document.getElementById('detail-wa-btn');
-            const jobWarning = document.getElementById('detail-job-warning');
-            const seekerWarning = document.getElementById('detail-seeker-warning');
-
-            jobWarning.style.display = 'none';
-            seekerWarning.style.display = 'none';
-
-            if (isJob) {
-                if (!currentUser.company_name || currentUser.company_name.trim() === '') {
-                    jobWarning.style.display = 'flex';
-                    callBtn.disabled = true;
-                    waBtn.disabled = true;
-                    callBtn.className = 'btn-call btn-disabled';
-                    waBtn.className = 'btn-whatsapp btn-disabled';
-                } else {
-                    callBtn.disabled = false;
-                    waBtn.disabled = false;
-                    callBtn.className = 'btn-call';
-                    waBtn.className = 'btn-whatsapp';
-                }
-            } else {
-                if (!currentUser.full_name || currentUser.full_name.trim() === '') {
-                    seekerWarning.style.display = 'flex';
-                    callBtn.disabled = true;
-                    waBtn.disabled = true;
-                    callBtn.className = 'btn-call btn-disabled';
-                    waBtn.className = 'btn-whatsapp btn-disabled';
-                } else {
-                    callBtn.disabled = false;
-                    waBtn.disabled = false;
-                    callBtn.className = 'btn-call';
-                    waBtn.className = 'btn-whatsapp';
-                }
-            }
-        }
-
-        function closeDetail() {
-            currentDetailData = null;
-            currentDetailType = null;
-            document.getElementById('detail-page').classList.add('hidden-page');
-            document.getElementById('home-page').classList.remove('hidden-page');
-            goHome();
-        }
-
-        function makeCall() {
-            const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A' || contact === '') {
-                showToast('⚠️ No contact number available');
-                return;
-            }
-            const isJob = currentDetailType === 'JOB';
-            if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
-                showToast('⚠️ Please set your company name to contact job seekers');
-                goToProfile();
-                return;
-            }
-            if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
-                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
-                goToEditSeeker();
-                return;
-            }
-            window.location.href = `tel:${contact}`;
-        }
-
-        function sendWhatsApp() {
-            const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A' || contact === '') {
-                showToast('⚠️ No contact number available');
-                return;
-            }
-            const isJob = currentDetailType === 'JOB';
-            if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
-                showToast('⚠️ Please set your company name to contact job seekers');
-                goToProfile();
-                return;
-            }
-            if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
-                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
-                goToEditSeeker();
-                return;
-            }
-            const title = document.getElementById('detail-title').textContent;
-            const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
-            window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
-        }
-
-        // ============================================================
-        // FETCH FEED DATA
-        // ============================================================
-        async function autoCleanExpiredJobs() {
-            try {
-                const now = new Date().toISOString();
-                const { error } = await sb
-                    .from('active_jobs')
-                    .delete()
-                    .lt('expiry_date', now);
-                if (error) console.error('Error cleaning expired jobs:', error);
-            } catch (err) {
-                console.error('Auto-clean error:', err);
-            }
-        }
-
         async function fetchFeedData() {
             console.log('🔄 Fetching feed data from Supabase...');
             try {
@@ -2898,6 +2314,15 @@
         // ============================================================
         // UI HELPERS
         // ============================================================
+        function showMessage(msg, type) {
+            const el = document.getElementById('msg');
+            el.textContent = msg;
+            el.className = 'msg msg-' + type;
+            el.classList.remove('hidden');
+        }
+
+        function hideMessage() { document.getElementById('msg').classList.add('hidden'); }
+
         function showToast(msg) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -2906,115 +2331,47 @@
             setTimeout(() => toast.remove(), 2000);
         }
 
-        function setStatus(text, type) {
-            const el = document.getElementById('mobile-status');
-            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
-            el.textContent = text;
-            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
+        function togglePin() {
+            const input = document.getElementById('pin');
+            input.type = input.type === 'password' ? 'text' : 'password';
         }
 
         function resetForm() {
             document.getElementById('step1').style.display = 'block';
             document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
             document.getElementById('home-page').classList.add('hidden-page');
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('detail-page').classList.add('hidden-page');
             document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('gender-icon').style.display = 'none';
+            document.getElementById('gender-icon-profile').style.display = 'none';
             document.getElementById('mobile').value = '';
-            document.getElementById('send-otp-btn').disabled = false;
+            document.getElementById('pin').value = '';
+            document.getElementById('reg-pin').value = '';
+            document.getElementById('reg-pin-confirm').value = '';
+            document.getElementById('msg').classList.add('hidden');
             document.getElementById('mobile-status').textContent = '';
-            document.querySelectorAll('.otp-input').forEach(el => {
-                el.value = '';
-                el.classList.remove('filled');
-            });
-            if (otpTimerInterval) clearInterval(otpTimerInterval);
-            document.getElementById('resend-otp').disabled = true;
-            const pinGroup = document.getElementById('pin-input-group');
-            if (pinGroup) pinGroup.remove();
+            document.getElementById('submitBtn').textContent = 'Submit';
+            document.getElementById('submitBtn').className = 'btn-green';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('register-btn').disabled = false;
+            document.getElementById('register-btn').textContent = '✅ Create Account';
+            document.getElementById('check-btn').disabled = false;
             currentMobile = '';
+            actionType = '';
             currentUser = null;
-            isLoginFlow = false;
+            isChecking = false;
             document.getElementById('mobile').focus();
         }
 
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                resetForm();
-                showToast('👋 Logged out');
-            }
-        }
-
-        // ============================================================
-        // FEED FUNCTIONS
-        // ============================================================
-        function setFilter(type) {
-            currentFilter = type;
-            const both = document.getElementById('filter-both');
-            const job = document.getElementById('filter-job');
-            const seeker = document.getElementById('filter-seeker');
-            both.className = type === 'BOTH' ? 'active' : 'inactive';
-            job.className = type === 'JOB' ? 'active' : 'inactive';
-            seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
-            renderFeed();
-        }
-
-        function renderFeed() {
-            if (currentPage !== 'home') return;
-            const container = document.getElementById('feed-container');
-            const count = document.getElementById('results-count');
-            if (!feedItems || feedItems.length === 0) {
-                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
-                count.textContent = 'Showing 0 Records';
-                return;
-            }
-            let filtered = [...feedItems];
-            if (currentFilter === 'JOB') {
-                filtered = filtered.filter(item => item.type === 'JOB');
-            } else if (currentFilter === 'SEEKER') {
-                filtered = filtered.filter(item => item.type === 'SEEKER');
-            }
-            if (selectedZoneId) {
-                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
-            }
-            if (selectedAreaId) {
-                filtered = filtered.filter(item => item.area_id === selectedAreaId);
-            }
-            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
-            if (titleFilter) {
-                filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
-            }
-            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
-            if (skillsFilter) {
-                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
-            }
-            const expFilter = document.getElementById('filter-exp').value;
-            if (expFilter === '0-2') {
-                filtered = filtered.filter(item => item.exp <= 2);
-            } else if (expFilter === '3-5') {
-                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
-            } else if (expFilter === '5+') {
-                filtered = filtered.filter(item => item.exp > 5);
-            }
-            count.textContent = `Showing ${filtered.length} Records`;
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
-                return;
-            }
-            container.innerHTML = filtered.map(item => {
-                const zoneName = getZoneName(item.zone_id);
-                const areaName = getAreaName(item.area_id);
-                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
-                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
-                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
-                return `
-                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                    <div class="title">${item.title}</div>
-                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
-                    <span class="badge ${typeClass}">${typeLabel}</span>
-                </div>
-            `}).join('');
+        function setStatus(text, type) {
+            const el = document.getElementById('mobile-status');
+            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
+            el.textContent = text;
+            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
         }
 
         // ============================================================
@@ -3100,78 +2457,200 @@
         });
 
         // ============================================================
-        // INIT
+        // FEED FUNCTIONS
         // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const aboutTextarea = document.getElementById('edit-seeker-about');
-            const charCount = document.getElementById('char-count');
-            if (aboutTextarea && charCount) {
-                aboutTextarea.addEventListener('input', function() {
-                    charCount.textContent = this.value.length;
-                });
+        function setFilter(type) {
+            currentFilter = type;
+            const both = document.getElementById('filter-both');
+            const job = document.getElementById('filter-job');
+            const seeker = document.getElementById('filter-seeker');
+            both.className = type === 'BOTH' ? 'active' : 'inactive';
+            job.className = type === 'JOB' ? 'active' : 'inactive';
+            seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
+            renderFeed();
+        }
+
+        function renderFeed() {
+            if (currentPage !== 'home') return;
+            const container = document.getElementById('feed-container');
+            const count = document.getElementById('results-count');
+            if (!feedItems || feedItems.length === 0) {
+                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
+                count.textContent = 'Showing 0 Records';
+                return;
+            }
+            let filtered = [...feedItems];
+            if (currentFilter === 'JOB') {
+                filtered = filtered.filter(item => item.type === 'JOB');
+            } else if (currentFilter === 'SEEKER') {
+                filtered = filtered.filter(item => item.type === 'SEEKER');
+            }
+            if (selectedZoneId) {
+                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
+            }
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            }
+            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
+            if (titleFilter) {
+                filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
+            }
+            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
+            if (skillsFilter) {
+                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
+            }
+            const expFilter = document.getElementById('filter-exp').value;
+            if (expFilter === '0-2') {
+                filtered = filtered.filter(item => item.exp <= 2);
+            } else if (expFilter === '3-5') {
+                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
+            } else if (expFilter === '5+') {
+                filtered = filtered.filter(item => item.exp > 5);
+            }
+            count.textContent = `Showing ${filtered.length} Records`;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(item => {
+                const zoneName = getZoneName(item.zone_id);
+                const areaName = getAreaName(item.area_id);
+                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
+                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
+                return `
+                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                    <div class="title">${item.title}</div>
+                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
+                    <span class="badge ${typeClass}">${typeLabel}</span>
+                </div>
+            `}).join('');
+        }
+
+        function openDetailFromFeed(item) {
+            if (item._raw) {
+                openDetail(item._raw, item.type);
+            } else {
+                openDetail(item, item.type);
+            }
+        }
+
+        function openDetail(data, type) {
+            currentDetailData = data;
+            currentDetailType = type;
+            document.getElementById('detail-page').classList.remove('hidden-page');
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+
+            const isJob = type === 'JOB';
+            const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
+
+            document.getElementById('detail-title').textContent = data.job_title || data.title || 'Untitled';
+            document.getElementById('detail-company').textContent = data.company_name || data.company || 'Unknown';
+            document.getElementById('detail-type-badge').innerHTML = `<span class="type-badge ${isJob ? 'job' : 'seeker'}">${isJob ? 'JOB' : 'SEEKER'}</span>`;
+
+            document.getElementById('detail-exp').textContent = (data.min_experience_years || data.exp || 0) + ' yrs';
+            document.getElementById('detail-salary').textContent = data.max_salary_monthly ? '₹' + Number(data.max_salary_monthly).toLocaleString('en-IN') : (data.salary || 'Not specified');
+
+            if (isJob) {
+                document.getElementById('detail-gender-field').style.display = 'block';
+                document.getElementById('detail-gender').textContent = genderMap[data.preferred_gender] || 'No Preference';
+            } else {
+                document.getElementById('detail-gender-field').style.display = 'block';
+                document.getElementById('detail-gender').textContent = genderMap[data.gender] || 'Not Specified';
             }
 
-            const salaryInput = document.getElementById('edit-seeker-salary');
-            if (salaryInput) {
-                salaryInput.addEventListener('input', function() {
-                    const rawValue = parseSalaryValue(this.value);
-                    if (rawValue) {
-                        const formatted = formatSalaryDisplay(rawValue);
-                        this.value = formatted;
-                        this.setSelectionRange(this.value.length, this.value.length);
-                    }
-                });
+            const zoneId = data.zone_id || 0;
+            const areaId = data.area_id || 0;
+            document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
+            document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
+
+            document.getElementById('detail-skills').textContent = data.skills_comma_separated || data.skills || '—';
+
+            if (isJob) {
+                document.getElementById('detail-expiry-field').style.display = 'block';
+                document.getElementById('detail-expiry').textContent = data.expiry_date ? new Date(data.expiry_date).toLocaleDateString('en-IN') : '—';
+                document.getElementById('detail-notice-field').style.display = 'none';
+            } else {
+                document.getElementById('detail-expiry-field').style.display = 'none';
+                document.getElementById('detail-notice-field').style.display = 'block';
+                document.getElementById('detail-notice').textContent = (data.notice_period_days || '—') + ' days';
             }
 
-            populateEditZones();
+            document.getElementById('detail-desc').textContent = data.job_description || data.professional_summary || data.desc || '—';
 
-            setupCounter('pj-title', 'pj-title-counter', 60);
-            setupCounter('pj-skills', 'pj-skills-counter', 200);
-            setupCounter('pj-description', 'pj-desc-counter', 500);
+            const postedDate = data.posted_date || data.created_at || data.last_active;
+            document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
 
-            const pjSalary = document.getElementById('pj-salary');
-            if (pjSalary) {
-                pjSalary.addEventListener('input', function() {
-                    const raw = this.value.replace(/[^0-9]/g, '');
-                    if (raw) {
-                        const formatted = Number(raw).toLocaleString('en-IN');
-                        this.value = formatted;
-                    } else {
-                        this.value = '';
-                    }
-                });
+            document.getElementById('detail-contact').textContent = data.mobile || data.contact || 'N/A';
+            document.getElementById('detail-contact').dataset.contact = data.mobile || data.contact || '';
+
+            document.getElementById('detail-views').textContent = data.views || 0;
+            document.getElementById('detail-calls').textContent = data.calls || 0;
+            document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
+        }
+
+        function closeDetail() {
+            currentDetailData = null;
+            currentDetailType = null;
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.getElementById('home-page').classList.remove('hidden-page');
+            goHome();
+        }
+
+        function makeCall() {
+            const contact = document.getElementById('detail-contact').dataset.contact;
+            if (!contact || contact === 'N/A') {
+                showToast('⚠️ No contact number available');
+                return;
             }
+            window.location.href = `tel:${contact}`;
+        }
 
-            const expiryInput = document.getElementById('pj-expiry');
-            if (expiryInput) {
-                const d = new Date();
-                d.setDate(d.getDate() + 30);
-                expiryInput.value = d.toISOString().split('T')[0];
-                expiryInput.max = new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0];
-                expiryInput.min = new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0];
-                expiryInput.addEventListener('change', function() {
-                    const selected = new Date(this.value);
-                    const maxDate = new Date(Date.now() + 45*24*60*60*1000);
-                    if (selected > maxDate) {
-                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
-                        this.value = maxDate.toISOString().split('T')[0];
-                    }
-                });
+        function sendWhatsApp() {
+            const contact = document.getElementById('detail-contact').dataset.contact;
+            if (!contact || contact === 'N/A') {
+                showToast('⚠️ No contact number available');
+                return;
             }
+            const title = document.getElementById('detail-title').textContent;
+            const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
+            window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
+        }
 
-            const zoneSelect = document.getElementById('pj-zone');
-            zoneSelect.value = '100';
-            updatePostAreas();
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        window.logout = function() {
+            if (confirm('Are you sure you want to logout?')) {
+                resetForm();
+                showToast('👋 Logged out');
+            }
+        };
 
-            document.getElementById('mobile').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    sendWhatsAppOTP();
-                }
-            });
-
-            console.log('✅ JobAd with WhatsApp Auth & Access Control Ready');
-            document.getElementById('mobile').focus();
+        document.getElementById('pin').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                window.submitPin();
+            }
         });
+
+        document.getElementById('reg-pin').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('reg-pin-confirm').focus();
+            }
+        });
+
+        document.getElementById('reg-pin-confirm').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                registerUser();
+            }
+        });
+
+        console.log('✅ JobAd App Ready');
+        console.log('📱 Test users: 6300067332 (PIN: 1234)');
+        document.getElementById('mobile').focus();
     </script>
 </body>
 </html>
