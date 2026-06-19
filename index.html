@@ -68,6 +68,8 @@
         .btn-whatsapp:hover { background: #1da851; }
         .btn-red { background: #dc2626; }
         .btn-red:hover { background: #b91c1c; }
+        .btn-disabled { background: #94a3b8; cursor: not-allowed; }
+        .btn-disabled:hover { background: #94a3b8; }
         .msg {
             margin-top: 16px;
             padding: 12px;
@@ -118,7 +120,6 @@
         }
         .wa-icon { font-size: 32px; margin-bottom: 8px; }
 
-        /* OTP input styling */
         .otp-input-group {
             display: flex;
             gap: 8px;
@@ -144,7 +145,6 @@
             border-color: #16a34a;
             background: #f0fdf4;
         }
-
         .timer-text { font-size: 13px; color: #64748b; margin-top: 8px; }
         .resend-btn {
             background: none;
@@ -206,7 +206,6 @@
         .home-header .avatar-btn.female { color: #ec4899; border-color: #ec4899; }
         .home-header .avatar-btn.other { color: #8b5cf6; border-color: #8b5cf6; }
 
-        /* Profile Dropdown */
         .profile-dropdown {
             position: absolute;
             top: 44px;
@@ -246,7 +245,6 @@
         .profile-dropdown .dropdown-item.danger { color: #dc2626; }
         .profile-dropdown .dropdown-item.danger:hover { background: #fef2f2; }
 
-        /* PAGE CONTENT */
         .page-content {
             flex: 1;
             overflow-y: auto;
@@ -500,6 +498,20 @@
         .profile-section .section-btn-green:hover { background: #15803d; }
         .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
         .profile-active .section-badge { background: #dcfce7; color: #166534; }
+
+        .warning-banner {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #92400e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .warning-banner .icon { font-size: 18px; }
 
         /* EDIT SEEKER */
         .edit-page-header {
@@ -764,11 +776,15 @@
             border: none;
         }
         .detail-actions .btn-call { background: #16a34a; color: white; }
-        .detail-actions .btn-call:hover { background: #15803d; }
+        .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
         .detail-actions .btn-whatsapp { background: #25D366; color: white; }
-        .detail-actions .btn-whatsapp:hover { background: #1da851; }
+        .detail-actions .btn-whatsapp:hover:not(:disabled) { background: #1da851; }
         .detail-actions .btn-close { background: #6b7280; color: white; }
         .detail-actions .btn-close:hover { background: #4b5563; }
+        .detail-actions button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
         .type-badge {
             display: inline-block;
             padding: 2px 12px;
@@ -802,7 +818,6 @@
             display: inline-block;
         }
 
-        /* Change PIN Modal */
         .modal-overlay {
             position: absolute;
             top: 0;
@@ -838,6 +853,34 @@
         .modal-box .modal-actions .btn-cancel:hover { background: #e2e8f0; }
         .modal-box .modal-actions .btn-save { background: #2563eb; color: white; }
         .modal-box .modal-actions .btn-save:hover { background: #1d4ed8; }
+
+        /* Action Required Banner */
+        .action-required {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-required .icon { font-size: 20px; }
+        .action-required .text { font-size: 12px; color: #92400e; }
+        .action-required .text strong { display: block; font-size: 13px; }
+        .action-required .btn-action {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: auto;
+            flex-shrink: 0;
+        }
+        .action-required .btn-action:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
@@ -888,7 +931,6 @@
                         <button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()">
                             <span id="avatar-symbol">👤</span>
                         </button>
-                        <!-- Dropdown -->
                         <div class="profile-dropdown" id="profile-dropdown">
                             <button class="dropdown-item" onclick="closeDropdown(); goToProfile();">
                                 <span class="icon">👤</span> View Profile
@@ -1194,6 +1236,16 @@
                 </div>
 
                 <div class="postjob-scroll">
+                    <!-- Recruiter Check Warning -->
+                    <div id="recruiter-warning" class="action-required" style="display:none;">
+                        <span class="icon">⚠️</span>
+                        <div class="text">
+                            <strong>Recruiter Profile Required</strong>
+                            Please set your company name in the profile to post jobs.
+                        </div>
+                        <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
+                    </div>
+
                     <div class="form-group">
                         <label class="form-label">Company <span class="required">*</span></label>
                         <input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100">
@@ -1306,6 +1358,26 @@
                         <span id="detail-type-badge"></span>
                     </div>
 
+                    <!-- Action Required Warning for Job View -->
+                    <div id="detail-job-warning" class="action-required" style="display:none;">
+                        <span class="icon">⚠️</span>
+                        <div class="text">
+                            <strong>Recruiter Profile Required</strong>
+                            Please set your company name to contact job seekers.
+                        </div>
+                        <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
+                    </div>
+
+                    <!-- Action Required Warning for Seeker View -->
+                    <div id="detail-seeker-warning" class="action-required" style="display:none;">
+                        <span class="icon">⚠️</span>
+                        <div class="text">
+                            <strong>Job Seeker Profile Required</strong>
+                            Please complete your job seeker profile to apply/contact for jobs.
+                        </div>
+                        <button class="btn-action" onclick="goToEditSeeker()">Create Profile</button>
+                    </div>
+
                     <div class="grid-2" style="gap:8px;">
                         <div class="detail-field">
                             <label>Experience</label>
@@ -1379,8 +1451,8 @@
                     </div>
 
                     <div class="detail-actions">
-                        <button class="btn-call" onclick="makeCall()">📞 Call</button>
-                        <button class="btn-whatsapp" onclick="sendWhatsApp()">💬 WhatsApp</button>
+                        <button class="btn-call" id="detail-call-btn" onclick="makeCall()">📞 Call</button>
+                        <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">💬 WhatsApp</button>
                         <button class="btn-close" onclick="closeDetail()">Close</button>
                     </div>
                     <div class="bottom-spacer"></div>
@@ -1533,13 +1605,15 @@
         let feedItems = [];
         let currentPage = 'home';
         let otpTimerInterval = null;
-        let otpExpiryTime = 300; // 5 minutes
+        let otpExpiryTime = 300;
+        let currentDetailData = null;
+        let currentDetailType = null;
 
         // ============================================================
         // WHATSAPP OTP AUTHENTICATION
         // ============================================================
         function formatMobileForWA(mobile) {
-            return `91${mobile}`; // India country code
+            return `91${mobile}`;
         }
 
         async function sendWhatsAppOTP() {
@@ -1549,7 +1623,6 @@
                 return;
             }
 
-            // Check if mobile already registered
             const { data, error } = await sb
                 .from('all_users')
                 .select('mobile')
@@ -1564,39 +1637,30 @@
             setStatus('⏳ Sending OTP via WhatsApp...', 'blue');
             document.getElementById('send-otp-btn').disabled = true;
 
-            // Generate 6-digit OTP
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
             
-            // Store OTP in session (in production, store in database with expiry)
             sessionStorage.setItem('otp_' + mobile, otp);
             sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
 
-            // Send via WhatsApp (simulated - in production, use WhatsApp Business API)
             const waNumber = formatMobileForWA(mobile);
             const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
             const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
             
-            // Open WhatsApp with pre-filled message
             window.open(waUrl, '_blank');
 
-            // Show OTP input
             document.getElementById('step1').style.display = 'none';
             document.getElementById('step2').classList.remove('hidden');
             document.getElementById('display-mobile').textContent = mobile;
             currentMobile = mobile;
             setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
             
-            // Reset OTP inputs
             document.querySelectorAll('.otp-input').forEach(el => el.value = '');
             document.querySelector('.otp-input').focus();
             
-            // Start timer
             startOTPTimer();
-            
             showToast('💬 OTP sent via WhatsApp!');
         }
 
-        // OTP Input handling
         document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
             input.addEventListener('input', function(e) {
                 this.value = this.value.replace(/[^0-9]/g, '');
@@ -1605,7 +1669,6 @@
                     if (index < arr.length - 1) {
                         arr[index + 1].focus();
                     } else {
-                        // Auto-submit when all filled
                         const allFilled = Array.from(arr).every(el => el.value.length === 1);
                         if (allFilled) {
                             verifyOTP();
@@ -1696,15 +1759,12 @@
                 return;
             }
 
-            // OTP Verified! Proceed with registration/login
             setStatus('✅ Verified!', 'green');
             showToast('✅ Phone verified successfully!');
             
-            // Clear OTP from session
             sessionStorage.removeItem('otp_' + currentMobile);
             sessionStorage.removeItem('otp_expiry_' + currentMobile);
             
-            // Check if user exists in all_users
             const { data: userData, error } = await sb
                 .from('all_users')
                 .select('*')
@@ -1712,10 +1772,8 @@
                 .single();
 
             if (userData) {
-                // Existing user - login flow
                 await completeLogin(userData);
             } else {
-                // New user - registration flow
                 await completeRegistration();
             }
         }
@@ -1727,7 +1785,6 @@
             sessionStorage.setItem('otp_' + mobile, otp);
             sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
             
-            // Send via WhatsApp
             const waNumber = formatMobileForWA(mobile);
             const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
@@ -1741,10 +1798,6 @@
         // REGISTRATION / LOGIN
         // ============================================================
         async function completeRegistration() {
-            // Show PIN setup for new user
-            showToast('📝 New user! Set up your PIN');
-            
-            // Redirect to PIN setup (simplified - just ask for PIN)
             const pin = prompt('Set your 4-digit PIN for login:');
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                 showToast('⚠️ Please enter a valid 4-digit PIN');
@@ -1771,7 +1824,6 @@
         }
 
         async function completeLogin(userData) {
-            // Ask for PIN
             const pin = prompt('Enter your 4-digit PIN:');
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                 showToast('⚠️ Please enter a valid 4-digit PIN');
@@ -1805,7 +1857,6 @@
                 .single();
 
             if (error) {
-                // User not in active_users, create entry
                 const { data: newUser, error: insertError } = await sb
                     .from('active_users')
                     .insert([{ mobile: mobile, last_active: new Date().toISOString() }])
@@ -1821,7 +1872,6 @@
                 currentUser = data;
             }
 
-            // Enter app
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('home-page').classList.remove('hidden-page');
@@ -1857,7 +1907,6 @@
             document.querySelectorAll('.profile-dropdown').forEach(d => d.classList.remove('show'));
         }
 
-        // Close dropdown on outside click
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.header-right')) {
                 closeDropdown();
@@ -1947,24 +1996,41 @@
                 showToast('⚠️ Please login first');
                 return;
             }
-            document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+
+            // Check if recruiter profile exists (company name set)
+            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                document.getElementById('recruiter-warning').style.display = 'flex';
+                document.getElementById('pj-company').value = '';
+                // Disable form fields
+                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = true);
+                document.getElementById('pj-publish-btn').disabled = true;
+                document.getElementById('pj-publish-btn').textContent = '⚠️ Complete Recruiter Profile First';
+            } else {
+                document.getElementById('recruiter-warning').style.display = 'none';
+                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = false);
+                document.getElementById('pj-publish-btn').disabled = false;
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+                document.getElementById('pj-company').value = currentUser.company_name;
+            }
+
             document.getElementById('pj-publish-btn').dataset.editing = 'false';
             document.getElementById('pj-publish-btn').dataset.jobid = '';
-            document.getElementById('pj-title').value = '';
-            document.getElementById('pj-skills').value = '';
-            document.getElementById('pj-description').value = '';
-            document.getElementById('pj-salary').value = '';
-            document.getElementById('pj-experience').value = '3.5';
-            document.getElementById('pj-company').value = currentUser.company_name || '';
-            document.getElementById('pj-gender').value = '0';
-            document.getElementById('pj-zone').value = '100';
-            updatePostAreas();
-            const d = new Date();
-            d.setDate(d.getDate() + 30);
-            document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
-            document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
-                el.dispatchEvent(new Event('input'));
-            });
+            if (!document.getElementById('recruiter-warning').style.display || document.getElementById('recruiter-warning').style.display === 'none') {
+                document.getElementById('pj-title').value = '';
+                document.getElementById('pj-skills').value = '';
+                document.getElementById('pj-description').value = '';
+                document.getElementById('pj-salary').value = '';
+                document.getElementById('pj-experience').value = '3.5';
+                document.getElementById('pj-gender').value = '0';
+                document.getElementById('pj-zone').value = '100';
+                updatePostAreas();
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
+                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                    el.dispatchEvent(new Event('input'));
+                });
+            }
 
             currentPage = 'postjob';
             document.getElementById('home-page').classList.add('hidden-page');
@@ -1974,10 +2040,6 @@
             document.getElementById('detail-page').classList.add('hidden-page');
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item')[1].classList.add('active');
-            if (currentUser && currentUser.company_name) {
-                document.getElementById('pj-company').value = currentUser.company_name;
-            }
-            updatePostAreas();
         }
 
         function goToProfile() {
@@ -2252,6 +2314,13 @@
                 return;
             }
 
+            // Check recruiter profile
+            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                showToast('⚠️ Please set your company name in profile first');
+                goToProfile();
+                return;
+            }
+
             const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
             const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
 
@@ -2421,13 +2490,53 @@
             const postedDate = data.posted_date || data.created_at || data.last_active;
             document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
 
-            document.getElementById('detail-contact').textContent = data.mobile || data.contact || 'N/A';
+            const contact = data.mobile || data.contact || 'N/A';
+            document.getElementById('detail-contact').textContent = contact;
+            document.getElementById('detail-contact').dataset.contact = contact;
 
             document.getElementById('detail-views').textContent = data.views || 0;
             document.getElementById('detail-calls').textContent = data.calls || 0;
             document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
 
-            document.getElementById('detail-contact').dataset.contact = data.mobile || data.contact || '';
+            // Check permissions for Call/WhatsApp actions
+            const callBtn = document.getElementById('detail-call-btn');
+            const waBtn = document.getElementById('detail-wa-btn');
+            const jobWarning = document.getElementById('detail-job-warning');
+            const seekerWarning = document.getElementById('detail-seeker-warning');
+
+            // Hide warnings initially
+            jobWarning.style.display = 'none';
+            seekerWarning.style.display = 'none';
+
+            if (isJob) {
+                // Viewing a JOB - need recruiter profile to contact
+                if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                    jobWarning.style.display = 'flex';
+                    callBtn.disabled = true;
+                    waBtn.disabled = true;
+                    callBtn.className = 'btn-call btn-disabled';
+                    waBtn.className = 'btn-whatsapp btn-disabled';
+                } else {
+                    callBtn.disabled = false;
+                    waBtn.disabled = false;
+                    callBtn.className = 'btn-call';
+                    waBtn.className = 'btn-whatsapp';
+                }
+            } else {
+                // Viewing a SEEKER - need job seeker profile to contact
+                if (!currentUser.full_name || currentUser.full_name.trim() === '') {
+                    seekerWarning.style.display = 'flex';
+                    callBtn.disabled = true;
+                    waBtn.disabled = true;
+                    callBtn.className = 'btn-call btn-disabled';
+                    waBtn.className = 'btn-whatsapp btn-disabled';
+                } else {
+                    callBtn.disabled = false;
+                    waBtn.disabled = false;
+                    callBtn.className = 'btn-call';
+                    waBtn.className = 'btn-whatsapp';
+                }
+            }
         }
 
         function closeDetail() {
@@ -2440,8 +2549,20 @@
 
         function makeCall() {
             const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A') {
+            if (!contact || contact === 'N/A' || contact === '') {
                 showToast('⚠️ No contact number available');
+                return;
+            }
+            // Check permissions based on type
+            const isJob = currentDetailType === 'JOB';
+            if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
+                showToast('⚠️ Please set your company name to contact job seekers');
+                goToProfile();
+                return;
+            }
+            if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
+                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
+                goToEditSeeker();
                 return;
             }
             window.location.href = `tel:${contact}`;
@@ -2449,8 +2570,20 @@
 
         function sendWhatsApp() {
             const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A') {
+            if (!contact || contact === 'N/A' || contact === '') {
                 showToast('⚠️ No contact number available');
+                return;
+            }
+            // Check permissions based on type
+            const isJob = currentDetailType === 'JOB';
+            if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
+                showToast('⚠️ Please set your company name to contact job seekers');
+                goToProfile();
+                return;
+            }
+            if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
+                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
+                goToEditSeeker();
                 return;
             }
             const title = document.getElementById('detail-title').textContent;
@@ -2722,7 +2855,6 @@
         // INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Edit seeker counters
             const aboutTextarea = document.getElementById('edit-seeker-about');
             const charCount = document.getElementById('char-count');
             if (aboutTextarea && charCount) {
@@ -2745,7 +2877,6 @@
 
             populateEditZones();
 
-            // Post Job counters
             setupCounter('pj-title', 'pj-title-counter', 60);
             setupCounter('pj-skills', 'pj-skills-counter', 200);
             setupCounter('pj-description', 'pj-desc-counter', 500);
@@ -2784,14 +2915,13 @@
             zoneSelect.value = '100';
             updatePostAreas();
 
-            // Enter key on mobile
             document.getElementById('mobile').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     sendWhatsAppOTP();
                 }
             });
 
-            console.log('✅ JobAd with WhatsApp Auth Ready');
+            console.log('✅ JobAd with WhatsApp Auth & Access Control Ready');
             document.getElementById('mobile').focus();
         });
     </script>
