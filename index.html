@@ -1619,8 +1619,6 @@
                 const result = await deferredPrompt.userChoice;
                 console.log('✅ User choice:', result.outcome);
                 deferredPrompt = null;
-                
-                // Hide banner after installation
                 document.getElementById('install-banner').classList.remove('show');
             }
         });
