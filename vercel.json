@@ -1,24 +1,5 @@
 {
   "version": 2,
-  "public": true,
-  "builds": [
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.json",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.png",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.js",
-      "use": "@vercel/static"
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",
