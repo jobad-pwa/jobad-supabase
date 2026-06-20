@@ -3215,5 +3215,34 @@
         console.log('📱 Test users: 6300067332 (PIN: 1234)');
         document.getElementById('mobile').focus();
     </script>
+    <script>
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(reg => {
+                console.log('✅ Service Worker registered:', reg);
+            })
+            .catch(err => {
+                console.log('❌ Service Worker error:', err);
+            });
+    }
+
+    // Handle installation prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        console.log('✅ App is installable!');
+        
+        // Optional: Show a custom install button
+        // You can add a "Install App" button in your UI
+    });
+
+    // Check if app is already installed
+    window.addEventListener('appinstalled', () => {
+        console.log('✅ App installed successfully!');
+        deferredPrompt = null;
+    });
+</script>
 </body>
 </html>
