@@ -38,18 +38,30 @@
         }
         .hidden { display: none; }
         .hidden-page { display: none; }
-        input {
+        
+        .input-field {
             width: 100%;
             padding: 14px 16px;
-            border: 1px solid #e5e7eb;
+            border: 2px solid #e2e8f0;
             border-radius: 12px;
             font-size: 16px;
             margin-bottom: 12px;
             box-sizing: border-box;
             text-align: center;
+            background: white;
+            transition: border-color 0.2s;
         }
-        input:focus { border-color: #2563eb; outline: 2px solid #93c5fd; }
-        button {
+        .input-field:focus {
+            border-color: #2563eb;
+            outline: 2px solid #93c5fd;
+            outline-offset: -1px;
+        }
+        .input-field::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        
+        .btn-primary {
             width: 100%;
             padding: 14px;
             background: #2563eb;
@@ -59,19 +71,30 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
+            transition: background 0.2s;
         }
-        button:hover { background: #1d4ed8; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-back { background: #6b7280; margin-top: 8px; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .btn-back {
+            background: #6b7280;
+            margin-top: 8px;
+            width: 100%;
+            padding: 14px;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
         .btn-back:hover { background: #4b5563; }
+        
         .btn-green { background: #16a34a; }
         .btn-green:hover { background: #15803d; }
         .btn-yellow { background: #d97706; }
         .btn-yellow:hover { background: #b45309; }
-        .btn-red { background: #dc2626; }
-        .btn-red:hover { background: #b91c1c; }
-        .btn-whatsapp { background: #25D366; }
-        .btn-whatsapp:hover { background: #1da851; }
+        
         .msg {
             margin-top: 16px;
             padding: 12px;
@@ -83,6 +106,7 @@
         .msg-red { background: #fee2e2; color: #991b1b; }
         .msg-blue { background: #dbeafe; color: #1e40af; }
         .msg-yellow { background: #fef3c7; color: #92400e; }
+        
         .toast {
             position: fixed;
             bottom: 80px;
@@ -107,7 +131,6 @@
         .fade-in { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* LOGIN SCREEN */
         #login-screen {
             display: flex;
             flex-direction: column;
@@ -139,10 +162,21 @@
             border-radius: 12px;
             font-size: 16px;
             text-align: center;
-            letter-spacing: 4px;
-            margin: 8px 0;
+            letter-spacing: 8px;
+            margin: 8px 0 12px 0;
+            background: white;
+            transition: border-color 0.2s;
         }
-        .pin-login-input:focus { border-color: #2563eb; outline: none; }
+        .pin-login-input:focus {
+            border-color: #2563eb;
+            outline: 2px solid #93c5fd;
+            outline-offset: -1px;
+        }
+        .pin-login-input::placeholder {
+            letter-spacing: 2px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
 
         .otp-input-group {
             display: flex;
@@ -160,6 +194,7 @@
             margin: 0;
             border-radius: 12px;
             border: 2px solid #e2e8f0;
+            background: white;
         }
         .otp-input-group input:focus {
             border-color: #2563eb;
@@ -182,7 +217,6 @@
         .resend-btn:hover { text-decoration: underline; }
         .resend-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* HOME SCREEN */
         .home-container {
             display: flex;
             flex-direction: column;
@@ -430,49 +464,73 @@
         .feed-card:hover { border-color: #3b82f6; background: #f8faff; }
         .feed-card .title { font-weight: 700; font-size: 13px; color: #0f172a; }
         .feed-card .meta { font-size: 10px; color: #475569; margin-top: 1px; }
+        
+        .feed-card .bottom-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+            gap: 4px;
+            flex-wrap: nowrap;
+        }
         .feed-card .badge {
             font-size: 8px;
             padding: 1px 8px;
             border-radius: 4px;
             font-weight: 700;
-            display: inline-block;
-            margin-top: 3px;
+            flex-shrink: 0;
         }
         .feed-card .badge-job { background: #dbeafe; color: #1e40af; }
         .feed-card .badge-seeker { background: #dcfce7; color: #166534; }
-        .feed-card .action-icons {
+        
+        .feed-card .action-row {
             display: flex;
-            gap: 16px;
-            margin-top: 6px;
-            font-size: 14px;
             align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-shrink: 0;
         }
-        .feed-card .action-icons .count-display {
-            font-weight: 600;
-            font-size: 14px;
+        .feed-card .action-row .action-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
             color: #475569;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            font-weight: 500;
+            white-space: nowrap;
+            font-size: 12px;
         }
-        .feed-card .action-icons .icon-btn {
+        .feed-card .action-row .action-item .count {
+            font-weight: 600;
+        }
+        .feed-card .action-row .action-divider {
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        .feed-card .action-row .share-btn {
             cursor: pointer;
-            font-size: 18px;
             padding: 4px 6px;
             border-radius: 6px;
             transition: 0.15s;
-            background: none;
+            background: #25D366;
+            color: white;
             border: none;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
+            line-height: 1;
+            min-width: 28px;
+            min-height: 28px;
         }
-        .feed-card .action-icons .icon-btn:hover { background: #f1f5f9; }
-        .feed-card .action-icons .icon-btn .label {
-            font-size: 10px;
-            color: #64748b;
-            font-weight: 500;
+        .feed-card .action-row .share-btn:hover {
+            background: #1da851;
+            transform: scale(1.05);
         }
+        .feed-card .action-row .share-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
         .no-records { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 13px; }
 
         .bottom-nav {
@@ -505,7 +563,6 @@
         .bottom-nav .nav-item .icon { font-size: 18px; margin-bottom: 1px; }
         .bottom-nav .nav-item .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
 
-        /* PROFILE PAGE */
         .profile-header-card {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border-radius: 16px;
@@ -556,7 +613,6 @@
         .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
         .profile-active .section-badge { background: #dcfce7; color: #166534; }
 
-        /* Action Required Banner */
         .action-required {
             background: #fef3c7;
             border: 1px solid #f59e0b;
@@ -584,7 +640,6 @@
         }
         .action-required .btn-action:hover { background: #1d4ed8; }
 
-        /* EDIT SEEKER */
         .edit-page-header {
             display: flex;
             justify-content: space-between;
@@ -676,7 +731,6 @@
         }
         .edit-activate-btn:hover { background: #1d4ed8; }
 
-        /* POST JOB */
         .postjob-header, .detail-header {
             display: flex;
             justify-content: space-between;
@@ -785,7 +839,6 @@
         .bottom-spacer { height: 4px; }
         input[type="date"] { text-align: left; padding: 10px 12px; }
 
-        /* My Jobs */
         .my-job-item {
             border: 1px solid #e2e8f0;
             border-radius: 10px;
@@ -808,7 +861,6 @@
             display: inline-block;
         }
 
-        /* Detail View */
         .detail-field { margin-bottom: 10px; }
         .detail-field label {
             font-size: 9px;
@@ -864,11 +916,10 @@
             letter-spacing: 0.05em;
         }
 
-        /* Detail Actions - Organized */
         .detail-actions {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
             margin-top: 12px;
         }
         .detail-actions .action-group {
@@ -886,8 +937,7 @@
         }
         .detail-actions button {
             width: 100%;
-            padding: 10px 4px;
-            font-size: 22px;
+            padding: 8px 2px;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
@@ -895,7 +945,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 48px;
+            min-height: 44px;
         }
         .detail-actions .btn-call { background: #16a34a; color: white; }
         .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
@@ -906,7 +956,7 @@
         .detail-actions .btn-endorse {
             background: #f1f5f9;
             color: #475569;
-            font-size: 22px;
+            font-size: 20px;
         }
         .detail-actions .btn-endorse.active {
             background: #2563eb;
@@ -917,7 +967,7 @@
         .detail-actions .btn-flag {
             background: #f1f5f9;
             color: #475569;
-            font-size: 22px;
+            font-size: 20px;
         }
         .detail-actions .btn-flag.active {
             background: #dc2626;
@@ -926,11 +976,15 @@
         .detail-actions .btn-flag:hover:not(:disabled) { background: #fee2e2; }
         .detail-actions .btn-flag.active:hover { background: #b91c1c; }
         .detail-actions .btn-share {
-            background: #2563eb;
+            background: #25D366;
             color: white;
-            font-size: 22px;
         }
-        .detail-actions .btn-share:hover { background: #1d4ed8; }
+        .detail-actions .btn-share:hover { background: #1da851; }
+        .detail-actions .btn-share svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
         .detail-actions button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -946,7 +1000,6 @@
         .type-badge.job { background: #dbeafe; color: #1e40af; }
         .type-badge.seeker { background: #dcfce7; color: #166534; }
 
-        /* Modal */
         .modal-overlay {
             position: absolute;
             top: 0;
@@ -1014,35 +1067,134 @@
         .modal-box .modal-close-btn:hover { background: #e2e8f0; }
 
         /* Share Modal */
-        .share-grid {
+        .share-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            border-radius: 24px;
+        }
+        .share-modal-overlay.show { display: flex; }
+        .share-modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 340px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .share-modal-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .share-modal-box h3 svg {
+            width: 24px;
+            height: 24px;
+            fill: #2563eb;
+        }
+        .share-modal-box p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0 0 16px 0;
+        }
+        .share-modal-box .share-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin: 12px 0;
         }
-        .share-grid .share-item {
+        .share-modal-box .share-grid .share-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 10px 6px;
+            padding: 12px 6px;
             border-radius: 12px;
             cursor: pointer;
             transition: 0.2s;
             border: 1px solid #e2e8f0;
             background: white;
+            text-decoration: none;
         }
-        .share-grid .share-item:hover { background: #f8fafc; border-color: #2563eb; transform: scale(1.02); }
-        .share-grid .share-item .share-icon { font-size: 28px; margin-bottom: 3px; }
-        .share-grid .share-item .share-label { font-size: 9px; color: #475569; font-weight: 500; }
-        .share-grid .share-item.whatsapp:hover { border-color: #25D366; background: #f0fdf4; }
-        .share-grid .share-item.facebook:hover { border-color: #1877f2; background: #f0f7ff; }
-        .share-grid .share-item.twitter:hover { border-color: #000000; background: #f8fafc; }
-        .share-grid .share-item.linkedin:hover { border-color: #0a66c2; background: #f0f7ff; }
-        .share-grid .share-item.telegram:hover { border-color: #0088cc; background: #f0faff; }
-        .share-grid .share-item.instagram:hover { border-color: #e4405f; background: #fdf0f3; }
-        .share-grid .share-item.copy:hover { border-color: #6b7280; background: #f8fafc; }
+        .share-modal-box .share-grid .share-item:hover {
+            background: #f8fafc;
+            border-color: #2563eb;
+            transform: scale(1.02);
+        }
+        .share-modal-box .share-grid .share-item .share-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 4px;
+        }
+        .share-modal-box .share-grid .share-item .share-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+        .share-modal-box .share-grid .share-item .share-label {
+            font-size: 9px;
+            color: #475569;
+            font-weight: 500;
+        }
+        .share-modal-box .share-grid .share-item.whatsapp:hover {
+            border-color: #25D366;
+            background: #f0fdf4;
+        }
+        .share-modal-box .share-grid .share-item.facebook:hover {
+            border-color: #1877f2;
+            background: #f0f7ff;
+        }
+        .share-modal-box .share-grid .share-item.twitter:hover {
+            border-color: #000000;
+            background: #f8fafc;
+        }
+        .share-modal-box .share-grid .share-item.linkedin:hover {
+            border-color: #0a66c2;
+            background: #f0f7ff;
+        }
+        .share-modal-box .share-grid .share-item.telegram:hover {
+            border-color: #0088cc;
+            background: #f0faff;
+        }
+        .share-modal-box .share-grid .share-item.instagram:hover {
+            border-color: #e4405f;
+            background: #fdf0f3;
+        }
+        .share-modal-box .share-grid .share-item.copy:hover {
+            border-color: #6b7280;
+            background: #f8fafc;
+        }
+        .share-modal-box .share-grid .share-item.more-share:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .share-modal-box .share-modal-close-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .share-modal-box .share-modal-close-btn:hover {
+            background: #e2e8f0;
+        }
 
-        /* Install Banner */
         .install-banner {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             color: white;
@@ -1081,13 +1233,13 @@
     </style>
 </head>
 <body>
-    <!-- LOGIN SCREEN -->
     <div class="card">
+        <!-- LOGIN SCREEN -->
         <div id="login-screen">
             <h1>JobAd</h1>
             <div class="test-links"><a href="test.html">🔌 DB Test</a></div>
             <div id="step1" style="width:100%;">
-                <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10" autofocus>
+                <input type="tel" id="mobile" class="input-field" placeholder="Enter Mobile Number" maxlength="10" autofocus>
                 <div class="mobile-status" id="mobile-status"></div>
             </div>
             <div id="step2" class="hidden fade-in" style="width:100%;">
@@ -1099,7 +1251,7 @@
                 <div style="margin:4px 0 8px 0; font-size:12px; color:#64748b;">
                     Forgot PIN? <span style="color:#2563eb; cursor:pointer; font-weight:600;" onclick="resetPIN()">Reset PIN</span>
                 </div>
-                <button onclick="submitPin()" id="submitBtn" class="btn-green">🔐 Login</button>
+                <button onclick="submitPin()" id="submitBtn" class="btn-primary btn-green">🔐 Login</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
             <div id="step3" class="hidden fade-in" style="width:100%;">
@@ -1119,7 +1271,7 @@
                 <div style="margin-top:4px;">
                     <button class="resend-btn" id="resend-otp" onclick="resendOTP()" disabled>Resend OTP</button>
                 </div>
-                <button onclick="verifyOTP()" id="verify-btn" class="btn-green">✅ Verify & Continue</button>
+                <button onclick="verifyOTP()" id="verify-btn" class="btn-primary btn-green">✅ Verify & Continue</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
             <div id="step4" class="hidden fade-in" style="width:100%;">
@@ -1129,7 +1281,7 @@
                 </div>
                 <input type="password" id="reg-pin" class="pin-login-input" placeholder="New PIN" maxlength="4" inputmode="numeric">
                 <input type="password" id="reg-pin-confirm" class="pin-login-input" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
-                <button onclick="registerUser()" id="register-btn" class="btn-green">✅ Create Account</button>
+                <button onclick="registerUser()" id="register-btn" class="btn-primary btn-green">✅ Create Account</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
             <div id="msg" class="hidden"></div>
@@ -1636,30 +1788,41 @@
                         </div>
                     </div>
 
-                    <!-- Detail Actions - Organized with proper symbols -->
                     <div class="detail-actions">
                         <div class="action-group">
-                            <button class="btn-call" id="detail-call-btn" onclick="makeCall()">📞</button>
+                            <button class="btn-call" id="detail-call-btn" onclick="makeCall()">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            </button>
                             <span class="action-label">Call</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">💬</button>
+                            <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            </button>
                             <span class="action-label">WhatsApp</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()">👍</button>
+                            <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                            </button>
                             <span class="action-label">Recommend</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()">👎</button>
+                            <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
+                            </button>
                             <span class="action-label">Not Rec</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-share" id="detail-share-btn" onclick="openShareModal()">📤</button>
+                            <button class="btn-share" id="detail-share-btn" onclick="openShareModal()">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                            </button>
                             <span class="action-label">Share</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-close" onclick="closeDetail()">✕</button>
+                            <button class="btn-close" onclick="closeDetail()">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                            </button>
                             <span class="action-label">Close</span>
                         </div>
                     </div>
@@ -1688,8 +1851,8 @@
             <div class="modal-box">
                 <h3>🔑 Change PIN</h3>
                 <p>Enter your new 4-digit PIN</p>
-                <input type="password" id="new-pin" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric">
-                <input type="password" id="confirm-pin" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
+                <input type="password" id="new-pin" class="input-field" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric">
+                <input type="password" id="confirm-pin" class="input-field" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
                 <div class="modal-actions">
                     <button class="btn-cancel" onclick="closeChangePin()">Cancel</button>
                     <button class="btn-save" onclick="saveNewPin()">Save PIN</button>
@@ -1698,45 +1861,64 @@
         </div>
 
         <!-- SHARE MODAL -->
-        <div class="modal-overlay" id="share-modal">
-            <div class="modal-box">
-                <h3>📤 Share</h3>
+        <div class="share-modal-overlay" id="share-modal">
+            <div class="share-modal-box">
+                <h3>
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                    Share
+                </h3>
                 <p>Share this opportunity with your network</p>
                 <div class="share-grid">
                     <div class="share-item whatsapp" onclick="shareVia('whatsapp')">
-                        <span class="share-icon">💬</span>
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        </span>
                         <span class="share-label">WhatsApp</span>
                     </div>
                     <div class="share-item facebook" onclick="shareVia('facebook')">
-                        <span class="share-icon">📘</span>
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#1877f2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </span>
                         <span class="share-label">Facebook</span>
                     </div>
                     <div class="share-item twitter" onclick="shareVia('twitter')">
-                        <span class="share-icon">🐦</span>
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#000000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </span>
                         <span class="share-label">Twitter</span>
                     </div>
                     <div class="share-item linkedin" onclick="shareVia('linkedin')">
-                        <span class="share-icon">🔗</span>
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#0a66c2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        </span>
                         <span class="share-label">LinkedIn</span>
                     </div>
                     <div class="share-item telegram" onclick="shareVia('telegram')">
-                        <span class="share-icon">✈️</span>
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#0088cc"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+                        </span>
                         <span class="share-label">Telegram</span>
                     </div>
                     <div class="share-item instagram" onclick="shareVia('instagram')">
-                        <span class="share-icon">📸</span>
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#e4405f"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                        </span>
                         <span class="share-label">Instagram</span>
                     </div>
                     <div class="share-item copy" onclick="shareVia('copy')" style="grid-column: span 2;">
-                        <span class="share-icon">📋</span>
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#6b7280"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </span>
                         <span class="share-label">Copy Link</span>
                     </div>
-                    <div class="share-item" onclick="shareVia('more')" style="grid-column: span 1;">
-                        <span class="share-icon">📱</span>
+                    <div class="share-item more-share" onclick="shareVia('more')" style="grid-column: span 1;">
+                        <span class="share-icon">
+                            <svg viewBox="0 0 24 24" fill="#2563eb"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                        </span>
                         <span class="share-label">More...</span>
                     </div>
                 </div>
-                <button class="modal-close-btn" onclick="closeModal('share-modal')">Cancel</button>
+                <button class="share-modal-close-btn" onclick="closeShareModal()">Cancel</button>
             </div>
         </div>
     </div>
@@ -1907,6 +2089,144 @@
         });
 
         // ============================================================
+        // SHARE FUNCTIONS
+        // ============================================================
+        function openShareModal() {
+            if (!currentUser) {
+                redirectToLogin();
+                return;
+            }
+            document.getElementById('share-modal').classList.add('show');
+        }
+
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.remove('show');
+        }
+
+        function getShareData() {
+            let title = 'JobAd Opportunity';
+            let url = window.location.href;
+            
+            if (currentDetailData) {
+                title = currentDetailData.job_title || currentDetailData.title || 'JobAd Opportunity';
+                const itemId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                url = `${window.location.origin}${window.location.pathname}?view=${currentDetailType?.toLowerCase() || 'job'}&id=${itemId}`;
+            }
+            
+            return { title, url };
+        }
+
+        function shareVia(platform) {
+            const { title, url } = getShareData();
+            const text = `Check out this opportunity on JobAd:\n\n${title}\n\n${url}`;
+            
+            let shareUrl = '';
+            
+            switch(platform) {
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                    break;
+                case 'telegram':
+                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+                    break;
+                case 'instagram':
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('📸 Link copied! Open Instagram to share.');
+                    }).catch(() => {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = text;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        textarea.remove();
+                        showToast('📸 Link copied! Open Instagram to share.');
+                    });
+                    closeShareModal();
+                    return;
+                case 'copy':
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('📋 Link copied to clipboard!');
+                    }).catch(() => {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = text;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        textarea.remove();
+                        showToast('📋 Link copied to clipboard!');
+                    });
+                    closeShareModal();
+                    return;
+                case 'more':
+                    if (navigator.share) {
+                        navigator.share({
+                            title: title,
+                            text: text,
+                            url: url
+                        }).then(() => {
+                            console.log('✅ Shared successfully');
+                        }).catch((err) => {
+                            if (err.name !== 'AbortError') {
+                                console.error('Share error:', err);
+                                showToast('⚠️ Share cancelled or failed');
+                            }
+                        });
+                    } else {
+                        navigator.clipboard.writeText(text).then(() => {
+                            showToast('📋 Link copied! Use your device share menu.');
+                        }).catch(() => {
+                            const textarea = document.createElement('textarea');
+                            textarea.value = text;
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            document.execCommand('copy');
+                            textarea.remove();
+                            showToast('📋 Link copied! Use your device share menu.');
+                        });
+                    }
+                    closeShareModal();
+                    return;
+                default:
+                    showToast('⚠️ Share option not available');
+                    return;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank');
+            }
+            closeShareModal();
+        }
+
+        function shareFromFeed(event, targetType, targetId) {
+            event.stopPropagation();
+            if (!currentUser) {
+                redirectToLogin();
+                return;
+            }
+
+            const item = feedItems.find(i => {
+                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
+                return i.type === targetType && id == targetId;
+            });
+
+            if (item) {
+                currentDetailData = item._raw;
+                currentDetailType = item.type;
+            }
+
+            openShareModal();
+        }
+
+        // ============================================================
         // INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1972,9 +2292,11 @@
 
             autoCleanExpiredJobs();
 
+            // AUTO-DETECT on mobile input
             document.getElementById('mobile').addEventListener('input', function(e) {
                 const mobile = this.value.trim();
                 const statusEl = document.getElementById('mobile-status');
+                
                 if (mobile.length === 10) {
                     autoCheckMobile(mobile);
                 } else if (mobile.length > 0 && mobile.length < 10) {
@@ -2027,6 +2349,7 @@
                     .select('*')
                     .eq('mobile', mobile)
                     .single();
+                
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
                     .select('*')
@@ -2040,7 +2363,7 @@
                     document.getElementById('status-badge').textContent = '✅ Existing user - Enter PIN';
                     document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
                     document.getElementById('submitBtn').textContent = '🔐 Login';
-                    document.getElementById('submitBtn').className = 'btn-green';
+                    document.getElementById('submitBtn').className = 'btn-primary btn-green';
                     document.getElementById('step1').style.display = 'none';
                     document.getElementById('step2').classList.remove('hidden');
                     document.getElementById('step3').classList.add('hidden');
@@ -2074,20 +2397,27 @@
 
         async function sendWhatsAppOTP(mobile) {
             setStatus('📱 Sending OTP via WhatsApp...', 'blue');
+            
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            
             sessionStorage.setItem('otp_' + mobile, otp);
             sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+
             const waNumber = formatMobileForWA(mobile);
             const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
             const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            
             window.open(waUrl, '_blank');
+
             document.getElementById('step1').style.display = 'none';
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
             document.getElementById('step4').classList.add('hidden');
             document.getElementById('wa-display-mobile').textContent = mobile;
+            
             document.querySelectorAll('.otp-input').forEach(el => el.value = '');
             document.querySelector('.otp-input').focus();
+            
             startOTPTimer();
             setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
             showToast('💬 OTP sent via WhatsApp!');
@@ -2110,6 +2440,7 @@
                     this.classList.remove('filled');
                 }
             });
+
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
                     arr[index - 1].focus();
@@ -2125,6 +2456,7 @@
                     }
                 }
             });
+
             input.addEventListener('focus', function() {
                 this.select();
             });
@@ -2140,12 +2472,15 @@
             let timeLeft = otpExpiryTime;
             const timerEl = document.getElementById('otp-timer');
             const resendBtn = document.getElementById('resend-otp');
+            
             if (otpTimerInterval) clearInterval(otpTimerInterval);
+            
             otpTimerInterval = setInterval(() => {
                 const mins = Math.floor(timeLeft / 60);
                 const secs = timeLeft % 60;
                 timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
                 timeLeft--;
+                
                 if (timeLeft < 0) {
                     clearInterval(otpTimerInterval);
                     timerEl.textContent = 'Expired';
@@ -2160,18 +2495,22 @@
                 showToast('⚠️ Enter complete 6-digit OTP');
                 return;
             }
+
             const storedOtp = sessionStorage.getItem('otp_' + currentMobile);
             const storedExpiry = sessionStorage.getItem('otp_expiry_' + currentMobile);
+
             if (!storedOtp) {
                 showToast('❌ OTP expired. Please request again.');
                 return;
             }
+
             if (Date.now() > parseInt(storedExpiry)) {
                 showToast('❌ OTP expired. Please request again.');
                 sessionStorage.removeItem('otp_' + currentMobile);
                 document.getElementById('resend-otp').disabled = false;
                 return;
             }
+
             if (otp !== storedOtp) {
                 showToast('❌ Invalid OTP. Please try again.');
                 document.querySelectorAll('.otp-input').forEach(el => {
@@ -2181,9 +2520,11 @@
                 document.querySelector('.otp-input').focus();
                 return;
             }
+
             showToast('✅ Phone verified successfully!');
             sessionStorage.removeItem('otp_' + currentMobile);
             sessionStorage.removeItem('otp_expiry_' + currentMobile);
+            
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
             document.getElementById('reg-display-mobile').textContent = currentMobile;
@@ -2196,11 +2537,14 @@
         async function resendOTP() {
             const mobile = currentMobile;
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            
             sessionStorage.setItem('otp_' + mobile, otp);
             sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+            
             const waNumber = formatMobileForWA(mobile);
             const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            
             document.getElementById('resend-otp').disabled = true;
             startOTPTimer();
             showToast('🔄 OTP resent via WhatsApp!');
@@ -2212,19 +2556,23 @@
         async function registerUser() {
             const pin = document.getElementById('reg-pin').value.trim();
             const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
+
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                 showToast('⚠️ Enter a valid 4-digit PIN');
                 document.getElementById('reg-pin').focus();
                 return;
             }
+
             if (pin !== confirmPin) {
                 showToast('⚠️ PINs do not match');
                 document.getElementById('reg-pin-confirm').value = '';
                 document.getElementById('reg-pin-confirm').focus();
                 return;
             }
+
             document.getElementById('register-btn').disabled = true;
             document.getElementById('register-btn').textContent = '⏳ Creating...';
+
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                     method: 'POST',
@@ -2232,6 +2580,7 @@
                     body: JSON.stringify({ mobile: currentMobile, pin: pin })
                 });
                 const data = await response.json();
+                
                 if (data.success) {
                     showToast('✅ Registration successful!');
                     await sb.from('archive_users').insert([{ mobile: currentMobile, pin_hash: pin }]);
@@ -2258,8 +2607,10 @@
                 document.getElementById('pin').focus();
                 return;
             }
+
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('submitBtn').textContent = '⏳ Verifying...';
+
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
                     method: 'POST',
@@ -2267,6 +2618,7 @@
                     body: JSON.stringify({ mobile: currentMobile, pin: pin })
                 });
                 const data = await response.json();
+                
                 if (data.success) {
                     await fetchUserData(currentMobile);
                     showToast('✅ Welcome back!');
@@ -2292,12 +2644,14 @@
                 .select('*')
                 .eq('mobile', mobile)
                 .single();
+
             if (error) {
                 const { data: newUser, error: insertError } = await sb
                     .from('active_users')
                     .insert([{ mobile: mobile, last_active: new Date().toISOString() }])
                     .select()
                     .single();
+                    
                 if (insertError) {
                     showToast('❌ Error creating user: ' + insertError.message);
                     return;
@@ -2306,6 +2660,7 @@
             } else {
                 currentUser = data;
             }
+
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.add('hidden');
@@ -2327,6 +2682,7 @@
             if (gender === 1) { symbol = '♀'; cls = 'female'; }
             else if (gender === 2) { symbol = '♂'; cls = 'male'; }
             else { cls = 'other'; }
+            
             document.querySelectorAll('.avatar-btn').forEach(btn => {
                 btn.className = `avatar-btn ${cls}`;
                 btn.querySelector('span').textContent = symbol;
@@ -2358,14 +2714,17 @@
         async function saveNewPin() {
             const newPin = document.getElementById('new-pin').value.trim();
             const confirmPin = document.getElementById('confirm-pin').value.trim();
+
             if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
                 showToast('⚠️ Enter a valid 4-digit PIN');
                 return;
             }
+
             if (newPin !== confirmPin) {
                 showToast('⚠️ PINs do not match');
                 return;
             }
+
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
                     method: 'POST',
@@ -2373,6 +2732,7 @@
                     body: JSON.stringify({ mobile: currentUser.mobile, new_pin: newPin })
                 });
                 const data = await response.json();
+                
                 if (data.success) {
                     showToast('✅ PIN changed successfully!');
                     closeChangePin();
@@ -2391,17 +2751,21 @@
             if (confirm('Forgot your PIN? We\'ll send an OTP to reset it.')) {
                 const mobile = currentMobile;
                 const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                
                 sessionStorage.setItem('reset_otp_' + mobile, otp);
                 sessionStorage.setItem('reset_otp_expiry_' + mobile, Date.now() + 300000);
+                
                 const waNumber = formatMobileForWA(mobile);
                 const message = `Your JobAd PIN reset code is: *${otp}*\n\nEnter this code to reset your PIN.`;
                 window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                
                 showToast('📱 PIN reset OTP sent via WhatsApp!');
+                
                 document.getElementById('step2').classList.add('hidden');
                 document.getElementById('step3').classList.remove('hidden');
                 document.getElementById('wa-display-mobile').textContent = mobile;
                 document.getElementById('verify-btn').textContent = '✅ Verify & Reset PIN';
-                document.getElementById('verify-btn').className = 'btn-green';
+                document.getElementById('verify-btn').className = 'btn-primary btn-green';
                 document.getElementById('verify-btn').onclick = function() {
                     verifyResetOTP();
                 };
@@ -2427,13 +2791,16 @@
                 showToast('⚠️ Enter complete 6-digit OTP');
                 return;
             }
+
             const mobile = currentMobile;
             const storedOtp = sessionStorage.getItem('reset_otp_' + mobile);
             const storedExpiry = sessionStorage.getItem('reset_otp_expiry_' + mobile);
+
             if (!storedOtp || Date.now() > parseInt(storedExpiry)) {
                 showToast('❌ OTP expired. Please try again.');
                 return;
             }
+
             if (otp !== storedOtp) {
                 showToast('❌ Invalid OTP. Please try again.');
                 document.querySelectorAll('.otp-input').forEach(el => {
@@ -2443,14 +2810,16 @@
                 document.querySelector('.otp-input').focus();
                 return;
             }
+
             showToast('✅ OTP verified! Set your new PIN.');
             sessionStorage.removeItem('reset_otp_' + mobile);
             sessionStorage.removeItem('reset_otp_expiry_' + mobile);
+
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
             document.getElementById('reg-display-mobile').textContent = mobile;
             document.getElementById('register-btn').textContent = '💾 Reset PIN';
-            document.getElementById('register-btn').className = 'btn-yellow';
+            document.getElementById('register-btn').className = 'btn-primary btn-yellow';
             document.getElementById('register-btn').onclick = function() {
                 saveResetPIN();
             };
@@ -2462,17 +2831,20 @@
         async function saveResetPIN() {
             const pin = document.getElementById('reg-pin').value.trim();
             const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
+
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                 showToast('⚠️ Enter a valid 4-digit PIN');
                 document.getElementById('reg-pin').focus();
                 return;
             }
+
             if (pin !== confirmPin) {
                 showToast('⚠️ PINs do not match');
                 document.getElementById('reg-pin-confirm').value = '';
                 document.getElementById('reg-pin-confirm').focus();
                 return;
             }
+
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
                     method: 'POST',
@@ -2480,6 +2852,7 @@
                     body: JSON.stringify({ mobile: currentMobile, new_pin: pin })
                 });
                 const data = await response.json();
+                
                 if (data.success) {
                     showToast('✅ PIN reset successfully! Please login with your new PIN.');
                     resetForm();
@@ -2540,13 +2913,16 @@
                 showToast('⚠️ Please login first');
                 return;
             }
+
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 showToast('⚠️ Please set your company name in profile first');
                 goToProfile();
                 return;
             }
+
             const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
             const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
+
             const company = document.getElementById('pj-company').value.trim();
             const jobTitle = document.getElementById('pj-title').value.trim();
             const expRaw = document.getElementById('pj-experience').value.trim();
@@ -2557,6 +2933,7 @@
             const skills = document.getElementById('pj-skills').value.trim();
             const description = document.getElementById('pj-description').value.trim();
             const expiryDate = document.getElementById('pj-expiry').value;
+
             if (!company) { showToast('⚠️ Company name is required'); return; }
             if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
             if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
@@ -2568,12 +2945,14 @@
             if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
             if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
             if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
+
             const selectedDate = new Date(expiryDate);
             const maxDate = new Date(Date.now() + 45*24*60*60*1000);
             if (selectedDate > maxDate) {
                 showToast('⚠️ Expiry date cannot exceed 45 days from today');
                 return;
             }
+
             const jobData = {
                 mobile: currentUser.mobile,
                 job_title: jobTitle,
@@ -2587,6 +2966,7 @@
                 area_id: parseInt(area),
                 expiry_date: new Date(expiryDate).toISOString()
             };
+
             try {
                 if (isEditing && editJobId) {
                     const { error } = await sb
@@ -2604,6 +2984,7 @@
                     if (error) throw error;
                     showToast('✅ Job published successfully!');
                 }
+
                 document.getElementById('pj-publish-btn').dataset.editing = 'false';
                 document.getElementById('pj-publish-btn').dataset.jobid = '';
                 document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
@@ -2622,6 +3003,7 @@
                 document.getElementById('pj-gender').value = '0';
                 document.getElementById('pj-zone').value = '100';
                 updatePostAreas();
+
                 fetchFeedData();
                 goToProfile();
                 loadMyJobs();
@@ -2639,6 +3021,7 @@
             if (!container) return;
             try {
                 await autoCleanExpiredJobs();
+
                 const { data, error } = await sb
                     .from('active_jobs')
                     .select('*')
@@ -2700,13 +3083,17 @@
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
+
             const isJob = type === 'JOB';
             const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
+
             document.getElementById('detail-title').textContent = data.job_title || data.title || 'Untitled';
             document.getElementById('detail-company').textContent = data.company_name || data.company || 'Unknown';
             document.getElementById('detail-type-badge').innerHTML = `<span class="type-badge ${isJob ? 'job' : 'seeker'}">${isJob ? 'JOB' : 'SEEKER'}</span>`;
+
             document.getElementById('detail-exp').textContent = (data.min_experience_years || data.exp || 0) + ' yrs';
             document.getElementById('detail-salary').textContent = data.max_salary_monthly ? '₹' + Number(data.max_salary_monthly).toLocaleString('en-IN') : (data.salary || 'Not specified');
+
             if (isJob) {
                 document.getElementById('detail-gender-field').style.display = 'block';
                 document.getElementById('detail-gender').textContent = genderMap[data.preferred_gender] || 'No Preference';
@@ -2714,11 +3101,14 @@
                 document.getElementById('detail-gender-field').style.display = 'block';
                 document.getElementById('detail-gender').textContent = genderMap[data.gender] || 'Not Specified';
             }
+
             const zoneId = data.zone_id || 0;
             const areaId = data.area_id || 0;
             document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
             document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
+
             document.getElementById('detail-skills').textContent = data.skills_comma_separated || data.skills || '—';
+
             if (isJob) {
                 document.getElementById('detail-expiry-field').style.display = 'block';
                 document.getElementById('detail-expiry').textContent = data.expiry_date ? new Date(data.expiry_date).toLocaleDateString('en-IN') : '—';
@@ -2728,24 +3118,29 @@
                 document.getElementById('detail-notice-field').style.display = 'block';
                 document.getElementById('detail-notice').textContent = (data.notice_period_days || '—') + ' days';
             }
+
             document.getElementById('detail-desc').textContent = data.job_description || data.professional_summary || data.desc || '—';
+
             const postedDate = data.posted_date || data.created_at || data.last_active;
             document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
-            // Contact number hidden - only shown through Call/WhatsApp buttons
-            // Update endorsements and flags
+
             const endorsements = data.endorsements || [];
             const flags = data.flags || [];
+
             document.getElementById('detail-endorsements-count').textContent = endorsements.length || 0;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-views').textContent = data.views || 0;
+
             updateDetailCounts(endorsements, flags);
-            // ACCESS CONTROL
+
             const callBtn = document.getElementById('detail-call-btn');
             const waBtn = document.getElementById('detail-wa-btn');
             const jobWarning = document.getElementById('detail-job-warning');
             const seekerWarning = document.getElementById('detail-seeker-warning');
+
             jobWarning.style.display = 'none';
             seekerWarning.style.display = 'none';
+
             if (isJob) {
                 if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                     jobWarning.style.display = 'flex';
@@ -2834,20 +3229,26 @@
                 redirectToLogin();
                 return null;
             }
+
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
             const targetMobile = currentUser.mobile;
+
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements, flags')
                     .eq(idField, targetId)
                     .single();
+
                 if (error) throw error;
+
                 let endorsements = data.endorsements || [];
                 let flags = data.flags || [];
+
                 const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
                 const alreadyFlagged = flags.includes(parseInt(targetMobile));
+
                 if (alreadyEndorsed) {
                     endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
                     showToast('👍 Endorsement removed');
@@ -2859,13 +3260,17 @@
                     endorsements.push(parseInt(targetMobile));
                     showToast('👍 Endorsed successfully!');
                 }
+
                 const { error: updateError } = await sb
                     .from(table)
                     .update({ endorsements: endorsements, flags: flags })
                     .eq(idField, targetId);
+
                 if (updateError) throw updateError;
+
                 await fetchFeedData();
                 return { endorsements, flags };
+
             } catch (err) {
                 console.error('Error toggling endorsement:', err);
                 showToast('❌ Failed to update: ' + err.message);
@@ -2879,20 +3284,26 @@
                 redirectToLogin();
                 return null;
             }
+
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
             const targetMobile = currentUser.mobile;
+
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements, flags')
                     .eq(idField, targetId)
                     .single();
+
                 if (error) throw error;
+
                 let endorsements = data.endorsements || [];
                 let flags = data.flags || [];
+
                 const alreadyFlagged = flags.includes(parseInt(targetMobile));
                 const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
+
                 if (alreadyFlagged) {
                     flags = flags.filter(m => m !== parseInt(targetMobile));
                     showToast('👎 Flag removed');
@@ -2904,13 +3315,17 @@
                     flags.push(parseInt(targetMobile));
                     showToast('👎 Not recommended');
                 }
+
                 const { error: updateError } = await sb
                     .from(table)
                     .update({ endorsements: endorsements, flags: flags })
                     .eq(idField, targetId);
+
                 if (updateError) throw updateError;
+
                 await fetchFeedData();
                 return { endorsements, flags };
+
             } catch (err) {
                 console.error('Error toggling flag:', err);
                 showToast('❌ Failed to update: ' + err.message);
@@ -2921,24 +3336,31 @@
         async function getEndorsersList(targetType, targetId) {
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements')
                     .eq(idField, targetId)
                     .single();
+
                 if (error) throw error;
+
                 const endorsements = data.endorsements || [];
                 if (endorsements.length === 0) {
                     showToast('No endorsements yet');
                     return [];
                 }
+
                 const { data: users, error: userError } = await sb
                     .from('active_users')
                     .select('mobile, full_name, gender')
                     .in('mobile', endorsements.map(m => m.toString()));
+
                 if (userError) throw userError;
+
                 return users || [];
+
             } catch (err) {
                 console.error('Error fetching endorsers:', err);
                 showToast('❌ Failed to load endorsers: ' + err.message);
@@ -2949,24 +3371,31 @@
         async function getFlaggersList(targetType, targetId) {
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('flags')
                     .eq(idField, targetId)
                     .single();
+
                 if (error) throw error;
+
                 const flags = data.flags || [];
                 if (flags.length === 0) {
                     showToast('No flags yet');
                     return [];
                 }
+
                 const { data: users, error: userError } = await sb
                     .from('active_users')
                     .select('mobile, full_name, gender')
                     .in('mobile', flags.map(m => m.toString()));
+
                 if (userError) throw userError;
+
                 return users || [];
+
             } catch (err) {
                 console.error('Error fetching flaggers:', err);
                 showToast('❌ Failed to load flaggers: ' + err.message);
@@ -2977,6 +3406,7 @@
         async function showEndorsersModal(targetType, targetId) {
             const users = await getEndorsersList(targetType, targetId);
             if (users.length === 0) return;
+
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
                 return `<div class="user-item" onclick="viewUserProfile('${u.mobile}')">
@@ -2985,9 +3415,11 @@
                     <span class="mobile-text">${u.mobile}</span>
                 </div>`;
             }).join('');
+
             if (users.length > 5) {
                 html += `<div class="more-text">+ ${users.length - 5} more...</div>`;
             }
+
             const modalHtml = `
                 <div class="modal-overlay show" id="endorsers-modal">
                     <div class="modal-box">
@@ -2997,6 +3429,7 @@
                     </div>
                 </div>
             `;
+
             document.querySelector('#endorsers-modal')?.remove();
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
@@ -3004,6 +3437,7 @@
         async function showFlaggersModal(targetType, targetId) {
             const users = await getFlaggersList(targetType, targetId);
             if (users.length === 0) return;
+
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
                 return `<div class="user-item" onclick="viewUserProfile('${u.mobile}')">
@@ -3012,6 +3446,7 @@
                     <span class="mobile-text">${u.mobile}</span>
                 </div>`;
             }).join('');
+
             const modalHtml = `
                 <div class="modal-overlay show" id="flaggers-modal">
                     <div class="modal-box">
@@ -3021,6 +3456,7 @@
                     </div>
                 </div>
             `;
+
             document.querySelector('#flaggers-modal')?.remove();
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
@@ -3058,83 +3494,6 @@
             if (!currentUser) return false;
             const flags = targetFlags || [];
             return flags.includes(parseInt(currentUser.mobile));
-        }
-
-        // ============================================================
-        // SHARE FUNCTIONS
-        // ============================================================
-        function openShareModal() {
-            if (!currentUser) {
-                redirectToLogin();
-                return;
-            }
-            document.getElementById('share-modal').classList.add('show');
-        }
-
-        function getShareData() {
-            const title = currentDetailData?.job_title || currentDetailData?.title || 'JobAd';
-            const url = window.location.href;
-            return { title, url };
-        }
-
-        function shareVia(platform) {
-            const { title, url } = getShareData();
-            const text = `Check out this opportunity on JobAd:\n\n${title}\n\n${url}`;
-            let shareUrl = '';
-            switch(platform) {
-                case 'whatsapp':
-                    shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
-                    break;
-                case 'facebook':
-                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
-                    break;
-                case 'twitter':
-                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
-                    break;
-                case 'linkedin':
-                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
-                    break;
-                case 'telegram':
-                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
-                    break;
-                case 'instagram':
-                    showToast('📸 Instagram sharing requires the app. Copy link to share.');
-                    shareUrl = '';
-                    break;
-                case 'copy':
-                    navigator.clipboard.writeText(text).then(() => {
-                        showToast('📋 Link copied to clipboard!');
-                    }).catch(() => {
-                        const textarea = document.createElement('textarea');
-                        textarea.value = text;
-                        document.body.appendChild(textarea);
-                        textarea.select();
-                        document.execCommand('copy');
-                        textarea.remove();
-                        showToast('📋 Link copied to clipboard!');
-                    });
-                    closeModal('share-modal');
-                    return;
-                case 'more':
-                    if (navigator.share) {
-                        navigator.share({
-                            title: title,
-                            text: text,
-                            url: url
-                        }).catch(() => {});
-                    } else {
-                        showToast('📱 Please use your device\'s share menu');
-                    }
-                    closeModal('share-modal');
-                    return;
-                default:
-                    showToast('⚠️ Share option not available');
-                    return;
-            }
-            if (shareUrl) {
-                window.open(shareUrl, '_blank');
-            }
-            closeModal('share-modal');
         }
 
         // ============================================================
@@ -3195,11 +3554,14 @@
             const flagCount = document.getElementById('detail-flags-count');
             const endorseBtn = document.getElementById('detail-endorse-btn');
             const flagBtn = document.getElementById('detail-flag-btn');
+
             if (endorseCount) endorseCount.textContent = endorsements.length || 0;
             if (flagCount) flagCount.textContent = flags.length || 0;
+
             if (currentUser) {
                 const userEndorsed = endorsements.includes(parseInt(currentUser.mobile));
                 const userFlagged = flags.includes(parseInt(currentUser.mobile));
+
                 if (endorseBtn) {
                     endorseBtn.className = `btn-endorse ${userEndorsed ? 'active' : ''}`;
                 }
@@ -3230,6 +3592,7 @@
                 showToast('⚠️ Please login first');
                 return;
             }
+
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 document.getElementById('recruiter-warning').style.display = 'flex';
                 document.getElementById('pj-company').value = '';
@@ -3243,6 +3606,7 @@
                 document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
                 document.getElementById('pj-company').value = currentUser.company_name;
             }
+
             document.getElementById('pj-publish-btn').dataset.editing = 'false';
             document.getElementById('pj-publish-btn').dataset.jobid = '';
             if (!document.getElementById('recruiter-warning').style.display || document.getElementById('recruiter-warning').style.display === 'none') {
@@ -3261,6 +3625,7 @@
                     el.dispatchEvent(new Event('input'));
                 });
             }
+
             currentPage = 'postjob';
             document.getElementById('home-page').classList.add('hidden-page');
             document.getElementById('profile-page').classList.add('hidden-page');
@@ -3345,6 +3710,7 @@
                 document.getElementById('seeker-desc').textContent = 'Your job profile is active.';
                 document.getElementById('seeker-input-area').style.display = 'none';
                 document.getElementById('seeker-active-area').style.display = 'block';
+
                 document.getElementById('seeker-display-name').textContent = currentUser.full_name;
                 document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
                 document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
@@ -3352,6 +3718,7 @@
                 document.getElementById('seeker-display-notice').textContent = currentUser.notice_period_days || '0';
                 document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
                 document.getElementById('seeker-display-about').textContent = currentUser.professional_summary || '';
+
                 const zoneName = getZoneName(currentUser.zone_id);
                 const areaName = getAreaName(currentUser.area_id);
                 document.getElementById('seeker-display-location').textContent = areaName ? `${zoneName} - ${areaName}` : zoneName || 'Not set';
@@ -3518,7 +3885,7 @@
         }
 
         // ============================================================
-        // FEED FUNCTIONS
+        // FEED FUNCTIONS - Badge & Actions on same row
         // ============================================================
         function setFilter(type) {
             currentFilter = type;
@@ -3588,33 +3955,21 @@
                 <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
                     <div class="title">${item.title}</div>
                     <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
-                    <span class="badge ${typeClass}">${typeLabel}</span>
-                    <div class="action-icons">
-                        <span class="count-display">👍 ${endorsementsCount}</span>
-                        <span class="count-display">👎 ${flagsCount}</span>
-                        <button class="icon-btn" onclick="event.stopPropagation(); openShareModalFromFeed('${item.type}', '${targetId}')">
-                            📤 <span class="label">Share</span>
-                        </button>
+                    <div class="bottom-row">
+                        <span class="badge ${typeClass}">${typeLabel}</span>
+                        <div class="action-row">
+                            <span class="action-item">👍 <span class="count">${endorsementsCount}</span></span>
+                            <span class="action-divider">|</span>
+                            <span class="action-item">👎 <span class="count">${flagsCount}</span></span>
+                            <span class="action-divider">|</span>
+                            <button class="share-btn" onclick="shareFromFeed(event, '${item.type}', '${targetId}')" title="Share">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 `;
             }).join('');
-        }
-
-        function openShareModalFromFeed(targetType, targetId) {
-            if (!currentUser) {
-                redirectToLogin();
-                return;
-            }
-            const item = feedItems.find(i => {
-                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
-                return i.type === targetType && id == targetId;
-            });
-            if (item) {
-                currentDetailData = item._raw;
-                currentDetailType = item.type;
-            }
-            document.getElementById('share-modal').classList.add('show');
         }
 
         // ============================================================
