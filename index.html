@@ -437,7 +437,6 @@
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             padding: 8px 12px;
-            cursor: pointer;
             transition: all 0.2s ease;
         }
         .feed-card:hover { border-color: #3b82f6; background: #f8faff; }
@@ -826,7 +825,9 @@
             padding: 8px;
             background: #f8fafc;
             border-radius: 8px;
+            cursor: pointer;
         }
+        .detail-stats .stat-item:hover { background: #f1f5f9; }
         .detail-stats .stat-item .number {
             font-size: 18px;
             font-weight: 700;
@@ -908,6 +909,25 @@
         .modal-box .modal-actions .btn-cancel:hover { background: #e2e8f0; }
         .modal-box .modal-actions .btn-save { background: #2563eb; color: white; }
         .modal-box .modal-actions .btn-save:hover { background: #1d4ed8; }
+        .modal-box .user-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: 0.15s;
+            border-radius: 6px;
+        }
+        .modal-box .user-item:hover { background: #f8fafc; }
+        .modal-box .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 12px 0;
+        }
+        .modal-box .more-text {
+            padding: 8px 12px;
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 13px;
+        }
 
         /* Install Banner */
         .install-banner {
@@ -945,6 +965,39 @@
             width: auto;
         }
         .install-banner .btn-close:hover { color: white; }
+
+        /* Endorsement/Flag action buttons in feed */
+        .action-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .action-btn:hover { opacity: 0.8; }
+        .action-btn-endorse { background: #f1f5f9; color: #475569; }
+        .action-btn-endorse.active { background: #2563eb; color: white; }
+        .action-btn-flag { background: #f1f5f9; color: #475569; }
+        .action-btn-flag.active { background: #dc2626; color: white; }
+        .action-btn-share { background: #2563eb; color: white; }
+        .action-btn-share:hover { background: #1d4ed8; }
+        
+        .interact-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .interact-row .action-btn { flex: 1; }
+        
+        .count-link {
+            cursor: pointer;
+            transition: 0.15s;
+            padding: 0 2px;
+            border-radius: 4px;
+        }
+        .count-link:hover { background: #f1f5f9; }
     </style>
 </head>
 <body>
@@ -1528,21 +1581,36 @@
                     </div>
 
                     <div class="detail-stats">
-                        <div class="stat-item">
-                            <div class="number" id="detail-views">0</div>
-                            <div class="label">Views</div>
+                        <div class="stat-item" onclick="detailShowEndorsers()">
+                            <div class="number" id="detail-endorsements-count" style="color:#2563eb;">0</div>
+                            <div class="label">👍 Endorsements</div>
+                        </div>
+                        <div class="stat-item" onclick="detailShowFlaggers()">
+                            <div class="number" id="detail-flags-count" style="color:#dc2626;">0</div>
+                            <div class="label">👎 Flags</div>
                         </div>
                         <div class="stat-item">
-                            <div class="number" id="detail-calls">0</div>
-                            <div class="label">Calls</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="number" id="detail-whatsapp">0</div>
-                            <div class="label">WhatsApp</div>
+                            <div class="number" id="detail-views" style="color:#6b7280;">0</div>
+                            <div class="label">👁️ Views</div>
                         </div>
                     </div>
 
                     <div class="detail-actions">
+                        <button id="detail-endorse-btn" onclick="detailToggleEndorsement()" 
+                            style="flex:1; padding:10px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#f1f5f9; color:#475569;">
+                            👍 Recommend
+                        </button>
+                        <button id="detail-flag-btn" onclick="detailToggleFlag()" 
+                            style="flex:1; padding:10px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#f1f5f9; color:#475569;">
+                            👎 Not Recommend
+                        </button>
+                        <button id="detail-share-btn" onclick="detailShare()" 
+                            style="flex:1; padding:10px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#2563eb; color:white;">
+                            📤 Share
+                        </button>
+                    </div>
+
+                    <div class="detail-actions" style="margin-top:8px;">
                         <button class="btn-call" id="detail-call-btn" onclick="makeCall()">📞 Call</button>
                         <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">💬 WhatsApp</button>
                         <button class="btn-close" onclick="closeDetail()">Close</button>
@@ -1588,44 +1656,29 @@
         // ============================================================
         let deferredPrompt;
 
-        // Register Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
-                .then(reg => {
-                    console.log('✅ Service Worker registered:', reg);
-                })
-                .catch(err => {
-                    console.log('❌ Service Worker error:', err);
-                });
+                .then(reg => console.log('✅ Service Worker registered:', reg))
+                .catch(err => console.log('❌ Service Worker error:', err));
         }
 
-        // Handle install prompt
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            console.log('✅ App is installable!');
-            
-            // Show custom install banner
             const banner = document.getElementById('install-banner');
-            if (banner) {
-                banner.classList.add('show');
-            }
+            if (banner) banner.classList.add('show');
         });
 
-        // Handle install button click
         document.getElementById('install-btn')?.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const result = await deferredPrompt.userChoice;
-                console.log('✅ User choice:', result.outcome);
                 deferredPrompt = null;
                 document.getElementById('install-banner').classList.remove('show');
             }
         });
 
-        // Handle successful installation
         window.addEventListener('appinstalled', () => {
-            console.log('✅ App installed successfully!');
             deferredPrompt = null;
             document.getElementById('install-banner').classList.remove('show');
         });
@@ -1830,7 +1883,6 @@
 
             autoCleanExpiredJobs();
 
-            // AUTO-DETECT on mobile input
             document.getElementById('mobile').addEventListener('input', function(e) {
                 const mobile = this.value.trim();
                 const statusEl = document.getElementById('mobile-status');
@@ -1852,30 +1904,19 @@
                 }
             });
 
-            // Enter key on PIN input
             document.getElementById('pin').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    submitPin();
-                }
+                if (e.key === 'Enter') submitPin();
             });
 
-            // Enter key on registration PIN inputs
             document.getElementById('reg-pin').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    document.getElementById('reg-pin-confirm').focus();
-                }
+                if (e.key === 'Enter') document.getElementById('reg-pin-confirm').focus();
             });
             document.getElementById('reg-pin-confirm').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    registerUser();
-                }
+                if (e.key === 'Enter') registerUser();
             });
 
-            // Click outside dropdown
             document.addEventListener('click', function(e) {
-                if (!e.target.closest('.header-right')) {
-                    closeDropdown();
-                }
+                if (!e.target.closest('.header-right')) closeDropdown();
             });
 
             console.log('✅ JobAd Ready - Auto-detect on mobile entry');
@@ -1893,14 +1934,12 @@
             setStatus('⏳ Checking...', 'blue');
 
             try {
-                // Check in archive_users first
                 const { data: archiveUser, error: archiveError } = await sb
                     .from('archive_users')
                     .select('*')
                     .eq('mobile', mobile)
                     .single();
                 
-                // Also check in active_users
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
                     .select('*')
@@ -1908,7 +1947,6 @@
                     .single();
 
                 if (archiveUser || activeUser) {
-                    // User exists - Show PIN login
                     isNewUser = false;
                     currentMobile = mobile;
                     document.getElementById('display-mobile').textContent = mobile;
@@ -1925,14 +1963,12 @@
                     setStatus('✅ Existing user. Enter your PIN.', 'green');
                     showToast('📱 Existing user - Enter PIN');
                 } else {
-                    // New user - Send WhatsApp OTP
                     isNewUser = true;
                     currentMobile = mobile;
                     await sendWhatsAppOTP(mobile);
                 }
             } catch (err) {
                 console.error('Error checking user:', err);
-                // If error, treat as new user
                 isNewUser = true;
                 currentMobile = mobile;
                 await sendWhatsAppOTP(mobile);
@@ -2079,7 +2115,6 @@
             sessionStorage.removeItem('otp_' + currentMobile);
             sessionStorage.removeItem('otp_expiry_' + currentMobile);
             
-            // Show registration PIN setup
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
             document.getElementById('reg-display-mobile').textContent = currentMobile;
@@ -2245,8 +2280,7 @@
         }
 
         function toggleDropdown() {
-            const dropdowns = document.querySelectorAll('.profile-dropdown');
-            dropdowns.forEach(d => d.classList.toggle('show'));
+            document.querySelectorAll('.profile-dropdown').forEach(d => d.classList.toggle('show'));
         }
 
         function closeDropdown() {
@@ -2317,7 +2351,6 @@
                 
                 showToast('📱 PIN reset OTP sent via WhatsApp!');
                 
-                // Switch to OTP verification for reset
                 document.getElementById('step2').classList.add('hidden');
                 document.getElementById('step3').classList.remove('hidden');
                 document.getElementById('wa-display-mobile').textContent = mobile;
@@ -2471,7 +2504,6 @@
                 return;
             }
 
-            // Check recruiter profile
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 showToast('⚠️ Please set your company name in profile first');
                 goToProfile();
@@ -2686,47 +2718,43 @@
             document.getElementById('detail-contact').textContent = contact;
             document.getElementById('detail-contact').dataset.contact = contact;
 
-            document.getElementById('detail-views').textContent = data.views || 0;
-            document.getElementById('detail-calls').textContent = data.calls || 0;
-            document.getElementById('detail-whatsapp').textContent = data.whatsapp || 0;
+            // Update endorsements and flags
+            const endorsements = data.endorsements || [];
+            const flags = data.flags || [];
 
-            // ACCESS CONTROL: Check permissions for Call/WhatsApp
+            document.getElementById('detail-endorsements-count').textContent = endorsements.length || 0;
+            document.getElementById('detail-flags-count').textContent = flags.length || 0;
+            document.getElementById('detail-views').textContent = data.views || 0;
+
+            // Update button states
+            updateDetailCounts(endorsements, flags);
+
+            // ACCESS CONTROL
             const callBtn = document.getElementById('detail-call-btn');
             const waBtn = document.getElementById('detail-wa-btn');
             const jobWarning = document.getElementById('detail-job-warning');
             const seekerWarning = document.getElementById('detail-seeker-warning');
 
-            // Hide warnings initially
             jobWarning.style.display = 'none';
             seekerWarning.style.display = 'none';
 
             if (isJob) {
-                // Viewing a JOB - need recruiter profile to contact
                 if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                     jobWarning.style.display = 'flex';
                     callBtn.disabled = true;
                     waBtn.disabled = true;
-                    callBtn.className = 'btn-call btn-disabled';
-                    waBtn.className = 'btn-whatsapp btn-disabled';
                 } else {
                     callBtn.disabled = false;
                     waBtn.disabled = false;
-                    callBtn.className = 'btn-call';
-                    waBtn.className = 'btn-whatsapp';
                 }
             } else {
-                // Viewing a SEEKER - need job seeker profile to contact
                 if (!currentUser.full_name || currentUser.full_name.trim() === '') {
                     seekerWarning.style.display = 'flex';
                     callBtn.disabled = true;
                     waBtn.disabled = true;
-                    callBtn.className = 'btn-call btn-disabled';
-                    waBtn.className = 'btn-whatsapp btn-disabled';
                 } else {
                     callBtn.disabled = false;
                     waBtn.disabled = false;
-                    callBtn.className = 'btn-call';
-                    waBtn.className = 'btn-whatsapp';
                 }
             }
         }
@@ -2745,7 +2773,6 @@
                 showToast('⚠️ No contact number available');
                 return;
             }
-            // Check permissions based on type
             const isJob = currentDetailType === 'JOB';
             if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
                 showToast('⚠️ Please set your company name to contact job seekers');
@@ -2766,7 +2793,6 @@
                 showToast('⚠️ No contact number available');
                 return;
             }
-            // Check permissions based on type
             const isJob = currentDetailType === 'JOB';
             if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
                 showToast('⚠️ Please set your company name to contact job seekers');
@@ -2781,6 +2807,451 @@
             const title = document.getElementById('detail-title').textContent;
             const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
             window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
+        }
+
+        // ============================================================
+        // ENDORSEMENTS & FLAGS FUNCTIONS
+        // ============================================================
+
+        /**
+         * Toggle endorsement (👍) for a job or seeker
+         */
+        async function toggleEndorsement(targetType, targetId, mobile) {
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                redirectToLogin();
+                return null;
+            }
+
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+            const targetMobile = currentUser.mobile;
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('endorsements, flags')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                let endorsements = data.endorsements || [];
+                let flags = data.flags || [];
+
+                const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
+                const alreadyFlagged = flags.includes(parseInt(targetMobile));
+
+                if (alreadyEndorsed) {
+                    endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
+                    showToast('👍 Endorsement removed');
+                } else {
+                    if (alreadyFlagged) {
+                        flags = flags.filter(m => m !== parseInt(targetMobile));
+                        showToast('👎 Flag removed, adding endorsement');
+                    }
+                    endorsements.push(parseInt(targetMobile));
+                    showToast('👍 Endorsed successfully!');
+                }
+
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ endorsements: endorsements, flags: flags })
+                    .eq(idField, targetId);
+
+                if (updateError) throw updateError;
+
+                await fetchFeedData();
+                return { endorsements, flags };
+
+            } catch (err) {
+                console.error('Error toggling endorsement:', err);
+                showToast('❌ Failed to update: ' + err.message);
+                return null;
+            }
+        }
+
+        /**
+         * Toggle flag (👎) for a job or seeker
+         */
+        async function toggleFlag(targetType, targetId, mobile) {
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                redirectToLogin();
+                return null;
+            }
+
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+            const targetMobile = currentUser.mobile;
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('endorsements, flags')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                let endorsements = data.endorsements || [];
+                let flags = data.flags || [];
+
+                const alreadyFlagged = flags.includes(parseInt(targetMobile));
+                const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
+
+                if (alreadyFlagged) {
+                    flags = flags.filter(m => m !== parseInt(targetMobile));
+                    showToast('👎 Flag removed');
+                } else {
+                    if (alreadyEndorsed) {
+                        endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
+                        showToast('👍 Endorsement removed, adding flag');
+                    }
+                    flags.push(parseInt(targetMobile));
+                    showToast('👎 Not recommended');
+                }
+
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ endorsements: endorsements, flags: flags })
+                    .eq(idField, targetId);
+
+                if (updateError) throw updateError;
+
+                await fetchFeedData();
+                return { endorsements, flags };
+
+            } catch (err) {
+                console.error('Error toggling flag:', err);
+                showToast('❌ Failed to update: ' + err.message);
+                return null;
+            }
+        }
+
+        /**
+         * Get endorsers list (names of people who endorsed)
+         */
+        async function getEndorsersList(targetType, targetId) {
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('endorsements')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                const endorsements = data.endorsements || [];
+                if (endorsements.length === 0) {
+                    showToast('No endorsements yet');
+                    return [];
+                }
+
+                const { data: users, error: userError } = await sb
+                    .from('active_users')
+                    .select('mobile, full_name, gender')
+                    .in('mobile', endorsements.map(m => m.toString()));
+
+                if (userError) throw userError;
+
+                return users || [];
+
+            } catch (err) {
+                console.error('Error fetching endorsers:', err);
+                showToast('❌ Failed to load endorsers: ' + err.message);
+                return [];
+            }
+        }
+
+        /**
+         * Get flaggers list (names of people who flagged)
+         */
+        async function getFlaggersList(targetType, targetId) {
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('flags')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                const flags = data.flags || [];
+                if (flags.length === 0) {
+                    showToast('No flags yet');
+                    return [];
+                }
+
+                const { data: users, error: userError } = await sb
+                    .from('active_users')
+                    .select('mobile, full_name, gender')
+                    .in('mobile', flags.map(m => m.toString()));
+
+                if (userError) throw userError;
+
+                return users || [];
+
+            } catch (err) {
+                console.error('Error fetching flaggers:', err);
+                showToast('❌ Failed to load flaggers: ' + err.message);
+                return [];
+            }
+        }
+
+        /**
+         * Show endorsers list in a modal
+         */
+        async function showEndorsersModal(targetType, targetId) {
+            const users = await getEndorsersList(targetType, targetId);
+            if (users.length === 0) return;
+
+            let html = users.map(u => {
+                const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
+                return `<div class="user-item" onclick="showUserProfile('${u.mobile}')">${genderSymbol} ${u.full_name || 'User'}</div>`;
+            }).join('');
+
+            if (users.length > 5) {
+                html += `<div class="more-text">+ ${users.length - 5} more...</div>`;
+            }
+
+            const modalHtml = `
+                <div class="modal-overlay show" id="endorsers-modal">
+                    <div class="modal-box" style="max-width:350px;">
+                        <h3>👍 Endorsed by ${users.length} people</h3>
+                        <div class="user-list">${html}</div>
+                        <button class="btn-cancel" onclick="closeModal('endorsers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.querySelector('#endorsers-modal')?.remove();
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        /**
+         * Show flaggers list in a modal
+         */
+        async function showFlaggersModal(targetType, targetId) {
+            const users = await getFlaggersList(targetType, targetId);
+            if (users.length === 0) return;
+
+            let html = users.map(u => {
+                const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
+                return `<div class="user-item" onclick="showUserProfile('${u.mobile}')">${genderSymbol} ${u.full_name || 'User'}</div>`;
+            }).join('');
+
+            const modalHtml = `
+                <div class="modal-overlay show" id="flaggers-modal">
+                    <div class="modal-box" style="max-width:350px;">
+                        <h3>👎 Not recommended by ${users.length} people</h3>
+                        <div class="user-list">${html}</div>
+                        <button class="btn-cancel" onclick="closeModal('flaggers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer;">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.querySelector('#flaggers-modal')?.remove();
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        /**
+         * Close modal by ID
+         */
+        function closeModal(modalId) {
+            document.getElementById(modalId)?.remove();
+        }
+
+        /**
+         * Show user profile (placeholder)
+         */
+        function showUserProfile(mobile) {
+            showToast(`👤 Viewing profile: ${mobile}`);
+        }
+
+        /**
+         * Redirect guest to login
+         */
+        function redirectToLogin() {
+            sessionStorage.setItem('redirect_after_login', window.location.pathname);
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('login-screen').style.display = 'flex';
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('mobile').focus();
+            showToast('🔐 Please login to continue');
+        }
+
+        /**
+         * Check if current user has endorsed a target
+         */
+        function hasUserEndorsed(targetEndorsements) {
+            if (!currentUser) return false;
+            const endorsements = targetEndorsements || [];
+            return endorsements.includes(parseInt(currentUser.mobile));
+        }
+
+        /**
+         * Check if current user has flagged a target
+         */
+        function hasUserFlagged(targetFlags) {
+            if (!currentUser) return false;
+            const flags = targetFlags || [];
+            return flags.includes(parseInt(currentUser.mobile));
+        }
+
+        /**
+         * Share item via WhatsApp
+         */
+        function shareItem(targetType, targetId) {
+            if (!currentUser) {
+                redirectToLogin();
+                return;
+            }
+            
+            const item = feedItems.find(i => {
+                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
+                return i.type === targetType && id == targetId;
+            });
+            
+            if (!item) {
+                showToast('⚠️ Item not found');
+                return;
+            }
+            
+            const title = item.title || 'Job/Profile';
+            const url = window.location.href;
+            const message = encodeURIComponent(`Check out this ${item.type.toLowerCase()} on JobAd:\n\n${title}\n\n${url}`);
+            
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+
+        /**
+         * Toggle endorsement from detail view
+         */
+        async function detailToggleEndorsement() {
+            if (!currentUser) {
+                redirectToLogin();
+                return;
+            }
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            const result = await toggleEndorsement(currentDetailType, targetId, currentUser.mobile);
+            
+            if (result) {
+                updateDetailCounts(result.endorsements, result.flags);
+            }
+        }
+
+        /**
+         * Toggle flag from detail view
+         */
+        async function detailToggleFlag() {
+            if (!currentUser) {
+                redirectToLogin();
+                return;
+            }
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            const result = await toggleFlag(currentDetailType, targetId, currentUser.mobile);
+            
+            if (result) {
+                updateDetailCounts(result.endorsements, result.flags);
+            }
+        }
+
+        /**
+         * Share from detail view
+         */
+        function detailShare() {
+            if (!currentUser) {
+                redirectToLogin();
+                return;
+            }
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            
+            const title = currentDetailData.job_title || currentDetailData.title || 'Job/Profile';
+            const url = window.location.href;
+            const message = encodeURIComponent(`Check out this ${currentDetailType.toLowerCase()} on JobAd:\n\n${title}\n\n${url}`);
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+
+        /**
+         * Show endorsers from detail view
+         */
+        async function detailShowEndorsers() {
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            await showEndorsersModal(currentDetailType, targetId);
+        }
+
+        /**
+         * Show flaggers from detail view
+         */
+        async function detailShowFlaggers() {
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            await showFlaggersModal(currentDetailType, targetId);
+        }
+
+        /**
+         * Update detail view counts
+         */
+        function updateDetailCounts(endorsements, flags) {
+            const endorseCount = document.getElementById('detail-endorsements-count');
+            const flagCount = document.getElementById('detail-flags-count');
+            const endorseBtn = document.getElementById('detail-endorse-btn');
+            const flagBtn = document.getElementById('detail-flag-btn');
+            
+            if (endorseCount) endorseCount.textContent = endorsements.length || 0;
+            if (flagCount) flagCount.textContent = flags.length || 0;
+            
+            if (currentUser) {
+                const userEndorsed = endorsements.includes(parseInt(currentUser.mobile));
+                const userFlagged = flags.includes(parseInt(currentUser.mobile));
+                
+                if (endorseBtn) {
+                    endorseBtn.textContent = userEndorsed ? '✅ Recommended' : '👍 Recommend';
+                    endorseBtn.style.background = userEndorsed ? '#2563eb' : '#f1f5f9';
+                    endorseBtn.style.color = userEndorsed ? 'white' : '#475569';
+                }
+                
+                if (flagBtn) {
+                    flagBtn.textContent = userFlagged ? '⚠️ Not Recommended' : '👎 Not Recommend';
+                    flagBtn.style.background = userFlagged ? '#dc2626' : '#f1f5f9';
+                    flagBtn.style.color = userFlagged ? 'white' : '#475569';
+                }
+            }
         }
 
         // ============================================================
@@ -2805,7 +3276,6 @@
                 return;
             }
 
-            // Check recruiter profile
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 document.getElementById('recruiter-warning').style.display = 'flex';
                 document.getElementById('pj-company').value = '';
@@ -3098,65 +3568,109 @@
         }
 
         // ============================================================
-        // UI HELPERS
+        // FEED FUNCTIONS
         // ============================================================
-        function showMessage(msg, type) {
-            const el = document.getElementById('msg');
-            el.textContent = msg;
-            el.className = 'msg msg-' + type;
-            el.classList.remove('hidden');
+        function setFilter(type) {
+            currentFilter = type;
+            const both = document.getElementById('filter-both');
+            const job = document.getElementById('filter-job');
+            const seeker = document.getElementById('filter-seeker');
+            both.className = type === 'BOTH' ? 'active' : 'inactive';
+            job.className = type === 'JOB' ? 'active' : 'inactive';
+            seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
+            renderFeed();
         }
 
-        function hideMessage() { document.getElementById('msg').classList.add('hidden'); }
-
-        function showToast(msg) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = msg;
-            document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 2000);
-        }
-
-        function resetForm() {
-            document.getElementById('step1').style.display = 'block';
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.add('hidden');
-            document.getElementById('step4').classList.add('hidden');
-            document.getElementById('home-page').classList.add('hidden-page');
-            document.getElementById('profile-page').classList.add('hidden-page');
-            document.getElementById('edit-seeker-page').classList.add('hidden-page');
-            document.getElementById('postjob-page').classList.add('hidden-page');
-            document.getElementById('detail-page').classList.add('hidden-page');
-            document.getElementById('login-screen').style.display = 'flex';
-            document.querySelectorAll('.avatar-btn').forEach(btn => {
-                btn.style.display = 'none';
-            });
-            document.getElementById('mobile').value = '';
-            document.getElementById('pin').value = '';
-            document.getElementById('reg-pin').value = '';
-            document.getElementById('reg-pin-confirm').value = '';
-            document.querySelectorAll('.otp-input').forEach(el => {
-                el.value = '';
-                el.classList.remove('filled');
-            });
-            document.getElementById('msg').classList.add('hidden');
-            document.getElementById('mobile-status').textContent = '';
-            document.getElementById('submitBtn').disabled = false;
-            document.getElementById('submitBtn').textContent = '🔐 Login';
-            document.getElementById('register-btn').disabled = false;
-            document.getElementById('register-btn').textContent = '✅ Create Account';
-            if (otpTimerInterval) clearInterval(otpTimerInterval);
-            currentMobile = '';
-            currentUser = null;
-            isChecking = false;
-            document.getElementById('mobile').focus();
-        }
-
-        function setStatus(text, type) {
-            const el = document.getElementById('mobile-status');
-            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
-            el.textContent = text;
-            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
+        function renderFeed() {
+            if (currentPage !== 'home') return;
+            const container = document.getElementById('feed-container');
+            const count = document.getElementById('results-count');
+            if (!feedItems || feedItems.length === 0) {
+                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
+                count.textContent = 'Showing 0 Records';
+                return;
+            }
+            let filtered = [...feedItems];
+            if (currentFilter === 'JOB') {
+                filtered = filtered.filter(item => item.type === 'JOB');
+            } else if (currentFilter === 'SEEKER') {
+                filtered = filtered.filter(item => item.type === 'SEEKER');
+            }
+            if (selectedZoneId) {
+                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
+            }
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            }
+            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
+            if (titleFilter) {
+                filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
+            }
+            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
+            if (skillsFilter) {
+                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
+            }
+            const expFilter = document.getElementById('filter-exp').value;
+            if (expFilter === '0-2') {
+                filtered = filtered.filter(item => item.exp <= 2);
+            } else if (expFilter === '3-5') {
+                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
+            } else if (expFilter === '5+') {
+                filtered = filtered.filter(item => item.exp > 5);
+            }
+            count.textContent = `Showing ${filtered.length} Records`;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(item => {
+                const zoneName = getZoneName(item.zone_id);
+                const areaName = getAreaName(item.area_id);
+                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
+                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
+                
+                const endorsements = item._raw?.endorsements || [];
+                const flags = item._raw?.flags || [];
+                const endorsementsCount = endorsements.length;
+                const flagsCount = flags.length;
+                
+                const userEndorsed = hasUserEndorsed(endorsements);
+                const userFlagged = hasUserFlagged(flags);
+                
+                const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
+                
+                return `
+                <div class="feed-card">
+                    <div onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                        <div class="title">${item.title}</div>
+                        <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
+                        <span class="badge ${typeClass}">${typeLabel}</span>
+                        <div style="display:flex; gap:16px; margin-top:6px; font-size:12px; color:#64748b;">
+                            <span class="count-link" onclick="event.stopPropagation(); showEndorsersModal('${item.type}', '${targetId}')">
+                                👍 <span id="endorse-count-${targetId}">${endorsementsCount}</span>
+                            </span>
+                            <span class="count-link" onclick="event.stopPropagation(); showFlaggersModal('${item.type}', '${targetId}')">
+                                👎 <span id="flag-count-${targetId}">${flagsCount}</span>
+                            </span>
+                            <span style="cursor:pointer; color:#2563eb;" onclick="event.stopPropagation(); shareItem('${item.type}', '${targetId}')">
+                                📤 Share
+                            </span>
+                        </div>
+                    </div>
+                    <div class="interact-row">
+                        <button class="action-btn action-btn-endorse ${userEndorsed ? 'active' : ''}" 
+                            onclick="event.stopPropagation(); toggleEndorsement('${item.type}', '${targetId}')">
+                            ${userEndorsed ? '✅' : '👍'} Recommend
+                        </button>
+                        <button class="action-btn action-btn-flag ${userFlagged ? 'active' : ''}" 
+                            onclick="event.stopPropagation(); toggleFlag('${item.type}', '${targetId}')">
+                            ${userFlagged ? '⚠️' : '👎'} Not Recommend
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
         }
 
         // ============================================================
@@ -3242,74 +3756,65 @@
         });
 
         // ============================================================
-        // FEED FUNCTIONS
+        // UI HELPERS
         // ============================================================
-        function setFilter(type) {
-            currentFilter = type;
-            const both = document.getElementById('filter-both');
-            const job = document.getElementById('filter-job');
-            const seeker = document.getElementById('filter-seeker');
-            both.className = type === 'BOTH' ? 'active' : 'inactive';
-            job.className = type === 'JOB' ? 'active' : 'inactive';
-            seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
-            renderFeed();
+        function showMessage(msg, type) {
+            const el = document.getElementById('msg');
+            el.textContent = msg;
+            el.className = 'msg msg-' + type;
+            el.classList.remove('hidden');
         }
 
-        function renderFeed() {
-            if (currentPage !== 'home') return;
-            const container = document.getElementById('feed-container');
-            const count = document.getElementById('results-count');
-            if (!feedItems || feedItems.length === 0) {
-                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
-                count.textContent = 'Showing 0 Records';
-                return;
-            }
-            let filtered = [...feedItems];
-            if (currentFilter === 'JOB') {
-                filtered = filtered.filter(item => item.type === 'JOB');
-            } else if (currentFilter === 'SEEKER') {
-                filtered = filtered.filter(item => item.type === 'SEEKER');
-            }
-            if (selectedZoneId) {
-                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
-            }
-            if (selectedAreaId) {
-                filtered = filtered.filter(item => item.area_id === selectedAreaId);
-            }
-            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
-            if (titleFilter) {
-                filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
-            }
-            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
-            if (skillsFilter) {
-                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
-            }
-            const expFilter = document.getElementById('filter-exp').value;
-            if (expFilter === '0-2') {
-                filtered = filtered.filter(item => item.exp <= 2);
-            } else if (expFilter === '3-5') {
-                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
-            } else if (expFilter === '5+') {
-                filtered = filtered.filter(item => item.exp > 5);
-            }
-            count.textContent = `Showing ${filtered.length} Records`;
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
-                return;
-            }
-            container.innerHTML = filtered.map(item => {
-                const zoneName = getZoneName(item.zone_id);
-                const areaName = getAreaName(item.area_id);
-                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
-                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
-                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
-                return `
-                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                    <div class="title">${item.title}</div>
-                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
-                    <span class="badge ${typeClass}">${typeLabel}</span>
-                </div>
-            `}).join('');
+        function hideMessage() { document.getElementById('msg').classList.add('hidden'); }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function resetForm() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.getElementById('login-screen').style.display = 'flex';
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                btn.style.display = 'flex';
+            });
+            document.getElementById('mobile').value = '';
+            document.getElementById('pin').value = '';
+            document.getElementById('reg-pin').value = '';
+            document.getElementById('reg-pin-confirm').value = '';
+            document.querySelectorAll('.otp-input').forEach(el => {
+                el.value = '';
+                el.classList.remove('filled');
+            });
+            document.getElementById('msg').classList.add('hidden');
+            document.getElementById('mobile-status').textContent = '';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = '🔐 Login';
+            document.getElementById('register-btn').disabled = false;
+            document.getElementById('register-btn').textContent = '✅ Create Account';
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            currentMobile = '';
+            currentUser = null;
+            isChecking = false;
+            document.getElementById('mobile').focus();
+        }
+
+        function setStatus(text, type) {
+            const el = document.getElementById('mobile-status');
+            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
+            el.textContent = text;
+            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
         }
 
         // ============================================================
@@ -3324,7 +3829,7 @@
 
         console.log('✅ JobAd App Ready');
         console.log('📱 Auto-detect on mobile number entry');
-        console.log('📱 Test users: 6300067332 (PIN: 1234)');
+        console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
     </script>
 </body>
