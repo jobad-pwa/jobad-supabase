@@ -6,7 +6,6 @@
     <title>JobAd</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -135,12 +134,12 @@
 
         .pin-login-input {
             width: 100%;
-            padding: 14px;
+            padding: 14px 16px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            font-size: 24px;
+            font-size: 16px;
             text-align: center;
-            letter-spacing: 8px;
+            letter-spacing: 4px;
             margin: 8px 0;
         }
         .pin-login-input:focus { border-color: #2563eb; outline: none; }
@@ -448,17 +447,14 @@
             font-size: 14px;
             align-items: center;
         }
-        .feed-card .action-icons .count-link {
-            color: #2563eb;
-            text-decoration: underline;
-            cursor: pointer;
+        .feed-card .action-icons .count-display {
             font-weight: 600;
             font-size: 14px;
+            color: #475569;
             display: inline-flex;
             align-items: center;
             gap: 4px;
         }
-        .feed-card .action-icons .count-link:hover { color: #1d4ed8; }
         .feed-card .action-icons .icon-btn {
             cursor: pointer;
             font-size: 18px;
@@ -867,17 +863,31 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
+
+        /* Detail Actions - Organized */
         .detail-actions {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             margin-top: 12px;
-            flex-wrap: wrap;
+        }
+        .detail-actions .action-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .detail-actions .action-group .action-label {
+            font-size: 7px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-weight: 600;
         }
         .detail-actions button {
-            flex: 1;
-            min-width: 44px;
-            padding: 10px 8px;
-            font-size: 18px;
+            width: 100%;
+            padding: 10px 4px;
+            font-size: 22px;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
@@ -885,7 +895,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            min-height: 48px;
         }
         .detail-actions .btn-call { background: #16a34a; color: white; }
         .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
@@ -896,8 +906,7 @@
         .detail-actions .btn-endorse {
             background: #f1f5f9;
             color: #475569;
-            font-size: 20px;
-            padding: 8px;
+            font-size: 22px;
         }
         .detail-actions .btn-endorse.active {
             background: #2563eb;
@@ -908,8 +917,7 @@
         .detail-actions .btn-flag {
             background: #f1f5f9;
             color: #475569;
-            font-size: 20px;
-            padding: 8px;
+            font-size: 22px;
         }
         .detail-actions .btn-flag.active {
             background: #dc2626;
@@ -920,18 +928,14 @@
         .detail-actions .btn-share {
             background: #2563eb;
             color: white;
-            font-size: 18px;
-            padding: 8px 12px;
+            font-size: 22px;
         }
         .detail-actions .btn-share:hover { background: #1d4ed8; }
         .detail-actions button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        .detail-actions .btn-label {
-            font-size: 10px;
-            font-weight: 500;
-        }
+
         .type-badge {
             display: inline-block;
             padding: 2px 12px;
@@ -961,7 +965,7 @@
             background: white;
             border-radius: 20px;
             padding: 24px;
-            max-width: 320px;
+            max-width: 340px;
             width: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             max-height: 80vh;
@@ -1012,29 +1016,31 @@
         /* Share Modal */
         .share-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin: 12px 0;
         }
         .share-grid .share-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 12px 8px;
+            padding: 10px 6px;
             border-radius: 12px;
             cursor: pointer;
             transition: 0.2s;
             border: 1px solid #e2e8f0;
             background: white;
         }
-        .share-grid .share-item:hover { background: #f8fafc; border-color: #2563eb; }
-        .share-grid .share-item .share-icon { font-size: 28px; margin-bottom: 4px; }
-        .share-grid .share-item .share-label { font-size: 10px; color: #475569; font-weight: 500; }
+        .share-grid .share-item:hover { background: #f8fafc; border-color: #2563eb; transform: scale(1.02); }
+        .share-grid .share-item .share-icon { font-size: 28px; margin-bottom: 3px; }
+        .share-grid .share-item .share-label { font-size: 9px; color: #475569; font-weight: 500; }
         .share-grid .share-item.whatsapp:hover { border-color: #25D366; background: #f0fdf4; }
         .share-grid .share-item.facebook:hover { border-color: #1877f2; background: #f0f7ff; }
         .share-grid .share-item.twitter:hover { border-color: #000000; background: #f8fafc; }
-        .share-grid .share-item.copy:hover { border-color: #6b7280; background: #f8fafc; }
+        .share-grid .share-item.linkedin:hover { border-color: #0a66c2; background: #f0f7ff; }
         .share-grid .share-item.telegram:hover { border-color: #0088cc; background: #f0faff; }
+        .share-grid .share-item.instagram:hover { border-color: #e4405f; background: #fdf0f3; }
+        .share-grid .share-item.copy:hover { border-color: #6b7280; background: #f8fafc; }
 
         /* Install Banner */
         .install-banner {
@@ -1075,8 +1081,8 @@
     </style>
 </head>
 <body>
+    <!-- LOGIN SCREEN -->
     <div class="card">
-        <!-- LOGIN SCREEN -->
         <div id="login-screen">
             <h1>JobAd</h1>
             <div class="test-links"><a href="test.html">🔌 DB Test</a></div>
@@ -1084,7 +1090,6 @@
                 <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10" autofocus>
                 <div class="mobile-status" id="mobile-status"></div>
             </div>
-            <!-- PIN Login Step -->
             <div id="step2" class="hidden fade-in" style="width:100%;">
                 <div class="text-center mb-4">
                     <div class="mobile-display" id="display-mobile">--</div>
@@ -1097,7 +1102,6 @@
                 <button onclick="submitPin()" id="submitBtn" class="btn-green">🔐 Login</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
-            <!-- WhatsApp OTP Step -->
             <div id="step3" class="hidden fade-in" style="width:100%;">
                 <div class="text-center mb-4">
                     <div class="mobile-display" id="wa-display-mobile">--</div>
@@ -1118,7 +1122,6 @@
                 <button onclick="verifyOTP()" id="verify-btn" class="btn-green">✅ Verify & Continue</button>
                 <button onclick="resetForm()" class="btn-back">← Change Number</button>
             </div>
-            <!-- Registration PIN Setup -->
             <div id="step4" class="hidden fade-in" style="width:100%;">
                 <div class="text-center mb-4">
                     <div class="mobile-display" id="reg-display-mobile">--</div>
@@ -1156,7 +1159,6 @@
                     </div>
                 </div>
 
-                <!-- Install Banner -->
                 <div class="install-banner" id="install-banner">
                     <span class="text">📲 Install JobAd app</span>
                     <div>
@@ -1351,18 +1353,15 @@
                     <h2>👤 Job Seeker Profile</h2>
                     <button class="cancel-btn" onclick="goToProfile()">Cancel</button>
                 </div>
-
                 <div class="page-content">
                     <div class="edit-hint">
                         <div class="hint-title">📍 Why select your location?</div>
                         <div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div>
                     </div>
-
                     <div class="edit-field">
                         <label>Full Name *</label>
                         <input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50">
                     </div>
-
                     <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
                         <div class="edit-field">
                             <label>Job Title *</label>
@@ -1377,7 +1376,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div class="edit-field">
                             <label>Experience (Years)</label>
@@ -1391,7 +1389,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div class="edit-field">
                             <label>Notice (days)</label>
@@ -1402,7 +1399,6 @@
                             <input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100">
                         </div>
                     </div>
-
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div class="edit-field">
                             <label>Zone *</label>
@@ -1417,7 +1413,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="edit-field">
                         <label>About Me <span style="font-size:9px;color:#94a3b8;">(max 200 chars)</span></label>
                         <textarea id="edit-seeker-about" rows="2" placeholder="Write about yourself..." maxlength="200"></textarea>
@@ -1425,10 +1420,8 @@
                             <span id="char-count">0</span> / 200
                         </div>
                     </div>
-
                     <button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button>
                 </div>
-
                 <div class="bottom-nav">
                     <button class="nav-item" onclick="goHome()">
                         <span class="icon">🏠</span>
@@ -1453,9 +1446,7 @@
                     <span class="logo" onclick="goHome()">JobAd</span>
                     <button class="cancel-btn" onclick="cancelPostJob()">Cancel</button>
                 </div>
-
                 <div class="postjob-scroll">
-                    <!-- Recruiter Warning -->
                     <div id="recruiter-warning" class="action-required" style="display:none;">
                         <span class="icon">⚠️</span>
                         <div class="text">
@@ -1464,12 +1455,10 @@
                         </div>
                         <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Company <span class="required">*</span></label>
                         <input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100">
                     </div>
-
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Job Title <span class="required">*</span></label>
@@ -1481,7 +1470,6 @@
                             <input class="form-control" type="number" id="pj-experience" placeholder="e.g. 3.5" min="0" max="50" step="0.5" value="3.5">
                         </div>
                     </div>
-
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Max Monthly Salary (₹) <span class="required">*</span></label>
@@ -1499,7 +1487,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Job Location Zone <span class="required">*</span></label>
@@ -1519,7 +1506,6 @@
                             <div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div>
                         </div>
                     </div>
-
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Skills (comma separated) <span class="required">*</span></label>
@@ -1532,17 +1518,14 @@
                             <div class="inline-hint"><span>⏳ Auto: +30 days</span><span id="expiry-hint">max 45 days</span></div>
                         </div>
                     </div>
-
                     <div class="form-group">
                         <label class="form-label">Description</label>
                         <textarea class="form-control" id="pj-description" rows="3" placeholder="Job details..." maxlength="500"></textarea>
                         <div class="inline-hint"><span></span><span id="pj-desc-counter">0/500</span></div>
                     </div>
-
                     <button class="publish-btn" id="pj-publish-btn" onclick="publishJob()">📤 Publish Job</button>
                     <div class="bottom-spacer"></div>
                 </div>
-
                 <div class="bottom-nav">
                     <button class="nav-item" onclick="goHome()">
                         <span class="icon">🏠</span>
@@ -1567,7 +1550,6 @@
                     <span class="logo" onclick="goHome()">JobAd</span>
                     <button class="cancel-btn" onclick="closeDetail()">Close</button>
                 </div>
-
                 <div class="detail-scroll" id="detail-scroll">
                     <div style="margin-bottom:12px; display:flex; justify-content:space-between; align-items:center;">
                         <div>
@@ -1577,7 +1559,6 @@
                         <span id="detail-type-badge"></span>
                     </div>
 
-                    <!-- Recruiter Warning for Job View -->
                     <div id="detail-job-warning" class="action-required" style="display:none;">
                         <span class="icon">⚠️</span>
                         <div class="text">
@@ -1586,8 +1567,6 @@
                         </div>
                         <button class="btn-action" onclick="goToProfile()">Go to Profile</button>
                     </div>
-
-                    <!-- Seeker Warning for Seeker View -->
                     <div id="detail-seeker-warning" class="action-required" style="display:none;">
                         <span class="icon">⚠️</span>
                         <div class="text">
@@ -1607,12 +1586,10 @@
                             <div class="value" id="detail-salary">--</div>
                         </div>
                     </div>
-
                     <div class="detail-field" id="detail-gender-field">
                         <label>Gender Preference</label>
                         <div class="value" id="detail-gender">--</div>
                     </div>
-
                     <div class="grid-2" style="gap:8px;">
                         <div class="detail-field">
                             <label>Zone</label>
@@ -1623,38 +1600,27 @@
                             <div class="value" id="detail-area">--</div>
                         </div>
                     </div>
-
                     <div class="detail-field">
                         <label>Skills</label>
                         <div class="value" id="detail-skills">--</div>
                     </div>
-
                     <div class="detail-field" id="detail-expiry-field">
                         <label>Expiry Date</label>
                         <div class="value" id="detail-expiry">--</div>
                     </div>
-
                     <div class="detail-field" id="detail-notice-field">
                         <label>Notice Period</label>
                         <div class="value" id="detail-notice">--</div>
                     </div>
-
                     <div class="detail-field">
                         <label>Description / About</label>
                         <div class="value-multiline" id="detail-desc">--</div>
                     </div>
-
                     <div class="detail-field">
                         <label>Posted / Active Since</label>
                         <div class="value" id="detail-posted">--</div>
                     </div>
 
-                    <div class="detail-field">
-                        <label>Contact</label>
-                        <div class="value" id="detail-contact">--</div>
-                    </div>
-
-                    <!-- Endorsements, Flags, Views -->
                     <div class="detail-stats">
                         <div class="stat-item" onclick="detailShowEndorsers()">
                             <div class="number" id="detail-endorsements-count">0</div>
@@ -1670,31 +1636,36 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons: Call, WhatsApp, Recommend, Not Recommend, Share, Close -->
+                    <!-- Detail Actions - Organized with proper symbols -->
                     <div class="detail-actions">
-                        <button class="btn-call" id="detail-call-btn" onclick="makeCall()">
-                            📞 <span class="btn-label">Call</span>
-                        </button>
-                        <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">
-                            💬 <span class="btn-label">WhatsApp</span>
-                        </button>
-                        <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()">
-                            👍 <span class="btn-label">Recommend</span>
-                        </button>
-                        <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()">
-                            👎 <span class="btn-label">Not Rec</span>
-                        </button>
-                        <button class="btn-share" id="detail-share-btn" onclick="openShareModal()">
-                            📤 <span class="btn-label">Share</span>
-                        </button>
-                        <button class="btn-close" onclick="closeDetail()">
-                            ✕ <span class="btn-label">Close</span>
-                        </button>
+                        <div class="action-group">
+                            <button class="btn-call" id="detail-call-btn" onclick="makeCall()">📞</button>
+                            <span class="action-label">Call</span>
+                        </div>
+                        <div class="action-group">
+                            <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">💬</button>
+                            <span class="action-label">WhatsApp</span>
+                        </div>
+                        <div class="action-group">
+                            <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()">👍</button>
+                            <span class="action-label">Recommend</span>
+                        </div>
+                        <div class="action-group">
+                            <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()">👎</button>
+                            <span class="action-label">Not Rec</span>
+                        </div>
+                        <div class="action-group">
+                            <button class="btn-share" id="detail-share-btn" onclick="openShareModal()">📤</button>
+                            <span class="action-label">Share</span>
+                        </div>
+                        <div class="action-group">
+                            <button class="btn-close" onclick="closeDetail()">✕</button>
+                            <span class="action-label">Close</span>
+                        </div>
                     </div>
 
                     <div class="bottom-spacer"></div>
                 </div>
-
                 <div class="bottom-nav">
                     <button class="nav-item" onclick="goHome()">
                         <span class="icon">🏠</span>
@@ -1742,13 +1713,21 @@
                     </div>
                     <div class="share-item twitter" onclick="shareVia('twitter')">
                         <span class="share-icon">🐦</span>
-                        <span class="share-label">Twitter/X</span>
+                        <span class="share-label">Twitter</span>
+                    </div>
+                    <div class="share-item linkedin" onclick="shareVia('linkedin')">
+                        <span class="share-icon">🔗</span>
+                        <span class="share-label">LinkedIn</span>
                     </div>
                     <div class="share-item telegram" onclick="shareVia('telegram')">
                         <span class="share-icon">✈️</span>
                         <span class="share-label">Telegram</span>
                     </div>
-                    <div class="share-item copy" onclick="shareVia('copy')">
+                    <div class="share-item instagram" onclick="shareVia('instagram')">
+                        <span class="share-icon">📸</span>
+                        <span class="share-label">Instagram</span>
+                    </div>
+                    <div class="share-item copy" onclick="shareVia('copy')" style="grid-column: span 2;">
                         <span class="share-icon">📋</span>
                         <span class="share-label">Copy Link</span>
                     </div>
@@ -1769,7 +1748,6 @@
         const SUPABASE_URL = 'https://njhioapckeupxrcixmdh.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
         const EDGE_FUNCTION_URL = 'https://njhioapckeupxrcixmdh.supabase.co/functions/v1';
-
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
@@ -1901,7 +1879,6 @@
         // PWA INSTALLATION HANDLER
         // ============================================================
         let deferredPrompt;
-
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then(reg => console.log('✅ Service Worker registered:', reg))
@@ -1998,7 +1975,6 @@
             document.getElementById('mobile').addEventListener('input', function(e) {
                 const mobile = this.value.trim();
                 const statusEl = document.getElementById('mobile-status');
-                
                 if (mobile.length === 10) {
                     autoCheckMobile(mobile);
                 } else if (mobile.length > 0 && mobile.length < 10) {
@@ -2031,7 +2007,7 @@
                 if (!e.target.closest('.header-right')) closeDropdown();
             });
 
-            console.log('✅ JobAd Ready - Auto-detect on mobile entry');
+            console.log('✅ JobAd Ready');
             document.getElementById('mobile').focus();
         });
 
@@ -2051,7 +2027,6 @@
                     .select('*')
                     .eq('mobile', mobile)
                     .single();
-                
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
                     .select('*')
@@ -2099,27 +2074,20 @@
 
         async function sendWhatsAppOTP(mobile) {
             setStatus('📱 Sending OTP via WhatsApp...', 'blue');
-            
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            
             sessionStorage.setItem('otp_' + mobile, otp);
             sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
-
             const waNumber = formatMobileForWA(mobile);
             const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
             const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-            
             window.open(waUrl, '_blank');
-
             document.getElementById('step1').style.display = 'none';
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.remove('hidden');
             document.getElementById('step4').classList.add('hidden');
             document.getElementById('wa-display-mobile').textContent = mobile;
-            
             document.querySelectorAll('.otp-input').forEach(el => el.value = '');
             document.querySelector('.otp-input').focus();
-            
             startOTPTimer();
             setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
             showToast('💬 OTP sent via WhatsApp!');
@@ -2142,7 +2110,6 @@
                     this.classList.remove('filled');
                 }
             });
-
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
                     arr[index - 1].focus();
@@ -2158,7 +2125,6 @@
                     }
                 }
             });
-
             input.addEventListener('focus', function() {
                 this.select();
             });
@@ -2174,15 +2140,12 @@
             let timeLeft = otpExpiryTime;
             const timerEl = document.getElementById('otp-timer');
             const resendBtn = document.getElementById('resend-otp');
-            
             if (otpTimerInterval) clearInterval(otpTimerInterval);
-            
             otpTimerInterval = setInterval(() => {
                 const mins = Math.floor(timeLeft / 60);
                 const secs = timeLeft % 60;
                 timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
                 timeLeft--;
-                
                 if (timeLeft < 0) {
                     clearInterval(otpTimerInterval);
                     timerEl.textContent = 'Expired';
@@ -2197,22 +2160,18 @@
                 showToast('⚠️ Enter complete 6-digit OTP');
                 return;
             }
-
             const storedOtp = sessionStorage.getItem('otp_' + currentMobile);
             const storedExpiry = sessionStorage.getItem('otp_expiry_' + currentMobile);
-
             if (!storedOtp) {
                 showToast('❌ OTP expired. Please request again.');
                 return;
             }
-
             if (Date.now() > parseInt(storedExpiry)) {
                 showToast('❌ OTP expired. Please request again.');
                 sessionStorage.removeItem('otp_' + currentMobile);
                 document.getElementById('resend-otp').disabled = false;
                 return;
             }
-
             if (otp !== storedOtp) {
                 showToast('❌ Invalid OTP. Please try again.');
                 document.querySelectorAll('.otp-input').forEach(el => {
@@ -2222,11 +2181,9 @@
                 document.querySelector('.otp-input').focus();
                 return;
             }
-
             showToast('✅ Phone verified successfully!');
             sessionStorage.removeItem('otp_' + currentMobile);
             sessionStorage.removeItem('otp_expiry_' + currentMobile);
-            
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
             document.getElementById('reg-display-mobile').textContent = currentMobile;
@@ -2239,14 +2196,11 @@
         async function resendOTP() {
             const mobile = currentMobile;
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            
             sessionStorage.setItem('otp_' + mobile, otp);
             sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
-            
             const waNumber = formatMobileForWA(mobile);
             const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
-            
             document.getElementById('resend-otp').disabled = true;
             startOTPTimer();
             showToast('🔄 OTP resent via WhatsApp!');
@@ -2258,23 +2212,19 @@
         async function registerUser() {
             const pin = document.getElementById('reg-pin').value.trim();
             const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
-
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                 showToast('⚠️ Enter a valid 4-digit PIN');
                 document.getElementById('reg-pin').focus();
                 return;
             }
-
             if (pin !== confirmPin) {
                 showToast('⚠️ PINs do not match');
                 document.getElementById('reg-pin-confirm').value = '';
                 document.getElementById('reg-pin-confirm').focus();
                 return;
             }
-
             document.getElementById('register-btn').disabled = true;
             document.getElementById('register-btn').textContent = '⏳ Creating...';
-
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                     method: 'POST',
@@ -2282,7 +2232,6 @@
                     body: JSON.stringify({ mobile: currentMobile, pin: pin })
                 });
                 const data = await response.json();
-                
                 if (data.success) {
                     showToast('✅ Registration successful!');
                     await sb.from('archive_users').insert([{ mobile: currentMobile, pin_hash: pin }]);
@@ -2309,10 +2258,8 @@
                 document.getElementById('pin').focus();
                 return;
             }
-
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('submitBtn').textContent = '⏳ Verifying...';
-
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
                     method: 'POST',
@@ -2320,7 +2267,6 @@
                     body: JSON.stringify({ mobile: currentMobile, pin: pin })
                 });
                 const data = await response.json();
-                
                 if (data.success) {
                     await fetchUserData(currentMobile);
                     showToast('✅ Welcome back!');
@@ -2346,14 +2292,12 @@
                 .select('*')
                 .eq('mobile', mobile)
                 .single();
-
             if (error) {
                 const { data: newUser, error: insertError } = await sb
                     .from('active_users')
                     .insert([{ mobile: mobile, last_active: new Date().toISOString() }])
                     .select()
                     .single();
-                    
                 if (insertError) {
                     showToast('❌ Error creating user: ' + insertError.message);
                     return;
@@ -2362,7 +2306,6 @@
             } else {
                 currentUser = data;
             }
-
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.add('hidden');
@@ -2384,7 +2327,6 @@
             if (gender === 1) { symbol = '♀'; cls = 'female'; }
             else if (gender === 2) { symbol = '♂'; cls = 'male'; }
             else { cls = 'other'; }
-            
             document.querySelectorAll('.avatar-btn').forEach(btn => {
                 btn.className = `avatar-btn ${cls}`;
                 btn.querySelector('span').textContent = symbol;
@@ -2416,17 +2358,14 @@
         async function saveNewPin() {
             const newPin = document.getElementById('new-pin').value.trim();
             const confirmPin = document.getElementById('confirm-pin').value.trim();
-
             if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
                 showToast('⚠️ Enter a valid 4-digit PIN');
                 return;
             }
-
             if (newPin !== confirmPin) {
                 showToast('⚠️ PINs do not match');
                 return;
             }
-
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
                     method: 'POST',
@@ -2434,7 +2373,6 @@
                     body: JSON.stringify({ mobile: currentUser.mobile, new_pin: newPin })
                 });
                 const data = await response.json();
-                
                 if (data.success) {
                     showToast('✅ PIN changed successfully!');
                     closeChangePin();
@@ -2453,16 +2391,12 @@
             if (confirm('Forgot your PIN? We\'ll send an OTP to reset it.')) {
                 const mobile = currentMobile;
                 const otp = Math.floor(100000 + Math.random() * 900000).toString();
-                
                 sessionStorage.setItem('reset_otp_' + mobile, otp);
                 sessionStorage.setItem('reset_otp_expiry_' + mobile, Date.now() + 300000);
-                
                 const waNumber = formatMobileForWA(mobile);
                 const message = `Your JobAd PIN reset code is: *${otp}*\n\nEnter this code to reset your PIN.`;
                 window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
-                
                 showToast('📱 PIN reset OTP sent via WhatsApp!');
-                
                 document.getElementById('step2').classList.add('hidden');
                 document.getElementById('step3').classList.remove('hidden');
                 document.getElementById('wa-display-mobile').textContent = mobile;
@@ -2493,16 +2427,13 @@
                 showToast('⚠️ Enter complete 6-digit OTP');
                 return;
             }
-
             const mobile = currentMobile;
             const storedOtp = sessionStorage.getItem('reset_otp_' + mobile);
             const storedExpiry = sessionStorage.getItem('reset_otp_expiry_' + mobile);
-
             if (!storedOtp || Date.now() > parseInt(storedExpiry)) {
                 showToast('❌ OTP expired. Please try again.');
                 return;
             }
-
             if (otp !== storedOtp) {
                 showToast('❌ Invalid OTP. Please try again.');
                 document.querySelectorAll('.otp-input').forEach(el => {
@@ -2512,11 +2443,9 @@
                 document.querySelector('.otp-input').focus();
                 return;
             }
-
             showToast('✅ OTP verified! Set your new PIN.');
             sessionStorage.removeItem('reset_otp_' + mobile);
             sessionStorage.removeItem('reset_otp_expiry_' + mobile);
-
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
             document.getElementById('reg-display-mobile').textContent = mobile;
@@ -2533,20 +2462,17 @@
         async function saveResetPIN() {
             const pin = document.getElementById('reg-pin').value.trim();
             const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
-
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
                 showToast('⚠️ Enter a valid 4-digit PIN');
                 document.getElementById('reg-pin').focus();
                 return;
             }
-
             if (pin !== confirmPin) {
                 showToast('⚠️ PINs do not match');
                 document.getElementById('reg-pin-confirm').value = '';
                 document.getElementById('reg-pin-confirm').focus();
                 return;
             }
-
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
                     method: 'POST',
@@ -2554,7 +2480,6 @@
                     body: JSON.stringify({ mobile: currentMobile, new_pin: pin })
                 });
                 const data = await response.json();
-                
                 if (data.success) {
                     showToast('✅ PIN reset successfully! Please login with your new PIN.');
                     resetForm();
@@ -2615,16 +2540,13 @@
                 showToast('⚠️ Please login first');
                 return;
             }
-
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 showToast('⚠️ Please set your company name in profile first');
                 goToProfile();
                 return;
             }
-
             const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
             const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
-
             const company = document.getElementById('pj-company').value.trim();
             const jobTitle = document.getElementById('pj-title').value.trim();
             const expRaw = document.getElementById('pj-experience').value.trim();
@@ -2635,7 +2557,6 @@
             const skills = document.getElementById('pj-skills').value.trim();
             const description = document.getElementById('pj-description').value.trim();
             const expiryDate = document.getElementById('pj-expiry').value;
-
             if (!company) { showToast('⚠️ Company name is required'); return; }
             if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
             if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
@@ -2647,14 +2568,12 @@
             if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
             if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
             if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
-
             const selectedDate = new Date(expiryDate);
             const maxDate = new Date(Date.now() + 45*24*60*60*1000);
             if (selectedDate > maxDate) {
                 showToast('⚠️ Expiry date cannot exceed 45 days from today');
                 return;
             }
-
             const jobData = {
                 mobile: currentUser.mobile,
                 job_title: jobTitle,
@@ -2668,7 +2587,6 @@
                 area_id: parseInt(area),
                 expiry_date: new Date(expiryDate).toISOString()
             };
-
             try {
                 if (isEditing && editJobId) {
                     const { error } = await sb
@@ -2686,7 +2604,6 @@
                     if (error) throw error;
                     showToast('✅ Job published successfully!');
                 }
-
                 document.getElementById('pj-publish-btn').dataset.editing = 'false';
                 document.getElementById('pj-publish-btn').dataset.jobid = '';
                 document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
@@ -2705,7 +2622,6 @@
                 document.getElementById('pj-gender').value = '0';
                 document.getElementById('pj-zone').value = '100';
                 updatePostAreas();
-
                 fetchFeedData();
                 goToProfile();
                 loadMyJobs();
@@ -2723,7 +2639,6 @@
             if (!container) return;
             try {
                 await autoCleanExpiredJobs();
-
                 const { data, error } = await sb
                     .from('active_jobs')
                     .select('*')
@@ -2785,17 +2700,13 @@
             document.getElementById('profile-page').classList.add('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
-
             const isJob = type === 'JOB';
             const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
-
             document.getElementById('detail-title').textContent = data.job_title || data.title || 'Untitled';
             document.getElementById('detail-company').textContent = data.company_name || data.company || 'Unknown';
             document.getElementById('detail-type-badge').innerHTML = `<span class="type-badge ${isJob ? 'job' : 'seeker'}">${isJob ? 'JOB' : 'SEEKER'}</span>`;
-
             document.getElementById('detail-exp').textContent = (data.min_experience_years || data.exp || 0) + ' yrs';
             document.getElementById('detail-salary').textContent = data.max_salary_monthly ? '₹' + Number(data.max_salary_monthly).toLocaleString('en-IN') : (data.salary || 'Not specified');
-
             if (isJob) {
                 document.getElementById('detail-gender-field').style.display = 'block';
                 document.getElementById('detail-gender').textContent = genderMap[data.preferred_gender] || 'No Preference';
@@ -2803,14 +2714,11 @@
                 document.getElementById('detail-gender-field').style.display = 'block';
                 document.getElementById('detail-gender').textContent = genderMap[data.gender] || 'Not Specified';
             }
-
             const zoneId = data.zone_id || 0;
             const areaId = data.area_id || 0;
             document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
             document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
-
             document.getElementById('detail-skills').textContent = data.skills_comma_separated || data.skills || '—';
-
             if (isJob) {
                 document.getElementById('detail-expiry-field').style.display = 'block';
                 document.getElementById('detail-expiry').textContent = data.expiry_date ? new Date(data.expiry_date).toLocaleDateString('en-IN') : '—';
@@ -2820,36 +2728,24 @@
                 document.getElementById('detail-notice-field').style.display = 'block';
                 document.getElementById('detail-notice').textContent = (data.notice_period_days || '—') + ' days';
             }
-
             document.getElementById('detail-desc').textContent = data.job_description || data.professional_summary || data.desc || '—';
-
             const postedDate = data.posted_date || data.created_at || data.last_active;
             document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
-
-            const contact = data.mobile || data.contact || 'N/A';
-            document.getElementById('detail-contact').textContent = contact;
-            document.getElementById('detail-contact').dataset.contact = contact;
-
+            // Contact number hidden - only shown through Call/WhatsApp buttons
             // Update endorsements and flags
             const endorsements = data.endorsements || [];
             const flags = data.flags || [];
-
             document.getElementById('detail-endorsements-count').textContent = endorsements.length || 0;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-views').textContent = data.views || 0;
-
-            // Update button states
             updateDetailCounts(endorsements, flags);
-
             // ACCESS CONTROL
             const callBtn = document.getElementById('detail-call-btn');
             const waBtn = document.getElementById('detail-wa-btn');
             const jobWarning = document.getElementById('detail-job-warning');
             const seekerWarning = document.getElementById('detail-seeker-warning');
-
             jobWarning.style.display = 'none';
             seekerWarning.style.display = 'none';
-
             if (isJob) {
                 if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                     jobWarning.style.display = 'flex';
@@ -2880,8 +2776,12 @@
         }
 
         function makeCall() {
-            const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A' || contact === '') {
+            if (!currentDetailData) {
+                showToast('⚠️ No contact available');
+                return;
+            }
+            const contact = currentDetailData.mobile || currentDetailData.contact;
+            if (!contact) {
                 showToast('⚠️ No contact number available');
                 return;
             }
@@ -2900,8 +2800,12 @@
         }
 
         function sendWhatsApp() {
-            const contact = document.getElementById('detail-contact').dataset.contact;
-            if (!contact || contact === 'N/A' || contact === '') {
+            if (!currentDetailData) {
+                showToast('⚠️ No contact available');
+                return;
+            }
+            const contact = currentDetailData.mobile || currentDetailData.contact;
+            if (!contact) {
                 showToast('⚠️ No contact number available');
                 return;
             }
@@ -2924,33 +2828,26 @@
         // ============================================================
         // ENDORSEMENTS & FLAGS FUNCTIONS
         // ============================================================
-
         async function toggleEndorsement(targetType, targetId, mobile) {
             if (!currentUser) {
                 showToast('⚠️ Please login first');
                 redirectToLogin();
                 return null;
             }
-
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
             const targetMobile = currentUser.mobile;
-
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements, flags')
                     .eq(idField, targetId)
                     .single();
-
                 if (error) throw error;
-
                 let endorsements = data.endorsements || [];
                 let flags = data.flags || [];
-
                 const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
                 const alreadyFlagged = flags.includes(parseInt(targetMobile));
-
                 if (alreadyEndorsed) {
                     endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
                     showToast('👍 Endorsement removed');
@@ -2962,17 +2859,13 @@
                     endorsements.push(parseInt(targetMobile));
                     showToast('👍 Endorsed successfully!');
                 }
-
                 const { error: updateError } = await sb
                     .from(table)
                     .update({ endorsements: endorsements, flags: flags })
                     .eq(idField, targetId);
-
                 if (updateError) throw updateError;
-
                 await fetchFeedData();
                 return { endorsements, flags };
-
             } catch (err) {
                 console.error('Error toggling endorsement:', err);
                 showToast('❌ Failed to update: ' + err.message);
@@ -2986,26 +2879,20 @@
                 redirectToLogin();
                 return null;
             }
-
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
             const targetMobile = currentUser.mobile;
-
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements, flags')
                     .eq(idField, targetId)
                     .single();
-
                 if (error) throw error;
-
                 let endorsements = data.endorsements || [];
                 let flags = data.flags || [];
-
                 const alreadyFlagged = flags.includes(parseInt(targetMobile));
                 const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
-
                 if (alreadyFlagged) {
                     flags = flags.filter(m => m !== parseInt(targetMobile));
                     showToast('👎 Flag removed');
@@ -3017,17 +2904,13 @@
                     flags.push(parseInt(targetMobile));
                     showToast('👎 Not recommended');
                 }
-
                 const { error: updateError } = await sb
                     .from(table)
                     .update({ endorsements: endorsements, flags: flags })
                     .eq(idField, targetId);
-
                 if (updateError) throw updateError;
-
                 await fetchFeedData();
                 return { endorsements, flags };
-
             } catch (err) {
                 console.error('Error toggling flag:', err);
                 showToast('❌ Failed to update: ' + err.message);
@@ -3038,31 +2921,24 @@
         async function getEndorsersList(targetType, targetId) {
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
-
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements')
                     .eq(idField, targetId)
                     .single();
-
                 if (error) throw error;
-
                 const endorsements = data.endorsements || [];
                 if (endorsements.length === 0) {
                     showToast('No endorsements yet');
                     return [];
                 }
-
                 const { data: users, error: userError } = await sb
                     .from('active_users')
                     .select('mobile, full_name, gender')
                     .in('mobile', endorsements.map(m => m.toString()));
-
                 if (userError) throw userError;
-
                 return users || [];
-
             } catch (err) {
                 console.error('Error fetching endorsers:', err);
                 showToast('❌ Failed to load endorsers: ' + err.message);
@@ -3073,31 +2949,24 @@
         async function getFlaggersList(targetType, targetId) {
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
-
             try {
                 const { data, error } = await sb
                     .from(table)
                     .select('flags')
                     .eq(idField, targetId)
                     .single();
-
                 if (error) throw error;
-
                 const flags = data.flags || [];
                 if (flags.length === 0) {
                     showToast('No flags yet');
                     return [];
                 }
-
                 const { data: users, error: userError } = await sb
                     .from('active_users')
                     .select('mobile, full_name, gender')
                     .in('mobile', flags.map(m => m.toString()));
-
                 if (userError) throw userError;
-
                 return users || [];
-
             } catch (err) {
                 console.error('Error fetching flaggers:', err);
                 showToast('❌ Failed to load flaggers: ' + err.message);
@@ -3108,7 +2977,6 @@
         async function showEndorsersModal(targetType, targetId) {
             const users = await getEndorsersList(targetType, targetId);
             if (users.length === 0) return;
-
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
                 return `<div class="user-item" onclick="viewUserProfile('${u.mobile}')">
@@ -3117,11 +2985,9 @@
                     <span class="mobile-text">${u.mobile}</span>
                 </div>`;
             }).join('');
-
             if (users.length > 5) {
                 html += `<div class="more-text">+ ${users.length - 5} more...</div>`;
             }
-
             const modalHtml = `
                 <div class="modal-overlay show" id="endorsers-modal">
                     <div class="modal-box">
@@ -3131,7 +2997,6 @@
                     </div>
                 </div>
             `;
-
             document.querySelector('#endorsers-modal')?.remove();
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
@@ -3139,7 +3004,6 @@
         async function showFlaggersModal(targetType, targetId) {
             const users = await getFlaggersList(targetType, targetId);
             if (users.length === 0) return;
-
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
                 return `<div class="user-item" onclick="viewUserProfile('${u.mobile}')">
@@ -3148,7 +3012,6 @@
                     <span class="mobile-text">${u.mobile}</span>
                 </div>`;
             }).join('');
-
             const modalHtml = `
                 <div class="modal-overlay show" id="flaggers-modal">
                     <div class="modal-box">
@@ -3158,7 +3021,6 @@
                     </div>
                 </div>
             `;
-
             document.querySelector('#flaggers-modal')?.remove();
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
@@ -3171,7 +3033,6 @@
             closeModal('endorsers-modal');
             closeModal('flaggers-modal');
             showToast(`👤 Viewing profile: ${mobile}`);
-            // In production, this would navigate to the user's profile page
         }
 
         function redirectToLogin() {
@@ -3210,16 +3071,15 @@
             document.getElementById('share-modal').classList.add('show');
         }
 
-        function getShareUrl() {
+        function getShareData() {
             const title = currentDetailData?.job_title || currentDetailData?.title || 'JobAd';
             const url = window.location.href;
             return { title, url };
         }
 
         function shareVia(platform) {
-            const { title, url } = getShareUrl();
+            const { title, url } = getShareData();
             const text = `Check out this opportunity on JobAd:\n\n${title}\n\n${url}`;
-            
             let shareUrl = '';
             switch(platform) {
                 case 'whatsapp':
@@ -3231,14 +3091,20 @@
                 case 'twitter':
                     shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
                     break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                    break;
                 case 'telegram':
                     shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+                    break;
+                case 'instagram':
+                    showToast('📸 Instagram sharing requires the app. Copy link to share.');
+                    shareUrl = '';
                     break;
                 case 'copy':
                     navigator.clipboard.writeText(text).then(() => {
                         showToast('📋 Link copied to clipboard!');
                     }).catch(() => {
-                        // Fallback
                         const textarea = document.createElement('textarea');
                         textarea.value = text;
                         document.body.appendChild(textarea);
@@ -3265,7 +3131,6 @@
                     showToast('⚠️ Share option not available');
                     return;
             }
-            
             if (shareUrl) {
                 window.open(shareUrl, '_blank');
             }
@@ -3284,10 +3149,8 @@
                 showToast('⚠️ No item selected');
                 return;
             }
-            
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
             const result = await toggleEndorsement(currentDetailType, targetId, currentUser.mobile);
-            
             if (result) {
                 updateDetailCounts(result.endorsements, result.flags);
             }
@@ -3302,10 +3165,8 @@
                 showToast('⚠️ No item selected');
                 return;
             }
-            
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
             const result = await toggleFlag(currentDetailType, targetId, currentUser.mobile);
-            
             if (result) {
                 updateDetailCounts(result.endorsements, result.flags);
             }
@@ -3334,22 +3195,16 @@
             const flagCount = document.getElementById('detail-flags-count');
             const endorseBtn = document.getElementById('detail-endorse-btn');
             const flagBtn = document.getElementById('detail-flag-btn');
-            
             if (endorseCount) endorseCount.textContent = endorsements.length || 0;
             if (flagCount) flagCount.textContent = flags.length || 0;
-            
             if (currentUser) {
                 const userEndorsed = endorsements.includes(parseInt(currentUser.mobile));
                 const userFlagged = flags.includes(parseInt(currentUser.mobile));
-                
                 if (endorseBtn) {
                     endorseBtn.className = `btn-endorse ${userEndorsed ? 'active' : ''}`;
-                    endorseBtn.innerHTML = `👍 <span class="btn-label">${userEndorsed ? 'Recommended' : 'Recommend'}</span>`;
                 }
-                
                 if (flagBtn) {
                     flagBtn.className = `btn-flag ${userFlagged ? 'active' : ''}`;
-                    flagBtn.innerHTML = `👎 <span class="btn-label">${userFlagged ? 'Not Rec' : 'Not Rec'}</span>`;
                 }
             }
         }
@@ -3375,7 +3230,6 @@
                 showToast('⚠️ Please login first');
                 return;
             }
-
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
                 document.getElementById('recruiter-warning').style.display = 'flex';
                 document.getElementById('pj-company').value = '';
@@ -3389,7 +3243,6 @@
                 document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
                 document.getElementById('pj-company').value = currentUser.company_name;
             }
-
             document.getElementById('pj-publish-btn').dataset.editing = 'false';
             document.getElementById('pj-publish-btn').dataset.jobid = '';
             if (!document.getElementById('recruiter-warning').style.display || document.getElementById('recruiter-warning').style.display === 'none') {
@@ -3408,7 +3261,6 @@
                     el.dispatchEvent(new Event('input'));
                 });
             }
-
             currentPage = 'postjob';
             document.getElementById('home-page').classList.add('hidden-page');
             document.getElementById('profile-page').classList.add('hidden-page');
@@ -3493,7 +3345,6 @@
                 document.getElementById('seeker-desc').textContent = 'Your job profile is active.';
                 document.getElementById('seeker-input-area').style.display = 'none';
                 document.getElementById('seeker-active-area').style.display = 'block';
-
                 document.getElementById('seeker-display-name').textContent = currentUser.full_name;
                 document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
                 document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
@@ -3501,7 +3352,6 @@
                 document.getElementById('seeker-display-notice').textContent = currentUser.notice_period_days || '0';
                 document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
                 document.getElementById('seeker-display-about').textContent = currentUser.professional_summary || '';
-
                 const zoneName = getZoneName(currentUser.zone_id);
                 const areaName = getAreaName(currentUser.area_id);
                 document.getElementById('seeker-display-location').textContent = areaName ? `${zoneName} - ${areaName}` : zoneName || 'Not set';
@@ -3729,26 +3579,19 @@
                 const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
                 const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
                 const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
-                
                 const endorsements = item._raw?.endorsements || [];
                 const flags = item._raw?.flags || [];
                 const endorsementsCount = endorsements.length;
                 const flagsCount = flags.length;
-                
                 const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
-                
                 return `
                 <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
                     <div class="title">${item.title}</div>
                     <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
                     <span class="badge ${typeClass}">${typeLabel}</span>
                     <div class="action-icons">
-                        <span class="count-link" onclick="event.stopPropagation(); showEndorsersModal('${item.type}', '${targetId}')">
-                            👍 ${endorsementsCount}
-                        </span>
-                        <span class="count-link" onclick="event.stopPropagation(); showFlaggersModal('${item.type}', '${targetId}')">
-                            👎 ${flagsCount}
-                        </span>
+                        <span class="count-display">👍 ${endorsementsCount}</span>
+                        <span class="count-display">👎 ${flagsCount}</span>
                         <button class="icon-btn" onclick="event.stopPropagation(); openShareModalFromFeed('${item.type}', '${targetId}')">
                             📤 <span class="label">Share</span>
                         </button>
@@ -3763,7 +3606,6 @@
                 redirectToLogin();
                 return;
             }
-            // Find the item in feed
             const item = feedItems.find(i => {
                 const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
                 return i.type === targetType && id == targetId;
@@ -3930,7 +3772,6 @@
         };
 
         console.log('✅ JobAd App Ready');
-        console.log('📱 Auto-detect on mobile number entry');
         document.getElementById('mobile').focus();
     </script>
 </body>
