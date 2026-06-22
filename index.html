@@ -105,7 +105,6 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
         }
         .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
-        .action-label { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
         .fade-in { animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -131,17 +130,6 @@
         #login-screen .test-links a {
             color: #3b82f6;
             text-decoration: none;
-        }
-        #login-screen .password-wrapper { position: relative; }
-        #login-screen .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            font-size: 14px;
-            user-select: none;
-            padding: 4px;
         }
         .mobile-status { font-size: 12px; color: #94a3b8; margin-top: 4px; }
 
@@ -437,6 +425,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 10px;
             padding: 8px 12px;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
         .feed-card:hover { border-color: #3b82f6; background: #f8faff; }
@@ -452,6 +441,42 @@
         }
         .feed-card .badge-job { background: #dbeafe; color: #1e40af; }
         .feed-card .badge-seeker { background: #dcfce7; color: #166534; }
+        .feed-card .action-icons {
+            display: flex;
+            gap: 16px;
+            margin-top: 6px;
+            font-size: 14px;
+            align-items: center;
+        }
+        .feed-card .action-icons .count-link {
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .feed-card .action-icons .count-link:hover { color: #1d4ed8; }
+        .feed-card .action-icons .icon-btn {
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: 0.15s;
+            background: none;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .feed-card .action-icons .icon-btn:hover { background: #f1f5f9; }
+        .feed-card .action-icons .icon-btn .label {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 500;
+        }
         .no-records { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 13px; }
 
         .bottom-nav {
@@ -832,7 +857,10 @@
             font-size: 18px;
             font-weight: 700;
             color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
         }
+        .detail-stats .stat-item .number:hover { color: #1d4ed8; }
         .detail-stats .stat-item .label {
             font-size: 8px;
             color: #94a3b8;
@@ -843,15 +871,21 @@
             display: flex;
             gap: 8px;
             margin-top: 12px;
+            flex-wrap: wrap;
         }
         .detail-actions button {
             flex: 1;
-            padding: 10px;
-            font-size: 13px;
+            min-width: 44px;
+            padding: 10px 8px;
+            font-size: 18px;
             border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
         .detail-actions .btn-call { background: #16a34a; color: white; }
         .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
@@ -859,9 +893,44 @@
         .detail-actions .btn-whatsapp:hover:not(:disabled) { background: #1da851; }
         .detail-actions .btn-close { background: #6b7280; color: white; }
         .detail-actions .btn-close:hover { background: #4b5563; }
+        .detail-actions .btn-endorse {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 20px;
+            padding: 8px;
+        }
+        .detail-actions .btn-endorse.active {
+            background: #2563eb;
+            color: white;
+        }
+        .detail-actions .btn-endorse:hover:not(:disabled) { background: #dbeafe; }
+        .detail-actions .btn-endorse.active:hover { background: #1d4ed8; }
+        .detail-actions .btn-flag {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 20px;
+            padding: 8px;
+        }
+        .detail-actions .btn-flag.active {
+            background: #dc2626;
+            color: white;
+        }
+        .detail-actions .btn-flag:hover:not(:disabled) { background: #fee2e2; }
+        .detail-actions .btn-flag.active:hover { background: #b91c1c; }
+        .detail-actions .btn-share {
+            background: #2563eb;
+            color: white;
+            font-size: 18px;
+            padding: 8px 12px;
+        }
+        .detail-actions .btn-share:hover { background: #1d4ed8; }
         .detail-actions button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
+        }
+        .detail-actions .btn-label {
+            font-size: 10px;
+            font-weight: 500;
         }
         .type-badge {
             display: inline-block;
@@ -895,39 +964,77 @@
             max-width: 320px;
             width: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
         }
         .modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: #1e293b; }
         .modal-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
-        .modal-box input { text-align: left; margin-bottom: 8px; }
-        .modal-box .modal-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
+        .modal-box .user-list {
+            flex: 1;
+            overflow-y: auto;
+            margin: 8px 0;
         }
-        .modal-box .modal-actions button { flex: 1; padding: 10px; font-size: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; }
-        .modal-box .modal-actions .btn-cancel { background: #f1f5f9; color: #475569; }
-        .modal-box .modal-actions .btn-cancel:hover { background: #e2e8f0; }
-        .modal-box .modal-actions .btn-save { background: #2563eb; color: white; }
-        .modal-box .modal-actions .btn-save:hover { background: #1d4ed8; }
-        .modal-box .user-item {
-            padding: 8px 12px;
+        .modal-box .user-list .user-item {
+            padding: 10px 12px;
             border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
             transition: 0.15s;
             border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .modal-box .user-item:hover { background: #f8fafc; }
-        .modal-box .user-list {
-            max-height: 300px;
-            overflow-y: auto;
-            margin: 12px 0;
-        }
-        .modal-box .more-text {
+        .modal-box .user-list .user-item:hover { background: #f8fafc; }
+        .modal-box .user-list .user-item .gender-icon { font-size: 16px; }
+        .modal-box .user-list .user-item .name { font-size: 14px; font-weight: 500; color: #1e293b; }
+        .modal-box .user-list .user-item .mobile-text { font-size: 11px; color: #94a3b8; }
+        .modal-box .user-list .more-text {
             padding: 8px 12px;
             color: #94a3b8;
             font-style: italic;
             font-size: 13px;
+            text-align: center;
         }
+        .modal-box .modal-close-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .modal-box .modal-close-btn:hover { background: #e2e8f0; }
+
+        /* Share Modal */
+        .share-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .share-grid .share-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+        .share-grid .share-item:hover { background: #f8fafc; border-color: #2563eb; }
+        .share-grid .share-item .share-icon { font-size: 28px; margin-bottom: 4px; }
+        .share-grid .share-item .share-label { font-size: 10px; color: #475569; font-weight: 500; }
+        .share-grid .share-item.whatsapp:hover { border-color: #25D366; background: #f0fdf4; }
+        .share-grid .share-item.facebook:hover { border-color: #1877f2; background: #f0f7ff; }
+        .share-grid .share-item.twitter:hover { border-color: #000000; background: #f8fafc; }
+        .share-grid .share-item.copy:hover { border-color: #6b7280; background: #f8fafc; }
+        .share-grid .share-item.telegram:hover { border-color: #0088cc; background: #f0faff; }
 
         /* Install Banner */
         .install-banner {
@@ -965,39 +1072,6 @@
             width: auto;
         }
         .install-banner .btn-close:hover { color: white; }
-
-        /* Endorsement/Flag action buttons in feed */
-        .action-btn {
-            padding: 4px 8px;
-            font-size: 11px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
-        }
-        .action-btn:hover { opacity: 0.8; }
-        .action-btn-endorse { background: #f1f5f9; color: #475569; }
-        .action-btn-endorse.active { background: #2563eb; color: white; }
-        .action-btn-flag { background: #f1f5f9; color: #475569; }
-        .action-btn-flag.active { background: #dc2626; color: white; }
-        .action-btn-share { background: #2563eb; color: white; }
-        .action-btn-share:hover { background: #1d4ed8; }
-        
-        .interact-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 6px;
-        }
-        .interact-row .action-btn { flex: 1; }
-        
-        .count-link {
-            cursor: pointer;
-            transition: 0.15s;
-            padding: 0 2px;
-            border-radius: 4px;
-        }
-        .count-link:hover { background: #f1f5f9; }
     </style>
 </head>
 <body>
@@ -1580,41 +1654,44 @@
                         <div class="value" id="detail-contact">--</div>
                     </div>
 
+                    <!-- Endorsements, Flags, Views -->
                     <div class="detail-stats">
                         <div class="stat-item" onclick="detailShowEndorsers()">
-                            <div class="number" id="detail-endorsements-count" style="color:#2563eb;">0</div>
+                            <div class="number" id="detail-endorsements-count">0</div>
                             <div class="label">👍 Endorsements</div>
                         </div>
                         <div class="stat-item" onclick="detailShowFlaggers()">
-                            <div class="number" id="detail-flags-count" style="color:#dc2626;">0</div>
+                            <div class="number" id="detail-flags-count">0</div>
                             <div class="label">👎 Flags</div>
                         </div>
                         <div class="stat-item">
-                            <div class="number" id="detail-views" style="color:#6b7280;">0</div>
+                            <div class="number" id="detail-views">0</div>
                             <div class="label">👁️ Views</div>
                         </div>
                     </div>
 
+                    <!-- Action Buttons: Call, WhatsApp, Recommend, Not Recommend, Share, Close -->
                     <div class="detail-actions">
-                        <button id="detail-endorse-btn" onclick="detailToggleEndorsement()" 
-                            style="flex:1; padding:10px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#f1f5f9; color:#475569;">
-                            👍 Recommend
+                        <button class="btn-call" id="detail-call-btn" onclick="makeCall()">
+                            📞 <span class="btn-label">Call</span>
                         </button>
-                        <button id="detail-flag-btn" onclick="detailToggleFlag()" 
-                            style="flex:1; padding:10px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#f1f5f9; color:#475569;">
-                            👎 Not Recommend
+                        <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">
+                            💬 <span class="btn-label">WhatsApp</span>
                         </button>
-                        <button id="detail-share-btn" onclick="detailShare()" 
-                            style="flex:1; padding:10px; border:none; border-radius:10px; font-weight:600; cursor:pointer; background:#2563eb; color:white;">
-                            📤 Share
+                        <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()">
+                            👍 <span class="btn-label">Recommend</span>
+                        </button>
+                        <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()">
+                            👎 <span class="btn-label">Not Rec</span>
+                        </button>
+                        <button class="btn-share" id="detail-share-btn" onclick="openShareModal()">
+                            📤 <span class="btn-label">Share</span>
+                        </button>
+                        <button class="btn-close" onclick="closeDetail()">
+                            ✕ <span class="btn-label">Close</span>
                         </button>
                     </div>
 
-                    <div class="detail-actions" style="margin-top:8px;">
-                        <button class="btn-call" id="detail-call-btn" onclick="makeCall()">📞 Call</button>
-                        <button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()">💬 WhatsApp</button>
-                        <button class="btn-close" onclick="closeDetail()">Close</button>
-                    </div>
                     <div class="bottom-spacer"></div>
                 </div>
 
@@ -1648,41 +1725,44 @@
                 </div>
             </div>
         </div>
+
+        <!-- SHARE MODAL -->
+        <div class="modal-overlay" id="share-modal">
+            <div class="modal-box">
+                <h3>📤 Share</h3>
+                <p>Share this opportunity with your network</p>
+                <div class="share-grid">
+                    <div class="share-item whatsapp" onclick="shareVia('whatsapp')">
+                        <span class="share-icon">💬</span>
+                        <span class="share-label">WhatsApp</span>
+                    </div>
+                    <div class="share-item facebook" onclick="shareVia('facebook')">
+                        <span class="share-icon">📘</span>
+                        <span class="share-label">Facebook</span>
+                    </div>
+                    <div class="share-item twitter" onclick="shareVia('twitter')">
+                        <span class="share-icon">🐦</span>
+                        <span class="share-label">Twitter/X</span>
+                    </div>
+                    <div class="share-item telegram" onclick="shareVia('telegram')">
+                        <span class="share-icon">✈️</span>
+                        <span class="share-label">Telegram</span>
+                    </div>
+                    <div class="share-item copy" onclick="shareVia('copy')">
+                        <span class="share-icon">📋</span>
+                        <span class="share-label">Copy Link</span>
+                    </div>
+                    <div class="share-item" onclick="shareVia('more')" style="grid-column: span 1;">
+                        <span class="share-icon">📱</span>
+                        <span class="share-label">More...</span>
+                    </div>
+                </div>
+                <button class="modal-close-btn" onclick="closeModal('share-modal')">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // ============================================================
-        // PWA INSTALLATION HANDLER
-        // ============================================================
-        let deferredPrompt;
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('✅ Service Worker registered:', reg))
-                .catch(err => console.log('❌ Service Worker error:', err));
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            const banner = document.getElementById('install-banner');
-            if (banner) banner.classList.add('show');
-        });
-
-        document.getElementById('install-btn')?.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const result = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                document.getElementById('install-banner').classList.remove('show');
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
-            deferredPrompt = null;
-            document.getElementById('install-banner').classList.remove('show');
-        });
-
         // ============================================================
         // CONFIGURATION
         // ============================================================
@@ -1816,6 +1896,38 @@
         let otpTimerInterval = null;
         let otpExpiryTime = 300;
         let isNewUser = false;
+
+        // ============================================================
+        // PWA INSTALLATION HANDLER
+        // ============================================================
+        let deferredPrompt;
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('✅ Service Worker registered:', reg))
+                .catch(err => console.log('❌ Service Worker error:', err));
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('install-banner');
+            if (banner) banner.classList.add('show');
+        });
+
+        document.getElementById('install-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                document.getElementById('install-banner').classList.remove('show');
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            document.getElementById('install-banner').classList.remove('show');
+        });
 
         // ============================================================
         // INIT
@@ -2813,9 +2925,6 @@
         // ENDORSEMENTS & FLAGS FUNCTIONS
         // ============================================================
 
-        /**
-         * Toggle endorsement (👍) for a job or seeker
-         */
         async function toggleEndorsement(targetType, targetId, mobile) {
             if (!currentUser) {
                 showToast('⚠️ Please login first');
@@ -2871,9 +2980,6 @@
             }
         }
 
-        /**
-         * Toggle flag (👎) for a job or seeker
-         */
         async function toggleFlag(targetType, targetId, mobile) {
             if (!currentUser) {
                 showToast('⚠️ Please login first');
@@ -2929,9 +3035,6 @@
             }
         }
 
-        /**
-         * Get endorsers list (names of people who endorsed)
-         */
         async function getEndorsersList(targetType, targetId) {
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
@@ -2967,9 +3070,6 @@
             }
         }
 
-        /**
-         * Get flaggers list (names of people who flagged)
-         */
         async function getFlaggersList(targetType, targetId) {
             const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
             const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
@@ -3005,16 +3105,17 @@
             }
         }
 
-        /**
-         * Show endorsers list in a modal
-         */
         async function showEndorsersModal(targetType, targetId) {
             const users = await getEndorsersList(targetType, targetId);
             if (users.length === 0) return;
 
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
-                return `<div class="user-item" onclick="showUserProfile('${u.mobile}')">${genderSymbol} ${u.full_name || 'User'}</div>`;
+                return `<div class="user-item" onclick="viewUserProfile('${u.mobile}')">
+                    <span class="gender-icon">${genderSymbol}</span>
+                    <span class="name">${u.full_name || 'User'}</span>
+                    <span class="mobile-text">${u.mobile}</span>
+                </div>`;
             }).join('');
 
             if (users.length > 5) {
@@ -3023,12 +3124,10 @@
 
             const modalHtml = `
                 <div class="modal-overlay show" id="endorsers-modal">
-                    <div class="modal-box" style="max-width:350px;">
+                    <div class="modal-box">
                         <h3>👍 Endorsed by ${users.length} people</h3>
                         <div class="user-list">${html}</div>
-                        <button class="btn-cancel" onclick="closeModal('endorsers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer;">
-                            Close
-                        </button>
+                        <button class="modal-close-btn" onclick="closeModal('endorsers-modal')">Close</button>
                     </div>
                 </div>
             `;
@@ -3037,26 +3136,25 @@
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
-        /**
-         * Show flaggers list in a modal
-         */
         async function showFlaggersModal(targetType, targetId) {
             const users = await getFlaggersList(targetType, targetId);
             if (users.length === 0) return;
 
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
-                return `<div class="user-item" onclick="showUserProfile('${u.mobile}')">${genderSymbol} ${u.full_name || 'User'}</div>`;
+                return `<div class="user-item" onclick="viewUserProfile('${u.mobile}')">
+                    <span class="gender-icon">${genderSymbol}</span>
+                    <span class="name">${u.full_name || 'User'}</span>
+                    <span class="mobile-text">${u.mobile}</span>
+                </div>`;
             }).join('');
 
             const modalHtml = `
                 <div class="modal-overlay show" id="flaggers-modal">
-                    <div class="modal-box" style="max-width:350px;">
+                    <div class="modal-box">
                         <h3>👎 Not recommended by ${users.length} people</h3>
                         <div class="user-list">${html}</div>
-                        <button class="btn-cancel" onclick="closeModal('flaggers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer;">
-                            Close
-                        </button>
+                        <button class="modal-close-btn" onclick="closeModal('flaggers-modal')">Close</button>
                     </div>
                 </div>
             `;
@@ -3065,23 +3163,17 @@
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
-        /**
-         * Close modal by ID
-         */
         function closeModal(modalId) {
             document.getElementById(modalId)?.remove();
         }
 
-        /**
-         * Show user profile (placeholder)
-         */
-        function showUserProfile(mobile) {
+        function viewUserProfile(mobile) {
+            closeModal('endorsers-modal');
+            closeModal('flaggers-modal');
             showToast(`👤 Viewing profile: ${mobile}`);
+            // In production, this would navigate to the user's profile page
         }
 
-        /**
-         * Redirect guest to login
-         */
         function redirectToLogin() {
             sessionStorage.setItem('redirect_after_login', window.location.pathname);
             document.getElementById('home-page').classList.add('hidden-page');
@@ -3095,53 +3187,94 @@
             showToast('🔐 Please login to continue');
         }
 
-        /**
-         * Check if current user has endorsed a target
-         */
         function hasUserEndorsed(targetEndorsements) {
             if (!currentUser) return false;
             const endorsements = targetEndorsements || [];
             return endorsements.includes(parseInt(currentUser.mobile));
         }
 
-        /**
-         * Check if current user has flagged a target
-         */
         function hasUserFlagged(targetFlags) {
             if (!currentUser) return false;
             const flags = targetFlags || [];
             return flags.includes(parseInt(currentUser.mobile));
         }
 
-        /**
-         * Share item via WhatsApp
-         */
-        function shareItem(targetType, targetId) {
+        // ============================================================
+        // SHARE FUNCTIONS
+        // ============================================================
+        function openShareModal() {
             if (!currentUser) {
                 redirectToLogin();
                 return;
             }
-            
-            const item = feedItems.find(i => {
-                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
-                return i.type === targetType && id == targetId;
-            });
-            
-            if (!item) {
-                showToast('⚠️ Item not found');
-                return;
-            }
-            
-            const title = item.title || 'Job/Profile';
-            const url = window.location.href;
-            const message = encodeURIComponent(`Check out this ${item.type.toLowerCase()} on JobAd:\n\n${title}\n\n${url}`);
-            
-            window.open(`https://wa.me/?text=${message}`, '_blank');
+            document.getElementById('share-modal').classList.add('show');
         }
 
-        /**
-         * Toggle endorsement from detail view
-         */
+        function getShareUrl() {
+            const title = currentDetailData?.job_title || currentDetailData?.title || 'JobAd';
+            const url = window.location.href;
+            return { title, url };
+        }
+
+        function shareVia(platform) {
+            const { title, url } = getShareUrl();
+            const text = `Check out this opportunity on JobAd:\n\n${title}\n\n${url}`;
+            
+            let shareUrl = '';
+            switch(platform) {
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'telegram':
+                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+                    break;
+                case 'copy':
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast('📋 Link copied to clipboard!');
+                    }).catch(() => {
+                        // Fallback
+                        const textarea = document.createElement('textarea');
+                        textarea.value = text;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        textarea.remove();
+                        showToast('📋 Link copied to clipboard!');
+                    });
+                    closeModal('share-modal');
+                    return;
+                case 'more':
+                    if (navigator.share) {
+                        navigator.share({
+                            title: title,
+                            text: text,
+                            url: url
+                        }).catch(() => {});
+                    } else {
+                        showToast('📱 Please use your device\'s share menu');
+                    }
+                    closeModal('share-modal');
+                    return;
+                default:
+                    showToast('⚠️ Share option not available');
+                    return;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank');
+            }
+            closeModal('share-modal');
+        }
+
+        // ============================================================
+        // DETAIL VIEW ENDORSEMENT/FLAG TOGGLES
+        // ============================================================
         async function detailToggleEndorsement() {
             if (!currentUser) {
                 redirectToLogin();
@@ -3160,9 +3293,6 @@
             }
         }
 
-        /**
-         * Toggle flag from detail view
-         */
         async function detailToggleFlag() {
             if (!currentUser) {
                 redirectToLogin();
@@ -3181,28 +3311,6 @@
             }
         }
 
-        /**
-         * Share from detail view
-         */
-        function detailShare() {
-            if (!currentUser) {
-                redirectToLogin();
-                return;
-            }
-            if (!currentDetailData || !currentDetailType) {
-                showToast('⚠️ No item selected');
-                return;
-            }
-            
-            const title = currentDetailData.job_title || currentDetailData.title || 'Job/Profile';
-            const url = window.location.href;
-            const message = encodeURIComponent(`Check out this ${currentDetailType.toLowerCase()} on JobAd:\n\n${title}\n\n${url}`);
-            window.open(`https://wa.me/?text=${message}`, '_blank');
-        }
-
-        /**
-         * Show endorsers from detail view
-         */
         async function detailShowEndorsers() {
             if (!currentDetailData || !currentDetailType) {
                 showToast('⚠️ No item selected');
@@ -3212,9 +3320,6 @@
             await showEndorsersModal(currentDetailType, targetId);
         }
 
-        /**
-         * Show flaggers from detail view
-         */
         async function detailShowFlaggers() {
             if (!currentDetailData || !currentDetailType) {
                 showToast('⚠️ No item selected');
@@ -3224,9 +3329,6 @@
             await showFlaggersModal(currentDetailType, targetId);
         }
 
-        /**
-         * Update detail view counts
-         */
         function updateDetailCounts(endorsements, flags) {
             const endorseCount = document.getElementById('detail-endorsements-count');
             const flagCount = document.getElementById('detail-flags-count');
@@ -3241,15 +3343,13 @@
                 const userFlagged = flags.includes(parseInt(currentUser.mobile));
                 
                 if (endorseBtn) {
-                    endorseBtn.textContent = userEndorsed ? '✅ Recommended' : '👍 Recommend';
-                    endorseBtn.style.background = userEndorsed ? '#2563eb' : '#f1f5f9';
-                    endorseBtn.style.color = userEndorsed ? 'white' : '#475569';
+                    endorseBtn.className = `btn-endorse ${userEndorsed ? 'active' : ''}`;
+                    endorseBtn.innerHTML = `👍 <span class="btn-label">${userEndorsed ? 'Recommended' : 'Recommend'}</span>`;
                 }
                 
                 if (flagBtn) {
-                    flagBtn.textContent = userFlagged ? '⚠️ Not Recommended' : '👎 Not Recommend';
-                    flagBtn.style.background = userFlagged ? '#dc2626' : '#f1f5f9';
-                    flagBtn.style.color = userFlagged ? 'white' : '#475569';
+                    flagBtn.className = `btn-flag ${userFlagged ? 'active' : ''}`;
+                    flagBtn.innerHTML = `👎 <span class="btn-label">${userFlagged ? 'Not Rec' : 'Not Rec'}</span>`;
                 }
             }
         }
@@ -3635,42 +3735,44 @@
                 const endorsementsCount = endorsements.length;
                 const flagsCount = flags.length;
                 
-                const userEndorsed = hasUserEndorsed(endorsements);
-                const userFlagged = hasUserFlagged(flags);
-                
                 const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
                 
                 return `
-                <div class="feed-card">
-                    <div onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-                        <div class="title">${item.title}</div>
-                        <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
-                        <span class="badge ${typeClass}">${typeLabel}</span>
-                        <div style="display:flex; gap:16px; margin-top:6px; font-size:12px; color:#64748b;">
-                            <span class="count-link" onclick="event.stopPropagation(); showEndorsersModal('${item.type}', '${targetId}')">
-                                👍 <span id="endorse-count-${targetId}">${endorsementsCount}</span>
-                            </span>
-                            <span class="count-link" onclick="event.stopPropagation(); showFlaggersModal('${item.type}', '${targetId}')">
-                                👎 <span id="flag-count-${targetId}">${flagsCount}</span>
-                            </span>
-                            <span style="cursor:pointer; color:#2563eb;" onclick="event.stopPropagation(); shareItem('${item.type}', '${targetId}')">
-                                📤 Share
-                            </span>
-                        </div>
-                    </div>
-                    <div class="interact-row">
-                        <button class="action-btn action-btn-endorse ${userEndorsed ? 'active' : ''}" 
-                            onclick="event.stopPropagation(); toggleEndorsement('${item.type}', '${targetId}')">
-                            ${userEndorsed ? '✅' : '👍'} Recommend
-                        </button>
-                        <button class="action-btn action-btn-flag ${userFlagged ? 'active' : ''}" 
-                            onclick="event.stopPropagation(); toggleFlag('${item.type}', '${targetId}')">
-                            ${userFlagged ? '⚠️' : '👎'} Not Recommend
+                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                    <div class="title">${item.title}</div>
+                    <div class="meta">${item.exp} yrs | 📍 ${locationDisplay} | ${item.salary}</div>
+                    <span class="badge ${typeClass}">${typeLabel}</span>
+                    <div class="action-icons">
+                        <span class="count-link" onclick="event.stopPropagation(); showEndorsersModal('${item.type}', '${targetId}')">
+                            👍 ${endorsementsCount}
+                        </span>
+                        <span class="count-link" onclick="event.stopPropagation(); showFlaggersModal('${item.type}', '${targetId}')">
+                            👎 ${flagsCount}
+                        </span>
+                        <button class="icon-btn" onclick="event.stopPropagation(); openShareModalFromFeed('${item.type}', '${targetId}')">
+                            📤 <span class="label">Share</span>
                         </button>
                     </div>
                 </div>
                 `;
             }).join('');
+        }
+
+        function openShareModalFromFeed(targetType, targetId) {
+            if (!currentUser) {
+                redirectToLogin();
+                return;
+            }
+            // Find the item in feed
+            const item = feedItems.find(i => {
+                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
+                return i.type === targetType && id == targetId;
+            });
+            if (item) {
+                currentDetailData = item._raw;
+                currentDetailType = item.type;
+            }
+            document.getElementById('share-modal').classList.add('show');
         }
 
         // ============================================================
@@ -3829,7 +3931,6 @@
 
         console.log('✅ JobAd App Ready');
         console.log('📱 Auto-detect on mobile number entry');
-        console.log('📱 Test users: 9876543210 (PIN: 1234)');
         document.getElementById('mobile').focus();
     </script>
 </body>
