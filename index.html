@@ -2056,6 +2056,7 @@
         let otpTimerInterval = null;
         let otpExpiryTime = 300;
         let isNewUser = false;
+        let sharedItemData = null;
 
         // ============================================================
         // PWA INSTALLATION HANDLER
@@ -2227,6 +2228,63 @@
         }
 
         // ============================================================
+        // HANDLE SHARED LINK - Load detail view from URL params
+        // ============================================================
+        async function handleSharedLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+            const id = urlParams.get('id');
+            
+            if (view && id) {
+                console.log('🔗 Shared link detected:', view, id);
+                try {
+                    let data = null;
+                    if (view === 'job') {
+                        const { data: job, error } = await sb
+                            .from('active_jobs')
+                            .select('*')
+                            .eq('job_id', parseInt(id))
+                            .single();
+                        if (!error && job) {
+                            data = job;
+                            currentDetailType = 'JOB';
+                        }
+                    } else if (view === 'seeker') {
+                        const { data: seeker, error } = await sb
+                            .from('active_users')
+                            .select('*')
+                            .eq('mobile', id)
+                            .single();
+                        if (!error && seeker) {
+                            data = seeker;
+                            currentDetailType = 'SEEKER';
+                        }
+                    }
+                    
+                    if (data) {
+                        // Store the data to show after login
+                        sharedItemData = data;
+                        // Check if user is logged in
+                        if (currentUser) {
+                            openDetail(data, currentDetailType);
+                        } else {
+                            // Show login screen with message
+                            showToast('🔐 Please login to view this opportunity');
+                            // Store the item data for after login
+                            sessionStorage.setItem('shared_item_data', JSON.stringify(data));
+                            sessionStorage.setItem('shared_item_type', currentDetailType);
+                        }
+                    } else {
+                        showToast('⚠️ Item not found');
+                    }
+                } catch (err) {
+                    console.error('Error loading shared item:', err);
+                    showToast('⚠️ Error loading item');
+                }
+            }
+        }
+
+        // ============================================================
         // INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
@@ -2329,6 +2387,9 @@
                 if (!e.target.closest('.header-right')) closeDropdown();
             });
 
+            // Handle shared link after login
+            handleSharedLink();
+            
             console.log('✅ JobAd Ready');
             document.getElementById('mobile').focus();
         });
@@ -2669,6 +2730,26 @@
             updateAvatar();
             setTimeout(autoDetectLocation, 500);
             await fetchFeedData();
+            
+            // Check for shared item after login
+            const sharedData = sessionStorage.getItem('shared_item_data');
+            const sharedType = sessionStorage.getItem('shared_item_type');
+            if (sharedData && sharedType) {
+                try {
+                    const data = JSON.parse(sharedData);
+                    sessionStorage.removeItem('shared_item_data');
+                    sessionStorage.removeItem('shared_item_type');
+                    currentDetailData = data;
+                    currentDetailType = sharedType;
+                    // Navigate to detail view
+                    goHome();
+                    setTimeout(() => {
+                        openDetail(data, sharedType);
+                    }, 500);
+                } catch (e) {
+                    console.error('Error loading shared item:', e);
+                }
+            }
         }
 
         // ============================================================
@@ -3469,6 +3550,7 @@
             closeModal('endorsers-modal');
             closeModal('flaggers-modal');
             showToast(`👤 Viewing profile: ${mobile}`);
+            // In production, navigate to user profile page
         }
 
         function redirectToLogin() {
@@ -3885,7 +3967,7 @@
         }
 
         // ============================================================
-        // FEED FUNCTIONS - Badge & Actions on same row
+        // FEED FUNCTIONS
         // ============================================================
         function setFilter(type) {
             currentFilter = type;
