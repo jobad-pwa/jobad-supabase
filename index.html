@@ -462,8 +462,22 @@
             transition: all 0.2s ease;
         }
         .feed-card:hover { border-color: #3b82f6; background: #f8faff; }
-        .feed-card .title { font-weight: 700; font-size: 13px; color: #0f172a; }
-        .feed-card .meta { font-size: 10px; color: #475569; margin-top: 1px; }
+        .feed-card .title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .feed-card .title.job-title { color: #1e40af; }
+        .feed-card .title.seeker-name { color: #166534; }
+        .feed-card .meta {
+            font-size: 10px;
+            color: #475569;
+            margin-top: 1px;
+        }
+        .feed-card .meta .highlight {
+            font-weight: 600;
+            color: #2563eb;
+        }
         
         .feed-card .bottom-row {
             display: flex;
@@ -2301,6 +2315,11 @@
         // SHARE FUNCTIONS - Simple URL without query params
         // ============================================================
         function openShareModal() {
+            if (!currentUser) {
+                showToast('🔐 Please login to share');
+                showLogin();
+                return;
+            }
             document.getElementById('share-modal').classList.add('show');
         }
 
@@ -2310,11 +2329,14 @@
 
         function getShareData() {
             let title = 'JobAd Opportunity';
-            // Just use the current page URL without any query params to avoid 403
             let url = window.location.origin + window.location.pathname;
             
             if (currentDetailData) {
-                title = currentDetailData.job_title || currentDetailData.full_name || currentDetailData.title || 'JobAd Opportunity';
+                if (currentDetailType === 'JOB') {
+                    title = `${currentDetailData.job_title || 'Job'} at ${currentDetailData.company_name || 'Company'}`;
+                } else {
+                    title = `${currentDetailData.full_name || 'Job Seeker'} - ${currentDetailData.job_title || 'Looking for Job'}`;
+                }
             }
             
             return { title, url };
@@ -2399,6 +2421,11 @@
 
         function shareFromFeed(event, targetType, targetId) {
             event.stopPropagation();
+            if (!currentUser) {
+                showToast('🔐 Please login to share');
+                showLogin();
+                return;
+            }
             const item = feedItems.find(i => {
                 const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
                 return i.type === targetType && id == targetId;
@@ -3465,7 +3492,7 @@
         }
 
         // ============================================================
-        // ENDORSEMENTS & FLAGS FUNCTIONS - NO MOBILE NUMBERS SHOWN
+        // ENDORSEMENTS & FLAGS FUNCTIONS
         // ============================================================
         async function toggleEndorsement(targetType, targetId, mobile) {
             if (isGuest) {
@@ -3664,7 +3691,6 @@
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
                 const displayName = u.full_name || `User ${u.mobile.slice(-4)}`;
-                // Pass mobile as data attribute, but only show name
                 return `<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)">
                     <span class="gender-icon">${genderSymbol}</span>
                     <span class="name clickable-name">${displayName}</span>
@@ -4146,25 +4172,25 @@
                 const formattedJobs = (jobs || []).map(job => ({
                     type: 'JOB',
                     title: job.job_title || 'Untitled Job',
+                    company: job.company_name || 'Unknown',
                     exp: parseInt(job.min_experience_years) || 0,
                     skills: job.skills_comma_separated || '',
                     zone_id: job.zone_id || 0,
                     area_id: job.area_id || 0,
-                    salary: job.max_salary_monthly ? `₹${job.max_salary_monthly}` : 'Negotiable',
-                    company: job.company_name || 'Unknown',
+                    salary: job.max_salary_monthly ? `₹${Number(job.max_salary_monthly).toLocaleString('en-IN')}` : 'Negotiable',
                     desc: job.job_description || '',
                     contact: job.mobile || 'N/A',
                     _raw: job
                 }));
                 const formattedSeekers = (seekers || []).map(user => ({
                     type: 'SEEKER',
-                    title: user.full_name || 'Job Seeker',
+                    title: user.job_title || 'Job Seeker',
+                    name: user.full_name || 'Job Seeker',
                     exp: parseFloat(user.total_experience_years) || 0,
                     skills: user.skills_comma_separated || '',
                     zone_id: user.zone_id || 0,
                     area_id: user.area_id || 0,
-                    salary: user.expected_salary_monthly ? `₹${user.expected_salary_monthly}` : 'Not specified',
-                    company: user.job_title || 'Job Seeker',
+                    salary: user.expected_salary_monthly ? `₹${Number(user.expected_salary_monthly).toLocaleString('en-IN')}` : 'Not specified',
                     desc: user.professional_summary || '',
                     contact: user.mobile || 'N/A',
                     _raw: user
@@ -4179,7 +4205,7 @@
         }
 
         // ============================================================
-        // FEED FUNCTIONS
+        // FEED FUNCTIONS - IMPROVED DISPLAY
         // ============================================================
         function setFilter(type) {
             currentFilter = type;
@@ -4193,91 +4219,96 @@
         }
 
         function renderFeed() {
-    if (currentPage !== 'home') return;
-    const container = document.getElementById('feed-container');
-    const count = document.getElementById('results-count');
-    if (!feedItems || feedItems.length === 0) {
-        container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
-        count.textContent = 'Showing 0 Records';
-        return;
-    }
-    let filtered = [...feedItems];
-    if (currentFilter === 'JOB') {
-        filtered = filtered.filter(item => item.type === 'JOB');
-    } else if (currentFilter === 'SEEKER') {
-        filtered = filtered.filter(item => item.type === 'SEEKER');
-    }
-    if (selectedZoneId) {
-        filtered = filtered.filter(item => item.zone_id === selectedZoneId);
-    }
-    if (selectedAreaId) {
-        filtered = filtered.filter(item => item.area_id === selectedAreaId);
-    }
-    const titleFilter = document.getElementById('filter-title').value.toLowerCase();
-    if (titleFilter) {
-        filtered = filtered.filter(item => item.title.toLowerCase().includes(titleFilter));
-    }
-    const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
-    if (skillsFilter) {
-        filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
-    }
-    const expFilter = document.getElementById('filter-exp').value;
-    if (expFilter === '0-2') {
-        filtered = filtered.filter(item => item.exp <= 2);
-    } else if (expFilter === '3-5') {
-        filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
-    } else if (expFilter === '5+') {
-        filtered = filtered.filter(item => item.exp > 5);
-    }
-    count.textContent = `Showing ${filtered.length} Records`;
-    if (filtered.length === 0) {
-        container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
-        return;
-    }
-    container.innerHTML = filtered.map(item => {
-        const zoneName = getZoneName(item.zone_id);
-        const areaName = getAreaName(item.area_id);
-        const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
-        const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
-        const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
-        const endorsements = item._raw?.endorsements || [];
-        const flags = item._raw?.flags || [];
-        const endorsementsCount = endorsements.length;
-        const flagsCount = flags.length;
-        const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
-        
-        // IMPROVED DISPLAY: Different format for JOB vs SEEKER
-        let titleDisplay, subDisplay;
-        if (item.type === 'JOB') {
-            // For JOBS: Show Job Title as primary, Company as secondary
-            titleDisplay = item.title;
-            subDisplay = item.company;
-        } else {
-            // For SEEKERS: Show Name as primary, Job Title as secondary
-            titleDisplay = item.company; // company field holds the name for seekers
-            subDisplay = item.title; // title field holds the job title
-        }
-        
-        return `
-        <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-            <div class="title">${titleDisplay}</div>
-            <div class="meta">${subDisplay} · ${item.exp} yrs · 📍 ${locationDisplay} · ${item.salary}</div>
-            <div class="bottom-row">
-                <span class="badge ${typeClass}">${typeLabel}</span>
-                <div class="action-row">
-                    <span class="action-item" onclick="event.stopPropagation(); feedShowEndorsers('${item.type}', '${targetId}')">👍 <span class="count">${endorsementsCount}</span></span>
-                    <span class="action-divider">|</span>
-                    <span class="action-item" onclick="event.stopPropagation(); feedShowFlaggers('${item.type}', '${targetId}')">👎 <span class="count">${flagsCount}</span></span>
-                    <span class="action-divider">|</span>
-                    <button class="share-btn" onclick="shareFromFeed(event, '${item.type}', '${targetId}')" title="Share">
-                        <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                    </button>
+            if (currentPage !== 'home') return;
+            const container = document.getElementById('feed-container');
+            const count = document.getElementById('results-count');
+            if (!feedItems || feedItems.length === 0) {
+                container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
+                count.textContent = 'Showing 0 Records';
+                return;
+            }
+            let filtered = [...feedItems];
+            if (currentFilter === 'JOB') {
+                filtered = filtered.filter(item => item.type === 'JOB');
+            } else if (currentFilter === 'SEEKER') {
+                filtered = filtered.filter(item => item.type === 'SEEKER');
+            }
+            if (selectedZoneId) {
+                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
+            }
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            }
+            const titleFilter = document.getElementById('filter-title').value.toLowerCase();
+            if (titleFilter) {
+                filtered = filtered.filter(item => {
+                    const searchText = item.type === 'JOB' ? item.title : item.name;
+                    return searchText.toLowerCase().includes(titleFilter);
+                });
+            }
+            const skillsFilter = document.getElementById('filter-skills').value.toLowerCase();
+            if (skillsFilter) {
+                filtered = filtered.filter(item => item.skills.toLowerCase().includes(skillsFilter));
+            }
+            const expFilter = document.getElementById('filter-exp').value;
+            if (expFilter === '0-2') {
+                filtered = filtered.filter(item => item.exp <= 2);
+            } else if (expFilter === '3-5') {
+                filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
+            } else if (expFilter === '5+') {
+                filtered = filtered.filter(item => item.exp > 5);
+            }
+            count.textContent = `Showing ${filtered.length} Records`;
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
+                return;
+            }
+            container.innerHTML = filtered.map(item => {
+                const zoneName = getZoneName(item.zone_id);
+                const areaName = getAreaName(item.area_id);
+                const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
+                const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
+                const endorsements = item._raw?.endorsements || [];
+                const flags = item._raw?.flags || [];
+                const endorsementsCount = endorsements.length;
+                const flagsCount = flags.length;
+                const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
+                
+                // IMPROVED DISPLAY: Different format for JOB vs SEEKER
+                let titleDisplay, subDisplay, titleClass;
+                if (item.type === 'JOB') {
+                    // For JOBS: Show Job Title as primary, Company as secondary
+                    titleDisplay = item.title;
+                    subDisplay = item.company;
+                    titleClass = 'job-title';
+                } else {
+                    // For SEEKERS: Show Name as primary, Job Title as secondary
+                    titleDisplay = item.name;
+                    subDisplay = item.title;
+                    titleClass = 'seeker-name';
+                }
+                
+                return `
+                <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                    <div class="title ${titleClass}">${titleDisplay}</div>
+                    <div class="meta"><span class="highlight">${subDisplay}</span> · ${item.exp} yrs · 📍 ${locationDisplay} · ${item.salary}</div>
+                    <div class="bottom-row">
+                        <span class="badge ${typeClass}">${typeLabel}</span>
+                        <div class="action-row">
+                            <span class="action-item" onclick="event.stopPropagation(); feedShowEndorsers('${item.type}', '${targetId}')">👍 <span class="count">${endorsementsCount}</span></span>
+                            <span class="action-divider">|</span>
+                            <span class="action-item" onclick="event.stopPropagation(); feedShowFlaggers('${item.type}', '${targetId}')">👎 <span class="count">${flagsCount}</span></span>
+                            <span class="action-divider">|</span>
+                            <button class="share-btn" onclick="shareFromFeed(event, '${item.type}', '${targetId}')" title="Share">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        `;
-    }).join('');
-}
+                `;
+            }).join('');
+        }
 
         // Feed-specific functions for endorsements/flags
         async function feedShowEndorsers(type, targetId) {
