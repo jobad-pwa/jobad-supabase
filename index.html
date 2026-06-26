@@ -2312,8 +2312,30 @@
         }
 
         // ============================================================
-        // SHARE FUNCTIONS - Simple URL without query params
+        // SHARE FUNCTIONS - FIXED for URL sharing
         // ============================================================
+        function getShareUrl() {
+            let url = window.location.origin + window.location.pathname;
+            
+            if (currentDetailData && currentDetailType) {
+                const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                url += `?type=${currentDetailType}&id=${targetId}`;
+            }
+            
+            return url;
+        }
+
+        function getShareTitle() {
+            if (currentDetailData) {
+                if (currentDetailType === 'JOB') {
+                    return `${currentDetailData.job_title || 'Job'} at ${currentDetailData.company_name || 'Company'}`;
+                } else {
+                    return `${currentDetailData.full_name || 'Job Seeker'} - ${currentDetailData.job_title || 'Looking for Job'}`;
+                }
+            }
+            return 'JobAd Opportunity';
+        }
+
         function openShareModal() {
             if (!currentUser) {
                 showToast('🔐 Please login to share');
@@ -2327,23 +2349,9 @@
             document.getElementById('share-modal').classList.remove('show');
         }
 
-        function getShareData() {
-            let title = 'JobAd Opportunity';
-            let url = window.location.origin + window.location.pathname;
-            
-            if (currentDetailData) {
-                if (currentDetailType === 'JOB') {
-                    title = `${currentDetailData.job_title || 'Job'} at ${currentDetailData.company_name || 'Company'}`;
-                } else {
-                    title = `${currentDetailData.full_name || 'Job Seeker'} - ${currentDetailData.job_title || 'Looking for Job'}`;
-                }
-            }
-            
-            return { title, url };
-        }
-
         function shareVia(platform) {
-            const { title, url } = getShareData();
+            const title = getShareTitle();
+            const url = getShareUrl();
             const text = `Check out this opportunity on JobAd:\n\n${title}\n\n${url}`;
             
             let shareUrl = '';
@@ -2437,6 +2445,73 @@
             }
 
             openShareModal();
+        }
+
+        // ============================================================
+        // URL PARAMETER HANDLING - Auto-open shared item
+        // ============================================================
+        async function handleSharedLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            const id = urlParams.get('id');
+            
+            if (type && id) {
+                console.log(`📎 Shared link detected: ${type} with ID ${id}`);
+                
+                // Wait for user to be logged in or guest
+                const waitForUser = setInterval(async () => {
+                    if (currentUser) {
+                        clearInterval(waitForUser);
+                        await openSharedItem(type, id);
+                    }
+                }, 500);
+                
+                // Timeout after 10 seconds
+                setTimeout(() => {
+                    clearInterval(waitForUser);
+                    console.log('⏰ Timeout waiting for user login');
+                }, 10000);
+            }
+        }
+
+        async function openSharedItem(type, id) {
+            try {
+                let data;
+                if (type === 'JOB') {
+                    const { data: job, error } = await sb
+                        .from('active_jobs')
+                        .select('*')
+                        .eq('job_id', parseInt(id))
+                        .single();
+                    if (error) throw error;
+                    data = job;
+                } else if (type === 'SEEKER') {
+                    const { data: user, error } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', id)
+                        .single();
+                    if (error) throw error;
+                    data = user;
+                } else {
+                    showToast('⚠️ Invalid share link');
+                    return;
+                }
+                
+                if (data) {
+                    // Show the detail view directly
+                    openDetail(data, type);
+                    showToast(`📎 ${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
+                    
+                    // Remove the URL parameters so refresh doesn't reload the same item
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState({}, '', window.location.pathname);
+                    }
+                }
+            } catch (err) {
+                console.error('Error opening shared item:', err);
+                showToast('⚠️ Could not load the shared item');
+            }
         }
 
         // ============================================================
@@ -2549,6 +2624,9 @@
             } else {
                 document.getElementById('mobile').focus();
             }
+            
+            // Check for shared link after login
+            setTimeout(handleSharedLink, 1000);
         });
 
         // ============================================================
@@ -4275,15 +4353,12 @@
                 const flagsCount = flags.length;
                 const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
                 
-                // IMPROVED DISPLAY: Different format for JOB vs SEEKER
                 let titleDisplay, subDisplay, titleClass;
                 if (item.type === 'JOB') {
-                    // For JOBS: Show Job Title as primary, Company as secondary
                     titleDisplay = item.title;
                     subDisplay = item.company;
                     titleClass = 'job-title';
                 } else {
-                    // For SEEKERS: Show Name as primary, Job Title as secondary
                     titleDisplay = item.name;
                     subDisplay = item.title;
                     titleClass = 'seeker-name';
