@@ -1299,10 +1299,49 @@
         .clickable-name:hover {
             color: #1d4ed8;
         }
+        /* Loading overlay for shared links */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 300;
+            border-radius: 24px;
+        }
+        .loading-overlay.show { display: flex; }
+        .loading-overlay .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-overlay .loading-text {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #475569;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
     <div class="card">
+        <!-- LOADING OVERLAY -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading shared item...</div>
+        </div>
+
         <!-- LOGIN SCREEN -->
         <div id="login-screen">
             <h1>JobAd</h1>
@@ -2135,6 +2174,8 @@
         let otpTimerInterval = null;
         let otpExpiryTime = 300;
         let isNewUser = false;
+        let sharedLinkData = null; // Store shared link data
+        let sharedLinkProcessed = false;
 
         // ============================================================
         // PWA INSTALLATION HANDLER
@@ -2168,7 +2209,26 @@
         });
 
         // ============================================================
-        // GUEST AUTO-LOGIN
+        // SHARED LINK DETECTION - CHECK EARLY
+        // ============================================================
+        function detectSharedLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            const id = urlParams.get('id');
+            
+            if (type && id) {
+                console.log(`📎 Shared link detected: ${type} with ID ${id}`);
+                sharedLinkData = { type, id };
+                return true;
+            }
+            return false;
+        }
+
+        // Check for shared link immediately
+        const hasSharedLink = detectSharedLink();
+
+        // ============================================================
+        // GUEST AUTO-LOGIN WITH SHARED LINK SUPPORT
         // ============================================================
         function continueAsGuest() {
             showToast('👤 Continuing as Guest...');
@@ -2227,6 +2287,8 @@
                     sessionStorage.setItem('guest_session', 'true');
                     await fetchGuestUserData(GUEST_MOBILE);
                     showToast('👤 Welcome, Guest!');
+                    // After guest login, process shared link
+                    processSharedLinkAfterLogin();
                 } else {
                     const { data: userData, error: userError } = await sb
                         .from('active_users')
@@ -2238,16 +2300,10 @@
                         isGuest = true;
                         sessionStorage.setItem('guest_session', 'true');
                         currentUser = userData;
-                        document.getElementById('step2').classList.add('hidden');
-                        document.getElementById('step3').classList.add('hidden');
-                        document.getElementById('step4').classList.add('hidden');
-                        document.getElementById('login-screen').style.display = 'none';
-                        document.getElementById('home-page').classList.remove('hidden-page');
-                        updateAvatar();
-                        updateGuestUI();
-                        setTimeout(autoDetectLocation, 500);
-                        await fetchFeedData();
+                        showHomeScreenAfterLogin();
                         showToast('👤 Welcome, Guest!');
+                        // After guest login, process shared link
+                        processSharedLinkAfterLogin();
                     } else {
                         showToast('⚠️ Guest login failed. Please try again.');
                     }
@@ -2285,6 +2341,10 @@
                 currentUser = data;
             }
 
+            showHomeScreenAfterLogin();
+        }
+
+        function showHomeScreenAfterLogin() {
             document.getElementById('step2').classList.add('hidden');
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.add('hidden');
@@ -2293,7 +2353,7 @@
             updateAvatar();
             updateGuestUI();
             setTimeout(autoDetectLocation, 500);
-            await fetchFeedData();
+            fetchFeedData();
         }
 
         function updateGuestUI() {
@@ -2312,7 +2372,64 @@
         }
 
         // ============================================================
-        // SHARE FUNCTIONS - FIXED for URL sharing
+        // PROCESS SHARED LINK AFTER LOGIN
+        // ============================================================
+        async function processSharedLinkAfterLogin() {
+            if (sharedLinkProcessed || !sharedLinkData) return;
+            
+            console.log('🔄 Processing shared link after login:', sharedLinkData);
+            sharedLinkProcessed = true;
+            
+            // Show loading overlay
+            const overlay = document.getElementById('loading-overlay');
+            overlay.classList.add('show');
+            
+            try {
+                const { type, id } = sharedLinkData;
+                let data;
+                
+                if (type === 'JOB') {
+                    const { data: job, error } = await sb
+                        .from('active_jobs')
+                        .select('*')
+                        .eq('job_id', parseInt(id))
+                        .single();
+                    if (error) throw error;
+                    data = job;
+                } else if (type === 'SEEKER') {
+                    const { data: user, error } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', id)
+                        .single();
+                    if (error) throw error;
+                    data = user;
+                } else {
+                    throw new Error('Invalid type');
+                }
+                
+                if (data) {
+                    // Hide loading overlay
+                    overlay.classList.remove('show');
+                    
+                    // Open detail view
+                    openDetail(data, type);
+                    showToast(`📎 ${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
+                    
+                    // Remove URL parameters
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState({}, '', window.location.pathname);
+                    }
+                }
+            } catch (err) {
+                console.error('Error processing shared link:', err);
+                overlay.classList.remove('show');
+                showToast('⚠️ Could not load the shared item');
+            }
+        }
+
+        // ============================================================
+        // SHARE FUNCTIONS
         // ============================================================
         function getShareUrl() {
             let url = window.location.origin + window.location.pathname;
@@ -2448,73 +2565,6 @@
         }
 
         // ============================================================
-        // URL PARAMETER HANDLING - Auto-open shared item
-        // ============================================================
-        async function handleSharedLink() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const type = urlParams.get('type');
-            const id = urlParams.get('id');
-            
-            if (type && id) {
-                console.log(`📎 Shared link detected: ${type} with ID ${id}`);
-                
-                // Wait for user to be logged in or guest
-                const waitForUser = setInterval(async () => {
-                    if (currentUser) {
-                        clearInterval(waitForUser);
-                        await openSharedItem(type, id);
-                    }
-                }, 500);
-                
-                // Timeout after 10 seconds
-                setTimeout(() => {
-                    clearInterval(waitForUser);
-                    console.log('⏰ Timeout waiting for user login');
-                }, 10000);
-            }
-        }
-
-        async function openSharedItem(type, id) {
-            try {
-                let data;
-                if (type === 'JOB') {
-                    const { data: job, error } = await sb
-                        .from('active_jobs')
-                        .select('*')
-                        .eq('job_id', parseInt(id))
-                        .single();
-                    if (error) throw error;
-                    data = job;
-                } else if (type === 'SEEKER') {
-                    const { data: user, error } = await sb
-                        .from('active_users')
-                        .select('*')
-                        .eq('mobile', id)
-                        .single();
-                    if (error) throw error;
-                    data = user;
-                } else {
-                    showToast('⚠️ Invalid share link');
-                    return;
-                }
-                
-                if (data) {
-                    // Show the detail view directly
-                    openDetail(data, type);
-                    showToast(`📎 ${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
-                    
-                    // Remove the URL parameters so refresh doesn't reload the same item
-                    if (window.history && window.history.pushState) {
-                        window.history.pushState({}, '', window.location.pathname);
-                    }
-                }
-            } catch (err) {
-                console.error('Error opening shared item:', err);
-                showToast('⚠️ Could not load the shared item');
-            }
-        }
-
-        // ============================================================
         // INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
@@ -2618,15 +2668,21 @@
 
             console.log('✅ JobAd Ready');
 
-            const guestSession = sessionStorage.getItem('guest_session');
-            if (guestSession === 'true') {
+            // Check for shared link and auto-login as guest
+            if (hasSharedLink) {
+                console.log('📎 Shared link detected, auto-login as guest...');
+                // Show loading overlay
+                document.getElementById('loading-overlay').classList.add('show');
+                // Auto-login as guest
                 autoLoginGuest();
             } else {
-                document.getElementById('mobile').focus();
+                const guestSession = sessionStorage.getItem('guest_session');
+                if (guestSession === 'true') {
+                    autoLoginGuest();
+                } else {
+                    document.getElementById('mobile').focus();
+                }
             }
-            
-            // Check for shared link after login
-            setTimeout(handleSharedLink, 1000);
         });
 
         // ============================================================
@@ -2959,15 +3015,9 @@
                 currentUser = data;
             }
 
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.add('hidden');
-            document.getElementById('step4').classList.add('hidden');
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('home-page').classList.remove('hidden-page');
-            updateAvatar();
-            updateGuestUI();
-            setTimeout(autoDetectLocation, 500);
-            await fetchFeedData();
+            showHomeScreenAfterLogin();
+            // Process shared link after normal login too
+            setTimeout(processSharedLinkAfterLogin, 500);
         }
 
         // ============================================================
@@ -4283,7 +4333,7 @@
         }
 
         // ============================================================
-        // FEED FUNCTIONS - IMPROVED DISPLAY
+        // FEED FUNCTIONS
         // ============================================================
         function setFilter(type) {
             currentFilter = type;
@@ -4572,7 +4622,17 @@
         };
 
         console.log('✅ JobAd App Ready');
-        document.getElementById('mobile').focus();
+
+        // If shared link was detected and not yet processed, try again after a delay
+        if (hasSharedLink) {
+            // Also try to process after 3 seconds as fallback
+            setTimeout(() => {
+                if (!sharedLinkProcessed && currentUser) {
+                    console.log('🔄 Fallback: Processing shared link after delay');
+                    processSharedLinkAfterLogin();
+                }
+            }, 3000);
+        }
     </script>
 </body>
 </html>
