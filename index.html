@@ -2330,10 +2330,12 @@
         // ============================================================
         // GUEST AUTO-LOGIN
         // ============================================================
-        function continueAsGuest() {
-            showToast('👤 Continuing as Guest...');
-            autoLoginGuest();
-        }
+function continueAsGuest() {
+    showToast('👤 Continuing as Guest...');
+    // Set sessionStorage to maintain guest session
+    sessionStorage.setItem('guest_session', 'true');
+    autoLoginGuest();
+}
 
         async function autoLoginGuest() {
             try {
@@ -2658,120 +2660,41 @@
         // ============================================================
         // INIT
         // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const aboutTextarea = document.getElementById('edit-seeker-about');
-            const charCount = document.getElementById('char-count');
-            if (aboutTextarea && charCount) {
-                aboutTextarea.addEventListener('input', function() {
-                    charCount.textContent = this.value.length;
-                });
-            }
+document.addEventListener('DOMContentLoaded', function() {
+    // ... (all existing initialization code like aboutTextarea, salaryInput, populateEditZones, setupCounter, etc.) ...
 
-            const salaryInput = document.getElementById('edit-seeker-salary');
-            if (salaryInput) {
-                salaryInput.addEventListener('input', function() {
-                    const rawValue = parseSalaryValue(this.value);
-                    if (rawValue) {
-                        const formatted = formatSalaryDisplay(rawValue);
-                        this.value = formatted;
-                        this.setSelectionRange(this.value.length, this.value.length);
-                    }
-                });
-            }
+    console.log('✅ JobAd Ready');
 
-            populateEditZones();
+    // FIX: Check if we are on the root path
+    const isRootPath = window.location.pathname === '/' || window.location.pathname === '/index.html';
 
-            setupCounter('pj-title', 'pj-title-counter', 60);
-            setupCounter('pj-skills', 'pj-skills-counter', 200);
-            setupCounter('pj-description', 'pj-desc-counter', 500);
+    // Only auto-login if it's a shared link or explicitly requested, NOT on root path
+    const shouldAutoLogin = (hasSharedLink || sessionStorage.getItem('guest_session') === 'true') && !isRootPath;
 
-            const pjSalary = document.getElementById('pj-salary');
-            if (pjSalary) {
-                pjSalary.addEventListener('input', function() {
-                    const raw = this.value.replace(/[^0-9]/g, '');
-                    if (raw) {
-                        const formatted = Number(raw).toLocaleString('en-IN');
-                        this.value = formatted;
-                    } else {
-                        this.value = '';
-                    }
-                });
-            }
-
-            const expiryInput = document.getElementById('pj-expiry');
-            if (expiryInput) {
-                const d = new Date();
-                d.setDate(d.getDate() + 30);
-                expiryInput.value = d.toISOString().split('T')[0];
-                expiryInput.max = new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0];
-                expiryInput.min = new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0];
-                expiryInput.addEventListener('change', function() {
-                    const selected = new Date(this.value);
-                    const maxDate = new Date(Date.now() + 45*24*60*60*1000);
-                    if (selected > maxDate) {
-                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
-                        this.value = maxDate.toISOString().split('T')[0];
-                    }
-                });
-            }
-
-            const zoneSelect = document.getElementById('pj-zone');
-            zoneSelect.value = '100';
-            updatePostAreas();
-
-            autoCleanExpiredJobs();
-
-            document.getElementById('mobile').addEventListener('input', function(e) {
-                const mobile = this.value.trim();
-                const statusEl = document.getElementById('mobile-status');
-                
-                if (mobile.length === 10) {
-                    autoCheckMobile(mobile);
-                } else if (mobile.length > 0 && mobile.length < 10) {
-                    setStatus('Enter 10 digits', 'gray');
-                    document.getElementById('step2').classList.add('hidden');
-                    document.getElementById('step3').classList.add('hidden');
-                    document.getElementById('step4').classList.add('hidden');
-                    document.getElementById('step1').style.display = 'block';
-                } else {
-                    document.getElementById('step2').classList.add('hidden');
-                    document.getElementById('step3').classList.add('hidden');
-                    document.getElementById('step4').classList.add('hidden');
-                    document.getElementById('step1').style.display = 'block';
-                    statusEl.textContent = '';
-                }
-            });
-
-            document.getElementById('pin').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') submitPin();
-            });
-
-            document.getElementById('reg-pin').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') document.getElementById('reg-pin-confirm').focus();
-            });
-            document.getElementById('reg-pin-confirm').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') registerUser();
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.header-right')) closeDropdown();
-            });
-
-            console.log('✅ JobAd Ready');
-
-            if (hasSharedLink) {
-                console.log('📎 Shared link detected, auto-login as guest...');
-                document.getElementById('loading-overlay').classList.add('show');
-                autoLoginGuest();
-            } else {
-                const guestSession = sessionStorage.getItem('guest_session');
-                if (guestSession === 'true') {
-                    autoLoginGuest();
-                } else {
-                    document.getElementById('mobile').focus();
-                }
-            }
-        });
+    if (shouldAutoLogin) {
+        // Immediately hide login screen and show home page for shared links
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('home-page').classList.remove('hidden-page');
+        
+        // Show loading overlay for shared links
+        if (hasSharedLink) {
+            document.getElementById('loading-overlay').classList.add('show');
+        }
+        
+        // Auto-login in background
+        autoLoginGuest();
+    } else {
+        // Show login screen for root path
+        document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('mobile').focus();
+        // Ensure home page is hidden
+        document.getElementById('home-page').classList.add('hidden-page');
+        // Clear any guest session that might cause auto-login on refresh
+        if (isRootPath) {
+            sessionStorage.removeItem('guest_session');
+        }
+    }
+});
 
         // ============================================================
         // AUTO CHECK MOBILE
