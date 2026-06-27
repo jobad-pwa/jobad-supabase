@@ -1929,7 +1929,7 @@
                             <span class="action-label">Not Rec</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-share" id="detail-share-btn" onclick="openShareModal()">
+                            <button class="btn-share" id="detail-share-btn" onclick="handleShareClick()">
                                 <svg viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                             </button>
                             <span class="action-label">Share</span>
@@ -2174,7 +2174,7 @@
         let otpTimerInterval = null;
         let otpExpiryTime = 300;
         let isNewUser = false;
-        let sharedLinkData = null; // Store shared link data
+        let sharedLinkData = null;
         let sharedLinkProcessed = false;
 
         // ============================================================
@@ -2209,7 +2209,7 @@
         });
 
         // ============================================================
-        // SHARED LINK DETECTION - CHECK EARLY
+        // SHARED LINK DETECTION
         // ============================================================
         function detectSharedLink() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -2224,11 +2224,110 @@
             return false;
         }
 
-        // Check for shared link immediately
         const hasSharedLink = detectSharedLink();
 
         // ============================================================
-        // GUEST AUTO-LOGIN WITH SHARED LINK SUPPORT
+        // SHARE COUNT INCREMENT - IMMEDIATE ON SHARE CLICK
+        // ============================================================
+        async function incrementShareCount(targetType, targetId) {
+            try {
+                const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+                const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+                
+                // First, get current share_count
+                const { data, error } = await sb
+                    .from(table)
+                    .select('share_count')
+                    .eq(idField, targetId)
+                    .single();
+                
+                if (error) throw error;
+                
+                const currentCount = data?.share_count || 0;
+                const newCount = currentCount + 1;
+                
+                // Update share_count
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ share_count: newCount })
+                    .eq(idField, targetId);
+                
+                if (updateError) throw updateError;
+                
+                console.log(`✅ Share count incremented: ${newCount}`);
+                
+                // Update the local data to reflect immediately
+                if (currentDetailData && currentDetailType === targetType) {
+                    const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                    if (targetIdValue == targetId) {
+                        currentDetailData.share_count = newCount;
+                        // Update the detail view display
+                        updateDetailStats();
+                    }
+                }
+                
+                // Update feed items
+                feedItems = feedItems.map(item => {
+                    const itemId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
+                    if (item.type === targetType && itemId == targetId) {
+                        if (item._raw) {
+                            item._raw.share_count = newCount;
+                        }
+                        item.share_count = newCount;
+                    }
+                    return item;
+                });
+                
+                // Re-render feed to show updated count
+                renderFeed();
+                
+                return newCount;
+            } catch (err) {
+                console.error('❌ Error incrementing share count:', err);
+                // Don't show error to user - share should work even if count fails
+                return null;
+            }
+        }
+
+        // ============================================================
+        // HANDLE SHARE CLICK - Increment count immediately
+        // ============================================================
+        function handleShareClick() {
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            
+            // Increment share count immediately
+            incrementShareCount(currentDetailType, targetId);
+            
+            // Then open share modal
+            openShareModal();
+        }
+
+        // ============================================================
+        // UPDATE DETAIL STATS
+        // ============================================================
+        function updateDetailStats() {
+            if (!currentDetailData) return;
+            
+            const endorsements = currentDetailData.endorsements || [];
+            const shareCount = currentDetailData.share_count || 0;
+            const totalPopularity = endorsements.length + shareCount;
+            
+            const endorseCountEl = document.getElementById('detail-endorsements-count');
+            const shareCountEl = document.getElementById('detail-share-count');
+            const totalPopularityEl = document.getElementById('detail-total-popularity');
+            
+            if (endorseCountEl) endorseCountEl.textContent = endorsements.length;
+            if (shareCountEl) shareCountEl.textContent = shareCount;
+            if (totalPopularityEl) totalPopularityEl.textContent = totalPopularity;
+        }
+
+        // ============================================================
+        // GUEST AUTO-LOGIN
         // ============================================================
         function continueAsGuest() {
             showToast('👤 Continuing as Guest...');
@@ -2287,7 +2386,6 @@
                     sessionStorage.setItem('guest_session', 'true');
                     await fetchGuestUserData(GUEST_MOBILE);
                     showToast('👤 Welcome, Guest!');
-                    // After guest login, process shared link
                     processSharedLinkAfterLogin();
                 } else {
                     const { data: userData, error: userError } = await sb
@@ -2302,7 +2400,6 @@
                         currentUser = userData;
                         showHomeScreenAfterLogin();
                         showToast('👤 Welcome, Guest!');
-                        // After guest login, process shared link
                         processSharedLinkAfterLogin();
                     } else {
                         showToast('⚠️ Guest login failed. Please try again.');
@@ -2380,7 +2477,6 @@
             console.log('🔄 Processing shared link after login:', sharedLinkData);
             sharedLinkProcessed = true;
             
-            // Show loading overlay
             const overlay = document.getElementById('loading-overlay');
             overlay.classList.add('show');
             
@@ -2409,14 +2505,10 @@
                 }
                 
                 if (data) {
-                    // Hide loading overlay
                     overlay.classList.remove('show');
-                    
-                    // Open detail view
                     openDetail(data, type);
                     showToast(`📎 ${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
                     
-                    // Remove URL parameters
                     if (window.history && window.history.pushState) {
                         window.history.pushState({}, '', window.location.pathname);
                     }
@@ -2454,11 +2546,6 @@
         }
 
         function openShareModal() {
-            if (!currentUser) {
-                showToast('🔐 Please login to share');
-                showLogin();
-                return;
-            }
             document.getElementById('share-modal').classList.add('show');
         }
 
@@ -2546,22 +2633,25 @@
 
         function shareFromFeed(event, targetType, targetId) {
             event.stopPropagation();
-            if (!currentUser) {
-                showToast('🔐 Please login to share');
-                showLogin();
-                return;
-            }
+            
+            // Find the item in feed
             const item = feedItems.find(i => {
                 const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
                 return i.type === targetType && id == targetId;
             });
 
-            if (item) {
+            if (item && item._raw) {
                 currentDetailData = item._raw;
                 currentDetailType = item.type;
+                
+                // Increment share count immediately
+                incrementShareCount(targetType, targetId);
+                
+                // Open share modal
+                openShareModal();
+            } else {
+                showToast('⚠️ Could not find item');
             }
-
-            openShareModal();
         }
 
         // ============================================================
@@ -2668,12 +2758,9 @@
 
             console.log('✅ JobAd Ready');
 
-            // Check for shared link and auto-login as guest
             if (hasSharedLink) {
                 console.log('📎 Shared link detected, auto-login as guest...');
-                // Show loading overlay
                 document.getElementById('loading-overlay').classList.add('show');
-                // Auto-login as guest
                 autoLoginGuest();
             } else {
                 const guestSession = sessionStorage.getItem('guest_session');
@@ -3016,7 +3103,6 @@
             }
 
             showHomeScreenAfterLogin();
-            // Process shared link after normal login too
             setTimeout(processSharedLinkAfterLogin, 500);
         }
 
@@ -3499,11 +3585,53 @@
             document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
 
             const endorsements = data.endorsements || [];
+            const shareCount = data.share_count || 0;
             const flags = data.flags || [];
+            const totalPopularity = endorsements.length + shareCount;
 
+            // Update detail stats
             document.getElementById('detail-endorsements-count').textContent = endorsements.length || 0;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-views').textContent = data.views || 0;
+            
+            // Add share count and total popularity to detail view
+            // First, check if share count element exists, if not create it
+            let shareCountEl = document.getElementById('detail-share-count');
+            let totalPopularityEl = document.getElementById('detail-total-popularity');
+            
+            // Get the stats container
+            const statsContainer = document.querySelector('.detail-stats');
+            
+            // If share count and total popularity elements don't exist, add them
+            if (!shareCountEl || !totalPopularityEl) {
+                // Clear and rebuild stats
+                if (statsContainer) {
+                    statsContainer.innerHTML = `
+                        <div class="stat-item" onclick="detailShowEndorsers()">
+                            <div class="number" id="detail-endorsements-count">${endorsements.length}</div>
+                            <div class="label">👍 Endorsements</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="number" id="detail-share-count">${shareCount}</div>
+                            <div class="label">📤 Shares</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="number" id="detail-total-popularity">${totalPopularity}</div>
+                            <div class="label">⭐ Total</div>
+                        </div>
+                        <div class="stat-item" onclick="detailShowFlaggers()" style="grid-column: span 3; margin-top: 4px;">
+                            <div class="number" id="detail-flags-count">${flags.length}</div>
+                            <div class="label">👎 Flags</div>
+                        </div>
+                    `;
+                }
+            } else {
+                // Update existing elements
+                shareCountEl.textContent = shareCount;
+                totalPopularityEl.textContent = totalPopularity;
+                document.getElementById('detail-endorsements-count').textContent = endorsements.length;
+                document.getElementById('detail-flags-count').textContent = flags.length;
+            }
 
             updateDetailCounts(endorsements, flags);
 
@@ -4308,6 +4436,7 @@
                     salary: job.max_salary_monthly ? `₹${Number(job.max_salary_monthly).toLocaleString('en-IN')}` : 'Negotiable',
                     desc: job.job_description || '',
                     contact: job.mobile || 'N/A',
+                    share_count: job.share_count || 0,
                     _raw: job
                 }));
                 const formattedSeekers = (seekers || []).map(user => ({
@@ -4321,6 +4450,7 @@
                     salary: user.expected_salary_monthly ? `₹${Number(user.expected_salary_monthly).toLocaleString('en-IN')}` : 'Not specified',
                     desc: user.professional_summary || '',
                     contact: user.mobile || 'N/A',
+                    share_count: user.share_count || 0,
                     _raw: user
                 }));
                 feedItems = [...formattedJobs, ...formattedSeekers];
@@ -4399,7 +4529,8 @@
                 const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
                 const endorsements = item._raw?.endorsements || [];
                 const flags = item._raw?.flags || [];
-                const endorsementsCount = endorsements.length;
+                const shareCount = item.share_count || 0;
+                const totalPopularity = endorsements.length + shareCount;
                 const flagsCount = flags.length;
                 const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
                 
@@ -4421,7 +4552,7 @@
                     <div class="bottom-row">
                         <span class="badge ${typeClass}">${typeLabel}</span>
                         <div class="action-row">
-                            <span class="action-item" onclick="event.stopPropagation(); feedShowEndorsers('${item.type}', '${targetId}')">👍 <span class="count">${endorsementsCount}</span></span>
+                            <span class="action-item" onclick="event.stopPropagation(); feedShowEndorsers('${item.type}', '${targetId}')">👍 <span class="count">${totalPopularity}</span></span>
                             <span class="action-divider">|</span>
                             <span class="action-item" onclick="event.stopPropagation(); feedShowFlaggers('${item.type}', '${targetId}')">👎 <span class="count">${flagsCount}</span></span>
                             <span class="action-divider">|</span>
@@ -4623,9 +4754,7 @@
 
         console.log('✅ JobAd App Ready');
 
-        // If shared link was detected and not yet processed, try again after a delay
         if (hasSharedLink) {
-            // Also try to process after 3 seconds as fallback
             setTimeout(() => {
                 if (!sharedLinkProcessed && currentUser) {
                     console.log('🔄 Fallback: Processing shared link after delay');
