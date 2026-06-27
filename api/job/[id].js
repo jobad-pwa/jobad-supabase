@@ -1,4 +1,4 @@
-// api/job/[id].js - WITH DEBUGGING
+// api/job/[id].js - WITH CLEAR ERROR MESSAGES
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
@@ -17,16 +17,9 @@ function getZoneName(id) {
   return z ? z.zone_name : 'Unknown';
 }
 
-function getLocationName(zoneId, areaId) {
-  const zoneName = getZoneName(zoneId);
-  return zoneName;
-}
-
 export default async function handler(req, res) {
   try {
     const { id } = req.query;
-    
-    console.log('📌 Job ID requested:', id);
     
     if (!id) {
       return res.status(400).send('Missing job ID');
@@ -39,11 +32,8 @@ export default async function handler(req, res) {
       .eq('job_id', parseInt(id))
       .single();
 
-    console.log('📌 Job found:', job ? 'YES' : 'NO');
-    console.log('📌 Error:', error ? error.message : 'None');
-
+    // If job not found, show a helpful message
     if (error || !job) {
-      // Show a debug page instead of redirecting
       return res.send(`
 <!DOCTYPE html>
 <html>
@@ -54,20 +44,20 @@ export default async function handler(req, res) {
       .card { max-width: 400px; background: white; border-radius: 24px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; }
       h1 { color: #dc2626; }
       .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; text-decoration: none; cursor: pointer; margin-top: 12px; }
-      .debug { background: #f8fafc; padding: 12px; border-radius: 8px; text-align: left; font-size: 13px; margin-top: 16px; border: 1px solid #e2e8f0; }
+      .info { background: #f0fdf4; padding: 12px; border-radius: 8px; text-align: left; font-size: 13px; margin-top: 16px; border: 1px solid #bbf7d0; }
     </style>
 </head>
 <body>
   <div class="card">
     <h1>🔍 Job Not Found</h1>
     <p>Job with ID <strong>${id}</strong> was not found in the database.</p>
-    <div class="debug">
-      <strong>Debug Info:</strong><br>
-      Job ID requested: ${id}<br>
-      Error: ${error ? error.message : 'No error, but job is null'}<br>
-      ${error ? 'Check if the job exists in Supabase.' : ''}
+    <div class="info">
+      <strong>💡 Tip:</strong><br>
+      • Create a job using the app<br>
+      • Or check the job ID in Supabase<br>
+      • Then try again with the correct ID
     </div>
-    <a href="/" class="btn">Go to Homepage</a>
+    <a href="/" class="btn">🏠 Go to Homepage</a>
   </div>
 </body>
 </html>
@@ -75,7 +65,6 @@ export default async function handler(req, res) {
     }
 
     const zoneName = getZoneName(job.zone_id);
-    const locationName = getLocationName(job.zone_id, job.area_id);
 
     const jsonLd = {
       "@context": "https://schema.org",
@@ -145,7 +134,7 @@ ${JSON.stringify(jsonLd, null, 2)}
     <div class="badge">💼 JOB</div>
     <h1 class="job-title">${job.job_title || 'Untitled Job'}</h1>
     <p class="company-name">🏢 ${job.company_name || 'Company'}</p>
-    <div class="job-field"><label>📍 Location</label><div class="value">${locationName || 'Not specified'}</div></div>
+    <div class="job-field"><label>📍 Location</label><div class="value">${zoneName || 'Not specified'}</div></div>
     <div class="job-field"><label>💼 Experience</label><div class="value">${job.min_experience_years || 0} years</div></div>
     <div class="job-field"><label>💰 Salary</label><div class="value">₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}/month</div></div>
     <div class="job-field"><label>🛠️ Skills</label><div class="value">${job.skills_comma_separated || 'Not specified'}</div></div>
