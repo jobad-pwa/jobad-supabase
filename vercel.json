@@ -2,6 +2,22 @@
   "version": 2,
   "rewrites": [
     {
+      "source": "/job/(.*)",
+      "destination": "/api/job/$1"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/jobs.xml",
+      "destination": "/api/indeed-feed"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api/robots"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
