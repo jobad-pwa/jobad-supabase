@@ -1,6 +1,6 @@
 // api/indeed-feed.js
 import { createClient } from '@supabase/supabase-js';
-import { ZONES, getZoneName } from '../data/zones.js';
+import { getZoneName } from '../data/zones.js';
 
 const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
