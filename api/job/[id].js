@@ -1,11 +1,10 @@
-// api/job/[id].js - WITH ZONES INSIDE (NO IMPORTS)
+// api/job/[id].js - WITH DEBUGGING
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// ZONES DATA DIRECTLY IN THIS FILE
 const ZONES = [
   { zone_id: 100, zone_name: "Hyderabad" },
   { zone_id: 200, zone_name: "North Telangana" },
@@ -27,21 +26,52 @@ export default async function handler(req, res) {
   try {
     const { id } = req.query;
     
+    console.log('📌 Job ID requested:', id);
+    
     if (!id) {
-      res.status(400).send('Missing job ID');
-      return;
+      return res.status(400).send('Missing job ID');
     }
 
+    // Fetch job from Supabase
     const { data: job, error } = await supabase
       .from('active_jobs')
       .select('*')
       .eq('job_id', parseInt(id))
       .single();
 
+    console.log('📌 Job found:', job ? 'YES' : 'NO');
+    console.log('📌 Error:', error ? error.message : 'None');
+
     if (error || !job) {
-      res.writeHead(302, { Location: '/' });
-      res.end();
-      return;
+      // Show a debug page instead of redirecting
+      return res.send(`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Not Found - JobAd</title>
+    <style>
+      body { font-family: system-ui; background: #f3f4f6; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+      .card { max-width: 400px; background: white; border-radius: 24px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; }
+      h1 { color: #dc2626; }
+      .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; text-decoration: none; cursor: pointer; margin-top: 12px; }
+      .debug { background: #f8fafc; padding: 12px; border-radius: 8px; text-align: left; font-size: 13px; margin-top: 16px; border: 1px solid #e2e8f0; }
+    </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔍 Job Not Found</h1>
+    <p>Job with ID <strong>${id}</strong> was not found in the database.</p>
+    <div class="debug">
+      <strong>Debug Info:</strong><br>
+      Job ID requested: ${id}<br>
+      Error: ${error ? error.message : 'No error, but job is null'}<br>
+      ${error ? 'Check if the job exists in Supabase.' : ''}
+    </div>
+    <a href="/" class="btn">Go to Homepage</a>
+  </div>
+</body>
+</html>
+      `);
     }
 
     const zoneName = getZoneName(job.zone_id);
