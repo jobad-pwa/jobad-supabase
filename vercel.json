@@ -6,6 +6,10 @@
       "destination": "/api/job/$1"
     },
     {
+      "source": "/job",
+      "destination": "/api/job-list"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
     },
