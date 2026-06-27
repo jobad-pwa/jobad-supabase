@@ -1888,10 +1888,11 @@
                         <div class="value" id="detail-posted">--</div>
                     </div>
 
-                    <div class="detail-stats">
+                    <!-- SIMPLIFIED DETAIL STATS -->
+                    <div class="detail-stats" style="grid-template-columns: 1fr 1fr 1fr;">
                         <div class="stat-item" onclick="detailShowEndorsers()">
-                            <div class="number" id="detail-endorsements-count">0</div>
-                            <div class="label">👍 Endorsements</div>
+                            <div class="number" id="detail-total-popularity">0</div>
+                            <div class="label">⭐ Popularity</div>
                         </div>
                         <div class="stat-item" onclick="detailShowFlaggers()">
                             <div class="number" id="detail-flags-count">0</div>
@@ -2317,13 +2318,13 @@
             const shareCount = currentDetailData.share_count || 0;
             const totalPopularity = endorsements.length + shareCount;
             
-            const endorseCountEl = document.getElementById('detail-endorsements-count');
-            const shareCountEl = document.getElementById('detail-share-count');
-            const totalPopularityEl = document.getElementById('detail-total-popularity');
+            const totalEl = document.getElementById('detail-total-popularity');
+            const flagsEl = document.getElementById('detail-flags-count');
+            const viewsEl = document.getElementById('detail-views');
             
-            if (endorseCountEl) endorseCountEl.textContent = endorsements.length;
-            if (shareCountEl) shareCountEl.textContent = shareCount;
-            if (totalPopularityEl) totalPopularityEl.textContent = totalPopularity;
+            if (totalEl) totalEl.textContent = totalPopularity;
+            if (flagsEl) flagsEl.textContent = (currentDetailData.flags || []).length;
+            if (viewsEl) viewsEl.textContent = currentDetailData.views || 0;
         }
 
         // ============================================================
@@ -3416,7 +3417,8 @@
                 job_description: description || '',
                 zone_id: parseInt(zone),
                 area_id: parseInt(area),
-                expiry_date: new Date(expiryDate).toISOString()
+                expiry_date: new Date(expiryDate).toISOString(),
+                share_count: 0
             };
 
             try {
@@ -3589,49 +3591,10 @@
             const flags = data.flags || [];
             const totalPopularity = endorsements.length + shareCount;
 
-            // Update detail stats
-            document.getElementById('detail-endorsements-count').textContent = endorsements.length || 0;
+            // Update simplified detail stats
+            document.getElementById('detail-total-popularity').textContent = totalPopularity;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-views').textContent = data.views || 0;
-            
-            // Add share count and total popularity to detail view
-            // First, check if share count element exists, if not create it
-            let shareCountEl = document.getElementById('detail-share-count');
-            let totalPopularityEl = document.getElementById('detail-total-popularity');
-            
-            // Get the stats container
-            const statsContainer = document.querySelector('.detail-stats');
-            
-            // If share count and total popularity elements don't exist, add them
-            if (!shareCountEl || !totalPopularityEl) {
-                // Clear and rebuild stats
-                if (statsContainer) {
-                    statsContainer.innerHTML = `
-                        <div class="stat-item" onclick="detailShowEndorsers()">
-                            <div class="number" id="detail-endorsements-count">${endorsements.length}</div>
-                            <div class="label">👍 Endorsements</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="number" id="detail-share-count">${shareCount}</div>
-                            <div class="label">📤 Shares</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="number" id="detail-total-popularity">${totalPopularity}</div>
-                            <div class="label">⭐ Total</div>
-                        </div>
-                        <div class="stat-item" onclick="detailShowFlaggers()" style="grid-column: span 3; margin-top: 4px;">
-                            <div class="number" id="detail-flags-count">${flags.length}</div>
-                            <div class="label">👎 Flags</div>
-                        </div>
-                    `;
-                }
-            } else {
-                // Update existing elements
-                shareCountEl.textContent = shareCount;
-                totalPopularityEl.textContent = totalPopularity;
-                document.getElementById('detail-endorsements-count').textContent = endorsements.length;
-                document.getElementById('detail-flags-count').textContent = flags.length;
-            }
 
             updateDetailCounts(endorsements, flags);
 
@@ -3946,7 +3909,8 @@
 
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
-                const displayName = u.full_name || `User ${u.mobile.slice(-4)}`;
+                // Display full name if available, otherwise show "Profile not updated yet"
+                const displayName = u.full_name && u.full_name.trim() !== '' ? u.full_name : 'Profile not updated yet';
                 return `<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)">
                     <span class="gender-icon">${genderSymbol}</span>
                     <span class="name clickable-name">${displayName}</span>
@@ -3977,7 +3941,7 @@
 
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
-                const displayName = u.full_name || `User ${u.mobile.slice(-4)}`;
+                const displayName = u.full_name && u.full_name.trim() !== '' ? u.full_name : 'Profile not updated yet';
                 return `<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)">
                     <span class="gender-icon">${genderSymbol}</span>
                     <span class="name clickable-name">${displayName}</span>
@@ -4035,7 +3999,8 @@
                 return;
             }
             if (!currentUser) {
-                redirectToLogin();
+                showToast('⚠️ Please login first');
+                showLogin();
                 return;
             }
             if (!currentDetailData || !currentDetailType) {
@@ -4046,6 +4011,10 @@
             const result = await toggleEndorsement(currentDetailType, targetId, currentUser.mobile);
             if (result) {
                 updateDetailCounts(result.endorsements, result.flags);
+                // Update total popularity
+                const shareCount = currentDetailData.share_count || 0;
+                const totalPopularity = result.endorsements.length + shareCount;
+                document.getElementById('detail-total-popularity').textContent = totalPopularity;
             }
         }
 
@@ -4056,7 +4025,8 @@
                 return;
             }
             if (!currentUser) {
-                redirectToLogin();
+                showToast('⚠️ Please login first');
+                showLogin();
                 return;
             }
             if (!currentDetailData || !currentDetailType) {
@@ -4089,12 +4059,10 @@
         }
 
         function updateDetailCounts(endorsements, flags) {
-            const endorseCount = document.getElementById('detail-endorsements-count');
             const flagCount = document.getElementById('detail-flags-count');
             const endorseBtn = document.getElementById('detail-endorse-btn');
             const flagBtn = document.getElementById('detail-flag-btn');
 
-            if (endorseCount) endorseCount.textContent = endorsements.length || 0;
             if (flagCount) flagCount.textContent = flags.length || 0;
 
             if (currentUser && !isGuest) {
