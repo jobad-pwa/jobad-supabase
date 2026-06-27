@@ -1,6 +1,6 @@
 // api/job/[id].js
 import { createClient } from '@supabase/supabase-js';
-import { ZONES, AREAS, getZoneName, getAreaName, getLocationName } from '../data/zones.js';
+import { getZoneName, getLocationName } from '../data/zones.js';
 
 const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
@@ -71,7 +71,6 @@ export default async function handler(req, res) {
       "@type": "Country",
       "name": "India"
     },
-    "jobLocationType": "TELECOMMUTE",
     "workHours": "Full-time",
     "responsibilities": job.job_description || '',
     "qualifications": job.skills_comma_separated || '',
@@ -80,8 +79,7 @@ export default async function handler(req, res) {
   };
 
   // Generate HTML with JSON-LD injected
-  const html = `
-<!DOCTYPE html>
+  const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -106,10 +104,11 @@ export default async function handler(req, res) {
     <meta name="twitter:description" content="Apply for ${job.job_title || 'this job'} at ${job.company_name || 'Company'}. Located in ${zoneName}.">
     
     <script type="application/ld+json">
-      ${JSON.stringify(jsonLd, null, 2)}
+${JSON.stringify(jsonLd, null, 2)}
     </script>
     
     <style>
+      * { box-sizing: border-box; }
       body {
         font-family: system-ui, -apple-system, sans-serif;
         background: #f3f4f6;
@@ -125,30 +124,26 @@ export default async function handler(req, res) {
         width: 100%;
         background: white;
         border-radius: 24px;
-        padding: 20px 18px 10px 18px;
+        padding: 24px 20px;
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        display: flex;
-        flex-direction: column;
-        height: 95vh;
-        max-height: 780px;
-        position: relative;
-        overflow: hidden;
       }
-      .job-title { font-size: 20px; font-weight: 700; color: #1e40af; margin: 0 0 4px 0; }
-      .company-name { font-size: 16px; color: #475569; margin: 0 0 12px 0; }
-      .job-field { margin-bottom: 8px; }
-      .job-field label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; display: block; }
-      .job-field .value { font-size: 14px; color: #1e293b; }
-      .btn-open { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+      .job-title { font-size: 22px; font-weight: 700; color: #1e40af; margin: 0 0 4px 0; }
+      .company-name { font-size: 16px; color: #475569; margin: 0 0 16px 0; }
+      .job-field { margin-bottom: 10px; }
+      .job-field label { font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; display: block; letter-spacing: 0.05em; }
+      .job-field .value { font-size: 14px; color: #1e293b; padding: 4px 0; border-bottom: 1px solid #f1f5f9; }
+      .job-field .value-multiline { font-size: 14px; color: #1e293b; padding: 4px 0; border-bottom: 1px solid #f1f5f9; white-space: pre-wrap; }
+      .badge { display: inline-block; padding: 2px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; background: #dbeafe; color: #1e40af; margin-bottom: 8px; }
+      .btn-open { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px; }
       .btn-open:hover { background: #1d4ed8; }
-      .badge { display: inline-block; padding: 2px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; background: #dbeafe; color: #1e40af; }
+      .footer { margin-top: 16px; text-align: center; font-size: 12px; color: #94a3b8; }
     </style>
 </head>
 <body>
   <div class="card">
-    <div class="badge">JOB</div>
+    <div class="badge">💼 JOB</div>
     <h1 class="job-title">${job.job_title || 'Untitled Job'}</h1>
-    <p class="company-name">${job.company_name || 'Company'}</p>
+    <p class="company-name">🏢 ${job.company_name || 'Company'}</p>
     
     <div class="job-field">
       <label>📍 Location</label>
@@ -172,16 +167,17 @@ export default async function handler(req, res) {
     
     <div class="job-field">
       <label>📝 Description</label>
-      <div class="value" style="white-space: pre-wrap;">${job.job_description || 'No description provided.'}</div>
+      <div class="value-multiline">${job.job_description || 'No description provided.'}</div>
     </div>
     
     <button class="btn-open" onclick="window.location.href='/?type=JOB&id=${job.job_id}'">
-      Open in App
+      📱 Open in App
     </button>
+    
+    <div class="footer">JobAd - Find Jobs in Your Area</div>
   </div>
 </body>
-</html>
-  `;
+</html>`;
 
   res.setHeader('Content-Type', 'text/html');
   res.status(200).send(html);
