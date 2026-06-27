@@ -2228,6 +2228,120 @@
         const hasSharedLink = detectSharedLink();
 
         // ============================================================
+        // VIEW COUNT INCREMENT - Called when detail page is opened
+        // ============================================================
+        async function incrementViewCount(targetType, targetId) {
+            try {
+                const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+                const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+                
+                // First, get current view count
+                const { data, error } = await sb
+                    .from(table)
+                    .select('views')
+                    .eq(idField, targetId)
+                    .single();
+                
+                if (error) throw error;
+                
+                const currentCount = data?.views || 0;
+                const newCount = currentCount + 1;
+                
+                // Update views
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ views: newCount })
+                    .eq(idField, targetId);
+                
+                if (updateError) throw updateError;
+                
+                console.log(`✅ View count incremented: ${newCount}`);
+                
+                // Update local data
+                if (currentDetailData && currentDetailType === targetType) {
+                    const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                    if (targetIdValue == targetId) {
+                        currentDetailData.views = newCount;
+                        document.getElementById('detail-views').textContent = newCount;
+                    }
+                }
+                
+                return newCount;
+            } catch (err) {
+                console.error('❌ Error incrementing view count:', err);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // INCREMENT CALL COUNT - Called when Call button is clicked
+        // ============================================================
+        async function incrementCallCount(targetType, targetId) {
+            try {
+                const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+                const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+                
+                const { data, error } = await sb
+                    .from(table)
+                    .select('calls')
+                    .eq(idField, targetId)
+                    .single();
+                
+                if (error) throw error;
+                
+                const currentCount = data?.calls || 0;
+                const newCount = currentCount + 1;
+                
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ calls: newCount })
+                    .eq(idField, targetId);
+                
+                if (updateError) throw updateError;
+                
+                console.log(`✅ Call count incremented: ${newCount}`);
+                return newCount;
+            } catch (err) {
+                console.error('❌ Error incrementing call count:', err);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // INCREMENT WHATSAPP COUNT - Called when WhatsApp button is clicked
+        // ============================================================
+        async function incrementWhatsAppCount(targetType, targetId) {
+            try {
+                const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+                const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+                
+                const { data, error } = await sb
+                    .from(table)
+                    .select('whatsapp')
+                    .eq(idField, targetId)
+                    .single();
+                
+                if (error) throw error;
+                
+                const currentCount = data?.whatsapp || 0;
+                const newCount = currentCount + 1;
+                
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ whatsapp: newCount })
+                    .eq(idField, targetId);
+                
+                if (updateError) throw updateError;
+                
+                console.log(`✅ WhatsApp count incremented: ${newCount}`);
+                return newCount;
+            } catch (err) {
+                console.error('❌ Error incrementing WhatsApp count:', err);
+                return null;
+            }
+        }
+
+        // ============================================================
         // SHARE COUNT INCREMENT - IMMEDIATE ON SHARE CLICK
         // ============================================================
         async function incrementShareCount(targetType, targetId) {
@@ -2285,7 +2399,6 @@
                 return newCount;
             } catch (err) {
                 console.error('❌ Error incrementing share count:', err);
-                // Don't show error to user - share should work even if count fails
                 return null;
             }
         }
@@ -3435,7 +3548,10 @@
                 zone_id: parseInt(zone),
                 area_id: parseInt(area),
                 expiry_date: new Date(expiryDate).toISOString(),
-                share_count: 0
+                share_count: 0,
+                views: 0,
+                calls: 0,
+                whatsapp: 0
             };
 
             try {
@@ -3447,9 +3563,6 @@
                     if (error) throw error;
                     showToast('✅ Job updated successfully!');
                 } else {
-                    jobData.views = 0;
-                    jobData.calls = 0;
-                    jobData.whatsapp = 0;
                     jobData.posted_date = new Date().toISOString();
                     const { error } = await sb.from('active_jobs').insert([jobData]);
                     if (error) throw error;
@@ -3558,6 +3671,12 @@
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
 
+            // ============================================================
+            // INCREMENT VIEW COUNT - Every time detail is opened
+            // ============================================================
+            const targetId = type === 'JOB' ? data.job_id : data.mobile;
+            incrementViewCount(type, targetId);
+
             const isJob = type === 'JOB';
             const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
 
@@ -3607,11 +3726,12 @@
             const shareCount = data.share_count || 0;
             const flags = data.flags || [];
             const totalPopularity = endorsements.length + shareCount;
+            const views = data.views || 0;
 
             // Update simplified detail stats
             document.getElementById('detail-total-popularity').textContent = totalPopularity;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
-            document.getElementById('detail-views').textContent = data.views || 0;
+            document.getElementById('detail-views').textContent = views;
 
             updateDetailCounts(endorsements, flags);
 
@@ -3660,7 +3780,7 @@
         }
 
         // ============================================================
-        // UPDATED: makeCall() - Redirects to login for guests
+        // UPDATED: makeCall() - Increments call count and redirects to login for guests
         // ============================================================
         function makeCall() {
             if (isGuest || !currentUser) {
@@ -3688,11 +3808,17 @@
                 goToEditSeeker();
                 return;
             }
+            
+            // Increment call count
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            incrementCallCount(currentDetailType, targetId);
+            
+            // Make the call
             window.location.href = `tel:${contact}`;
         }
 
         // ============================================================
-        // UPDATED: sendWhatsApp() - Redirects to login for guests
+        // UPDATED: sendWhatsApp() - Increments WhatsApp count and redirects to login for guests
         // ============================================================
         function sendWhatsApp() {
             if (isGuest || !currentUser) {
@@ -3720,6 +3846,12 @@
                 goToEditSeeker();
                 return;
             }
+            
+            // Increment WhatsApp count
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            incrementWhatsAppCount(currentDetailType, targetId);
+            
+            // Open WhatsApp
             const title = document.getElementById('detail-title').textContent;
             const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
             window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
@@ -4418,6 +4550,7 @@
                     desc: job.job_description || '',
                     contact: job.mobile || 'N/A',
                     share_count: job.share_count || 0,
+                    views: job.views || 0,
                     _raw: job
                 }));
                 const formattedSeekers = (seekers || []).map(user => ({
@@ -4432,6 +4565,7 @@
                     desc: user.professional_summary || '',
                     contact: user.mobile || 'N/A',
                     share_count: user.share_count || 0,
+                    views: user.views || 0,
                     _raw: user
                 }));
                 feedItems = [...formattedJobs, ...formattedSeekers];
