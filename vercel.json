@@ -10,6 +10,10 @@
       "destination": "/api/sitemap"
     },
     {
+      "source": "/sitemap-jobs.xml",
+      "destination": "/api/sitemap-jobs"
+    },
+    {
       "source": "/jobs.xml",
       "destination": "/api/indeed-feed"
     },
