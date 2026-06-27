@@ -1,38 +1,22 @@
-// api/job-list.js
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
-
-let supabase;
-
-try {
-  supabase = createClient(supabaseUrl, supabaseKey);
-} catch (err) {
-  console.error('Supabase client error:', err);
-}
-
+// api/job-list.js - USING FETCH (No Supabase SDK)
 export default async function handler(req, res) {
   try {
-    console.log('📌 Job list API called');
-    
-    // Check if supabase is initialized
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
+    const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
+
+    // Direct REST API call to Supabase
+    const response = await fetch(`${supabaseUrl}/rest/v1/active_jobs?select=job_id,job_title,company_name,min_experience_years&order=job_id.asc`, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Supabase error: ${response.status}`);
     }
 
-    // Fetch all active jobs
-    const { data: jobs, error } = await supabase
-      .from('active_jobs')
-      .select('job_id, job_title, company_name, min_experience_years')
-      .order('job_id', { ascending: true });
-
-    console.log('📌 Jobs fetched:', jobs ? jobs.length : 0);
-    console.log('📌 Error:', error ? error.message : 'None');
-
-    if (error) {
-      throw new Error(error.message);
-    }
+    const jobs = await response.json();
 
     if (!jobs || jobs.length === 0) {
       return res.send(`
@@ -58,15 +42,13 @@ export default async function handler(req, res) {
       `);
     }
 
-    // Build job list HTML
     let jobList = jobs.map(job => {
       const title = job.job_title || 'Untitled Job';
       const company = job.company_name || 'Unknown Company';
       const exp = job.min_experience_years || 0;
-      return `<li><a href="/job/${job.job_id}">🔹 ${title} at ${company} (${exp} yrs experience)</a></li>`;
+      return `<li><a href="/job/${job.job_id}">🔹 ${title} at ${company} (${exp} yrs)</a></li>`;
     }).join('');
 
-    // Return HTML page
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(`
 <!DOCTYPE html>
@@ -87,7 +69,7 @@ export default async function handler(req, res) {
       li { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; }
       li:last-child { border-bottom: none; }
       li a { color: #2563eb; text-decoration: none; font-weight: 500; display: block; transition: 0.15s; }
-      li a:hover { color: #1d4ed8; text-decoration: underline; background: #f8fafc; padding: 4px 8px; margin: -4px -8px; border-radius: 6px; }
+      li a:hover { color: #1d4ed8; text-decoration: underline; }
       .back { display: inline-block; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
       .back:hover { color: #2563eb; }
       .footer { margin-top: 20px; text-align: center; font-size: 12px; color: #94a3b8; }
@@ -109,7 +91,7 @@ export default async function handler(req, res) {
 </html>
     `);
   } catch (error) {
-    console.error('❌ Error in job-list handler:', error);
+    console.error('Error:', error);
     res.status(500).send(`
 <!DOCTYPE html>
 <html>
