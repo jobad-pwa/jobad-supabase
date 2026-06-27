@@ -1,9 +1,6 @@
 // api/job/[id].js
-import { createClient } from '@supabase/supabase-js';
-
 const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const ZONES = [
   { zone_id: 100, zone_name: "Hyderabad" },
@@ -22,71 +19,34 @@ export default async function handler(req, res) {
     const { id } = req.query;
     
     if (!id) {
-      // Show all jobs if no ID provided
-      const { data: jobs, error } = await supabase
-        .from('active_jobs')
-        .select('job_id, job_title, company_name')
-        .order('job_id', { ascending: true });
+      return res.status(400).send('Missing job ID');
+    }
 
-      if (error || !jobs || jobs.length === 0) {
-        return res.send(`
-<!DOCTYPE html>
-<html>
-<head><title>No Jobs - JobAd</title></head>
-<body style="font-family: system-ui; padding: 20px;">
-  <h1>No jobs found in database</h1>
-  <a href="/">Go Home</a>
-</body>
-</html>
-        `);
+    console.log('📌 Fetching job ID:', id);
+
+    // Fetch job from Supabase using REST API
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/active_jobs?select=*&job_id=eq.${id}`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`
+        }
       }
+    );
 
-      let jobList = jobs.map(job => 
-        `<li><a href="/job/${job.job_id}">Job #${job.job_id}: ${job.job_title || 'Untitled'} at ${job.company_name || 'Unknown'}</a></li>`
-      ).join('');
-
-      return res.send(`
-<!DOCTYPE html>
-<html>
-<head>
-    <title>All Jobs - JobAd</title>
-    <style>
-      body { font-family: system-ui; background: #f3f4f6; padding: 20px; }
-      .card { max-width: 600px; margin: 0 auto; background: white; border-radius: 24px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-      h1 { color: #2563eb; }
-      ul { list-style: none; padding: 0; }
-      li { padding: 12px; border-bottom: 1px solid #e2e8f0; }
-      li a { color: #2563eb; text-decoration: none; font-weight: 500; }
-      li a:hover { text-decoration: underline; }
-      .count { background: #dbeafe; padding: 2px 10px; border-radius: 12px; font-size: 14px; }
-      .back { display: inline-block; margin-top: 16px; color: #2563eb; text-decoration: none; }
-    </style>
-</head>
-<body>
-  <div class="card">
-    <h1>📋 All Jobs</h1>
-    <p>Total: <span class="count">${jobs.length}</span> jobs</p>
-    <ul>${jobList}</ul>
-    <a href="/" class="back">← Back to Home</a>
-  </div>
-</body>
-</html>
-      `);
+    if (!response.ok) {
+      console.log('❌ Supabase error:', response.status);
+      throw new Error(`Supabase error: ${response.status}`);
     }
 
-    // Fetch job by ID
-    const jobId = parseInt(id);
-    if (isNaN(jobId)) {
-      return res.status(400).send('Invalid job ID');
-    }
+    const jobs = await response.json();
+    console.log('📌 Jobs found:', jobs ? jobs.length : 0);
 
-    const { data: job, error } = await supabase
-      .from('active_jobs')
-      .select('*')
-      .eq('job_id', jobId)
-      .single();
+    const job = jobs && jobs.length > 0 ? jobs[0] : null;
 
-    if (error || !job) {
+    if (!job) {
+      console.log('❌ Job not found for ID:', id);
       return res.send(`
 <!DOCTYPE html>
 <html>
@@ -96,7 +56,7 @@ export default async function handler(req, res) {
       body { font-family: system-ui; background: #f3f4f6; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
       .card { max-width: 400px; background: white; border-radius: 24px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; }
       h1 { color: #dc2626; }
-      .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; text-decoration: none; cursor: pointer; margin-top: 12px; }
+      .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; text-decoration: none; margin-top: 12px; }
     </style>
 </head>
 <body>
@@ -104,13 +64,13 @@ export default async function handler(req, res) {
     <h1>🔍 Job Not Found</h1>
     <p>Job with ID <strong>${id}</strong> was not found.</p>
     <a href="/job" class="btn">📋 View All Jobs</a>
-    <br><br>
-    <a href="/" style="color: #2563eb; text-decoration: none;">← Back to Home</a>
   </div>
 </body>
 </html>
       `);
     }
+
+    console.log('✅ Job found:', job.job_title);
 
     const zoneName = getZoneName(job.zone_id);
 
@@ -156,7 +116,7 @@ export default async function handler(req, res) {
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2563eb">
     <meta property="og:title" content="${job.job_title || 'Job'} at ${job.company_name || 'Company'}">
-    <meta property="og:description" content="Apply for ${job.job_title || 'this job'} at ${job.company_name || 'Company'}. Located in ${zoneName}.">
+    <meta property="og:description" content="Apply for ${job.job_title || 'this job'} at ${job.company_name || 'Company'}.">
     <meta name="twitter:card" content="summary_large_image">
     <script type="application/ld+json">
 ${JSON.stringify(jsonLd, null, 2)}
@@ -175,14 +135,15 @@ ${JSON.stringify(jsonLd, null, 2)}
       .btn-open { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px; }
       .btn-open:hover { background: #1d4ed8; }
       .footer { margin-top: 16px; text-align: center; font-size: 12px; color: #94a3b8; }
-      .id-badge { font-size: 10px; color: #94a3b8; background: #f1f5f9; padding: 2px 8px; border-radius: 4px; }
+      .debug { background: #f1f5f9; padding: 6px 10px; border-radius: 6px; font-size: 10px; color: #64748b; font-family: monospace; margin-bottom: 12px; }
     </style>
 </head>
 <body>
   <div class="card">
-    <div class="badge">💼 JOB <span class="id-badge">#${job.job_id}</span></div>
+    <div class="badge">💼 JOB #${job.job_id}</div>
     <h1 class="job-title">${job.job_title || 'Untitled Job'}</h1>
     <p class="company-name">🏢 ${job.company_name || 'Company'}</p>
+    <div class="debug">Job ID: ${job.job_id}</div>
     <div class="job-field"><label>📍 Location</label><div class="value">${zoneName || 'Not specified'}</div></div>
     <div class="job-field"><label>💼 Experience</label><div class="value">${job.min_experience_years || 0} years</div></div>
     <div class="job-field"><label>💰 Salary</label><div class="value">₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}/month</div></div>
@@ -197,7 +158,27 @@ ${JSON.stringify(jsonLd, null, 2)}
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(html);
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Error: ' + error.message);
+    console.error('❌ Error:', error);
+    res.status(500).send(`
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Error - JobAd</title>
+    <style>
+      body { font-family: system-ui; background: #f3f4f6; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+      .card { max-width: 400px; background: white; border-radius: 24px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; }
+      h1 { color: #dc2626; }
+      .btn { display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; text-decoration: none; margin-top: 12px; }
+    </style>
+</head>
+<body>
+  <div class="card">
+    <h1>❌ Error Loading Job</h1>
+    <p>${error.message}</p>
+    <a href="/job" class="btn">📋 View All Jobs</a>
+  </div>
+</body>
+</html>
+    `);
   }
 }
