@@ -18,11 +18,11 @@ export default async function handler(req, res) {
   try {
     const { id } = req.query;
     
+    console.log('📌 Job ID requested:', id);
+
     if (!id) {
       return res.status(400).send('Missing job ID');
     }
-
-    console.log('📌 Fetching job ID:', id);
 
     // Fetch job from Supabase using REST API
     const response = await fetch(
@@ -35,8 +35,9 @@ export default async function handler(req, res) {
       }
     );
 
+    console.log('📌 Response status:', response.status);
+
     if (!response.ok) {
-      console.log('❌ Supabase error:', response.status);
       throw new Error(`Supabase error: ${response.status}`);
     }
 
@@ -135,7 +136,6 @@ ${JSON.stringify(jsonLd, null, 2)}
       .btn-open { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 16px; }
       .btn-open:hover { background: #1d4ed8; }
       .footer { margin-top: 16px; text-align: center; font-size: 12px; color: #94a3b8; }
-      .debug { background: #f1f5f9; padding: 6px 10px; border-radius: 6px; font-size: 10px; color: #64748b; font-family: monospace; margin-bottom: 12px; }
     </style>
 </head>
 <body>
@@ -143,7 +143,6 @@ ${JSON.stringify(jsonLd, null, 2)}
     <div class="badge">💼 JOB #${job.job_id}</div>
     <h1 class="job-title">${job.job_title || 'Untitled Job'}</h1>
     <p class="company-name">🏢 ${job.company_name || 'Company'}</p>
-    <div class="debug">Job ID: ${job.job_id}</div>
     <div class="job-field"><label>📍 Location</label><div class="value">${zoneName || 'Not specified'}</div></div>
     <div class="job-field"><label>💼 Experience</label><div class="value">${job.min_experience_years || 0} years</div></div>
     <div class="job-field"><label>💰 Salary</label><div class="value">₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}/month</div></div>
