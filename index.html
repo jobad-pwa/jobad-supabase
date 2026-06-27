@@ -1332,6 +1332,40 @@
             color: #475569;
             font-weight: 500;
         }
+
+        /* Login Prompt Modal */
+        .login-prompt-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            border-radius: 24px;
+        }
+        .login-prompt-overlay.show { display: flex; }
+        .login-prompt-box {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 24px;
+            max-width: 340px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .login-prompt-box .icon { font-size: 48px; margin-bottom: 8px; }
+        .login-prompt-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 8px 0; color: #1e293b; }
+        .login-prompt-box p { font-size: 14px; color: #64748b; margin: 0 0 20px 0; }
+        .login-prompt-box .btn-login-prompt { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+        .login-prompt-box .btn-login-prompt:hover { background: #1d4ed8; }
+        .login-prompt-box .btn-guest-prompt { width: 100%; padding: 12px; background: #8b5cf6; color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+        .login-prompt-box .btn-guest-prompt:hover { background: #7c3aed; }
+        .login-prompt-box .btn-cancel-prompt { width: 100%; padding: 10px; background: transparent; color: #94a3b8; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; }
+        .login-prompt-box .btn-cancel-prompt:hover { color: #64748b; }
     </style>
 </head>
 <body>
@@ -3650,10 +3684,12 @@
             goHome();
         }
 
+        // ============================================================
+        // UPDATED: makeCall() with Login Prompt for Guests
+        // ============================================================
         function makeCall() {
-            if (isGuest) {
-                showToast('🔐 Please login to call');
-                showLogin();
+            if (isGuest || !currentUser) {
+                showLoginPrompt('📞 To make a call, please login or create an account.');
                 return;
             }
             if (!currentDetailData) {
@@ -3679,10 +3715,12 @@
             window.location.href = `tel:${contact}`;
         }
 
+        // ============================================================
+        // UPDATED: sendWhatsApp() with Login Prompt for Guests
+        // ============================================================
         function sendWhatsApp() {
-            if (isGuest) {
-                showToast('🔐 Please login to WhatsApp');
-                showLogin();
+            if (isGuest || !currentUser) {
+                showLoginPrompt('💬 To send a WhatsApp message, please login or create an account.');
                 return;
             }
             if (!currentDetailData) {
@@ -3708,6 +3746,39 @@
             const title = document.getElementById('detail-title').textContent;
             const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
             window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
+        }
+
+        // ============================================================
+        // NEW: showLoginPrompt() - Shows a nice modal with login options
+        // ============================================================
+        function showLoginPrompt(message) {
+            // Remove any existing prompt
+            closeLoginPrompt();
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'login-prompt-overlay show';
+            overlay.id = 'login-prompt-modal';
+            overlay.style.display = 'flex';
+            
+            overlay.innerHTML = `
+                <div class="login-prompt-box">
+                    <div class="icon">🔐</div>
+                    <h3>Login Required</h3>
+                    <p>${message || 'Please login to access this feature.'}</p>
+                    <button class="btn-login-prompt" onclick="closeLoginPrompt(); showLogin();">🔐 Login Now</button>
+                    <button class="btn-guest-prompt" onclick="closeLoginPrompt(); continueAsGuest();">👤 Continue as Guest</button>
+                    <button class="btn-cancel-prompt" onclick="closeLoginPrompt();">Cancel</button>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+        }
+
+        function closeLoginPrompt() {
+            const modal = document.getElementById('login-prompt-modal');
+            if (modal) {
+                modal.remove();
+            }
         }
 
         // ============================================================
@@ -3909,7 +3980,6 @@
 
             let html = users.map(u => {
                 const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
-                // Display full name if available, otherwise show "Profile not updated yet"
                 const displayName = u.full_name && u.full_name.trim() !== '' ? u.full_name : 'Profile not updated yet';
                 return `<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)">
                     <span class="gender-icon">${genderSymbol}</span>
@@ -4011,7 +4081,6 @@
             const result = await toggleEndorsement(currentDetailType, targetId, currentUser.mobile);
             if (result) {
                 updateDetailCounts(result.endorsements, result.flags);
-                // Update total popularity
                 const shareCount = currentDetailData.share_count || 0;
                 const totalPopularity = result.endorsements.length + shareCount;
                 document.getElementById('detail-total-popularity').textContent = totalPopularity;
