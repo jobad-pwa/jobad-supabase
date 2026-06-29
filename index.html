@@ -1917,8 +1917,8 @@
                         <div class="value" id="detail-posted">--</div>
                     </div>
 
-                    <!-- DETAIL STATS - 3 ROWS with labels -->
-                    <div class="detail-stats">
+                    <!-- DETAIL STATS -->
+                    <div class="detail-stats" id="detail-stats-container">
                         <!-- Row 1: Popularity, Flags, Shares -->
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
                             <div class="stat-item" onclick="detailShowEndorsers()">
@@ -1935,8 +1935,8 @@
                             </div>
                         </div>
                         
-                        <!-- Row 2: 30-day with label -->
-                        <div style="border-top:1px solid #f1f5f9; padding-top:6px;">
+                        <!-- Row 2 & 3: Dynamic - shown/hidden based on type -->
+                        <div id="detail-30day-row" style="border-top:1px solid #f1f5f9; padding-top:6px; display:none;">
                             <div class="stat-row-label">📊 Last 30 Days</div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-top:2px;">
                                 <div style="text-align:center; padding:4px; display:flex; align-items:center; justify-content:center; gap:4px;">
@@ -1954,8 +1954,7 @@
                             </div>
                         </div>
                         
-                        <!-- Row 3: Total with label -->
-                        <div style="border-top:1px solid #f1f5f9; padding-top:6px;">
+                        <div id="detail-total-row" style="border-top:1px solid #f1f5f9; padding-top:6px; display:none;">
                             <div class="stat-row-label">📈 Total (All Time)</div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-top:2px;">
                                 <div style="text-align:center; padding:4px; display:flex; align-items:center; justify-content:center; gap:4px;">
@@ -2264,15 +2263,15 @@
         }
 
         function getView30Column(type) {
-            return type === 'JOB' ? 'views_30days' : 'views_30days';
+            return type === 'JOB' ? null : 'views_30days';
         }
 
         function getCall30Column(type) {
-            return type === 'JOB' ? 'calls_30days' : 'calls_30days';
+            return type === 'JOB' ? null : 'calls_30days';
         }
 
         function getWhatsApp30Column(type) {
-            return type === 'JOB' ? 'whatsapp_30days' : 'whatsapp_30days';
+            return type === 'JOB' ? null : 'whatsapp_30days';
         }
 
         // ============================================================
@@ -2334,6 +2333,63 @@
                 const viewCol = getViewColumn(targetType);
                 const view30Col = getView30Column(targetType);
 
+                // For jobs: only update 'views'
+                if (targetType === 'JOB') {
+                    const { data, error } = await sb
+                        .from(table)
+                        .select(viewCol)
+                        .eq(idField, targetId)
+                        .maybeSingle();
+
+                    if (error) {
+                        console.error('Error fetching view count:', error);
+                        return null;
+                    }
+
+                    if (!data) {
+                        console.log('Record not found:', targetId);
+                        return null;
+                    }
+
+                    const currentTotal = data[viewCol] || 0;
+                    const newTotal = currentTotal + 1;
+
+                    const updates = {};
+                    updates[viewCol] = newTotal;
+
+                    const { error: updateError } = await sb
+                        .from(table)
+                        .update(updates)
+                        .eq(idField, targetId);
+
+                    if (updateError) {
+                        console.error('Error updating view count:', updateError);
+                        return null;
+                    }
+
+                    console.log(`View count incremented for job: ${newTotal}`);
+
+                    if (currentDetailData && currentDetailType === targetType) {
+                        const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                        if (String(targetIdValue) === String(targetId)) {
+                            currentDetailData[viewCol] = newTotal;
+                            document.getElementById('detail-views-total').textContent = newTotal;
+                        }
+                    }
+
+                    feedItems = feedItems.map(item => {
+                        const itemId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
+                        if (item.type === targetType && String(itemId) === String(targetId)) {
+                            if (item._raw) item._raw[viewCol] = newTotal;
+                            item.views = newTotal;
+                        }
+                        return item;
+                    });
+
+                    return { total: newTotal };
+                }
+
+                // For seekers: update both total and 30-day
                 const { data, error } = await sb
                     .from(table)
                     .select(`${viewCol}, ${view30Col}`)
@@ -2369,7 +2425,7 @@
                     return null;
                 }
 
-                console.log(`View count incremented: total=${newTotal}, 30day=${new30}`);
+                console.log(`View count incremented for seeker: total=${newTotal}, 30day=${new30}`);
 
                 if (currentDetailData && currentDetailType === targetType) {
                     const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -2410,6 +2466,44 @@
                 const callCol = getCallColumn(targetType);
                 const call30Col = getCall30Column(targetType);
 
+                // For jobs: only update 'calls'
+                if (targetType === 'JOB') {
+                    const { data, error } = await sb
+                        .from(table)
+                        .select(callCol)
+                        .eq(idField, targetId)
+                        .maybeSingle();
+
+                    if (error) throw error;
+                    if (!data) return null;
+
+                    const currentTotal = data[callCol] || 0;
+                    const newTotal = currentTotal + 1;
+
+                    const updates = {};
+                    updates[callCol] = newTotal;
+
+                    const { error: updateError } = await sb
+                        .from(table)
+                        .update(updates)
+                        .eq(idField, targetId);
+
+                    if (updateError) throw updateError;
+
+                    console.log(`Call count incremented for job: ${newTotal}`);
+                    
+                    if (currentDetailData && currentDetailType === targetType) {
+                        const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                        if (String(targetIdValue) === String(targetId)) {
+                            currentDetailData[callCol] = newTotal;
+                            document.getElementById('detail-calls-total').textContent = newTotal;
+                        }
+                    }
+
+                    return { total: newTotal };
+                }
+
+                // For seekers: update both total and 30-day
                 const { data, error } = await sb
                     .from(table)
                     .select(`${callCol}, ${call30Col}`)
@@ -2435,7 +2529,7 @@
 
                 if (updateError) throw updateError;
 
-                console.log(`Call count incremented: total=${newTotal}, 30day=${new30}`);
+                console.log(`Call count incremented for seeker: total=${newTotal}, 30day=${new30}`);
                 
                 if (currentDetailData && currentDetailType === targetType) {
                     const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -2464,6 +2558,44 @@
                 const waCol = getWhatsAppColumn(targetType);
                 const wa30Col = getWhatsApp30Column(targetType);
 
+                // For jobs: only update 'whatsapp'
+                if (targetType === 'JOB') {
+                    const { data, error } = await sb
+                        .from(table)
+                        .select(waCol)
+                        .eq(idField, targetId)
+                        .maybeSingle();
+
+                    if (error) throw error;
+                    if (!data) return null;
+
+                    const currentTotal = data[waCol] || 0;
+                    const newTotal = currentTotal + 1;
+
+                    const updates = {};
+                    updates[waCol] = newTotal;
+
+                    const { error: updateError } = await sb
+                        .from(table)
+                        .update(updates)
+                        .eq(idField, targetId);
+
+                    if (updateError) throw updateError;
+
+                    console.log(`WhatsApp count incremented for job: ${newTotal}`);
+                    
+                    if (currentDetailData && currentDetailType === targetType) {
+                        const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                        if (String(targetIdValue) === String(targetId)) {
+                            currentDetailData[waCol] = newTotal;
+                            document.getElementById('detail-wa-total').textContent = newTotal;
+                        }
+                    }
+
+                    return { total: newTotal };
+                }
+
+                // For seekers: update both total and 30-day
                 const { data, error } = await sb
                     .from(table)
                     .select(`${waCol}, ${wa30Col}`)
@@ -2489,7 +2621,7 @@
 
                 if (updateError) throw updateError;
 
-                console.log(`WhatsApp count incremented: total=${newTotal}, 30day=${new30}`);
+                console.log(`WhatsApp count incremented for seeker: total=${newTotal}, 30day=${new30}`);
                 
                 if (currentDetailData && currentDetailType === targetType) {
                     const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -2593,21 +2725,39 @@
             const view30Col = getView30Column(currentDetailType);
             const call30Col = getCall30Column(currentDetailType);
             const wa30Col = getWhatsApp30Column(currentDetailType);
+            const isSeeker = currentDetailType === 'SEEKER';
 
-            // Row 1
+            // Row 1 - Always show
             document.getElementById('detail-total-popularity').textContent = totalPopularity;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-shares').textContent = shareCount;
 
-            // Row 2 - 30-day
-            document.getElementById('detail-views-30d').textContent = currentDetailData[view30Col] || 0;
-            document.getElementById('detail-calls-30d').textContent = currentDetailData[call30Col] || 0;
-            document.getElementById('detail-wa-30d').textContent = currentDetailData[wa30Col] || 0;
+            // Show/hide 30-day and total rows based on type
+            const row30 = document.getElementById('detail-30day-row');
+            const rowTotal = document.getElementById('detail-total-row');
 
-            // Row 3 - Total
-            document.getElementById('detail-views-total').textContent = currentDetailData[viewCol] || 0;
-            document.getElementById('detail-calls-total').textContent = currentDetailData[callCol] || 0;
-            document.getElementById('detail-wa-total').textContent = currentDetailData[waCol] || 0;
+            if (isSeeker) {
+                // Show both rows for seekers
+                row30.style.display = 'block';
+                rowTotal.style.display = 'block';
+                
+                document.getElementById('detail-views-30d').textContent = currentDetailData[view30Col] || 0;
+                document.getElementById('detail-calls-30d').textContent = currentDetailData[call30Col] || 0;
+                document.getElementById('detail-wa-30d').textContent = currentDetailData[wa30Col] || 0;
+                
+                document.getElementById('detail-views-total').textContent = currentDetailData[viewCol] || 0;
+                document.getElementById('detail-calls-total').textContent = currentDetailData[callCol] || 0;
+                document.getElementById('detail-wa-total').textContent = currentDetailData[waCol] || 0;
+            } else {
+                // Hide 30-day row for jobs, show only total row
+                row30.style.display = 'none';
+                rowTotal.style.display = 'block';
+                
+                // For jobs, total row shows the actual counts
+                document.getElementById('detail-views-total').textContent = currentDetailData[viewCol] || 0;
+                document.getElementById('detail-calls-total').textContent = currentDetailData[callCol] || 0;
+                document.getElementById('detail-wa-total').textContent = currentDetailData[waCol] || 0;
+            }
         }
 
         // ============================================================
@@ -3745,10 +3895,7 @@
                 share_count: 0,
                 views: 0,
                 calls: 0,
-                whatsapp: 0,
-                views_30days: 0,
-                calls_30days: 0,
-                whatsapp_30days: 0
+                whatsapp: 0
             };
 
             try {
@@ -3870,8 +4017,12 @@
                     if (result && currentDetailData && currentDetailType === type) {
                         const currentId = type === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
                         if (String(currentId) === String(targetId)) {
-                            document.getElementById('detail-views-30d').textContent = result.days30;
-                            document.getElementById('detail-views-total').textContent = result.total;
+                            if (type === 'JOB') {
+                                document.getElementById('detail-views-total').textContent = result.total;
+                            } else {
+                                document.getElementById('detail-views-30d').textContent = result.days30;
+                                document.getElementById('detail-views-total').textContent = result.total;
+                            }
                         }
                     }
                 });
@@ -5107,7 +5258,7 @@
             }
         };
 
-        console.log('✅ JobAd App Ready - Using platform_stats.all_users');
+        console.log('✅ JobAd App Ready - Jobs show only totals, Seekers show 30-day + totals');
 
         if (hasSharedLink) {
             setTimeout(() => {
