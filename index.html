@@ -1299,7 +1299,6 @@
         .clickable-name:hover {
             color: #1d4ed8;
         }
-        /* Loading overlay for shared links */
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -2274,7 +2273,7 @@
         }
 
         // ============================================================
-        // INCREMENT CALL COUNT - Called when Call button is clicked
+        // INCREMENT CALL COUNT
         // ============================================================
         async function incrementCallCount(targetType, targetId) {
             try {
@@ -2308,7 +2307,7 @@
         }
 
         // ============================================================
-        // INCREMENT WHATSAPP COUNT - Called when WhatsApp button is clicked
+        // INCREMENT WHATSAPP COUNT
         // ============================================================
         async function incrementWhatsAppCount(targetType, targetId) {
             try {
@@ -2342,14 +2341,13 @@
         }
 
         // ============================================================
-        // SHARE COUNT INCREMENT - IMMEDIATE ON SHARE CLICK
+        // SHARE COUNT INCREMENT
         // ============================================================
         async function incrementShareCount(targetType, targetId) {
             try {
                 const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
                 const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
                 
-                // First, get current share_count
                 const { data, error } = await sb
                     .from(table)
                     .select('share_count')
@@ -2361,7 +2359,6 @@
                 const currentCount = data?.share_count || 0;
                 const newCount = currentCount + 1;
                 
-                // Update share_count
                 const { error: updateError } = await sb
                     .from(table)
                     .update({ share_count: newCount })
@@ -2371,17 +2368,14 @@
                 
                 console.log(`✅ Share count incremented: ${newCount}`);
                 
-                // Update the local data to reflect immediately
                 if (currentDetailData && currentDetailType === targetType) {
                     const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
                     if (targetIdValue == targetId) {
                         currentDetailData.share_count = newCount;
-                        // Update the detail view display
                         updateDetailStats();
                     }
                 }
                 
-                // Update feed items
                 feedItems = feedItems.map(item => {
                     const itemId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
                     if (item.type === targetType && itemId == targetId) {
@@ -2393,7 +2387,6 @@
                     return item;
                 });
                 
-                // Re-render feed to show updated count
                 renderFeed();
                 
                 return newCount;
@@ -2404,7 +2397,7 @@
         }
 
         // ============================================================
-        // HANDLE SHARE CLICK - Increment count immediately
+        // HANDLE SHARE CLICK
         // ============================================================
         function handleShareClick() {
             if (!currentDetailData || !currentDetailType) {
@@ -2413,11 +2406,7 @@
             }
             
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
-            
-            // Increment share count immediately
             incrementShareCount(currentDetailType, targetId);
-            
-            // Then open share modal
             openShareModal();
         }
 
@@ -2441,10 +2430,9 @@
         }
 
         // ============================================================
-        // GUEST AUTO-LOGIN
+        // GUEST AUTO-LOGIN - Uses platform_stats.all_users
         // ============================================================
         function continueAsGuest() {
-            // Set sessionStorage to maintain guest session
             sessionStorage.setItem('guest_session', 'true');
             showToast('👤 Continuing as Guest...');
             autoLoginGuest();
@@ -2452,25 +2440,54 @@
 
         async function autoLoginGuest() {
             try {
-                const { data: archiveUser, error: archiveError } = await sb
-                    .from('archive_users')
-                    .select('*')
-                    .eq('mobile', GUEST_MOBILE)
+                // Check if platform_stats.all_users exists
+                const { data: platformData, error: platformError } = await sb
+                    .from('platform_stats')
+                    .select('all_users')
                     .maybeSingle();
 
-                if (!archiveUser) {
-                    const { error: insertError } = await sb
-                        .from('archive_users')
-                        .insert([{ 
-                            mobile: GUEST_MOBILE, 
-                            pin_hash: GUEST_PIN,
-                            is_guest: true 
-                        }]);
-                    if (insertError) {
-                        console.error('Error creating guest:', insertError);
+                if (platformError && platformError.code !== 'PGRST116') {
+                    console.error('Error fetching platform_stats:', platformError);
+                }
+
+                let allUsers = platformData?.all_users || [];
+                const guestBigInt = BigInt(GUEST_MOBILE);
+                const guestExists = allUsers.some(m => {
+                    try {
+                        return BigInt(m) === guestBigInt;
+                    } catch (e) {
+                        return String(m) === GUEST_MOBILE;
+                    }
+                });
+                
+                if (!guestExists) {
+                    allUsers.push(Number(GUEST_MOBILE));
+                    
+                    if (platformData) {
+                        const { error: updateError } = await sb
+                            .from('platform_stats')
+                            .update({ all_users: allUsers })
+                            .eq('id', platformData.id);
+                        
+                        if (updateError) {
+                            console.error('Error updating platform_stats for guest:', updateError);
+                        } else {
+                            console.log('✅ Added guest to platform_stats.all_users');
+                        }
+                    } else {
+                        const { error: insertError } = await sb
+                            .from('platform_stats')
+                            .insert([{ all_users: allUsers }]);
+                        
+                        if (insertError) {
+                            console.error('Error inserting platform_stats for guest:', insertError);
+                        } else {
+                            console.log('✅ Created platform_stats with guest');
+                        }
                     }
                 }
 
+                // Check if guest exists in active_users
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
                     .select('*')
@@ -2748,7 +2765,6 @@
         function shareFromFeed(event, targetType, targetId) {
             event.stopPropagation();
             
-            // Find the item in feed
             const item = feedItems.find(i => {
                 const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
                 return i.type === targetType && id == targetId;
@@ -2757,11 +2773,7 @@
             if (item && item._raw) {
                 currentDetailData = item._raw;
                 currentDetailType = item.type;
-                
-                // Increment share count immediately
                 incrementShareCount(targetType, targetId);
-                
-                // Open share modal
                 openShareModal();
             } else {
                 showToast('⚠️ Could not find item');
@@ -2872,31 +2884,23 @@
 
             console.log('✅ JobAd Ready');
 
-            // FIX: Check if we are on the root path
             const isRootPath = window.location.pathname === '/' || window.location.pathname === '/index.html';
 
-            // Only auto-login if it's a shared link or explicitly requested, NOT on root path
             const shouldAutoLogin = (hasSharedLink || sessionStorage.getItem('guest_session') === 'true') && !isRootPath;
 
             if (shouldAutoLogin) {
-                // Immediately hide login screen and show home page for shared links
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('home-page').classList.remove('hidden-page');
                 
-                // Show loading overlay for shared links
                 if (hasSharedLink) {
                     document.getElementById('loading-overlay').classList.add('show');
                 }
                 
-                // Auto-login in background
                 autoLoginGuest();
             } else {
-                // Show login screen for root path
                 document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('mobile').focus();
-                // Ensure home page is hidden
                 document.getElementById('home-page').classList.add('hidden-page');
-                // Clear any guest session that might cause auto-login on refresh
                 if (isRootPath) {
                     sessionStorage.removeItem('guest_session');
                 }
@@ -2904,7 +2908,7 @@
         });
 
         // ============================================================
-        // AUTO CHECK MOBILE
+        // AUTO CHECK MOBILE - Uses platform_stats.all_users
         // ============================================================
         async function autoCheckMobile(mobile) {
             if (isChecking) return;
@@ -2914,19 +2918,14 @@
             setStatus('⏳ Checking...', 'blue');
 
             try {
-                const { data: archiveUser, error: archiveError } = await sb
-                    .from('archive_users')
-                    .select('*')
-                    .eq('mobile', mobile)
-                    .maybeSingle();
-                
+                // First check active_users
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
                     .select('*')
                     .eq('mobile', mobile)
                     .maybeSingle();
 
-                if (archiveUser || activeUser) {
+                if (activeUser) {
                     isNewUser = false;
                     currentMobile = mobile;
                     document.getElementById('display-mobile').textContent = mobile;
@@ -2942,11 +2941,98 @@
                     document.getElementById('pin').focus();
                     setStatus('✅ Existing user. Enter your PIN.', 'green');
                     showToast('📱 Existing user - Enter PIN');
-                } else {
-                    isNewUser = true;
-                    currentMobile = mobile;
-                    await sendWhatsAppOTP(mobile);
+                    isChecking = false;
+                    mobileInput.disabled = false;
+                    return;
                 }
+
+                // Check platform_stats.all_users for archived users
+                const { data: platformData, error: platformError } = await sb
+                    .from('platform_stats')
+                    .select('all_users')
+                    .maybeSingle();
+
+                if (platformError && platformError.code !== 'PGRST116') {
+                    console.error('Error fetching platform_stats:', platformError);
+                }
+
+                // Check if mobile exists in all_users array
+                let isArchived = false;
+                if (platformData && platformData.all_users) {
+                    const allUsers = platformData.all_users || [];
+                    const mobileBigInt = BigInt(mobile);
+                    isArchived = allUsers.some(m => {
+                        try {
+                            return BigInt(m) === mobileBigInt;
+                        } catch (e) {
+                            return String(m) === mobile;
+                        }
+                    });
+                }
+                
+                if (isArchived) {
+                    // User exists in all_users (archived) - move to active_users
+                    showToast('📱 Welcome back! Moving from archive to active...');
+                    
+                    // Insert into active_users (copy entire row)
+                    const { data: newActive, error: createError } = await sb
+                        .from('active_users')
+                        .insert([{ 
+                            mobile: mobile, 
+                            last_active: new Date().toISOString()
+                        }])
+                        .select()
+                        .single();
+                    
+                    if (createError) {
+                        console.error('Error creating active user:', createError);
+                        // Still allow login
+                        isNewUser = false;
+                        currentMobile = mobile;
+                        document.getElementById('display-mobile').textContent = mobile;
+                        document.getElementById('status-badge').textContent = '✅ Welcome back!';
+                        document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
+                        document.getElementById('submitBtn').textContent = '🔐 Login';
+                        document.getElementById('submitBtn').className = 'btn-primary btn-green';
+                        document.getElementById('step1').style.display = 'none';
+                        document.getElementById('step2').classList.remove('hidden');
+                        document.getElementById('step3').classList.add('hidden');
+                        document.getElementById('step4').classList.add('hidden');
+                        document.getElementById('pin').value = '';
+                        document.getElementById('pin').focus();
+                        setStatus('✅ Welcome back! Enter your PIN.', 'green');
+                        showToast('📱 Welcome back!');
+                        isChecking = false;
+                        mobileInput.disabled = false;
+                        return;
+                    }
+                    
+                    showToast('✅ User moved from archive to active!');
+                    isNewUser = false;
+                    currentMobile = mobile;
+                    document.getElementById('display-mobile').textContent = mobile;
+                    document.getElementById('status-badge').textContent = '✅ Welcome back! Enter PIN';
+                    document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
+                    document.getElementById('submitBtn').textContent = '🔐 Login';
+                    document.getElementById('submitBtn').className = 'btn-primary btn-green';
+                    document.getElementById('step1').style.display = 'none';
+                    document.getElementById('step2').classList.remove('hidden');
+                    document.getElementById('step3').classList.add('hidden');
+                    document.getElementById('step4').classList.add('hidden');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
+                    setStatus('✅ Welcome back! Enter your PIN.', 'green');
+                    showToast('📱 Welcome back!');
+                    isChecking = false;
+                    mobileInput.disabled = false;
+                    return;
+                }
+
+                // No user found - new registration
+                isNewUser = true;
+                currentMobile = mobile;
+                await sendWhatsAppOTP(mobile);
+                
             } catch (err) {
                 console.error('Error checking user:', err);
                 isNewUser = true;
@@ -3121,7 +3207,7 @@
         }
 
         // ============================================================
-        // REGISTER USER
+        // REGISTER USER - Adds to platform_stats.all_users
         // ============================================================
         async function registerUser() {
             const pin = document.getElementById('reg-pin').value.trim();
@@ -3152,8 +3238,55 @@
                 const data = await response.json();
                 
                 if (data.success) {
+                    // Add to platform_stats.all_users
+                    const { data: platformData, error: fetchError } = await sb
+                        .from('platform_stats')
+                        .select('all_users')
+                        .maybeSingle();
+                    
+                    if (fetchError && fetchError.code !== 'PGRST116') {
+                        console.error('Error fetching platform_stats:', fetchError);
+                    }
+                    
+                    let allUsers = platformData?.all_users || [];
+                    const mobileBigInt = BigInt(currentMobile);
+                    
+                    const exists = allUsers.some(m => {
+                        try {
+                            return BigInt(m) === mobileBigInt;
+                        } catch (e) {
+                            return String(m) === currentMobile;
+                        }
+                    });
+                    
+                    if (!exists) {
+                        allUsers.push(Number(currentMobile));
+                        
+                        if (platformData) {
+                            const { error: updateError } = await sb
+                                .from('platform_stats')
+                                .update({ all_users: allUsers })
+                                .eq('id', platformData.id);
+                            
+                            if (updateError) {
+                                console.error('Error updating platform_stats:', updateError);
+                            } else {
+                                console.log('✅ Added user to platform_stats.all_users');
+                            }
+                        } else {
+                            const { error: insertError } = await sb
+                                .from('platform_stats')
+                                .insert([{ all_users: allUsers }]);
+                            
+                            if (insertError) {
+                                console.error('Error inserting platform_stats:', insertError);
+                            } else {
+                                console.log('✅ Created platform_stats with user');
+                            }
+                        }
+                    }
+                    
                     showToast('✅ Registration successful!');
-                    await sb.from('archive_users').insert([{ mobile: currentMobile, pin_hash: pin }]);
                     await fetchUserData(currentMobile);
                 } else {
                     showToast('❌ Registration failed: ' + data.error);
@@ -3671,9 +3804,7 @@
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
 
-            // ============================================================
-            // INCREMENT VIEW COUNT - Every time detail is opened
-            // ============================================================
+            // Increment view count
             const targetId = type === 'JOB' ? data.job_id : data.mobile;
             incrementViewCount(type, targetId);
 
@@ -3728,7 +3859,6 @@
             const totalPopularity = endorsements.length + shareCount;
             const views = data.views || 0;
 
-            // Update simplified detail stats
             document.getElementById('detail-total-popularity').textContent = totalPopularity;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-views').textContent = views;
@@ -3745,7 +3875,6 @@
             jobWarning.style.display = 'none';
             seekerWarning.style.display = 'none';
 
-            // Enable buttons for guests - let the click handlers handle login
             if (isJob) {
                 if (!currentUser || !currentUser.company_name || currentUser.company_name.trim() === '') {
                     jobWarning.style.display = 'flex';
@@ -3780,7 +3909,7 @@
         }
 
         // ============================================================
-        // UPDATED: makeCall() - Increments call count and redirects to login for guests
+        // makeCall()
         // ============================================================
         function makeCall() {
             if (isGuest || !currentUser) {
@@ -3809,16 +3938,14 @@
                 return;
             }
             
-            // Increment call count
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
             incrementCallCount(currentDetailType, targetId);
             
-            // Make the call
             window.location.href = `tel:${contact}`;
         }
 
         // ============================================================
-        // UPDATED: sendWhatsApp() - Increments WhatsApp count and redirects to login for guests
+        // sendWhatsApp()
         // ============================================================
         function sendWhatsApp() {
             if (isGuest || !currentUser) {
@@ -3847,11 +3974,9 @@
                 return;
             }
             
-            // Increment WhatsApp count
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
             incrementWhatsAppCount(currentDetailType, targetId);
             
-            // Open WhatsApp
             const title = document.getElementById('detail-title').textContent;
             const msg = encodeURIComponent(`Hi, I'm interested in "${title}" from JobAd.`);
             window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
@@ -4050,6 +4175,82 @@
             }
         }
 
+        // ============================================================
+        // VIEW USER PROFILE - Fixed
+        // ============================================================
+        function viewUserProfile(mobile) {
+            closeModal('endorsers-modal');
+            closeModal('flaggers-modal');
+            
+            if (!mobile) {
+                showToast('⚠️ No user selected');
+                return;
+            }
+            
+            const mobileStr = mobile.toString();
+            viewUserDetail(mobileStr);
+        }
+
+        async function viewUserDetail(mobile) {
+            try {
+                showToast('⏳ Loading profile...');
+                
+                const { data, error } = await sb
+                    .from('active_users')
+                    .select('*')
+                    .eq('mobile', mobile.toString())
+                    .maybeSingle();
+                    
+                if (error) throw error;
+                
+                if (data) {
+                    if (!data.full_name) data.full_name = data.mobile || 'Job Seeker';
+                    if (!data.job_title) data.job_title = 'Job Seeker';
+                    
+                    document.getElementById('detail-page').classList.add('hidden-page');
+                    setTimeout(() => {
+                        openDetail(data, 'SEEKER');
+                        showToast('👤 Profile loaded');
+                    }, 100);
+                } else {
+                    const { data: userData, error: userError } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', mobile)
+                        .single();
+                        
+                    if (userError) throw userError;
+                    
+                    if (userData) {
+                        document.getElementById('detail-page').classList.add('hidden-page');
+                        setTimeout(() => {
+                            openDetail(userData, 'SEEKER');
+                            showToast('👤 Profile loaded');
+                        }, 100);
+                    } else {
+                        showToast('⚠️ User profile not found');
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading user:', err);
+                showToast('⚠️ Could not load profile: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // MODAL FUNCTIONS
+        // ============================================================
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.remove();
+            }
+            document.querySelectorAll('.modal-overlay.show').forEach(el => {
+                el.classList.remove('show');
+                el.style.display = 'none';
+            });
+        }
+
         async function showEndorsersModal(targetType, targetId) {
             const users = await getEndorsersList(targetType, targetId);
             if (users.length === 0) return;
@@ -4067,17 +4268,20 @@
                 html += `<div class="more-text">+ ${users.length - 5} more...</div>`;
             }
 
+            document.querySelector('#endorsers-modal')?.remove();
+            
             const modalHtml = `
-                <div class="modal-overlay show" id="endorsers-modal">
-                    <div class="modal-box">
-                        <h3>👍 Endorsed by ${users.length} people</h3>
-                        <div class="user-list">${html}</div>
-                        <button class="modal-close-btn" onclick="closeModal('endorsers-modal')">Close</button>
+                <div class="modal-overlay show" id="endorsers-modal" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:24px;">
+                    <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
+                        <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👍 Endorsed by ${users.length} people</h3>
+                        <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">
+                            ${html}
+                        </div>
+                        <button class="modal-close-btn" onclick="closeModal('endorsers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer; margin-top:8px;">Close</button>
                     </div>
                 </div>
             `;
 
-            document.querySelector('#endorsers-modal')?.remove();
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
@@ -4094,45 +4298,21 @@
                 </div>`;
             }).join('');
 
+            document.querySelector('#flaggers-modal')?.remove();
+            
             const modalHtml = `
-                <div class="modal-overlay show" id="flaggers-modal">
-                    <div class="modal-box">
-                        <h3>👎 Not recommended by ${users.length} people</h3>
-                        <div class="user-list">${html}</div>
-                        <button class="modal-close-btn" onclick="closeModal('flaggers-modal')">Close</button>
+                <div class="modal-overlay show" id="flaggers-modal" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:24px;">
+                    <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
+                        <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👎 Not recommended by ${users.length} people</h3>
+                        <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">
+                            ${html}
+                        </div>
+                        <button class="modal-close-btn" onclick="closeModal('flaggers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer; margin-top:8px;">Close</button>
                     </div>
                 </div>
             `;
 
-            document.querySelector('#flaggers-modal')?.remove();
             document.body.insertAdjacentHTML('beforeend', modalHtml);
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId)?.remove();
-        }
-
-        function viewUserProfile(mobile) {
-            closeModal('endorsers-modal');
-            closeModal('flaggers-modal');
-            viewUserDetail(mobile);
-        }
-
-        async function viewUserDetail(mobile) {
-            try {
-                const { data, error } = await sb
-                    .from('active_users')
-                    .select('*')
-                    .eq('mobile', mobile)
-                    .single();
-                if (error) throw error;
-                if (data) {
-                    openDetail(data, 'SEEKER');
-                }
-            } catch (err) {
-                console.error('Error loading user:', err);
-                showToast('⚠️ User profile not available');
-            }
         }
 
         // ============================================================
@@ -4681,7 +4861,6 @@
             }).join('');
         }
 
-        // Feed-specific functions for endorsements/flags
         async function feedShowEndorsers(type, targetId) {
             const item = feedItems.find(i => {
                 const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
@@ -4867,7 +5046,7 @@
             }
         };
 
-        console.log('✅ JobAd App Ready');
+        console.log('✅ JobAd App Ready - Using platform_stats.all_users');
 
         if (hasSharedLink) {
             setTimeout(() => {
