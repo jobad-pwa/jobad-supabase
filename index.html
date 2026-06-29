@@ -12,10 +12,38 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         /* ... (keep all existing styles) ... */
+        * { box-sizing: border-box; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 20px 18px 10px 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+            max-height: 780px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hidden { display: none; }
+        .hidden-page { display: none; }
+        /* ... rest of styles ... */
     </style>
 </head>
 <body>
-    <!-- ... (keep all existing HTML) ... -->
+    <!-- ... keep all HTML ... -->
 
     <script>
         // ============================================================
@@ -29,9 +57,115 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // ZONE & AREA DATA (keep as is)
+        // ZONE & AREA DATA
         // ============================================================
-        // ... (keep all ZONES, AREAS, helper functions)
+        const ZONES = [
+            { zone_id: 100, zone_name: "Hyderabad" },
+            { zone_id: 200, zone_name: "North Telangana" },
+            { zone_id: 300, zone_name: "East Telangana" },
+            { zone_id: 400, zone_name: "South Telangana" }
+        ];
+
+        const AREAS = [
+            { area_id: 100000, zone_id: 100, area_name: "All Hyderabad" },
+            { area_id: 200000, zone_id: 200, area_name: "All North Telangana" },
+            { area_id: 300000, zone_id: 300, area_name: "All East Telangana" },
+            { area_id: 400000, zone_id: 400, area_name: "All South Telangana" },
+            { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
+            { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
+            { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
+            { area_id: 100004, zone_id: 100, area_name: "Gachibowli" },
+            { area_id: 100005, zone_id: 100, area_name: "Hitech City" },
+            { area_id: 100006, zone_id: 100, area_name: "Miyapur" },
+            { area_id: 100007, zone_id: 100, area_name: "Uppal" },
+            { area_id: 100008, zone_id: 100, area_name: "LB Nagar" },
+            { area_id: 100009, zone_id: 100, area_name: "Dilsukhnagar" },
+            { area_id: 100995, zone_id: 100, area_name: "Shamshabad" },
+            { area_id: 100996, zone_id: 100, area_name: "Jadcharla" },
+            { area_id: 100997, zone_id: 100, area_name: "Medak" },
+            { area_id: 100998, zone_id: 100, area_name: "Sangareddy" },
+            { area_id: 100999, zone_id: 100, area_name: "Zahirabad" },
+            { area_id: 200001, zone_id: 200, area_name: "Adilabad" },
+            { area_id: 200002, zone_id: 200, area_name: "Asifabad" },
+            { area_id: 200003, zone_id: 200, area_name: "Mancherial" },
+            { area_id: 200004, zone_id: 200, area_name: "Nirmal" },
+            { area_id: 200005, zone_id: 200, area_name: "Nizamabad" },
+            { area_id: 200006, zone_id: 200, area_name: "Jagtial" },
+            { area_id: 200007, zone_id: 200, area_name: "Peddapalli" },
+            { area_id: 200008, zone_id: 200, area_name: "Karimnagar" },
+            { area_id: 200009, zone_id: 200, area_name: "Sircilla" },
+            { area_id: 200010, zone_id: 200, area_name: "Kamareddy" },
+            { area_id: 200011, zone_id: 200, area_name: "Siddipet" },
+            { area_id: 300001, zone_id: 300, area_name: "Warangal" },
+            { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
+            { area_id: 300003, zone_id: 300, area_name: "Khammam" },
+            { area_id: 300004, zone_id: 300, area_name: "Bhupalpally" },
+            { area_id: 300005, zone_id: 300, area_name: "Mulugu" },
+            { area_id: 300006, zone_id: 300, area_name: "Mahabubabad" },
+            { area_id: 300007, zone_id: 300, area_name: "Kothagudem" },
+            { area_id: 300008, zone_id: 300, area_name: "Bhuvanagiri" },
+            { area_id: 300009, zone_id: 300, area_name: "Jangaon" },
+            { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
+            { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
+            { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
+            { area_id: 400004, zone_id: 400, area_name: "Nagarkurnool" },
+            { area_id: 400005, zone_id: 400, area_name: "Vikarabad" },
+            { area_id: 400006, zone_id: 400, area_name: "Narayanpet" },
+            { area_id: 400007, zone_id: 400, area_name: "Wanaparthy" },
+            { area_id: 400008, zone_id: 400, area_name: "Gadwal" }
+        ];
+
+        // ============================================================
+        // HELPER FUNCTIONS - Defined FIRST before they're used
+        // ============================================================
+        function getZoneName(id) {
+            const z = ZONES.find(z => z.zone_id === id);
+            return z ? z.zone_name : 'Unknown';
+        }
+
+        function getAreaName(id) {
+            const a = AREAS.find(a => a.area_id === id);
+            return a ? a.area_name : '';
+        }
+
+        function getAreasByZone(zoneId) {
+            return AREAS.filter(a => a.zone_id === zoneId);
+        }
+
+        function populateEditZones() {
+            const select = document.getElementById('edit-seeker-zone');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Select --</option>';
+            ZONES.forEach(zone => {
+                select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
+            });
+        }
+
+        function updateEditAreas() {
+            const zoneSelect = document.getElementById('edit-seeker-zone');
+            const areaSelect = document.getElementById('edit-seeker-area');
+            if (!zoneSelect || !areaSelect) return;
+            const zoneId = parseInt(zoneSelect.value);
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (zoneId) {
+                const areas = getAreasByZone(zoneId);
+                areas.forEach(area => {
+                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+                });
+            }
+        }
+
+        function formatSalaryDisplay(value) {
+            if (!value) return '';
+            const num = value.toString().replace(/[^0-9]/g, '');
+            if (!num) return '';
+            return Number(num).toLocaleString('en-IN');
+        }
+
+        function parseSalaryValue(value) {
+            if (!value) return '';
+            return value.toString().replace(/[^0-9]/g, '');
+        }
 
         // ============================================================
         // STATE
@@ -54,15 +188,13 @@
         let sharedLinkProcessed = false;
 
         // ============================================================
-        // FIXED: INCREMENT VIEW COUNT - Works for both guests and registered users
-        // Every view counts, including repeated views by same user/guest
+        // VIEW COUNT INCREMENT - Works for guests and registered users
         // ============================================================
         async function incrementViewCount(targetType, targetId) {
             try {
                 const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
                 const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
                 
-                // Get current view count
                 const { data, error } = await sb
                     .from(table)
                     .select('views')
@@ -82,7 +214,6 @@
                 const currentCount = data?.views || 0;
                 const newCount = currentCount + 1;
                 
-                // Update views - always increment regardless of who views it
                 const { error: updateError } = await sb
                     .from(table)
                     .update({ views: newCount })
@@ -95,7 +226,6 @@
                 
                 console.log(`✅ View count incremented for ${targetType} ${targetId}: ${newCount}`);
                 
-                // Update local data
                 if (currentDetailData && currentDetailType === targetType) {
                     const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
                     if (String(targetIdValue) === String(targetId)) {
@@ -105,7 +235,6 @@
                     }
                 }
                 
-                // Update feed data
                 feedItems = feedItems.map(item => {
                     const itemId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
                     if (item.type === targetType && String(itemId) === String(targetId)) {
@@ -125,17 +254,16 @@
         }
 
         // ============================================================
-        // FIXED: AUTO CHECK MOBILE - Checks all_users in platform_stats
+        // AUTO CHECK MOBILE - Uses all_users in platform_stats
         // ============================================================
         async function autoCheckMobile(mobile) {
             if (isChecking) return;
             isChecking = true;
             const mobileInput = document.getElementById('mobile');
-            mobileInput.disabled = true;
+            if (mobileInput) mobileInput.disabled = true;
             setStatus('⏳ Checking...', 'blue');
 
             try {
-                // 1. Check active_users first
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
                     .select('*')
@@ -143,7 +271,6 @@
                     .maybeSingle();
 
                 if (activeUser) {
-                    // User already active - login
                     isNewUser = false;
                     currentMobile = mobile;
                     document.getElementById('display-mobile').textContent = mobile;
@@ -160,11 +287,10 @@
                     setStatus('✅ Existing user. Enter your PIN.', 'green');
                     showToast('📱 Existing user - Enter PIN');
                     isChecking = false;
-                    mobileInput.disabled = false;
+                    if (mobileInput) mobileInput.disabled = false;
                     return;
                 }
 
-                // 2. Check platform_stats.all_users for archived users
                 const { data: platformData, error: platformError } = await sb
                     .from('platform_stats')
                     .select('all_users')
@@ -174,7 +300,6 @@
                     console.error('Error fetching platform_stats:', platformError);
                 }
 
-                // Check if mobile exists in all_users array
                 let isArchived = false;
                 if (platformData && platformData.all_users) {
                     const allUsers = platformData.all_users || [];
@@ -189,11 +314,8 @@
                 }
                 
                 if (isArchived) {
-                    // User exists in all_users (archived from Google Sheets)
-                    // Move them to active_users (cut from Google Sheets, paste to Supabase)
                     showToast('📱 Welcome back! Moving from archive to active...');
                     
-                    // Insert into active_users
                     const { data: newActive, error: createError } = await sb
                         .from('active_users')
                         .insert([{ 
@@ -205,7 +327,6 @@
                     
                     if (createError) {
                         console.error('Error creating active user:', createError);
-                        // Still allow login even if insert fails
                         isNewUser = false;
                         currentMobile = mobile;
                         document.getElementById('display-mobile').textContent = mobile;
@@ -222,7 +343,7 @@
                         setStatus('✅ Welcome back! Enter your PIN.', 'green');
                         showToast('📱 Welcome back!');
                         isChecking = false;
-                        mobileInput.disabled = false;
+                        if (mobileInput) mobileInput.disabled = false;
                         return;
                     }
                     
@@ -243,11 +364,10 @@
                     setStatus('✅ Welcome back! Enter your PIN.', 'green');
                     showToast('📱 Welcome back!');
                     isChecking = false;
-                    mobileInput.disabled = false;
+                    if (mobileInput) mobileInput.disabled = false;
                     return;
                 }
 
-                // 3. No user found - new registration
                 isNewUser = true;
                 currentMobile = mobile;
                 await sendWhatsAppOTP(mobile);
@@ -259,12 +379,138 @@
                 await sendWhatsAppOTP(mobile);
             } finally {
                 isChecking = false;
-                mobileInput.disabled = false;
+                if (mobileInput) mobileInput.disabled = false;
             }
         }
 
         // ============================================================
-        // FIXED: REGISTER USER - Adds to all_users in platform_stats
+        // WHATSAPP OTP FUNCTIONS
+        // ============================================================
+        function formatMobileForWA(mobile) {
+            return `91${mobile}`;
+        }
+
+        async function sendWhatsAppOTP(mobile) {
+            setStatus('📱 Sending OTP via WhatsApp...', 'blue');
+            
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            sessionStorage.setItem('otp_' + mobile, otp);
+            sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+
+            const waNumber = formatMobileForWA(mobile);
+            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
+            const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+            
+            window.open(waUrl, '_blank');
+
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.remove('hidden');
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('wa-display-mobile').textContent = mobile;
+            
+            document.querySelectorAll('.otp-input').forEach(el => el.value = '');
+            const firstInput = document.querySelector('.otp-input');
+            if (firstInput) firstInput.focus();
+            
+            startOTPTimer();
+            setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
+            showToast('💬 OTP sent via WhatsApp!');
+        }
+
+        function getOTP() {
+            return Array.from(document.querySelectorAll('.otp-input'))
+                .map(el => el.value)
+                .join('');
+        }
+
+        function startOTPTimer() {
+            let timeLeft = otpExpiryTime;
+            const timerEl = document.getElementById('otp-timer');
+            const resendBtn = document.getElementById('resend-otp');
+            
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            
+            otpTimerInterval = setInterval(() => {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                if (timerEl) timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                timeLeft--;
+                
+                if (timeLeft < 0) {
+                    clearInterval(otpTimerInterval);
+                    if (timerEl) timerEl.textContent = 'Expired';
+                    if (resendBtn) resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        async function verifyOTP() {
+            const otp = getOTP();
+            if (otp.length !== 6) {
+                showToast('⚠️ Enter complete 6-digit OTP');
+                return;
+            }
+
+            const storedOtp = sessionStorage.getItem('otp_' + currentMobile);
+            const storedExpiry = sessionStorage.getItem('otp_expiry_' + currentMobile);
+
+            if (!storedOtp) {
+                showToast('❌ OTP expired. Please request again.');
+                return;
+            }
+
+            if (Date.now() > parseInt(storedExpiry)) {
+                showToast('❌ OTP expired. Please request again.');
+                sessionStorage.removeItem('otp_' + currentMobile);
+                const resendBtn = document.getElementById('resend-otp');
+                if (resendBtn) resendBtn.disabled = false;
+                return;
+            }
+
+            if (otp !== storedOtp) {
+                showToast('❌ Invalid OTP. Please try again.');
+                document.querySelectorAll('.otp-input').forEach(el => {
+                    el.value = '';
+                    el.classList.remove('filled');
+                });
+                const firstInput = document.querySelector('.otp-input');
+                if (firstInput) firstInput.focus();
+                return;
+            }
+
+            showToast('✅ Phone verified successfully!');
+            sessionStorage.removeItem('otp_' + currentMobile);
+            sessionStorage.removeItem('otp_expiry_' + currentMobile);
+            
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.remove('hidden');
+            document.getElementById('reg-display-mobile').textContent = currentMobile;
+            document.getElementById('reg-pin').value = '';
+            document.getElementById('reg-pin-confirm').value = '';
+            document.getElementById('reg-pin').focus();
+            setStatus('📱 Set your PIN', 'blue');
+        }
+
+        async function resendOTP() {
+            const mobile = currentMobile;
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            sessionStorage.setItem('otp_' + mobile, otp);
+            sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
+            
+            const waNumber = formatMobileForWA(mobile);
+            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
+            window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            
+            document.getElementById('resend-otp').disabled = true;
+            startOTPTimer();
+            showToast('🔄 OTP resent via WhatsApp!');
+        }
+
+        // ============================================================
+        // REGISTER USER - Adds to all_users
         // ============================================================
         async function registerUser() {
             const pin = document.getElementById('reg-pin').value.trim();
@@ -287,7 +533,6 @@
             document.getElementById('register-btn').textContent = '⏳ Creating...';
 
             try {
-                // Register user via edge function
                 const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -296,7 +541,6 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Add to platform_stats.all_users
                     const { data: platformData, error: fetchError } = await sb
                         .from('platform_stats')
                         .select('all_users')
@@ -309,7 +553,6 @@
                     let allUsers = platformData?.all_users || [];
                     const mobileBigInt = BigInt(currentMobile);
                     
-                    // Check if already exists
                     const exists = allUsers.some(m => {
                         try {
                             return BigInt(m) === mobileBigInt;
@@ -329,8 +572,6 @@
                             
                             if (updateError) {
                                 console.error('Error updating platform_stats:', updateError);
-                            } else {
-                                console.log('✅ Added user to platform_stats.all_users');
                             }
                         } else {
                             const { error: insertError } = await sb
@@ -339,8 +580,6 @@
                             
                             if (insertError) {
                                 console.error('Error inserting platform_stats:', insertError);
-                            } else {
-                                console.log('✅ Created platform_stats with user');
                             }
                         }
                     }
@@ -360,7 +599,77 @@
         }
 
         // ============================================================
-        // FIXED: GUEST AUTO-LOGIN - Uses all_users in platform_stats
+        // SUBMIT PIN
+        // ============================================================
+        window.submitPin = async function() {
+            const pin = document.getElementById('pin').value.trim();
+            if (!pin || pin.length !== 4) {
+                showToast('⚠️ Enter 4-digit PIN');
+                document.getElementById('pin').focus();
+                return;
+            }
+
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '⏳ Verifying...';
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, pin: pin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    isGuest = false;
+                    sessionStorage.removeItem('guest_session');
+                    await fetchUserData(currentMobile);
+                    showToast('✅ Welcome back!');
+                } else {
+                    showToast('❌ Invalid PIN. Please try again.');
+                    document.getElementById('pin').value = '';
+                    document.getElementById('pin').focus();
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            } finally {
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').textContent = '🔐 Login';
+            }
+        };
+
+        // ============================================================
+        // FETCH USER DATA
+        // ============================================================
+        async function fetchUserData(mobile) {
+            const { data, error } = await sb
+                .from('active_users')
+                .select('*')
+                .eq('mobile', mobile)
+                .single();
+
+            if (error) {
+                const { data: newUser, error: insertError } = await sb
+                    .from('active_users')
+                    .insert([{ mobile: mobile, last_active: new Date().toISOString() }])
+                    .select()
+                    .single();
+                    
+                if (insertError) {
+                    showToast('❌ Error creating user: ' + insertError.message);
+                    return;
+                }
+                currentUser = newUser;
+            } else {
+                currentUser = data;
+            }
+
+            showHomeScreenAfterLogin();
+            setTimeout(processSharedLinkAfterLogin, 500);
+        }
+
+        // ============================================================
+        // GUEST AUTO-LOGIN
         // ============================================================
         function continueAsGuest() {
             sessionStorage.setItem('guest_session', 'true');
@@ -370,7 +679,6 @@
 
         async function autoLoginGuest() {
             try {
-                // Check if platform_stats exists, create if not
                 const { data: platformData, error: platformError } = await sb
                     .from('platform_stats')
                     .select('all_users')
@@ -397,8 +705,6 @@
                         
                         if (updateError) {
                             console.error('Error updating platform_stats for guest:', updateError);
-                        } else {
-                            console.log('✅ Added guest to platform_stats.all_users');
                         }
                     } else {
                         const { error: insertError } = await sb
@@ -407,13 +713,10 @@
                         
                         if (insertError) {
                             console.error('Error inserting platform_stats for guest:', insertError);
-                        } else {
-                            console.log('✅ Created platform_stats with guest');
                         }
                     }
                 }
 
-                // Check if guest exists in active_users
                 const { data: activeUser, error: activeError } = await sb
                     .from('active_users')
                     .select('*')
@@ -433,7 +736,6 @@
                     }
                 }
 
-                // Try login via edge function
                 const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -469,9 +771,139 @@
             }
         }
 
+        async function fetchGuestUserData(mobile) {
+            const { data, error } = await sb
+                .from('active_users')
+                .select('*')
+                .eq('mobile', mobile)
+                .maybeSingle();
+
+            if (error || !data) {
+                const { data: newUser, error: insertError } = await sb
+                    .from('active_users')
+                    .insert([{ 
+                        mobile: mobile,
+                        is_guest: true,
+                        last_active: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                    
+                if (insertError) {
+                    showToast('❌ Error creating guest: ' + insertError.message);
+                    return;
+                }
+                currentUser = newUser;
+            } else {
+                currentUser = data;
+            }
+
+            showHomeScreenAfterLogin();
+        }
+
+        function showHomeScreenAfterLogin() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('home-page').classList.remove('hidden-page');
+            updateAvatar();
+            updateGuestUI();
+            setTimeout(autoDetectLocation, 500);
+            fetchFeedData();
+        }
+
+        function updateGuestUI() {
+            const banner = document.getElementById('guest-banner');
+            if (banner) {
+                banner.style.display = isGuest ? 'flex' : 'none';
+            }
+        }
+
+        function showLogin() {
+            resetForm();
+            document.getElementById('mobile').focus();
+            showToast('🔐 Enter your mobile number to login');
+        }
+
         // ============================================================
-        // FIXED: OPEN DETAIL - Increments view count for every view
+        // SHARED LINK DETECTION & PROCESSING
         // ============================================================
+        function detectSharedLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            const id = urlParams.get('id');
+            
+            if (type && id) {
+                console.log(`📎 Shared link detected: ${type} with ID ${id}`);
+                sharedLinkData = { type, id };
+                return true;
+            }
+            return false;
+        }
+
+        const hasSharedLink = detectSharedLink();
+
+        async function processSharedLinkAfterLogin() {
+            if (sharedLinkProcessed || !sharedLinkData) return;
+            
+            console.log('🔄 Processing shared link after login:', sharedLinkData);
+            sharedLinkProcessed = true;
+            
+            const overlay = document.getElementById('loading-overlay');
+            if (overlay) overlay.classList.add('show');
+            
+            try {
+                const { type, id } = sharedLinkData;
+                let data;
+                
+                if (type === 'JOB') {
+                    const { data: job, error } = await sb
+                        .from('active_jobs')
+                        .select('*')
+                        .eq('job_id', parseInt(id))
+                        .single();
+                    if (error) throw error;
+                    data = job;
+                } else if (type === 'SEEKER') {
+                    const { data: user, error } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', id)
+                        .single();
+                    if (error) throw error;
+                    data = user;
+                } else {
+                    throw new Error('Invalid type');
+                }
+                
+                if (data) {
+                    if (overlay) overlay.classList.remove('show');
+                    openDetail(data, type);
+                    showToast(`📎 ${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
+                    
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState({}, '', window.location.pathname);
+                    }
+                }
+            } catch (err) {
+                console.error('Error processing shared link:', err);
+                if (overlay) overlay.classList.remove('show');
+                showToast('⚠️ Could not load the shared item');
+            }
+        }
+
+        // ============================================================
+        // OPEN DETAIL - With view count increment
+        // ============================================================
+        function openDetailFromFeed(item) {
+            if (item._raw) {
+                openDetail(item._raw, item.type);
+            } else {
+                openDetail(item, item.type);
+            }
+        }
+
         function openDetail(data, type) {
             currentDetailData = data;
             currentDetailType = type;
@@ -481,30 +913,19 @@
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('edit-seeker-page').classList.add('hidden-page');
 
-            // ============================================================
-            // INCREMENT VIEW COUNT - Every view counts, including guests and repeated views
-            // ============================================================
             const targetId = type === 'JOB' ? data.job_id : data.mobile;
             if (targetId) {
-                // Increment view count asynchronously
                 incrementViewCount(type, targetId).then(newCount => {
-                    if (newCount !== null) {
-                        console.log(`✅ View count updated to ${newCount} for ${type} ${targetId}`);
-                        // Update the detail view if still open
-                        if (currentDetailData && currentDetailType === type) {
-                            const currentId = type === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
-                            if (String(currentId) === String(targetId)) {
-                                const viewsEl = document.getElementById('detail-views');
-                                if (viewsEl) viewsEl.textContent = newCount;
-                            }
+                    if (newCount !== null && currentDetailData && currentDetailType === type) {
+                        const currentId = type === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                        if (String(currentId) === String(targetId)) {
+                            const viewsEl = document.getElementById('detail-views');
+                            if (viewsEl) viewsEl.textContent = newCount;
                         }
                     }
-                }).catch(err => {
-                    console.error('❌ View count increment failed:', err);
                 });
             }
 
-            // ... rest of openDetail function (keep as is)
             const isJob = type === 'JOB';
             const genderMap = {0: 'No Preference', 1: 'Female', 2: 'Male'};
 
@@ -531,7 +952,7 @@
             document.getElementById('detail-zone').textContent = getZoneName(zoneId) || 'Not set';
             document.getElementById('detail-area').textContent = getAreaName(areaId) || 'Not set';
 
-            const skillsText = isJob ? data.skills_comma_separated : data.skills_comma_separated;
+            const skillsText = data.skills_comma_separated || '';
             document.getElementById('detail-skills').textContent = skillsText || '—';
 
             if (isJob) {
@@ -569,69 +990,44 @@
             const jobWarning = document.getElementById('detail-job-warning');
             const seekerWarning = document.getElementById('detail-seeker-warning');
 
-            jobWarning.style.display = 'none';
-            seekerWarning.style.display = 'none';
+            if (jobWarning) jobWarning.style.display = 'none';
+            if (seekerWarning) seekerWarning.style.display = 'none';
 
             if (isJob) {
                 if (!currentUser || !currentUser.company_name || currentUser.company_name.trim() === '') {
-                    jobWarning.style.display = 'flex';
-                    callBtn.disabled = true;
-                    waBtn.disabled = true;
+                    if (jobWarning) jobWarning.style.display = 'flex';
+                    if (callBtn) callBtn.disabled = true;
+                    if (waBtn) waBtn.disabled = true;
                 } else {
-                    callBtn.disabled = false;
-                    waBtn.disabled = false;
+                    if (callBtn) callBtn.disabled = false;
+                    if (waBtn) waBtn.disabled = false;
                 }
-                endorseBtn.disabled = false;
-                flagBtn.disabled = false;
+                if (endorseBtn) endorseBtn.disabled = false;
+                if (flagBtn) flagBtn.disabled = false;
             } else {
                 if (!currentUser || !currentUser.full_name || currentUser.full_name.trim() === '') {
-                    seekerWarning.style.display = 'flex';
-                    callBtn.disabled = true;
-                    waBtn.disabled = true;
+                    if (seekerWarning) seekerWarning.style.display = 'flex';
+                    if (callBtn) callBtn.disabled = true;
+                    if (waBtn) waBtn.disabled = true;
                 } else {
-                    callBtn.disabled = false;
-                    waBtn.disabled = false;
+                    if (callBtn) callBtn.disabled = false;
+                    if (waBtn) waBtn.disabled = false;
                 }
-                endorseBtn.disabled = false;
-                flagBtn.disabled = false;
+                if (endorseBtn) endorseBtn.disabled = false;
+                if (flagBtn) flagBtn.disabled = false;
             }
         }
 
-        // ============================================================
-        // VIEW USER DETAIL - Fixed to show proper profile
-        // ============================================================
-        async function viewUserDetail(mobile) {
-            try {
-                showToast('⏳ Loading profile...');
-                
-                const { data, error } = await sb
-                    .from('active_users')
-                    .select('*')
-                    .eq('mobile', mobile.toString())
-                    .maybeSingle();
-                    
-                if (error) throw error;
-                
-                if (data) {
-                    if (!data.full_name) data.full_name = data.mobile || 'Job Seeker';
-                    if (!data.job_title) data.job_title = 'Job Seeker';
-                    
-                    document.getElementById('detail-page').classList.add('hidden-page');
-                    setTimeout(() => {
-                        openDetail(data, 'SEEKER');
-                        showToast('👤 Profile loaded');
-                    }, 100);
-                } else {
-                    showToast('⚠️ User profile not found');
-                }
-            } catch (err) {
-                console.error('Error loading user:', err);
-                showToast('⚠️ Could not load profile: ' + err.message);
-            }
+        function closeDetail() {
+            currentDetailData = null;
+            currentDetailType = null;
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.getElementById('home-page').classList.remove('hidden-page');
+            goHome();
         }
 
         // ============================================================
-        // MAKE CALL - Increments call count
+        // MAKE CALL & SEND WHATSAPP
         // ============================================================
         function makeCall() {
             if (isGuest || !currentUser) {
@@ -666,9 +1062,6 @@
             window.location.href = `tel:${contact}`;
         }
 
-        // ============================================================
-        // SEND WHATSAPP - Increments WhatsApp count
-        // ============================================================
         function sendWhatsApp() {
             if (isGuest || !currentUser) {
                 showLogin();
@@ -704,9 +1097,6 @@
             window.open(`https://wa.me/${contact}?text=${msg}`, '_blank');
         }
 
-        // ============================================================
-        // INCREMENT CALL COUNT
-        // ============================================================
         async function incrementCallCount(targetType, targetId) {
             try {
                 const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
@@ -738,9 +1128,6 @@
             }
         }
 
-        // ============================================================
-        // INCREMENT WHATSAPP COUNT
-        // ============================================================
         async function incrementWhatsAppCount(targetType, targetId) {
             try {
                 const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
@@ -773,15 +1160,1891 @@
         }
 
         // ============================================================
-        // THE REST OF THE FUNCTIONS (keep as is)
-        // - ZONE & AREA helpers
-        // - WHATSAPP OTP functions
-        // - ENDORSEMENTS & FLAGS
-        // - NAVIGATION
-        // - PROFILE
-        // - FEED
-        // - UI HELPERS
+        // AVATAR & DROPDOWN
         // ============================================================
+        function updateAvatar() {
+            if (!currentUser) {
+                document.querySelectorAll('.avatar-btn').forEach(btn => {
+                    btn.className = 'avatar-btn other';
+                    const span = btn.querySelector('span');
+                    if (span) span.textContent = '👤';
+                });
+                return;
+            }
+            const gender = currentUser.gender || 0;
+            let symbol = '👤';
+            let cls = '';
+            if (gender === 1) { symbol = '♀'; cls = 'female'; }
+            else if (gender === 2) { symbol = '♂'; cls = 'male'; }
+            else { cls = 'other'; }
+            
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                btn.className = `avatar-btn ${cls}`;
+                const span = btn.querySelector('span');
+                if (span) span.textContent = symbol;
+            });
+        }
+
+        function toggleDropdown() {
+            document.querySelectorAll('.profile-dropdown').forEach(d => d.classList.toggle('show'));
+        }
+
+        function closeDropdown() {
+            document.querySelectorAll('.profile-dropdown').forEach(d => d.classList.remove('show'));
+        }
+
+        // ============================================================
+        // CHANGE PIN
+        // ============================================================
+        function openChangePin() {
+            if (isGuest) {
+                showToast('🔐 Please login to change PIN');
+                showLogin();
+                return;
+            }
+            const modal = document.getElementById('change-pin-modal');
+            if (modal) modal.classList.add('show');
+            document.getElementById('new-pin').value = '';
+            document.getElementById('confirm-pin').value = '';
+            document.getElementById('new-pin').focus();
+        }
+
+        function closeChangePin() {
+            const modal = document.getElementById('change-pin-modal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        async function saveNewPin() {
+            if (isGuest) {
+                showToast('🔐 Please login to change PIN');
+                showLogin();
+                return;
+            }
+            const newPin = document.getElementById('new-pin').value.trim();
+            const confirmPin = document.getElementById('confirm-pin').value.trim();
+
+            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                showToast('⚠️ Enter a valid 4-digit PIN');
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                showToast('⚠️ PINs do not match');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentUser.mobile, new_pin: newPin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✅ PIN changed successfully!');
+                    closeChangePin();
+                } else {
+                    showToast('❌ Failed to change PIN: ' + data.error);
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // RESET PIN
+        // ============================================================
+        function resetPIN() {
+            if (confirm('Forgot your PIN? We\'ll send an OTP to reset it.')) {
+                const mobile = currentMobile;
+                const otp = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                sessionStorage.setItem('reset_otp_' + mobile, otp);
+                sessionStorage.setItem('reset_otp_expiry_' + mobile, Date.now() + 300000);
+                
+                const waNumber = formatMobileForWA(mobile);
+                const message = `Your JobAd PIN reset code is: *${otp}*\n\nEnter this code to reset your PIN.`;
+                window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+                
+                showToast('📱 PIN reset OTP sent via WhatsApp!');
+                
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('step3').classList.remove('hidden');
+                document.getElementById('wa-display-mobile').textContent = mobile;
+                document.getElementById('verify-btn').textContent = '✅ Verify & Reset PIN';
+                document.getElementById('verify-btn').className = 'btn-primary btn-green';
+                document.getElementById('verify-btn').onclick = function() {
+                    verifyResetOTP();
+                };
+                document.querySelectorAll('.otp-input').forEach(el => el.value = '');
+                const firstInput = document.querySelector('.otp-input');
+                if (firstInput) firstInput.focus();
+                startOTPTimer();
+                document.getElementById('resend-otp').disabled = true;
+                document.getElementById('resend-otp').onclick = function() {
+                    const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
+                    sessionStorage.setItem('reset_otp_' + mobile, newOtp);
+                    sessionStorage.setItem('reset_otp_expiry_' + mobile, Date.now() + 300000);
+                    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${newOtp}*`)}`, '_blank');
+                    document.getElementById('resend-otp').disabled = true;
+                    startOTPTimer();
+                    showToast('🔄 Reset OTP resent!');
+                };
+            }
+        }
+
+        async function verifyResetOTP() {
+            const otp = getOTP();
+            if (otp.length !== 6) {
+                showToast('⚠️ Enter complete 6-digit OTP');
+                return;
+            }
+
+            const mobile = currentMobile;
+            const storedOtp = sessionStorage.getItem('reset_otp_' + mobile);
+            const storedExpiry = sessionStorage.getItem('reset_otp_expiry_' + mobile);
+
+            if (!storedOtp || Date.now() > parseInt(storedExpiry)) {
+                showToast('❌ OTP expired. Please try again.');
+                return;
+            }
+
+            if (otp !== storedOtp) {
+                showToast('❌ Invalid OTP. Please try again.');
+                document.querySelectorAll('.otp-input').forEach(el => {
+                    el.value = '';
+                    el.classList.remove('filled');
+                });
+                const firstInput = document.querySelector('.otp-input');
+                if (firstInput) firstInput.focus();
+                return;
+            }
+
+            showToast('✅ OTP verified! Set your new PIN.');
+            sessionStorage.removeItem('reset_otp_' + mobile);
+            sessionStorage.removeItem('reset_otp_expiry_' + mobile);
+
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.remove('hidden');
+            document.getElementById('reg-display-mobile').textContent = mobile;
+            document.getElementById('register-btn').textContent = '💾 Reset PIN';
+            document.getElementById('register-btn').className = 'btn-primary btn-yellow';
+            document.getElementById('register-btn').onclick = function() {
+                saveResetPIN();
+            };
+            document.getElementById('reg-pin').value = '';
+            document.getElementById('reg-pin-confirm').value = '';
+            document.getElementById('reg-pin').focus();
+        }
+
+        async function saveResetPIN() {
+            const pin = document.getElementById('reg-pin').value.trim();
+            const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
+
+            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                showToast('⚠️ Enter a valid 4-digit PIN');
+                document.getElementById('reg-pin').focus();
+                return;
+            }
+
+            if (pin !== confirmPin) {
+                showToast('⚠️ PINs do not match');
+                document.getElementById('reg-pin-confirm').value = '';
+                document.getElementById('reg-pin-confirm').focus();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${EDGE_FUNCTION_URL}/change-pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mobile: currentMobile, new_pin: pin })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('✅ PIN reset successfully! Please login with your new PIN.');
+                    resetForm();
+                    document.getElementById('mobile').value = currentMobile;
+                    document.getElementById('mobile').focus();
+                } else {
+                    showToast('❌ Failed to reset PIN: ' + data.error);
+                }
+            } catch (err) {
+                showToast('❌ Error: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // POST JOB FUNCTIONS
+        // ============================================================
+        function setupCounter(inputId, counterId, maxLen) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
+            if (!input || !counter) return;
+            const update = () => {
+                const len = input.value.length;
+                counter.textContent = `${len}/${maxLen}`;
+                if (len > maxLen) {
+                    input.value = input.value.slice(0, maxLen);
+                    counter.textContent = `${maxLen}/${maxLen}`;
+                }
+            };
+            input.addEventListener('input', update);
+            update();
+        }
+
+        function updatePostAreas() {
+            const zoneSelect = document.getElementById('pj-zone');
+            const areaSelect = document.getElementById('pj-area');
+            const areaHint = document.getElementById('pj-area-hint');
+            if (!zoneSelect || !areaSelect) return;
+            const zoneId = parseInt(zoneSelect.value);
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (!zoneId) {
+                if (areaHint) areaHint.textContent = '⬆️ Choose zone first';
+                return;
+            }
+            const areas = getAreasByZone(zoneId);
+            if (areas.length === 0) {
+                areaSelect.innerHTML = '<option value="">No areas</option>';
+                if (areaHint) areaHint.textContent = '⚠️ No areas for this zone';
+                return;
+            }
+            areas.forEach(area => {
+                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+            });
+            if (areaHint) areaHint.textContent = `✅ ${areas.length} areas available`;
+            if (areas.length > 0) areaSelect.value = areas[0].area_id;
+        }
+
+        async function publishJob() {
+            if (!currentUser || isGuest) {
+                showToast('🔐 Please login to post jobs');
+                showLogin();
+                return;
+            }
+
+            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                showToast('⚠️ Please set your company name in profile first');
+                goToProfile();
+                return;
+            }
+
+            const isEditing = document.getElementById('pj-publish-btn').dataset.editing === 'true';
+            const editJobId = document.getElementById('pj-publish-btn').dataset.jobid;
+
+            const company = document.getElementById('pj-company').value.trim();
+            const jobTitle = document.getElementById('pj-title').value.trim();
+            const expRaw = document.getElementById('pj-experience').value.trim();
+            const salaryRaw = document.getElementById('pj-salary').value.replace(/,/g, '');
+            const gender = parseInt(document.getElementById('pj-gender').value);
+            const zone = document.getElementById('pj-zone').value;
+            const area = document.getElementById('pj-area').value;
+            const skills = document.getElementById('pj-skills').value.trim();
+            const description = document.getElementById('pj-description').value.trim();
+            const expiryDate = document.getElementById('pj-expiry').value;
+
+            if (!company) { showToast('⚠️ Company name is required'); return; }
+            if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
+            if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
+            if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('⚠️ Enter valid min experience'); return; }
+            if (!salaryRaw || isNaN(parseInt(salaryRaw)) || parseInt(salaryRaw) <= 0) { showToast('⚠️ Enter valid salary'); return; }
+            if (!zone) { showToast('⚠️ Please select Job Location Zone'); return; }
+            if (!area) { showToast('⚠️ Please select Specific Area'); return; }
+            if (!skills) { showToast('⚠️ Skills are required'); return; }
+            if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
+            if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
+            if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
+
+            const selectedDate = new Date(expiryDate);
+            const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+            if (selectedDate > maxDate) {
+                showToast('⚠️ Expiry date cannot exceed 45 days from today');
+                return;
+            }
+
+            const jobData = {
+                mobile: currentUser.mobile,
+                job_title: jobTitle,
+                company_name: company,
+                min_experience_years: parseFloat(expRaw),
+                max_salary_monthly: parseInt(salaryRaw),
+                preferred_gender: gender,
+                skills_comma_separated: skills,
+                job_description: description || '',
+                zone_id: parseInt(zone),
+                area_id: parseInt(area),
+                expiry_date: new Date(expiryDate).toISOString(),
+                share_count: 0,
+                views: 0,
+                calls: 0,
+                whatsapp: 0
+            };
+
+            try {
+                if (isEditing && editJobId) {
+                    const { error } = await sb
+                        .from('active_jobs')
+                        .update(jobData)
+                        .eq('job_id', parseInt(editJobId));
+                    if (error) throw error;
+                    showToast('✅ Job updated successfully!');
+                } else {
+                    jobData.posted_date = new Date().toISOString();
+                    const { error } = await sb.from('active_jobs').insert([jobData]);
+                    if (error) throw error;
+                    showToast('✅ Job published successfully!');
+                }
+
+                document.getElementById('pj-publish-btn').dataset.editing = 'false';
+                document.getElementById('pj-publish-btn').dataset.jobid = '';
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+                document.getElementById('pj-title').value = '';
+                document.getElementById('pj-skills').value = '';
+                document.getElementById('pj-description').value = '';
+                document.getElementById('pj-salary').value = '';
+                document.getElementById('pj-experience').value = '3.5';
+                document.getElementById('pj-company').value = currentUser.company_name || '';
+                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                    if (el) el.dispatchEvent(new Event('input'));
+                });
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
+                document.getElementById('pj-gender').value = '0';
+                document.getElementById('pj-zone').value = '100';
+                updatePostAreas();
+
+                fetchFeedData();
+                goToProfile();
+                loadMyJobs();
+            } catch (err) {
+                showToast('❌ Failed: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // LOAD MY JOBS
+        // ============================================================
+        async function loadMyJobs() {
+            if (!currentUser || isGuest) {
+                const container = document.getElementById('my-jobs-list');
+                if (container) container.innerHTML = '<p style="font-size:11px; color:#94a3b8;">Login to see your jobs.</p>';
+                return;
+            }
+            const container = document.getElementById('my-jobs-list');
+            if (!container) return;
+            try {
+                await autoCleanExpiredJobs();
+
+                const { data, error } = await sb
+                    .from('active_jobs')
+                    .select('*')
+                    .eq('mobile', currentUser.mobile)
+                    .order('posted_date', { ascending: false });
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="font-size:11px; color:#94a3b8;">No jobs posted yet.</p>';
+                    return;
+                }
+                container.innerHTML = data.map(job => {
+                    const isExpired = new Date(job.expiry_date) < new Date();
+                    return `
+                    <div class="my-job-item" onclick="viewJob(${job.job_id})">
+                        <div class="job-title">${job.job_title || 'Untitled'} ${isExpired ? '<span class="expired">Expired</span>' : ''}</div>
+                        <div class="job-meta">${job.company_name} · ${job.min_experience_years || 0} yrs · ₹${(job.max_salary_monthly || 0).toLocaleString('en-IN')}</div>
+                        <div class="job-meta" style="font-size:9px; color:#94a3b8;">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div>
+                    </div>
+                `}).join('');
+            } catch (err) {
+                console.error('Error loading my jobs:', err);
+                container.innerHTML = '<p style="font-size:11px; color:#ef4444;">Error loading jobs</p>';
+            }
+        }
+
+        // ============================================================
+        // VIEW JOB
+        // ============================================================
+        async function viewJob(jobId) {
+            try {
+                const { data, error } = await sb
+                    .from('active_jobs')
+                    .select('*')
+                    .eq('job_id', jobId)
+                    .single();
+                if (error) throw error;
+                openDetail(data, 'JOB');
+            } catch (err) {
+                showToast('❌ Error loading job: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // ENDORSEMENTS & FLAGS FUNCTIONS
+        // ============================================================
+        async function toggleEndorsement(targetType, targetId, mobile) {
+            if (isGuest) {
+                showToast('🔐 Please login to recommend');
+                showLogin();
+                return null;
+            }
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                showLogin();
+                return null;
+            }
+
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+            const targetMobile = currentUser.mobile;
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('endorsements, flags')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                let endorsements = data.endorsements || [];
+                let flags = data.flags || [];
+
+                const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
+                const alreadyFlagged = flags.includes(parseInt(targetMobile));
+
+                if (alreadyEndorsed) {
+                    endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
+                    showToast('👍 Endorsement removed');
+                } else {
+                    if (alreadyFlagged) {
+                        flags = flags.filter(m => m !== parseInt(targetMobile));
+                        showToast('👎 Flag removed, adding endorsement');
+                    }
+                    endorsements.push(parseInt(targetMobile));
+                    showToast('👍 Endorsed successfully!');
+                }
+
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ endorsements: endorsements, flags: flags })
+                    .eq(idField, targetId);
+
+                if (updateError) throw updateError;
+
+                await fetchFeedData();
+                return { endorsements, flags };
+
+            } catch (err) {
+                console.error('Error toggling endorsement:', err);
+                showToast('❌ Failed to update: ' + err.message);
+                return null;
+            }
+        }
+
+        async function toggleFlag(targetType, targetId, mobile) {
+            if (isGuest) {
+                showToast('🔐 Please login to flag');
+                showLogin();
+                return null;
+            }
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                showLogin();
+                return null;
+            }
+
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+            const targetMobile = currentUser.mobile;
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('endorsements, flags')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                let endorsements = data.endorsements || [];
+                let flags = data.flags || [];
+
+                const alreadyFlagged = flags.includes(parseInt(targetMobile));
+                const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
+
+                if (alreadyFlagged) {
+                    flags = flags.filter(m => m !== parseInt(targetMobile));
+                    showToast('👎 Flag removed');
+                } else {
+                    if (alreadyEndorsed) {
+                        endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
+                        showToast('👍 Endorsement removed, adding flag');
+                    }
+                    flags.push(parseInt(targetMobile));
+                    showToast('👎 Not recommended');
+                }
+
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ endorsements: endorsements, flags: flags })
+                    .eq(idField, targetId);
+
+                if (updateError) throw updateError;
+
+                await fetchFeedData();
+                return { endorsements, flags };
+
+            } catch (err) {
+                console.error('Error toggling flag:', err);
+                showToast('❌ Failed to update: ' + err.message);
+                return null;
+            }
+        }
+
+        async function getEndorsersList(targetType, targetId) {
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('endorsements')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                const endorsements = data.endorsements || [];
+                if (endorsements.length === 0) {
+                    showToast('No endorsements yet');
+                    return [];
+                }
+
+                const endorseMobiles = endorsements.map(m => m.toString());
+                
+                const { data: users, error: userError } = await sb
+                    .from('active_users')
+                    .select('mobile, full_name, gender')
+                    .in('mobile', endorseMobiles);
+
+                if (userError) throw userError;
+
+                return users || [];
+
+            } catch (err) {
+                console.error('Error fetching endorsers:', err);
+                showToast('❌ Failed to load endorsers: ' + err.message);
+                return [];
+            }
+        }
+
+        async function getFlaggersList(targetType, targetId) {
+            const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+            const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+
+            try {
+                const { data, error } = await sb
+                    .from(table)
+                    .select('flags')
+                    .eq(idField, targetId)
+                    .single();
+
+                if (error) throw error;
+
+                const flags = data.flags || [];
+                if (flags.length === 0) {
+                    showToast('No flags yet');
+                    return [];
+                }
+
+                const flagMobiles = flags.map(m => m.toString());
+                
+                const { data: users, error: userError } = await sb
+                    .from('active_users')
+                    .select('mobile, full_name, gender')
+                    .in('mobile', flagMobiles);
+
+                if (userError) throw userError;
+
+                return users || [];
+
+            } catch (err) {
+                console.error('Error fetching flaggers:', err);
+                showToast('❌ Failed to load flaggers: ' + err.message);
+                return [];
+            }
+        }
+
+        // ============================================================
+        // VIEW USER PROFILE
+        // ============================================================
+        function viewUserProfile(mobile) {
+            closeModal('endorsers-modal');
+            closeModal('flaggers-modal');
+            
+            if (!mobile) {
+                showToast('⚠️ No user selected');
+                return;
+            }
+            
+            const mobileStr = mobile.toString();
+            viewUserDetail(mobileStr);
+        }
+
+        async function viewUserDetail(mobile) {
+            try {
+                showToast('⏳ Loading profile...');
+                
+                const { data, error } = await sb
+                    .from('active_users')
+                    .select('*')
+                    .eq('mobile', mobile.toString())
+                    .maybeSingle();
+                    
+                if (error) throw error;
+                
+                if (data) {
+                    if (!data.full_name) data.full_name = data.mobile || 'Job Seeker';
+                    if (!data.job_title) data.job_title = 'Job Seeker';
+                    
+                    document.getElementById('detail-page').classList.add('hidden-page');
+                    setTimeout(() => {
+                        openDetail(data, 'SEEKER');
+                        showToast('👤 Profile loaded');
+                    }, 100);
+                } else {
+                    showToast('⚠️ User profile not found');
+                }
+            } catch (err) {
+                console.error('Error loading user:', err);
+                showToast('⚠️ Could not load profile: ' + err.message);
+            }
+        }
+
+        // ============================================================
+        // MODAL FUNCTIONS
+        // ============================================================
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.remove();
+            }
+            document.querySelectorAll('.modal-overlay.show').forEach(el => {
+                el.classList.remove('show');
+                el.style.display = 'none';
+            });
+        }
+
+        async function showEndorsersModal(targetType, targetId) {
+            const users = await getEndorsersList(targetType, targetId);
+            if (users.length === 0) return;
+
+            let html = users.map(u => {
+                const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
+                const displayName = u.full_name && u.full_name.trim() !== '' ? u.full_name : 'Profile not updated yet';
+                return `<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)">
+                    <span class="gender-icon">${genderSymbol}</span>
+                    <span class="name clickable-name">${displayName}</span>
+                </div>`;
+            }).join('');
+
+            if (users.length > 5) {
+                html += `<div class="more-text">+ ${users.length - 5} more...</div>`;
+            }
+
+            document.querySelector('#endorsers-modal')?.remove();
+            
+            const modalHtml = `
+                <div class="modal-overlay show" id="endorsers-modal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:0;">
+                    <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
+                        <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👍 Endorsed by ${users.length} people</h3>
+                        <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">
+                            ${html}
+                        </div>
+                        <button class="modal-close-btn" onclick="closeModal('endorsers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer; margin-top:8px;">Close</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        async function showFlaggersModal(targetType, targetId) {
+            const users = await getFlaggersList(targetType, targetId);
+            if (users.length === 0) return;
+
+            let html = users.map(u => {
+                const genderSymbol = u.gender === 1 ? '♀' : u.gender === 2 ? '♂' : '👤';
+                const displayName = u.full_name && u.full_name.trim() !== '' ? u.full_name : 'Profile not updated yet';
+                return `<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)">
+                    <span class="gender-icon">${genderSymbol}</span>
+                    <span class="name clickable-name">${displayName}</span>
+                </div>`;
+            }).join('');
+
+            document.querySelector('#flaggers-modal')?.remove();
+            
+            const modalHtml = `
+                <div class="modal-overlay show" id="flaggers-modal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:0;">
+                    <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
+                        <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👎 Not recommended by ${users.length} people</h3>
+                        <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">
+                            ${html}
+                        </div>
+                        <button class="modal-close-btn" onclick="closeModal('flaggers-modal')" style="width:100%; padding:10px; border:none; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; cursor:pointer; margin-top:8px;">Close</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        // ============================================================
+        // DETAIL VIEW ENDORSEMENT/FLAG TOGGLES
+        // ============================================================
+        async function detailToggleEndorsement() {
+            if (isGuest) {
+                showToast('🔐 Please login to recommend');
+                showLogin();
+                return;
+            }
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                showLogin();
+                return;
+            }
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            const result = await toggleEndorsement(currentDetailType, targetId, currentUser.mobile);
+            if (result) {
+                updateDetailCounts(result.endorsements, result.flags);
+                const shareCount = currentDetailData.share_count || 0;
+                const totalPopularity = result.endorsements.length + shareCount;
+                document.getElementById('detail-total-popularity').textContent = totalPopularity;
+            }
+        }
+
+        async function detailToggleFlag() {
+            if (isGuest) {
+                showToast('🔐 Please login to flag');
+                showLogin();
+                return;
+            }
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                showLogin();
+                return;
+            }
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            const result = await toggleFlag(currentDetailType, targetId, currentUser.mobile);
+            if (result) {
+                updateDetailCounts(result.endorsements, result.flags);
+            }
+        }
+
+        async function detailShowEndorsers() {
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            await showEndorsersModal(currentDetailType, targetId);
+        }
+
+        async function detailShowFlaggers() {
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            await showFlaggersModal(currentDetailType, targetId);
+        }
+
+        function updateDetailCounts(endorsements, flags) {
+            const flagCount = document.getElementById('detail-flags-count');
+            const endorseBtn = document.getElementById('detail-endorse-btn');
+            const flagBtn = document.getElementById('detail-flag-btn');
+
+            if (flagCount) flagCount.textContent = flags.length || 0;
+
+            if (currentUser && !isGuest) {
+                const userEndorsed = endorsements.includes(parseInt(currentUser.mobile));
+                const userFlagged = flags.includes(parseInt(currentUser.mobile));
+
+                if (endorseBtn) {
+                    endorseBtn.className = `btn-endorse ${userEndorsed ? 'active' : ''}`;
+                }
+                if (flagBtn) {
+                    flagBtn.className = `btn-flag ${userFlagged ? 'active' : ''}`;
+                }
+            } else {
+                if (endorseBtn) endorseBtn.className = 'btn-endorse';
+                if (flagBtn) flagBtn.className = 'btn-flag';
+            }
+        }
+
+        // ============================================================
+        // NAVIGATION FUNCTIONS
+        // ============================================================
+        function goHome() {
+            currentPage = 'home';
+            document.getElementById('home-page').classList.remove('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            const firstNav = document.querySelectorAll('.bottom-nav .nav-item')[0];
+            if (firstNav) firstNav.classList.add('active');
+            document.getElementById('feed-container').style.display = 'flex';
+            renderFeed();
+        }
+
+        function goPostJob() {
+            if (isGuest) {
+                showToast('🔐 Please login to post jobs');
+                showLogin();
+                return;
+            }
+            if (!currentUser) {
+                showToast('⚠️ Please login first');
+                showLogin();
+                return;
+            }
+
+            if (!currentUser.company_name || currentUser.company_name.trim() === '') {
+                const warning = document.getElementById('recruiter-warning');
+                if (warning) warning.style.display = 'flex';
+                document.getElementById('pj-company').value = '';
+                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = true);
+                document.getElementById('pj-publish-btn').disabled = true;
+                document.getElementById('pj-publish-btn').textContent = '⚠️ Complete Recruiter Profile First';
+            } else {
+                const warning = document.getElementById('recruiter-warning');
+                if (warning) warning.style.display = 'none';
+                document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = false);
+                document.getElementById('pj-publish-btn').disabled = false;
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
+                document.getElementById('pj-company').value = currentUser.company_name;
+            }
+
+            document.getElementById('pj-publish-btn').dataset.editing = 'false';
+            document.getElementById('pj-publish-btn').dataset.jobid = '';
+            if (!document.getElementById('recruiter-warning').style.display || document.getElementById('recruiter-warning').style.display === 'none') {
+                document.getElementById('pj-title').value = '';
+                document.getElementById('pj-skills').value = '';
+                document.getElementById('pj-description').value = '';
+                document.getElementById('pj-salary').value = '';
+                document.getElementById('pj-experience').value = '3.5';
+                document.getElementById('pj-gender').value = '0';
+                document.getElementById('pj-zone').value = '100';
+                updatePostAreas();
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
+                document.querySelectorAll('#postjob-page input, #postjob-page textarea').forEach(el => {
+                    if (el) el.dispatchEvent(new Event('input'));
+                });
+            }
+
+            currentPage = 'postjob';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.remove('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            const secondNav = document.querySelectorAll('.bottom-nav .nav-item')[1];
+            if (secondNav) secondNav.classList.add('active');
+        }
+
+        function goToProfile() {
+            if (isGuest) {
+                showToast('👤 You are viewing as Guest. Login to access profile.');
+                showLogin();
+                return;
+            }
+            currentPage = 'profile';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.remove('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
+            const thirdNav = document.querySelectorAll('.bottom-nav .nav-item')[2];
+            if (thirdNav) thirdNav.classList.add('active');
+            loadProfile();
+            loadMyJobs();
+        }
+
+        function goToEditSeeker() {
+            if (isGuest) {
+                showToast('🔐 Please login to create profile');
+                showLogin();
+                return;
+            }
+            currentPage = 'edit-seeker';
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.remove('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
+            populateEditZones();
+            if (currentUser) {
+                document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
+                document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
+                document.getElementById('edit-seeker-exp').value = currentUser.total_experience_years || '';
+                const salaryVal = currentUser.expected_salary_monthly || '';
+                document.getElementById('edit-seeker-salary').value = salaryVal ? formatSalaryDisplay(salaryVal) : '';
+                document.getElementById('edit-seeker-skills').value = currentUser.skills_comma_separated || '';
+                document.getElementById('edit-seeker-about').value = currentUser.professional_summary || '';
+                document.getElementById('edit-seeker-gender').value = currentUser.gender || 0;
+                document.getElementById('edit-seeker-notice').value = currentUser.notice_period_days || '';
+                if (currentUser.zone_id) {
+                    document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
+                    updateEditAreas();
+                    if (currentUser.area_id) {
+                        document.getElementById('edit-seeker-area').value = currentUser.area_id;
+                    }
+                }
+            }
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            if (aboutTextarea && charCount) {
+                charCount.textContent = aboutTextarea.value.length;
+            }
+        }
+
+        function cancelPostJob() {
+            if (document.getElementById('pj-publish-btn').dataset.editing === 'true') {
+                if (confirm('Cancel editing this job?')) {
+                    closeDetail();
+                }
+            } else if (confirm('Cancel posting this job?')) {
+                goHome();
+            }
+        }
+
+        // ============================================================
+        // PROFILE FUNCTIONS
+        // ============================================================
+        function formatSalary(amount) {
+            if (!amount || amount === 0) return 'Not specified';
+            return '₹' + Number(amount).toLocaleString('en-IN');
+        }
+
+        async function loadProfile() {
+            if (!currentUser || isGuest) {
+                document.getElementById('profile-mobile').textContent = 'Guest User';
+                document.getElementById('profile-badge').textContent = '👤 Guest';
+                document.getElementById('seeker-section').style.display = 'none';
+                document.getElementById('recruiter-section').style.display = 'none';
+                return;
+            }
+            document.getElementById('seeker-section').style.display = 'block';
+            document.getElementById('recruiter-section').style.display = 'block';
+            document.getElementById('profile-mobile').textContent = currentUser.mobile;
+            if (currentUser.full_name && currentUser.full_name.trim() !== '') {
+                document.getElementById('seeker-badge').textContent = '✅ Active';
+                document.getElementById('seeker-badge').style.background = '#dcfce7';
+                document.getElementById('seeker-badge').style.color = '#166534';
+                document.getElementById('seeker-desc').textContent = 'Your job profile is active.';
+                document.getElementById('seeker-input-area').style.display = 'none';
+                document.getElementById('seeker-active-area').style.display = 'block';
+
+                document.getElementById('seeker-display-name').textContent = currentUser.full_name;
+                document.getElementById('seeker-display-title').textContent = currentUser.job_title || 'Not set';
+                document.getElementById('seeker-display-exp').textContent = currentUser.total_experience_years || '0';
+                document.getElementById('seeker-display-salary').textContent = formatSalary(currentUser.expected_salary_monthly);
+                document.getElementById('seeker-display-notice').textContent = currentUser.notice_period_days || '0';
+                document.getElementById('seeker-display-skills').textContent = currentUser.skills_comma_separated || 'None';
+                document.getElementById('seeker-display-about').textContent = currentUser.professional_summary || '';
+
+                const zoneName = getZoneName(currentUser.zone_id);
+                const areaName = getAreaName(currentUser.area_id);
+                document.getElementById('seeker-display-location').textContent = areaName ? `${zoneName} - ${areaName}` : zoneName || 'Not set';
+                document.getElementById('seeker-section').className = 'profile-section profile-active';
+            } else {
+                document.getElementById('seeker-badge').textContent = '⚠️ Required to Apply';
+                document.getElementById('seeker-badge').style.background = '#fef3c7';
+                document.getElementById('seeker-badge').style.color = '#d97706';
+                document.getElementById('seeker-desc').textContent = 'Complete your job profile to get matched with relevant jobs.';
+                document.getElementById('seeker-input-area').style.display = 'block';
+                document.getElementById('seeker-active-area').style.display = 'none';
+                document.getElementById('seeker-section').className = 'profile-section';
+            }
+            if (currentUser.company_name && currentUser.company_name.trim() !== '') {
+                document.getElementById('recruiter-badge').textContent = '✅ Active';
+                document.getElementById('recruiter-badge').style.background = '#dcfce7';
+                document.getElementById('recruiter-badge').style.color = '#166534';
+                document.getElementById('recruiter-desc').textContent = 'Your recruiter profile is active.';
+                document.getElementById('recruiter-input-area').style.display = 'none';
+                document.getElementById('recruiter-active-area').style.display = 'block';
+                document.getElementById('recruiter-display-company').textContent = currentUser.company_name;
+                document.getElementById('recruiter-section').className = 'profile-section profile-active';
+            } else {
+                document.getElementById('recruiter-badge').textContent = '⚠️ Required to Post Jobs';
+                document.getElementById('recruiter-badge').style.background = '#fef3c7';
+                document.getElementById('recruiter-badge').style.color = '#d97706';
+                document.getElementById('recruiter-desc').textContent = 'Create your recruiter profile to post jobs and find candidates.';
+                document.getElementById('recruiter-input-area').style.display = 'block';
+                document.getElementById('recruiter-active-area').style.display = 'none';
+                document.getElementById('recruiter-section').className = 'profile-section';
+            }
+        }
+
+        async function saveEditSeeker() {
+            if (isGuest) {
+                showToast('🔐 Please login to save profile');
+                showLogin();
+                return;
+            }
+            const name = document.getElementById('edit-seeker-name').value.trim();
+            const title = document.getElementById('edit-seeker-title').value.trim();
+            const exp = document.getElementById('edit-seeker-exp').value.trim();
+            const salaryRaw = document.getElementById('edit-seeker-salary').value;
+            const salary = parseSalaryValue(salaryRaw);
+            const skills = document.getElementById('edit-seeker-skills').value.trim();
+            const about = document.getElementById('edit-seeker-about').value.trim();
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            const areaId = parseInt(document.getElementById('edit-seeker-area').value);
+            const gender = parseInt(document.getElementById('edit-seeker-gender').value);
+            const notice = parseInt(document.getElementById('edit-seeker-notice').value) || 0;
+            if (!name) { showToast('⚠️ Please enter your full name'); return; }
+            if (name.length > 50) { showToast('⚠️ Name must be less than 50 characters'); return; }
+            if (title.length > 50) { showToast('⚠️ Job title must be less than 50 characters'); return; }
+            if (exp && (parseFloat(exp) > 99 || parseFloat(exp) < 0)) { showToast('⚠️ Experience must be between 0-99 years'); return; }
+            if (salary && parseInt(salary) > 9999999) { showToast('⚠️ Salary cannot exceed ₹99,99,999'); return; }
+            if (notice > 365 || notice < 0) { showToast('⚠️ Notice period must be between 0-365 days'); return; }
+            if (skills.length > 100) { showToast('⚠️ Skills must be less than 100 characters'); return; }
+            if (about.length > 200) { showToast('⚠️ About Me must be less than 200 characters'); return; }
+            if (!zoneId) { showToast('⚠️ Please select your zone'); return; }
+            const updates = {
+                full_name: name,
+                job_title: title || '',
+                total_experience_years: parseFloat(exp) || 0,
+                expected_salary_monthly: parseInt(salary) || 0,
+                skills_comma_separated: skills || '',
+                professional_summary: about || '',
+                zone_id: zoneId,
+                area_id: areaId || null,
+                gender: gender || 0,
+                notice_period_days: notice,
+                last_active: new Date().toISOString()
+            };
+            try {
+                const { error } = await sb.from('active_users').update(updates).eq('mobile', currentUser.mobile);
+                if (error) throw error;
+                currentUser = { ...currentUser, ...updates };
+                showToast('✅ Job profile saved!');
+                goToProfile();
+            } catch (err) {
+                showToast('❌ Failed to save: ' + err.message);
+            }
+        }
+
+        async function saveRecruiterProfile() {
+            if (isGuest) {
+                showToast('🔐 Please login to save profile');
+                showLogin();
+                return;
+            }
+            const company = document.getElementById('recruiter-company').value.trim();
+            if (!company) { showToast('⚠️ Please enter company name'); return; }
+            if (company.length > 100) { showToast('⚠️ Company name must be less than 100 characters'); return; }
+            try {
+                const { error } = await sb.from('active_users').update({ company_name: company, last_active: new Date().toISOString() }).eq('mobile', currentUser.mobile);
+                if (error) throw error;
+                currentUser.company_name = company;
+                showToast('✅ Recruiter profile activated!');
+                loadProfile();
+                loadMyJobs();
+            } catch (err) {
+                showToast('❌ Failed to save: ' + err.message);
+            }
+        }
+
+        function editRecruiterProfile() {
+            document.getElementById('recruiter-company').value = currentUser.company_name || '';
+            document.getElementById('recruiter-input-area').style.display = 'block';
+            document.getElementById('recruiter-active-area').style.display = 'none';
+            document.getElementById('recruiter-section').className = 'profile-section';
+            document.getElementById('recruiter-badge').textContent = '✏️ Editing';
+            document.getElementById('recruiter-badge').style.background = '#dbeafe';
+            document.getElementById('recruiter-badge').style.color = '#1e40af';
+            document.getElementById('recruiter-desc').textContent = 'Update your company name.';
+            document.querySelector('#recruiter-input-area .section-btn').textContent = '💾 Update';
+        }
+
+        // ============================================================
+        // FETCH DATA FROM SUPABASE
+        // ============================================================
+        async function autoCleanExpiredJobs() {
+            try {
+                const now = new Date().toISOString();
+                const { error } = await sb
+                    .from('active_jobs')
+                    .delete()
+                    .lt('expiry_date', now);
+                if (error) console.error('Error cleaning expired jobs:', error);
+            } catch (err) {
+                console.error('Auto-clean error:', err);
+            }
+        }
+
+        async function fetchFeedData() {
+            console.log('🔄 Fetching feed data from Supabase...');
+            try {
+                await autoCleanExpiredJobs();
+                const { data: jobs, error: jobsError } = await sb.from('active_jobs').select('*').limit(50);
+                if (jobsError) throw jobsError;
+                const { data: seekers, error: seekersError } = await sb.from('active_users').select('*').not('full_name', 'is', null).limit(50);
+                if (seekersError) throw seekersError;
+                const formattedJobs = (jobs || []).map(job => ({
+                    type: 'JOB',
+                    title: job.job_title || 'Untitled Job',
+                    company: job.company_name || 'Unknown',
+                    exp: parseInt(job.min_experience_years) || 0,
+                    skills: job.skills_comma_separated || '',
+                    zone_id: job.zone_id || 0,
+                    area_id: job.area_id || 0,
+                    salary: job.max_salary_monthly ? `₹${Number(job.max_salary_monthly).toLocaleString('en-IN')}` : 'Negotiable',
+                    desc: job.job_description || '',
+                    contact: job.mobile || 'N/A',
+                    share_count: job.share_count || 0,
+                    views: job.views || 0,
+                    _raw: job
+                }));
+                const formattedSeekers = (seekers || []).map(user => ({
+                    type: 'SEEKER',
+                    title: user.job_title || 'Job Seeker',
+                    name: user.full_name || 'Job Seeker',
+                    exp: parseFloat(user.total_experience_years) || 0,
+                    skills: user.skills_comma_separated || '',
+                    zone_id: user.zone_id || 0,
+                    area_id: user.area_id || 0,
+                    salary: user.expected_salary_monthly ? `₹${Number(user.expected_salary_monthly).toLocaleString('en-IN')}` : 'Not specified',
+                    desc: user.professional_summary || '',
+                    contact: user.mobile || 'N/A',
+                    share_count: user.share_count || 0,
+                    views: user.views || 0,
+                    _raw: user
+                }));
+                feedItems = [...formattedJobs, ...formattedSeekers];
+                console.log(`✅ Loaded ${feedItems.length} items from Supabase`);
+            } catch (err) {
+                console.error('❌ Error fetching from Supabase:', err.message);
+                feedItems = [];
+            }
+            renderFeed();
+        }
+
+        // ============================================================
+        // FEED FUNCTIONS
+        // ============================================================
+        function setFilter(type) {
+            currentFilter = type;
+            const both = document.getElementById('filter-both');
+            const job = document.getElementById('filter-job');
+            const seeker = document.getElementById('filter-seeker');
+            if (both) both.className = type === 'BOTH' ? 'active' : 'inactive';
+            if (job) job.className = type === 'JOB' ? 'active' : 'inactive';
+            if (seeker) seeker.className = type === 'SEEKER' ? 'active' : 'inactive';
+            renderFeed();
+        }
+
+        function renderFeed() {
+            if (currentPage !== 'home') return;
+            const container = document.getElementById('feed-container');
+            const count = document.getElementById('results-count');
+            if (!feedItems || feedItems.length === 0) {
+                if (container) container.innerHTML = '<div class="no-records">No data available in Supabase</div>';
+                if (count) count.textContent = 'Showing 0 Records';
+                return;
+            }
+            let filtered = [...feedItems];
+            if (currentFilter === 'JOB') {
+                filtered = filtered.filter(item => item.type === 'JOB');
+            } else if (currentFilter === 'SEEKER') {
+                filtered = filtered.filter(item => item.type === 'SEEKER');
+            }
+            if (selectedZoneId) {
+                filtered = filtered.filter(item => item.zone_id === selectedZoneId);
+            }
+            if (selectedAreaId) {
+                filtered = filtered.filter(item => item.area_id === selectedAreaId);
+            }
+            const titleFilter = document.getElementById('filter-title');
+            if (titleFilter && titleFilter.value) {
+                const searchTerm = titleFilter.value.toLowerCase();
+                filtered = filtered.filter(item => {
+                    const searchText = item.type === 'JOB' ? item.title : item.name;
+                    return searchText.toLowerCase().includes(searchTerm);
+                });
+            }
+            const skillsFilter = document.getElementById('filter-skills');
+            if (skillsFilter && skillsFilter.value) {
+                const searchTerm = skillsFilter.value.toLowerCase();
+                filtered = filtered.filter(item => item.skills.toLowerCase().includes(searchTerm));
+            }
+            const expFilter = document.getElementById('filter-exp');
+            if (expFilter) {
+                const value = expFilter.value;
+                if (value === '0-2') {
+                    filtered = filtered.filter(item => item.exp <= 2);
+                } else if (value === '3-5') {
+                    filtered = filtered.filter(item => item.exp >= 3 && item.exp <= 5);
+                } else if (value === '5+') {
+                    filtered = filtered.filter(item => item.exp > 5);
+                }
+            }
+            if (count) count.textContent = `Showing ${filtered.length} Records`;
+            if (filtered.length === 0) {
+                if (container) container.innerHTML = '<div class="no-records">No records found matching your filters</div>';
+                return;
+            }
+            if (container) {
+                container.innerHTML = filtered.map(item => {
+                    const zoneName = getZoneName(item.zone_id);
+                    const areaName = getAreaName(item.area_id);
+                    const locationDisplay = areaName ? `${zoneName} - ${areaName}` : zoneName;
+                    const typeClass = item.type === 'SEEKER' ? 'badge-seeker' : 'badge-job';
+                    const typeLabel = item.type === 'SEEKER' ? 'SEEKER' : 'JOB';
+                    const endorsements = item._raw?.endorsements || [];
+                    const flags = item._raw?.flags || [];
+                    const shareCount = item.share_count || 0;
+                    const totalPopularity = endorsements.length + shareCount;
+                    const flagsCount = flags.length;
+                    const targetId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
+                    
+                    let titleDisplay, subDisplay, titleClass;
+                    if (item.type === 'JOB') {
+                        titleDisplay = item.title;
+                        subDisplay = item.company;
+                        titleClass = 'job-title';
+                    } else {
+                        titleDisplay = item.name;
+                        subDisplay = item.title;
+                        titleClass = 'seeker-name';
+                    }
+                    
+                    return `
+                    <div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                        <div class="title ${titleClass}">${titleDisplay}</div>
+                        <div class="meta"><span class="highlight">${subDisplay}</span> · ${item.exp} yrs · 📍 ${locationDisplay} · ${item.salary}</div>
+                        <div class="bottom-row">
+                            <span class="badge ${typeClass}">${typeLabel}</span>
+                            <div class="action-row">
+                                <span class="action-item" onclick="event.stopPropagation(); feedShowEndorsers('${item.type}', '${targetId}')">👍 <span class="count">${totalPopularity}</span></span>
+                                <span class="action-divider">|</span>
+                                <span class="action-item" onclick="event.stopPropagation(); feedShowFlaggers('${item.type}', '${targetId}')">👎 <span class="count">${flagsCount}</span></span>
+                                <span class="action-divider">|</span>
+                                <button class="share-btn" onclick="shareFromFeed(event, '${item.type}', '${targetId}')" title="Share">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        async function feedShowEndorsers(type, targetId) {
+            const item = feedItems.find(i => {
+                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
+                return i.type === type && id == targetId;
+            });
+            if (item && item._raw) {
+                currentDetailData = item._raw;
+                currentDetailType = type;
+                await showEndorsersModal(type, targetId);
+            } else {
+                showToast('⚠️ Could not find item data');
+            }
+        }
+
+        async function feedShowFlaggers(type, targetId) {
+            const item = feedItems.find(i => {
+                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
+                return i.type === type && id == targetId;
+            });
+            if (item && item._raw) {
+                currentDetailData = item._raw;
+                currentDetailType = type;
+                await showFlaggersModal(type, targetId);
+            } else {
+                showToast('⚠️ Could not find item data');
+            }
+        }
+
+        // ============================================================
+        // SHARE FUNCTIONS
+        // ============================================================
+        function getShareUrl() {
+            let url = window.location.origin + window.location.pathname;
+            
+            if (currentDetailData && currentDetailType) {
+                const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                url += `?type=${currentDetailType}&id=${targetId}`;
+            }
+            
+            return url;
+        }
+
+        function getShareTitle() {
+            if (currentDetailData) {
+                if (currentDetailType === 'JOB') {
+                    return `${currentDetailData.job_title || 'Job'} at ${currentDetailData.company_name || 'Company'}`;
+                } else {
+                    return `${currentDetailData.full_name || 'Job Seeker'} - ${currentDetailData.job_title || 'Looking for Job'}`;
+                }
+            }
+            return 'JobAd Opportunity';
+        }
+
+        function openShareModal() {
+            const modal = document.getElementById('share-modal');
+            if (modal) modal.classList.add('show');
+        }
+
+        function closeShareModal() {
+            const modal = document.getElementById('share-modal');
+            if (modal) modal.classList.remove('show');
+        }
+
+        function shareVia(platform) {
+            const title = getShareTitle();
+            const url = getShareUrl();
+            const text = `Check out this opportunity on JobAd:\n\n${title}\n\n${url}`;
+            
+            let shareUrl = '';
+            
+            switch(platform) {
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(title)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                    break;
+                case 'telegram':
+                    shareUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`;
+                    break;
+                case 'instagram':
+                case 'copy':
+                    navigator.clipboard.writeText(text).then(() => {
+                        showToast(platform === 'instagram' ? '📸 Link copied! Open Instagram to share.' : '📋 Link copied to clipboard!');
+                    }).catch(() => {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = text;
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        document.execCommand('copy');
+                        textarea.remove();
+                        showToast(platform === 'instagram' ? '📸 Link copied! Open Instagram to share.' : '📋 Link copied to clipboard!');
+                    });
+                    closeShareModal();
+                    return;
+                case 'more':
+                    if (navigator.share) {
+                        navigator.share({
+                            title: title,
+                            text: text,
+                            url: url
+                        }).then(() => {
+                            console.log('✅ Shared successfully');
+                        }).catch((err) => {
+                            if (err.name !== 'AbortError') {
+                                console.error('Share error:', err);
+                                showToast('⚠️ Share cancelled or failed');
+                            }
+                        });
+                    } else {
+                        navigator.clipboard.writeText(text).then(() => {
+                            showToast('📋 Link copied! Use your device share menu.');
+                        }).catch(() => {
+                            const textarea = document.createElement('textarea');
+                            textarea.value = text;
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            document.execCommand('copy');
+                            textarea.remove();
+                            showToast('📋 Link copied! Use your device share menu.');
+                        });
+                    }
+                    closeShareModal();
+                    return;
+                default:
+                    showToast('⚠️ Share option not available');
+                    return;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank');
+            }
+            closeShareModal();
+        }
+
+        function shareFromFeed(event, targetType, targetId) {
+            event.stopPropagation();
+            
+            const item = feedItems.find(i => {
+                const id = i.type === 'JOB' ? i._raw?.job_id : i._raw?.mobile;
+                return i.type === targetType && id == targetId;
+            });
+
+            if (item && item._raw) {
+                currentDetailData = item._raw;
+                currentDetailType = item.type;
+                
+                incrementShareCount(targetType, targetId);
+                
+                openShareModal();
+            } else {
+                showToast('⚠️ Could not find item');
+            }
+        }
+
+        // ============================================================
+        // INCREMENT SHARE COUNT
+        // ============================================================
+        async function incrementShareCount(targetType, targetId) {
+            try {
+                const table = targetType === 'JOB' ? 'active_jobs' : 'active_users';
+                const idField = targetType === 'JOB' ? 'job_id' : 'mobile';
+                
+                const { data, error } = await sb
+                    .from(table)
+                    .select('share_count')
+                    .eq(idField, targetId)
+                    .single();
+                
+                if (error) throw error;
+                
+                const currentCount = data?.share_count || 0;
+                const newCount = currentCount + 1;
+                
+                const { error: updateError } = await sb
+                    .from(table)
+                    .update({ share_count: newCount })
+                    .eq(idField, targetId);
+                
+                if (updateError) throw updateError;
+                
+                console.log(`✅ Share count incremented: ${newCount}`);
+                
+                if (currentDetailData && currentDetailType === targetType) {
+                    const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+                    if (targetIdValue == targetId) {
+                        currentDetailData.share_count = newCount;
+                        updateDetailStats();
+                    }
+                }
+                
+                feedItems = feedItems.map(item => {
+                    const itemId = item.type === 'JOB' ? item._raw?.job_id : item._raw?.mobile;
+                    if (item.type === targetType && itemId == targetId) {
+                        if (item._raw) {
+                            item._raw.share_count = newCount;
+                        }
+                        item.share_count = newCount;
+                    }
+                    return item;
+                });
+                
+                renderFeed();
+                
+                return newCount;
+            } catch (err) {
+                console.error('❌ Error incrementing share count:', err);
+                return null;
+            }
+        }
+
+        // ============================================================
+        // HANDLE SHARE CLICK
+        // ============================================================
+        function handleShareClick() {
+            if (!currentDetailData || !currentDetailType) {
+                showToast('⚠️ No item selected');
+                return;
+            }
+            
+            const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            
+            incrementShareCount(currentDetailType, targetId);
+            
+            openShareModal();
+        }
+
+        // ============================================================
+        // UPDATE DETAIL STATS
+        // ============================================================
+        function updateDetailStats() {
+            if (!currentDetailData) return;
+            
+            const endorsements = currentDetailData.endorsements || [];
+            const shareCount = currentDetailData.share_count || 0;
+            const totalPopularity = endorsements.length + shareCount;
+            
+            const totalEl = document.getElementById('detail-total-popularity');
+            const flagsEl = document.getElementById('detail-flags-count');
+            const viewsEl = document.getElementById('detail-views');
+            
+            if (totalEl) totalEl.textContent = totalPopularity;
+            if (flagsEl) flagsEl.textContent = (currentDetailData.flags || []).length;
+            if (viewsEl) viewsEl.textContent = currentDetailData.views || 0;
+        }
+
+        // ============================================================
+        // SEARCHABLE ZONE
+        // ============================================================
+        function searchZone() {
+            const input = document.getElementById('zone-search');
+            const suggestions = document.getElementById('zone-suggestions');
+            if (!input || !suggestions) return;
+            const query = input.value.toLowerCase().trim();
+            if (!query) {
+                suggestions.classList.remove('show');
+                return;
+            }
+            const matches = ZONES.filter(zone => zone.zone_name.toLowerCase().includes(query));
+            if (matches.length === 0) {
+                suggestions.innerHTML = '<div class="no-result">No zones found</div>';
+                suggestions.classList.add('show');
+                return;
+            }
+            suggestions.innerHTML = matches.map(zone => `
+                <div class="item" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
+                    📍 ${zone.zone_name}
+                </div>
+            `).join('');
+            suggestions.classList.add('show');
+        }
+
+        function selectZone(zoneId, zoneName) {
+            document.getElementById('zone-search').value = zoneName;
+            const suggestions = document.getElementById('zone-suggestions');
+            if (suggestions) suggestions.classList.remove('show');
+            selectedZoneId = zoneId;
+            selectedAreaId = null;
+            document.getElementById('zone-status').textContent = zoneName;
+            const areaSelect = document.getElementById('filter-area');
+            if (areaSelect) {
+                const areas = getAreasByZone(zoneId);
+                areaSelect.innerHTML = '<option value="ALL">All areas</option>';
+                areas.forEach(area => {
+                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+                });
+            }
+            renderFeed();
+        }
+
+        function onAreaFilterChange() {
+            const areaSelect = document.getElementById('filter-area');
+            if (areaSelect) {
+                selectedAreaId = areaSelect.value !== 'ALL' ? parseInt(areaSelect.value) : null;
+            }
+            renderFeed();
+        }
+
+        function autoDetectLocation() {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    const city = data.city || '';
+                    const matched = ZONES.find(zone => 
+                        city.toLowerCase().includes(zone.zone_name.toLowerCase()) ||
+                        zone.zone_name.toLowerCase().includes(city.toLowerCase())
+                    );
+                    if (matched) {
+                        selectZone(matched.zone_id, matched.zone_name);
+                        document.getElementById('zone-search').value = matched.zone_name + ' (Detected)';
+                    }
+                })
+                .catch(() => {
+                    selectZone(100, 'Hyderabad');
+                    document.getElementById('zone-search').value = 'Hyderabad (Default)';
+                });
+        }
+
+        // ============================================================
+        // UI HELPERS
+        // ============================================================
+        function showMessage(msg, type) {
+            const el = document.getElementById('msg');
+            if (!el) return;
+            el.textContent = msg;
+            el.className = 'msg msg-' + type;
+            el.classList.remove('hidden');
+        }
+
+        function hideMessage() { 
+            const el = document.getElementById('msg');
+            if (el) el.classList.add('hidden'); 
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
+        function resetForm() {
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('home-page').classList.add('hidden-page');
+            document.getElementById('profile-page').classList.add('hidden-page');
+            document.getElementById('edit-seeker-page').classList.add('hidden-page');
+            document.getElementById('postjob-page').classList.add('hidden-page');
+            document.getElementById('detail-page').classList.add('hidden-page');
+            document.getElementById('login-screen').style.display = 'flex';
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                btn.style.display = 'flex';
+            });
+            document.getElementById('mobile').value = '';
+            document.getElementById('pin').value = '';
+            document.getElementById('reg-pin').value = '';
+            document.getElementById('reg-pin-confirm').value = '';
+            document.querySelectorAll('.otp-input').forEach(el => {
+                el.value = '';
+                el.classList.remove('filled');
+            });
+            document.getElementById('msg').classList.add('hidden');
+            document.getElementById('mobile-status').textContent = '';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = '🔐 Login';
+            document.getElementById('register-btn').disabled = false;
+            document.getElementById('register-btn').textContent = '✅ Create Account';
+            if (otpTimerInterval) clearInterval(otpTimerInterval);
+            currentMobile = '';
+            currentUser = null;
+            isGuest = false;
+            isChecking = false;
+            document.getElementById('mobile').focus();
+            document.getElementById('guest-banner').style.display = 'none';
+            sessionStorage.removeItem('guest_session');
+        }
+
+        function setStatus(text, type) {
+            const el = document.getElementById('mobile-status');
+            if (!el) return;
+            const colors = { green: 'text-green-600', blue: 'text-blue-600', yellow: 'text-yellow-600', red: 'text-red-600', gray: 'text-slate-400' };
+            el.textContent = text;
+            el.className = 'text-xs mt-1 ' + (colors[type] || colors.gray);
+        }
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        window.logout = function() {
+            if (confirm('Are you sure you want to logout?')) {
+                resetForm();
+                showToast('👋 Logged out');
+            }
+        };
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const aboutTextarea = document.getElementById('edit-seeker-about');
+            const charCount = document.getElementById('char-count');
+            if (aboutTextarea && charCount) {
+                aboutTextarea.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+
+            const salaryInput = document.getElementById('edit-seeker-salary');
+            if (salaryInput) {
+                salaryInput.addEventListener('input', function() {
+                    const rawValue = parseSalaryValue(this.value);
+                    if (rawValue) {
+                        const formatted = formatSalaryDisplay(rawValue);
+                        this.value = formatted;
+                        this.setSelectionRange(this.value.length, this.value.length);
+                    }
+                });
+            }
+
+            populateEditZones();
+
+            setupCounter('pj-title', 'pj-title-counter', 60);
+            setupCounter('pj-skills', 'pj-skills-counter', 200);
+            setupCounter('pj-description', 'pj-desc-counter', 500);
+
+            const pjSalary = document.getElementById('pj-salary');
+            if (pjSalary) {
+                pjSalary.addEventListener('input', function() {
+                    const raw = this.value.replace(/[^0-9]/g, '');
+                    if (raw) {
+                        const formatted = Number(raw).toLocaleString('en-IN');
+                        this.value = formatted;
+                    } else {
+                        this.value = '';
+                    }
+                });
+            }
+
+            const expiryInput = document.getElementById('pj-expiry');
+            if (expiryInput) {
+                const d = new Date();
+                d.setDate(d.getDate() + 30);
+                expiryInput.value = d.toISOString().split('T')[0];
+                expiryInput.max = new Date(Date.now() + 45*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.min = new Date(Date.now() + 1*24*60*60*1000).toISOString().split('T')[0];
+                expiryInput.addEventListener('change', function() {
+                    const selected = new Date(this.value);
+                    const maxDate = new Date(Date.now() + 45*24*60*60*1000);
+                    if (selected > maxDate) {
+                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
+                        this.value = maxDate.toISOString().split('T')[0];
+                    }
+                });
+            }
+
+            const zoneSelect = document.getElementById('pj-zone');
+            if (zoneSelect) {
+                zoneSelect.value = '100';
+                updatePostAreas();
+            }
+
+            autoCleanExpiredJobs();
+
+            const mobileInput = document.getElementById('mobile');
+            if (mobileInput) {
+                mobileInput.addEventListener('input', function(e) {
+                    const mobile = this.value.trim();
+                    const statusEl = document.getElementById('mobile-status');
+                    
+                    if (mobile.length === 10) {
+                        autoCheckMobile(mobile);
+                    } else if (mobile.length > 0 && mobile.length < 10) {
+                        setStatus('Enter 10 digits', 'gray');
+                        document.getElementById('step2').classList.add('hidden');
+                        document.getElementById('step3').classList.add('hidden');
+                        document.getElementById('step4').classList.add('hidden');
+                        document.getElementById('step1').style.display = 'block';
+                    } else {
+                        document.getElementById('step2').classList.add('hidden');
+                        document.getElementById('step3').classList.add('hidden');
+                        document.getElementById('step4').classList.add('hidden');
+                        document.getElementById('step1').style.display = 'block';
+                        if (statusEl) statusEl.textContent = '';
+                    }
+                });
+            }
+
+            const pinInput = document.getElementById('pin');
+            if (pinInput) {
+                pinInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') submitPin();
+                });
+            }
+
+            const regPinInput = document.getElementById('reg-pin');
+            if (regPinInput) {
+                regPinInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') document.getElementById('reg-pin-confirm').focus();
+                });
+            }
+
+            const regPinConfirmInput = document.getElementById('reg-pin-confirm');
+            if (regPinConfirmInput) {
+                regPinConfirmInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') registerUser();
+                });
+            }
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.header-right')) closeDropdown();
+            });
+
+            // OTP input handling
+            document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
+                input.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value.length === 1) {
+                        this.classList.add('filled');
+                        if (index < arr.length - 1) {
+                            arr[index + 1].focus();
+                        } else {
+                            const allFilled = Array.from(arr).every(el => el.value.length === 1);
+                            if (allFilled) {
+                                verifyOTP();
+                            }
+                        }
+                    } else {
+                        this.classList.remove('filled');
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                        arr[index - 1].focus();
+                        arr[index - 1].classList.remove('filled');
+                    }
+                    if (e.key === 'Enter') {
+                        const allFilled = Array.from(arr).every(el => el.value.length === 1);
+                        if (allFilled) {
+                            verifyOTP();
+                        } else {
+                            const firstEmpty = Array.from(arr).find(el => el.value.length === 0);
+                            if (firstEmpty) firstEmpty.focus();
+                        }
+                    }
+                });
+
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+            });
+
+            console.log('✅ JobAd Ready');
+
+            const isRootPath = window.location.pathname === '/' || window.location.pathname === '/index.html';
+
+            const shouldAutoLogin = (hasSharedLink || sessionStorage.getItem('guest_session') === 'true') && !isRootPath;
+
+            if (shouldAutoLogin) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('home-page').classList.remove('hidden-page');
+                
+                if (hasSharedLink) {
+                    document.getElementById('loading-overlay').classList.add('show');
+                }
+                
+                autoLoginGuest();
+            } else {
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('mobile').focus();
+                document.getElementById('home-page').classList.add('hidden-page');
+                if (isRootPath) {
+                    sessionStorage.removeItem('guest_session');
+                }
+            }
+        });
 
         console.log('✅ JobAd App Ready with all_users support');
     </script>
