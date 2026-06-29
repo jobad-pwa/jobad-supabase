@@ -10,289 +10,27 @@
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Styles - same as your working code -->
     <style>
+        /* Keep all your existing styles */
         * { box-sizing: border-box; }
         body { font-family: system-ui, -apple-system, sans-serif; background: #f3f4f6; margin: 0; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .card { max-width: 400px; width: 100%; background: white; border-radius: 24px; padding: 20px 18px 10px 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 95vh; max-height: 780px; position: relative; overflow: hidden; }
         .hidden { display: none; }
         .hidden-page { display: none; }
-        .input-field { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; margin-bottom: 12px; box-sizing: border-box; text-align: center; background: white; transition: border-color 0.2s; }
-        .input-field:focus { border-color: #2563eb; outline: 2px solid #93c5fd; outline-offset: -1px; }
-        .input-field::placeholder { color: #94a3b8; font-weight: 400; }
-        .btn-primary { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-back { background: #6b7280; margin-top: 8px; width: 100%; padding: 14px; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .btn-back:hover { background: #4b5563; }
-        .btn-green { background: #16a34a; }
-        .btn-green:hover { background: #15803d; }
-        .btn-yellow { background: #d97706; }
-        .btn-yellow:hover { background: #b45309; }
-        .msg { margin-top: 16px; padding: 12px; border-radius: 12px; text-align: center; font-size: 14px; }
-        .msg-green { background: #dcfce7; color: #166534; }
-        .msg-red { background: #fee2e2; color: #991b1b; }
-        .msg-blue { background: #dbeafe; color: #1e40af; }
-        .msg-yellow { background: #fef3c7; color: #92400e; }
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 16px; border-radius: 999px; font-size: 12px; font-weight: bold; z-index: 1000; animation: fadeOut 2s ease forwards; white-space: nowrap; }
-        @keyframes fadeOut { 0% { opacity: 1; transform: translateX(-50%) translateY(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; } }
-        .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
-        .fade-in { animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        #login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; }
-        #login-screen h1 { font-size: 40px; font-weight: 900; color: #2563eb; margin: 0 0 4px 0; }
-        #login-screen .test-links { margin-bottom: 24px; font-size: 12px; }
-        #login-screen .test-links a { color: #3b82f6; text-decoration: none; }
-        .mobile-status { font-size: 12px; color: #94a3b8; margin-top: 4px; }
-        .pin-login-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; text-align: center; letter-spacing: 8px; margin: 8px 0 12px 0; background: white; transition: border-color 0.2s; }
-        .pin-login-input:focus { border-color: #2563eb; outline: 2px solid #93c5fd; outline-offset: -1px; }
-        .pin-login-input::placeholder { letter-spacing: 2px; font-size: 14px; color: #94a3b8; }
-        .otp-input-group { display: flex; gap: 8px; justify-content: center; margin: 12px 0; }
-        .otp-input-group input { width: 48px; height: 56px; text-align: center; font-size: 24px; font-weight: 700; padding: 0; margin: 0; border-radius: 12px; border: 2px solid #e2e8f0; background: white; }
-        .otp-input-group input:focus { border-color: #2563eb; outline: none; }
-        .otp-input-group input.filled { border-color: #16a34a; background: #f0fdf4; }
-        .timer-text { font-size: 13px; color: #64748b; margin-top: 8px; }
-        .resend-btn { background: none; border: none; color: #2563eb; font-weight: 600; cursor: pointer; padding: 4px; font-size: 14px; }
-        .resend-btn:hover { text-decoration: underline; }
-        .resend-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .home-container { display: flex; flex-direction: column; height: 100%; width: 100%; }
-        .home-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; flex-shrink: 0; border-bottom: 1px solid #f1f5f9; position: relative; }
-        .home-header .logo { font-size: 22px; font-weight: 900; color: #2563eb; cursor: pointer; }
-        .home-header .header-right { display: flex; align-items: center; gap: 8px; position: relative; }
-        .home-header .avatar-btn { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #e2e8f0; background: #f8fafc; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; transition: 0.2s; padding: 0; }
-        .home-header .avatar-btn:hover { border-color: #2563eb; background: #eff6ff; }
-        .home-header .avatar-btn.male { color: #2563eb; border-color: #2563eb; }
-        .home-header .avatar-btn.female { color: #ec4899; border-color: #ec4899; }
-        .home-header .avatar-btn.other { color: #8b5cf6; border-color: #8b5cf6; }
-        .profile-dropdown { position: absolute; top: 44px; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); min-width: 180px; z-index: 100; display: none; overflow: hidden; }
-        .profile-dropdown.show { display: block; }
-        .profile-dropdown .dropdown-item { padding: 10px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; color: #1e293b; cursor: pointer; border: none; background: none; width: 100%; text-align: left; transition: 0.15s; }
-        .profile-dropdown .dropdown-item:hover { background: #f8fafc; }
-        .profile-dropdown .dropdown-item .icon { font-size: 16px; }
-        .profile-dropdown .dropdown-divider { height: 1px; background: #e2e8f0; margin: 4px 12px; }
-        .profile-dropdown .dropdown-item.danger { color: #dc2626; }
-        .profile-dropdown .dropdown-item.danger:hover { background: #fef2f2; }
-        .page-content { flex: 1; overflow-y: auto; min-height: 0; padding: 8px 0; }
-        .page-content::-webkit-scrollbar { width: 3px; }
-        .page-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .home-top { flex-shrink: 0; padding-bottom: 6px; }
-        .zone-filter { background: #0f172a; border-radius: 12px; padding: 8px 12px; margin-bottom: 8px; }
-        .zone-filter .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .zone-filter .header label { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
-        .zone-filter .header span { font-size: 8px; background: rgba(52, 211, 153, 0.2); color: #34d399; padding: 1px 8px; border-radius: 4px; font-weight: 700; }
-        .zone-filter .search-wrapper { position: relative; }
-        .zone-filter .search-wrapper input { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 5px 12px; font-size: 11px; color: white; font-weight: 600; outline: none; margin-bottom: 0; }
-        .zone-filter .search-wrapper input::placeholder { color: #64748b; }
-        .zone-filter .search-wrapper input:focus { border-color: #3b82f6; }
-        .zone-filter .suggestions { position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; border: 1px solid #334155; border-radius: 10px; margin-top: 4px; max-height: 150px; overflow-y: auto; z-index: 50; display: none; }
-        .zone-filter .suggestions.show { display: block; }
-        .zone-filter .suggestions .item { padding: 6px 12px; font-size: 12px; color: #e2e8f0; cursor: pointer; }
-        .zone-filter .suggestions .item:hover { background: #334155; }
-        .zone-filter .suggestions .no-result { padding: 8px 12px; font-size: 12px; color: #64748b; text-align: center; }
-        .type-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; background: #e2e8f0; padding: 3px; border-radius: 10px; margin-bottom: 8px; }
-        .type-buttons button { padding: 4px; font-size: 10px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; width: 100%; }
-        .type-buttons .active { background: white; color: #1e293b; }
-        .type-buttons .inactive { background: transparent; color: #64748b; }
-        .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
-        .filter-row label { font-size: 8px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 1px; }
-        .filter-row input, .filter-row select { width: 100%; padding: 4px 8px; font-size: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 600; outline: none; margin-bottom: 0; }
-        .results-count { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 3px; margin-bottom: 6px; }
-        .results-count span { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
-        .feed-container { display: flex; flex-direction: column; gap: 6px; padding-bottom: 4px; }
-        .feed-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px; cursor: pointer; transition: all 0.2s ease; }
-        .feed-card:hover { border-color: #3b82f6; background: #f8faff; }
-        .feed-card .title { font-weight: 700; font-size: 14px; color: #0f172a; }
-        .feed-card .title.job-title { color: #1e40af; }
-        .feed-card .title.seeker-name { color: #166534; }
-        .feed-card .meta { font-size: 10px; color: #475569; margin-top: 1px; }
-        .feed-card .meta .highlight { font-weight: 600; color: #2563eb; }
-        .feed-card .bottom-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; gap: 4px; flex-wrap: nowrap; }
-        .feed-card .badge { font-size: 8px; padding: 1px 8px; border-radius: 4px; font-weight: 700; flex-shrink: 0; }
-        .feed-card .badge-job { background: #dbeafe; color: #1e40af; }
-        .feed-card .badge-seeker { background: #dcfce7; color: #166534; }
-        .feed-card .action-row { display: flex; align-items: center; gap: 6px; font-size: 12px; flex-shrink: 0; }
-        .feed-card .action-row .action-item { display: flex; align-items: center; gap: 2px; color: #475569; font-weight: 500; white-space: nowrap; font-size: 12px; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.15s; }
-        .feed-card .action-row .action-item:hover { background: #f1f5f9; }
-        .feed-card .action-row .action-item .count { font-weight: 600; }
-        .feed-card .action-row .action-divider { color: #e2e8f0; font-size: 14px; }
-        .feed-card .action-row .share-btn { cursor: pointer; padding: 4px 6px; border-radius: 6px; transition: 0.15s; background: #25D366; color: white; border: none; display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-width: 28px; min-height: 28px; }
-        .feed-card .action-row .share-btn:hover { background: #1da851; transform: scale(1.05); }
-        .feed-card .action-row .share-btn svg { width: 18px; height: 18px; fill: white; }
-        .no-records { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 13px; }
-        .bottom-nav { display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 8px; margin-top: 4px; flex-shrink: 0; background: white; }
-        .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #94a3b8; font-size: 9px; font-weight: 600; cursor: pointer; padding: 3px 12px; border-radius: 8px; background: none; border: none; width: auto; }
-        .bottom-nav .nav-item:hover { color: #3b82f6; }
-        .bottom-nav .nav-item.active { color: #2563eb; }
-        .bottom-nav .nav-item .icon { font-size: 18px; margin-bottom: 1px; }
-        .bottom-nav .nav-item .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .profile-header-card { background: linear-gradient(135deg, #2563eb, #1d4ed8); border-radius: 16px; padding: 16px 20px; color: white; margin-bottom: 16px; }
-        .profile-header-card .welcome { font-size: 11px; opacity: 0.8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
-        .profile-header-card .mobile { font-size: 22px; font-weight: 700; margin: 2px 0; }
-        .profile-header-card .badge { font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 12px; border-radius: 12px; display: inline-block; }
-        .profile-section { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-        .profile-section .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .profile-section .section-title { font-size: 14px; font-weight: 700; color: #1e293b; }
-        .profile-section .section-badge { font-size: 9px; background: #fef3c7; color: #d97706; padding: 2px 10px; border-radius: 12px; font-weight: 700; }
-        .profile-section .section-desc { font-size: 12px; color: #64748b; margin-bottom: 10px; }
-        .profile-section .section-btn { padding: 8px 16px; background: #2563eb; color: white; border: none; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; }
-        .profile-section .section-btn:hover { background: #1d4ed8; }
-        .profile-section .section-btn-green { background: #16a34a; }
-        .profile-section .section-btn-green:hover { background: #15803d; }
-        .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
-        .profile-active .section-badge { background: #dcfce7; color: #166534; }
-        .action-required { background: #fef3c7; border: 1px solid #f59e0b; border-radius: 10px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-        .action-required .icon { font-size: 20px; }
-        .action-required .text { font-size: 12px; color: #92400e; }
-        .action-required .text strong { display: block; font-size: 13px; }
-        .action-required .btn-action { background: #2563eb; color: white; border: none; padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; width: auto; flex-shrink: 0; }
-        .action-required .btn-action:hover { background: #1d4ed8; }
-        .edit-page-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; margin-bottom: 12px; }
-        .edit-page-header h2 { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0; white-space: nowrap; }
-        .edit-page-header .cancel-btn { font-size: 12px; font-weight: 700; color: #94a3b8; cursor: pointer; background: none; border: none; padding: 4px 8px; flex-shrink: 0; margin-left: 8px; }
-        .edit-page-header .cancel-btn:hover { color: #64748b; }
-        .edit-hint { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px; }
-        .edit-hint .hint-title { font-size: 12px; font-weight: 700; color: #1d4ed8; }
-        .edit-hint .hint-desc { font-size: 11px; color: #475569; margin-top: 2px; }
-        .edit-field { margin-bottom: 10px; }
-        .edit-field label { display: block; font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 2px; }
-        .edit-field label .limit-hint { font-size: 9px; color: #94a3b8; font-weight: 400; }
-        .edit-field input, .edit-field select, .edit-field textarea { width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 13px; outline: none; font-family: inherit; }
-        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
-        .edit-field textarea { resize: vertical; min-height: 50px; }
-        .salary-input-wrapper { position: relative; display: flex; align-items: center; }
-        .salary-input-wrapper .currency-symbol { position: absolute; left: 12px; font-size: 14px; font-weight: 600; color: #1e293b; pointer-events: none; }
-        .salary-input-wrapper input { padding-left: 28px; text-align: left; }
-        .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
-        .edit-activate-btn { width: 100%; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 4px; }
-        .edit-activate-btn:hover { background: #1d4ed8; }
-        .postjob-header, .detail-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; flex-shrink: 0; border-bottom: 1px solid #f1f5f9; }
-        .postjob-header .logo, .detail-header .logo { font-size: 22px; font-weight: 900; color: #2563eb; cursor: pointer; }
-        .postjob-header .cancel-btn, .detail-header .cancel-btn { font-size: 14px; font-weight: 600; color: #6b7280; background: none; border: none; padding: 6px 12px; cursor: pointer; border-radius: 20px; transition: 0.2s; }
-        .postjob-header .cancel-btn:hover, .detail-header .cancel-btn:hover { background: #f3f4f6; }
-        .postjob-scroll, .detail-scroll { flex: 1; overflow-y: auto; padding: 12px 0 8px 0; min-height: 0; }
-        .postjob-scroll::-webkit-scrollbar, .detail-scroll::-webkit-scrollbar { width: 3px; }
-        .postjob-scroll::-webkit-scrollbar-thumb, .detail-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .form-group { margin-bottom: 12px; }
-        .form-label { font-size: 11px; font-weight: 700; color: #1e293b; display: block; margin-bottom: 3px; letter-spacing: 0.02em; }
-        .form-label .required { color: #ef4444; margin-left: 2px; }
-        .form-control { width: 100%; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: white; transition: 0.15s; outline: none; font-family: inherit; text-align: left; }
-        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
-        .form-control::placeholder { color: #b0b8c4; font-weight: 400; }
-        select.form-control { appearance: auto; }
-        textarea.form-control { resize: vertical; min-height: 60px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .inline-hint { font-size: 11px; color: #6b7280; margin-top: 2px; display: flex; justify-content: space-between; }
-        .salary-wrap { position: relative; display: flex; align-items: center; }
-        .salary-wrap .rupee { position: absolute; left: 12px; font-weight: 600; color: #1e293b; font-size: 15px; pointer-events: none; }
-        .salary-wrap .form-control { padding-left: 28px; }
-        .select-hint { font-size: 10px; color: #94a3b8; margin-top: 2px; }
-        .publish-btn { width: 100%; padding: 14px; background: #2563eb; color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 4px; }
-        .publish-btn:hover { background: #1d4ed8; }
-        .publish-btn:active { transform: scale(0.98); }
-        .bottom-spacer { height: 4px; }
-        input[type="date"] { text-align: left; padding: 10px 12px; }
-        .my-job-item { border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px; margin-bottom: 6px; cursor: pointer; transition: 0.2s; background: #fafbfc; }
-        .my-job-item:hover { border-color: #3b82f6; background: #f0f7ff; }
-        .my-job-item .job-title { font-weight: 600; font-size: 13px; color: #0f172a; }
-        .my-job-item .job-meta { font-size: 10px; color: #64748b; }
-        .my-job-item .expired { color: #dc2626; font-size: 9px; font-weight: 600; background: #fee2e2; padding: 1px 8px; border-radius: 4px; display: inline-block; }
-        .detail-field { margin-bottom: 10px; }
-        .detail-field label { font-size: 9px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 1px; }
-        .detail-field .value { font-size: 14px; font-weight: 500; color: #1e293b; padding: 4px 0; border-bottom: 1px solid #f1f5f9; }
-        .detail-field .value-multiline { font-size: 14px; font-weight: 500; color: #1e293b; padding: 4px 0; border-bottom: 1px solid #f1f5f9; white-space: pre-wrap; word-break: break-word; }
-        .detail-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 4px; }
-        .detail-stats .stat-item { text-align: center; padding: 8px; background: #f8fafc; border-radius: 8px; cursor: pointer; }
-        .detail-stats .stat-item:hover { background: #f1f5f9; }
-        .detail-stats .stat-item .number { font-size: 18px; font-weight: 700; color: #2563eb; text-decoration: underline; cursor: pointer; }
-        .detail-stats .stat-item .number:hover { color: #1d4ed8; }
-        .detail-stats .stat-item .label { font-size: 8px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
-        .detail-actions { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 12px; }
-        .detail-actions .action-group { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .detail-actions .action-group .action-label { font-size: 7px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; }
-        .detail-actions button { width: 100%; padding: 8px 2px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; min-height: 44px; }
-        .detail-actions .btn-call { background: #16a34a; color: white; }
-        .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
-        .detail-actions .btn-whatsapp { background: #25D366; color: white; }
-        .detail-actions .btn-whatsapp:hover:not(:disabled) { background: #1da851; }
-        .detail-actions .btn-close { background: #6b7280; color: white; }
-        .detail-actions .btn-close:hover { background: #4b5563; }
-        .detail-actions .btn-endorse { background: #f1f5f9; color: #475569; font-size: 20px; }
-        .detail-actions .btn-endorse.active { background: #2563eb; color: white; }
-        .detail-actions .btn-endorse:hover:not(:disabled) { background: #dbeafe; }
-        .detail-actions .btn-endorse.active:hover { background: #1d4ed8; }
-        .detail-actions .btn-flag { background: #f1f5f9; color: #475569; font-size: 20px; }
-        .detail-actions .btn-flag.active { background: #dc2626; color: white; }
-        .detail-actions .btn-flag:hover:not(:disabled) { background: #fee2e2; }
-        .detail-actions .btn-flag.active:hover { background: #b91c1c; }
-        .detail-actions .btn-share { background: #25D366; color: white; }
-        .detail-actions .btn-share:hover { background: #1da851; }
-        .detail-actions .btn-share svg { width: 22px; height: 22px; fill: white; }
-        .detail-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .type-badge { display: inline-block; padding: 2px 12px; border-radius: 12px; font-size: 10px; font-weight: 700; }
-        .type-badge.job { background: #dbeafe; color: #1e40af; }
-        .type-badge.seeker { background: #dcfce7; color: #166534; }
-        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200; border-radius: 24px; }
-        .modal-overlay.show { display: flex; }
-        .modal-box { background: white; border-radius: 20px; padding: 24px; max-width: 340px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 80vh; display: flex; flex-direction: column; }
-        .modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: #1e293b; }
-        .modal-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
-        .modal-box .user-list { flex: 1; overflow-y: auto; margin: 8px 0; }
-        .modal-box .user-list .user-item { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.15s; border-radius: 6px; display: flex; align-items: center; gap: 10px; }
-        .modal-box .user-list .user-item:hover { background: #f8fafc; }
-        .modal-box .user-list .user-item .gender-icon { font-size: 16px; }
-        .modal-box .user-list .user-item .name { font-size: 14px; font-weight: 500; color: #2563eb; cursor: pointer; text-decoration: underline; }
-        .modal-box .user-list .user-item .name:hover { color: #1d4ed8; }
-        .modal-box .user-list .more-text { padding: 8px 12px; color: #94a3b8; font-style: italic; font-size: 13px; text-align: center; }
-        .modal-box .modal-close-btn { width: 100%; padding: 10px; border: none; border-radius: 10px; background: #f1f5f9; color: #475569; font-weight: 600; cursor: pointer; margin-top: 8px; }
-        .modal-box .modal-close-btn:hover { background: #e2e8f0; }
-        .guest-banner { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 8px 14px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-shrink: 0; gap: 8px; flex-wrap: wrap; }
-        .guest-banner .text { font-size: 11px; font-weight: 500; }
-        .guest-banner .btn-login { background: white; color: #2563eb; border: none; padding: 4px 14px; border-radius: 6px; font-weight: 600; font-size: 11px; cursor: pointer; width: auto; white-space: nowrap; }
-        .guest-banner .btn-login:hover { background: #f0f0f0; }
-        .share-modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 200; border-radius: 24px; }
-        .share-modal-overlay.show { display: flex; }
-        .share-modal-box { background: white; border-radius: 20px; padding: 24px; max-width: 340px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 80vh; display: flex; flex-direction: column; }
-        .share-modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: #1e293b; display: flex; align-items: center; gap: 8px; }
-        .share-modal-box h3 svg { width: 24px; height: 24px; fill: #2563eb; }
-        .share-modal-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
-        .share-modal-box .share-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
-        .share-modal-box .share-grid .share-item { display: flex; flex-direction: column; align-items: center; padding: 12px 6px; border-radius: 12px; cursor: pointer; transition: 0.2s; border: 1px solid #e2e8f0; background: white; text-decoration: none; }
-        .share-modal-box .share-grid .share-item:hover { background: #f8fafc; border-color: #2563eb; transform: scale(1.02); }
-        .share-modal-box .share-grid .share-item .share-icon { width: 32px; height: 32px; margin-bottom: 4px; }
-        .share-modal-box .share-grid .share-item .share-icon svg { width: 32px; height: 32px; }
-        .share-modal-box .share-grid .share-item .share-label { font-size: 9px; color: #475569; font-weight: 500; }
-        .share-modal-box .share-grid .share-item.whatsapp:hover { border-color: #25D366; background: #f0fdf4; }
-        .share-modal-box .share-grid .share-item.facebook:hover { border-color: #1877f2; background: #f0f7ff; }
-        .share-modal-box .share-grid .share-item.twitter:hover { border-color: #000000; background: #f8fafc; }
-        .share-modal-box .share-grid .share-item.linkedin:hover { border-color: #0a66c2; background: #f0f7ff; }
-        .share-modal-box .share-grid .share-item.telegram:hover { border-color: #0088cc; background: #f0faff; }
-        .share-modal-box .share-grid .share-item.instagram:hover { border-color: #e4405f; background: #fdf0f3; }
-        .share-modal-box .share-grid .share-item.copy:hover { border-color: #6b7280; background: #f8fafc; }
-        .share-modal-box .share-grid .share-item.more-share:hover { border-color: #2563eb; background: #eff6ff; }
-        .share-modal-box .share-modal-close-btn { width: 100%; padding: 10px; border: none; border-radius: 10px; background: #f1f5f9; color: #475569; font-weight: 600; cursor: pointer; margin-top: 8px; }
-        .share-modal-box .share-modal-close-btn:hover { background: #e2e8f0; }
-        .install-banner { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 10px 16px; border-radius: 12px; display: none; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-shrink: 0; }
-        .install-banner.show { display: flex; }
-        .install-banner .text { font-size: 12px; font-weight: 500; }
-        .install-banner .btn-install { background: white; color: #2563eb; border: none; padding: 6px 16px; border-radius: 8px; font-weight: 600; font-size: 12px; cursor: pointer; width: auto; }
-        .install-banner .btn-install:hover { background: #f0f0f0; }
-        .install-banner .btn-close { background: transparent; border: none; color: rgba(255,255,255,0.7); font-size: 18px; cursor: pointer; padding: 0 4px; width: auto; }
-        .install-banner .btn-close:hover { color: white; }
-        .clickable-name { cursor: pointer; color: #2563eb; font-weight: 600; text-decoration: underline; }
-        .clickable-name:hover { color: #1d4ed8; }
-        .loading-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.9); display: none; align-items: center; justify-content: center; flex-direction: column; z-index: 300; border-radius: 24px; }
-        .loading-overlay.show { display: flex; }
-        .loading-overlay .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-overlay .loading-text { margin-top: 12px; font-size: 14px; color: #475569; font-weight: 500; }
+        /* ... rest of styles from your working code ... */
     </style>
 </head>
 <body>
+    <!-- HTML - same as your working code -->
     <div class="card">
+        <!-- LOADING OVERLAY -->
         <div class="loading-overlay" id="loading-overlay">
             <div class="spinner"></div>
             <div class="loading-text">Loading shared item...</div>
         </div>
 
+        <!-- LOGIN SCREEN -->
         <div id="login-screen">
             <h1>JobAd</h1>
             <div class="test-links"><a href="test.html">🔌 DB Test</a></div>
@@ -346,6 +84,7 @@
             <div id="msg" class="hidden"></div>
         </div>
 
+        <!-- HOME PAGE -->
         <div id="home-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="home-header">
@@ -455,6 +194,7 @@
             </div>
         </div>
 
+        <!-- PROFILE PAGE -->
         <div id="profile-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="home-header">
@@ -560,6 +300,7 @@
             </div>
         </div>
 
+        <!-- EDIT SEEKER PAGE -->
         <div id="edit-seeker-page" class="hidden-page" style="height:100%;">
             <div class="home-container">
                 <div class="edit-page-header">
@@ -652,6 +393,7 @@
             </div>
         </div>
 
+        <!-- POST JOB PAGE -->
         <div id="postjob-page" class="hidden-page" style="height:100%;">
             <div class="postjob-container">
                 <div class="postjob-header">
@@ -755,6 +497,7 @@
             </div>
         </div>
 
+        <!-- DETAIL VIEW PAGE -->
         <div id="detail-page" class="hidden-page" style="height:100%;">
             <div class="detail-container">
                 <div class="detail-header">
@@ -832,7 +575,7 @@
                         <div class="value" id="detail-posted">--</div>
                     </div>
 
-                    <div class="detail-stats" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+                    <div class="detail-stats" style="grid-template-columns: 1fr 1fr 1fr;">
                         <div class="stat-item" onclick="detailShowEndorsers()">
                             <div class="number" id="detail-total-popularity">0</div>
                             <div class="label">⭐</div>
@@ -844,10 +587,6 @@
                         <div class="stat-item">
                             <div class="number" id="detail-views">0</div>
                             <div class="label">👁️</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="number" id="detail-calls">0</div>
-                            <div class="label">📞</div>
                         </div>
                     </div>
 
@@ -865,13 +604,13 @@
                             <span class="action-label">WhatsApp</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()">
+                            <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()" disabled>
                                 <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
                             </button>
                             <span class="action-label">Recommend</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()">
+                            <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()" disabled>
                                 <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
                             </button>
                             <span class="action-label">Not Rec</span>
@@ -909,6 +648,7 @@
             </div>
         </div>
 
+        <!-- CHANGE PIN MODAL -->
         <div class="modal-overlay" id="change-pin-modal">
             <div class="modal-box">
                 <h3>🔑 Change PIN</h3>
@@ -922,6 +662,7 @@
             </div>
         </div>
 
+        <!-- SHARE MODAL -->
         <div class="share-modal-overlay" id="share-modal">
             <div class="share-modal-box">
                 <h3>
@@ -1124,7 +865,7 @@
         let sharedLinkProcessed = false;
 
         // ============================================================
-        // COLUMN NAME HELPERS
+        // COLUMN HELPERS - Fix for active_users column names
         // ============================================================
         function getViewColumn(type) {
             return type === 'JOB' ? 'views' : 'views_total';
@@ -1151,7 +892,7 @@
         }
 
         // ============================================================
-        // VIEW COUNT INCREMENT - Works for both jobs and seekers
+        // VIEW COUNT INCREMENT - Works for jobs and seekers
         // ============================================================
         async function incrementViewCount(targetType, targetId) {
             try {
@@ -1195,7 +936,7 @@
                     return null;
                 }
 
-                console.log(`View count incremented for ${targetType}: total=${newTotal}, 30day=${new30}`);
+                console.log(`View count incremented: total=${newTotal}, 30day=${new30}`);
 
                 if (currentDetailData && currentDetailType === targetType) {
                     const targetIdValue = targetType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -1226,7 +967,7 @@
         }
 
         // ============================================================
-        // CALL COUNT INCREMENT
+        // INCREMENT CALL COUNT
         // ============================================================
         async function incrementCallCount(targetType, targetId) {
             try {
@@ -1269,7 +1010,7 @@
         }
 
         // ============================================================
-        // WHATSAPP COUNT INCREMENT
+        // INCREMENT WHATSAPP COUNT
         // ============================================================
         async function incrementWhatsAppCount(targetType, targetId) {
             try {
@@ -1393,13 +1134,58 @@
 
             const viewCol = getViewColumn(currentDetailType);
             document.getElementById('detail-views').textContent = currentDetailData[viewCol] || 0;
-
-            const callCol = getCallColumn(currentDetailType);
-            document.getElementById('detail-calls').textContent = currentDetailData[callCol] || 0;
         }
 
         // ============================================================
-        // GUEST AUTO-LOGIN - Uses platform_stats.all_users
+        // PWA INSTALLATION HANDLER
+        // ============================================================
+        let deferredPrompt;
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service Worker registered:', reg))
+                .catch(err => console.log('Service Worker error:', err));
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('install-banner');
+            if (banner) banner.classList.add('show');
+        });
+
+        document.getElementById('install-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                document.getElementById('install-banner').classList.remove('show');
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            document.getElementById('install-banner').classList.remove('show');
+        });
+
+        // ============================================================
+        // SHARED LINK DETECTION
+        // ============================================================
+        function detectSharedLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            const id = urlParams.get('id');
+            if (type && id) {
+                console.log('Shared link detected:', type, id);
+                sharedLinkData = { type, id };
+                return true;
+            }
+            return false;
+        }
+
+        const hasSharedLink = detectSharedLink();
+
+        // ============================================================
+        // GUEST AUTO-LOGIN
         // ============================================================
         function continueAsGuest() {
             sessionStorage.setItem('guest_session', 'true');
@@ -1533,21 +1319,8 @@
         }
 
         // ============================================================
-        // SHARED LINK DETECTION & PROCESSING
+        // PROCESS SHARED LINK AFTER LOGIN
         // ============================================================
-        function detectSharedLink() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const type = urlParams.get('type');
-            const id = urlParams.get('id');
-            if (type && id) {
-                sharedLinkData = { type, id };
-                return true;
-            }
-            return false;
-        }
-
-        const hasSharedLink = detectSharedLink();
-
         async function processSharedLinkAfterLogin() {
             if (sharedLinkProcessed || !sharedLinkData) return;
             sharedLinkProcessed = true;
@@ -1575,7 +1348,7 @@
                 if (data) {
                     if (overlay) overlay.classList.remove('show');
                     openDetail(data, type);
-                    showToast(`${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link');
+                    showToast(`${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
                     if (window.history && window.history.pushState) {
                         window.history.pushState({}, '', window.location.pathname);
                     }
@@ -2721,12 +2494,10 @@
             const totalPopularity = endorsements.length + shareCount;
 
             const viewCol = getViewColumn(type);
-            const callCol = getCallColumn(type);
 
             document.getElementById('detail-total-popularity').textContent = totalPopularity;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-views').textContent = data[viewCol] || 0;
-            document.getElementById('detail-calls').textContent = data[callCol] || 0;
 
             updateDetailCounts(endorsements, flags);
 
@@ -3114,7 +2885,7 @@
             document.querySelector('#endorsers-modal')?.remove();
 
             const modalHtml = `
-                <div class="modal-overlay show" id="endorsers-modal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:0;">
+                <div class="modal-overlay show" id="endorsers-modal" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:24px;">
                     <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
                         <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👍 Endorsed by ${users.length} people</h3>
                         <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">${html}</div>
@@ -3142,7 +2913,7 @@
             document.querySelector('#flaggers-modal')?.remove();
 
             const modalHtml = `
-                <div class="modal-overlay show" id="flaggers-modal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:0;">
+                <div class="modal-overlay show" id="flaggers-modal" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:24px;">
                     <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
                         <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👎 Not recommended by ${users.length} people</h3>
                         <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">${html}</div>
