@@ -10,19 +10,1330 @@
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- Styles - same as your working code -->
     <style>
-        /* Keep all your existing styles */
         * { box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: #f3f4f6; margin: 0; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .card { max-width: 400px; width: 100%; background: white; border-radius: 24px; padding: 20px 18px 10px 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 95vh; max-height: 780px; position: relative; overflow: hidden; }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f3f4f6;
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 24px;
+            padding: 20px 18px 10px 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 95vh;
+            max-height: 780px;
+            position: relative;
+            overflow: hidden;
+        }
         .hidden { display: none; }
         .hidden-page { display: none; }
-        /* ... rest of styles from your working code ... */
+        
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            text-align: center;
+            background: white;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus {
+            border-color: #2563eb;
+            outline: 2px solid #93c5fd;
+            outline-offset: -1px;
+        }
+        .input-field::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .btn-back {
+            background: #6b7280;
+            margin-top: 8px;
+            width: 100%;
+            padding: 14px;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-back:hover { background: #4b5563; }
+        
+        .btn-green { background: #16a34a; }
+        .btn-green:hover { background: #15803d; }
+        .btn-yellow { background: #d97706; }
+        .btn-yellow:hover { background: #b45309; }
+        
+        .msg {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .msg-green { background: #dcfce7; color: #166534; }
+        .msg-red { background: #fee2e2; color: #991b1b; }
+        .msg-blue { background: #dbeafe; color: #1e40af; }
+        .msg-yellow { background: #fef3c7; color: #92400e; }
+        
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: fadeOut 2s ease forwards;
+            white-space: nowrap;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            70% { opacity: 1; }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); visibility: hidden; }
+        }
+        .mobile-display { font-size: 20px; font-weight: bold; color: #1e293b; padding: 4px 0; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+        #login-screen h1 {
+            font-size: 40px;
+            font-weight: 900;
+            color: #2563eb;
+            margin: 0 0 4px 0;
+        }
+        #login-screen .test-links {
+            margin-bottom: 24px;
+            font-size: 12px;
+        }
+        #login-screen .test-links a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .mobile-status { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+        .pin-login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 8px;
+            margin: 8px 0 12px 0;
+            background: white;
+            transition: border-color 0.2s;
+        }
+        .pin-login-input:focus {
+            border-color: #2563eb;
+            outline: 2px solid #93c5fd;
+            outline-offset: -1px;
+        }
+        .pin-login-input::placeholder {
+            letter-spacing: 2px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 12px 0;
+        }
+        .otp-input-group input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            padding: 0;
+            margin: 0;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            background: white;
+        }
+        .otp-input-group input:focus {
+            border-color: #2563eb;
+            outline: none;
+        }
+        .otp-input-group input.filled {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+        .timer-text { font-size: 13px; color: #64748b; margin-top: 8px; }
+        .resend-btn {
+            background: none;
+            border: none;
+            color: #2563eb;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px;
+            font-size: 14px;
+        }
+        .resend-btn:hover { text-decoration: underline; }
+        .resend-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .home-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #f1f5f9;
+            position: relative;
+        }
+        .home-header .logo {
+            font-size: 22px;
+            font-weight: 900;
+            color: #2563eb;
+            cursor: pointer;
+        }
+        .home-header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        .home-header .avatar-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            transition: 0.2s;
+            padding: 0;
+        }
+        .home-header .avatar-btn:hover { border-color: #2563eb; background: #eff6ff; }
+        .home-header .avatar-btn.male { color: #2563eb; border-color: #2563eb; }
+        .home-header .avatar-btn.female { color: #ec4899; border-color: #ec4899; }
+        .home-header .avatar-btn.other { color: #8b5cf6; border-color: #8b5cf6; }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 44px;
+            right: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            min-width: 180px;
+            z-index: 100;
+            display: none;
+            overflow: hidden;
+        }
+        .profile-dropdown.show { display: block; }
+        .profile-dropdown .dropdown-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e293b;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: 0.15s;
+        }
+        .profile-dropdown .dropdown-item:hover { background: #f8fafc; }
+        .profile-dropdown .dropdown-item .icon { font-size: 16px; }
+        .profile-dropdown .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 4px 12px;
+        }
+        .profile-dropdown .dropdown-item.danger { color: #dc2626; }
+        .profile-dropdown .dropdown-item.danger:hover { background: #fef2f2; }
+
+        .page-content {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding: 8px 0;
+        }
+        .page-content::-webkit-scrollbar { width: 3px; }
+        .page-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .home-top { flex-shrink: 0; padding-bottom: 6px; }
+        .zone-filter {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+        }
+        .zone-filter .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        .zone-filter .header label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .zone-filter .header span {
+            font-size: 8px;
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+        .zone-filter .search-wrapper { position: relative; }
+        .zone-filter .search-wrapper input {
+            width: 100%;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 5px 12px;
+            font-size: 11px;
+            color: white;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 0;
+        }
+        .zone-filter .search-wrapper input::placeholder { color: #64748b; }
+        .zone-filter .search-wrapper input:focus { border-color: #3b82f6; }
+        .zone-filter .suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            margin-top: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+        }
+        .zone-filter .suggestions.show { display: block; }
+        .zone-filter .suggestions .item {
+            padding: 6px 12px;
+            font-size: 12px;
+            color: #e2e8f0;
+            cursor: pointer;
+        }
+        .zone-filter .suggestions .item:hover { background: #334155; }
+        .zone-filter .suggestions .no-result {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .type-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 4px;
+            background: #e2e8f0;
+            padding: 3px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .type-buttons button {
+            padding: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .type-buttons .active { background: white; color: #1e293b; }
+        .type-buttons .inactive { background: transparent; color: #64748b; }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .filter-row label {
+            font-size: 8px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 1px;
+        }
+        .filter-row input, .filter-row select {
+            width: 100%;
+            padding: 4px 8px;
+            font-size: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-weight: 600;
+            outline: none;
+            margin-bottom: 0;
+        }
+
+        .results-count {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 3px;
+            margin-bottom: 6px;
+        }
+        .results-count span {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-bottom: 4px;
+        }
+        .feed-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .feed-card:hover { border-color: #3b82f6; background: #f8faff; }
+        .feed-card .title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #0f172a;
+        }
+        .feed-card .title.job-title { color: #1e40af; }
+        .feed-card .title.seeker-name { color: #166534; }
+        .feed-card .meta {
+            font-size: 10px;
+            color: #475569;
+            margin-top: 1px;
+        }
+        .feed-card .meta .highlight {
+            font-weight: 600;
+            color: #2563eb;
+        }
+        
+        .feed-card .bottom-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+            gap: 4px;
+            flex-wrap: nowrap;
+        }
+        .feed-card .badge {
+            font-size: 8px;
+            padding: 1px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .feed-card .badge-job { background: #dbeafe; color: #1e40af; }
+        .feed-card .badge-seeker { background: #dcfce7; color: #166534; }
+        
+        .feed-card .action-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .feed-card .action-row .action-item {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            color: #475569;
+            font-weight: 500;
+            white-space: nowrap;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+        .feed-card .action-row .action-item:hover {
+            background: #f1f5f9;
+        }
+        .feed-card .action-row .action-item .count {
+            font-weight: 600;
+        }
+        .feed-card .action-row .action-divider {
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        .feed-card .action-row .share-btn {
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: 0.15s;
+            background: #25D366;
+            color: white;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            min-width: 28px;
+            min-height: 28px;
+        }
+        .feed-card .action-row .share-btn:hover {
+            background: #1da851;
+            transform: scale(1.05);
+        }
+        .feed-card .action-row .share-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .no-records { text-align: center; padding: 30px 0; color: #94a3b8; font-size: 13px; }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
+            margin-top: 4px;
+            flex-shrink: 0;
+            background: white;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #94a3b8;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 3px 12px;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            width: auto;
+        }
+        .bottom-nav .nav-item:hover { color: #3b82f6; }
+        .bottom-nav .nav-item.active { color: #2563eb; }
+        .bottom-nav .nav-item .icon { font-size: 18px; margin-bottom: 1px; }
+        .bottom-nav .nav-item .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .profile-header-card {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border-radius: 16px;
+            padding: 16px 20px;
+            color: white;
+            margin-bottom: 16px;
+        }
+        .profile-header-card .welcome { font-size: 11px; opacity: 0.8; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+        .profile-header-card .mobile { font-size: 22px; font-weight: 700; margin: 2px 0; }
+        .profile-header-card .badge { font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 12px; border-radius: 12px; display: inline-block; }
+
+        .profile-section {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .profile-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .profile-section .section-title { font-size: 14px; font-weight: 700; color: #1e293b; }
+        .profile-section .section-badge {
+            font-size: 9px;
+            background: #fef3c7;
+            color: #d97706;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+        .profile-section .section-desc { font-size: 12px; color: #64748b; margin-bottom: 10px; }
+        .profile-section .section-btn {
+            padding: 8px 16px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .profile-section .section-btn:hover { background: #1d4ed8; }
+        .profile-section .section-btn-green { background: #16a34a; }
+        .profile-section .section-btn-green:hover { background: #15803d; }
+        .profile-active { background: #f0fdf4; border-color: #bbf7d0; }
+        .profile-active .section-badge { background: #dcfce7; color: #166534; }
+
+        .action-required {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-required .icon { font-size: 20px; }
+        .action-required .text { font-size: 12px; color: #92400e; }
+        .action-required .text strong { display: block; font-size: 13px; }
+        .action-required .btn-action {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            width: auto;
+            flex-shrink: 0;
+        }
+        .action-required .btn-action:hover { background: #1d4ed8; }
+
+        .edit-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        .edit-page-header h2 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .edit-page-header .cancel-btn {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+        .edit-page-header .cancel-btn:hover {
+            color: #64748b;
+        }
+
+        .edit-hint {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+        .edit-hint .hint-title { font-size: 12px; font-weight: 700; color: #1d4ed8; }
+        .edit-hint .hint-desc { font-size: 11px; color: #475569; margin-top: 2px; }
+
+        .edit-field { margin-bottom: 10px; }
+        .edit-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        .edit-field label .limit-hint { font-size: 9px; color: #94a3b8; font-weight: 400; }
+        .edit-field input, .edit-field select, .edit-field textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+        .edit-field input:focus, .edit-field select:focus, .edit-field textarea:focus { border-color: #2563eb; }
+        .edit-field textarea { resize: vertical; min-height: 50px; }
+
+        .salary-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .salary-input-wrapper .currency-symbol {
+            position: absolute;
+            left: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            pointer-events: none;
+        }
+        .salary-input-wrapper input { padding-left: 28px; text-align: left; }
+
+        .char-counter { text-align: right; font-size: 10px; color: #94a3b8; margin-top: 2px; }
+        .edit-activate-btn {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+        .edit-activate-btn:hover { background: #1d4ed8; }
+
+        .postjob-header, .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 8px;
+            flex-shrink: 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .postjob-header .logo, .detail-header .logo {
+            font-size: 22px;
+            font-weight: 900;
+            color: #2563eb;
+            cursor: pointer;
+        }
+        .postjob-header .cancel-btn, .detail-header .cancel-btn {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            background: none;
+            border: none;
+            padding: 6px 12px;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+        .postjob-header .cancel-btn:hover, .detail-header .cancel-btn:hover { background: #f3f4f6; }
+
+        .postjob-scroll, .detail-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0 8px 0;
+            min-height: 0;
+        }
+        .postjob-scroll::-webkit-scrollbar, .detail-scroll::-webkit-scrollbar { width: 3px; }
+        .postjob-scroll::-webkit-scrollbar-thumb, .detail-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 3px;
+            letter-spacing: 0.02em;
+        }
+        .form-label .required { color: #ef4444; margin-left: 2px; }
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+            transition: 0.15s;
+            outline: none;
+            font-family: inherit;
+            text-align: left;
+        }
+        .form-control:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+        .form-control::placeholder { color: #b0b8c4; font-weight: 400; }
+        select.form-control { appearance: auto; }
+        textarea.form-control { resize: vertical; min-height: 60px; }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .inline-hint {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .salary-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .salary-wrap .rupee {
+            position: absolute;
+            left: 12px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 15px;
+            pointer-events: none;
+        }
+        .salary-wrap .form-control { padding-left: 28px; }
+        .select-hint { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+        .publish-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 4px;
+        }
+        .publish-btn:hover { background: #1d4ed8; }
+        .publish-btn:active { transform: scale(0.98); }
+        .bottom-spacer { height: 4px; }
+        input[type="date"] { text-align: left; padding: 10px 12px; }
+
+        .my-job-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fafbfc;
+        }
+        .my-job-item:hover { border-color: #3b82f6; background: #f0f7ff; }
+        .my-job-item .job-title { font-weight: 600; font-size: 13px; color: #0f172a; }
+        .my-job-item .job-meta { font-size: 10px; color: #64748b; }
+        .my-job-item .expired {
+            color: #dc2626;
+            font-size: 9px;
+            font-weight: 600;
+            background: #fee2e2;
+            padding: 1px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .detail-field { margin-bottom: 10px; }
+        .detail-field label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: block;
+            margin-bottom: 1px;
+        }
+        .detail-field .value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .detail-field .value-multiline {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1e293b;
+            padding: 4px 0;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .detail-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .detail-stats .stat-item {
+            text-align: center;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .detail-stats .stat-item:hover { background: #f1f5f9; }
+        .detail-stats .stat-item .number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        .detail-stats .stat-item .number:hover { color: #1d4ed8; }
+        .detail-stats .stat-item .label {
+            font-size: 8px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .detail-actions {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .detail-actions .action-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .detail-actions .action-group .action-label {
+            font-size: 7px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            font-weight: 600;
+        }
+        .detail-actions button {
+            width: 100%;
+            padding: 8px 2px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+        }
+        .detail-actions .btn-call { background: #16a34a; color: white; }
+        .detail-actions .btn-call:hover:not(:disabled) { background: #15803d; }
+        .detail-actions .btn-whatsapp { background: #25D366; color: white; }
+        .detail-actions .btn-whatsapp:hover:not(:disabled) { background: #1da851; }
+        .detail-actions .btn-close { background: #6b7280; color: white; }
+        .detail-actions .btn-close:hover { background: #4b5563; }
+        .detail-actions .btn-endorse {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 20px;
+        }
+        .detail-actions .btn-endorse.active {
+            background: #2563eb;
+            color: white;
+        }
+        .detail-actions .btn-endorse:hover:not(:disabled) { background: #dbeafe; }
+        .detail-actions .btn-endorse.active:hover { background: #1d4ed8; }
+        .detail-actions .btn-flag {
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 20px;
+        }
+        .detail-actions .btn-flag.active {
+            background: #dc2626;
+            color: white;
+        }
+        .detail-actions .btn-flag:hover:not(:disabled) { background: #fee2e2; }
+        .detail-actions .btn-flag.active:hover { background: #b91c1c; }
+        .detail-actions .btn-share {
+            background: #25D366;
+            color: white;
+        }
+        .detail-actions .btn-share:hover { background: #1da851; }
+        .detail-actions .btn-share svg {
+            width: 22px;
+            height: 22px;
+            fill: white;
+        }
+        .detail-actions button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .type-badge.job { background: #dbeafe; color: #1e40af; }
+        .type-badge.seeker { background: #dcfce7; color: #166534; }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            border-radius: 24px;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 340px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-box h3 { font-size: 18px; font-weight: 700; margin: 0 0 4px 0; color: #1e293b; }
+        .modal-box p { font-size: 13px; color: #64748b; margin: 0 0 16px 0; }
+        .modal-box .user-list {
+            flex: 1;
+            overflow-y: auto;
+            margin: 8px 0;
+        }
+        .modal-box .user-list .user-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: 0.15s;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-box .user-list .user-item:hover { background: #f8fafc; }
+        .modal-box .user-list .user-item .gender-icon { font-size: 16px; }
+        .modal-box .user-list .user-item .name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2563eb;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .modal-box .user-list .user-item .name:hover {
+            color: #1d4ed8;
+        }
+        .modal-box .user-list .more-text {
+            padding: 8px 12px;
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 13px;
+            text-align: center;
+        }
+        .modal-box .modal-close-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .modal-box .modal-close-btn:hover { background: #e2e8f0; }
+
+        .guest-banner {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .guest-banner .text {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .guest-banner .btn-login {
+            background: white;
+            color: #2563eb;
+            border: none;
+            padding: 4px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            width: auto;
+            white-space: nowrap;
+        }
+        .guest-banner .btn-login:hover { background: #f0f0f0; }
+
+        .share-modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            border-radius: 24px;
+        }
+        .share-modal-overlay.show { display: flex; }
+        .share-modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 340px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .share-modal-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .share-modal-box h3 svg {
+            width: 24px;
+            height: 24px;
+            fill: #2563eb;
+        }
+        .share-modal-box p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0 0 16px 0;
+        }
+        .share-modal-box .share-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 12px 0;
+        }
+        .share-modal-box .share-grid .share-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 6px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #e2e8f0;
+            background: white;
+            text-decoration: none;
+        }
+        .share-modal-box .share-grid .share-item:hover {
+            background: #f8fafc;
+            border-color: #2563eb;
+            transform: scale(1.02);
+        }
+        .share-modal-box .share-grid .share-item .share-icon {
+            width: 32px;
+            height: 32px;
+            margin-bottom: 4px;
+        }
+        .share-modal-box .share-grid .share-item .share-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+        .share-modal-box .share-grid .share-item .share-label {
+            font-size: 9px;
+            color: #475569;
+            font-weight: 500;
+        }
+        .share-modal-box .share-grid .share-item.whatsapp:hover {
+            border-color: #25D366;
+            background: #f0fdf4;
+        }
+        .share-modal-box .share-grid .share-item.facebook:hover {
+            border-color: #1877f2;
+            background: #f0f7ff;
+        }
+        .share-modal-box .share-grid .share-item.twitter:hover {
+            border-color: #000000;
+            background: #f8fafc;
+        }
+        .share-modal-box .share-grid .share-item.linkedin:hover {
+            border-color: #0a66c2;
+            background: #f0f7ff;
+        }
+        .share-modal-box .share-grid .share-item.telegram:hover {
+            border-color: #0088cc;
+            background: #f0faff;
+        }
+        .share-modal-box .share-grid .share-item.instagram:hover {
+            border-color: #e4405f;
+            background: #fdf0f3;
+        }
+        .share-modal-box .share-grid .share-item.copy:hover {
+            border-color: #6b7280;
+            background: #f8fafc;
+        }
+        .share-modal-box .share-grid .share-item.more-share:hover {
+            border-color: #2563eb;
+            background: #eff6ff;
+        }
+        .share-modal-box .share-modal-close-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .share-modal-box .share-modal-close-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .install-banner {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+        .install-banner.show { display: flex; }
+        .install-banner .text { font-size: 12px; font-weight: 500; }
+        .install-banner .btn-install {
+            background: white;
+            color: #2563eb;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            width: auto;
+        }
+        .install-banner .btn-install:hover { background: #f0f0f0; }
+        .install-banner .btn-close {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 4px;
+            width: auto;
+        }
+        .install-banner .btn-close:hover { color: white; }
+
+        .clickable-name {
+            cursor: pointer;
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .clickable-name:hover {
+            color: #1d4ed8;
+        }
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 300;
+            border-radius: 24px;
+        }
+        .loading-overlay.show { display: flex; }
+        .loading-overlay .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-overlay .loading-text {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #475569;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
-    <!-- HTML - same as your working code -->
     <div class="card">
         <!-- LOADING OVERLAY -->
         <div class="loading-overlay" id="loading-overlay">
@@ -108,6 +1419,7 @@
                     </div>
                 </div>
 
+                <!-- Guest Banner -->
                 <div class="guest-banner" id="guest-banner">
                     <span class="text">👋 Welcome, Guest! You're viewing as a guest. Sign up to interact.</span>
                     <button class="btn-login" onclick="showLogin()">🔐 Login</button>
@@ -575,18 +1887,19 @@
                         <div class="value" id="detail-posted">--</div>
                     </div>
 
+                    <!-- SIMPLIFIED DETAIL STATS -->
                     <div class="detail-stats" style="grid-template-columns: 1fr 1fr 1fr;">
                         <div class="stat-item" onclick="detailShowEndorsers()">
                             <div class="number" id="detail-total-popularity">0</div>
-                            <div class="label">⭐</div>
+                            <div class="label">⭐ Popularity</div>
                         </div>
                         <div class="stat-item" onclick="detailShowFlaggers()">
                             <div class="number" id="detail-flags-count">0</div>
-                            <div class="label">👎</div>
+                            <div class="label">👎 Flags</div>
                         </div>
                         <div class="stat-item">
                             <div class="number" id="detail-views">0</div>
-                            <div class="label">👁️</div>
+                            <div class="label">👁️ Views</div>
                         </div>
                     </div>
 
@@ -811,7 +2124,6 @@
 
         function populateEditZones() {
             const select = document.getElementById('edit-seeker-zone');
-            if (!select) return;
             select.innerHTML = '<option value="">-- Select --</option>';
             ZONES.forEach(zone => {
                 select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
@@ -819,10 +2131,8 @@
         }
 
         function updateEditAreas() {
-            const zoneSelect = document.getElementById('edit-seeker-zone');
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
             const areaSelect = document.getElementById('edit-seeker-area');
-            if (!zoneSelect || !areaSelect) return;
-            const zoneId = parseInt(zoneSelect.value);
             areaSelect.innerHTML = '<option value="">Select zone first</option>';
             if (zoneId) {
                 const areas = getAreasByZone(zoneId);
@@ -832,6 +2142,9 @@
             }
         }
 
+        // ============================================================
+        // SALARY FORMATTER
+        // ============================================================
         function formatSalaryDisplay(value) {
             if (!value) return '';
             const num = value.toString().replace(/[^0-9]/g, '');
@@ -865,7 +2178,7 @@
         let sharedLinkProcessed = false;
 
         // ============================================================
-        // COLUMN HELPERS - Fix for active_users column names
+        // COLUMN NAME HELPERS - For active_users vs active_jobs
         // ============================================================
         function getViewColumn(type) {
             return type === 'JOB' ? 'views' : 'views_total';
@@ -892,7 +2205,56 @@
         }
 
         // ============================================================
-        // VIEW COUNT INCREMENT - Works for jobs and seekers
+        // PWA INSTALLATION HANDLER
+        // ============================================================
+        let deferredPrompt;
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('✅ Service Worker registered:', reg))
+                .catch(err => console.log('❌ Service Worker error:', err));
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const banner = document.getElementById('install-banner');
+            if (banner) banner.classList.add('show');
+        });
+
+        document.getElementById('install-btn')?.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const result = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                document.getElementById('install-banner').classList.remove('show');
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            document.getElementById('install-banner').classList.remove('show');
+        });
+
+        // ============================================================
+        // SHARED LINK DETECTION
+        // ============================================================
+        function detectSharedLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const type = urlParams.get('type');
+            const id = urlParams.get('id');
+            
+            if (type && id) {
+                console.log(`📎 Shared link detected: ${type} with ID ${id}`);
+                sharedLinkData = { type, id };
+                return true;
+            }
+            return false;
+        }
+
+        const hasSharedLink = detectSharedLink();
+
+        // ============================================================
+        // VIEW COUNT INCREMENT - Works for both jobs and seekers
         // ============================================================
         async function incrementViewCount(targetType, targetId) {
             try {
@@ -1111,7 +2473,7 @@
         // ============================================================
         function handleShareClick() {
             if (!currentDetailData || !currentDetailType) {
-                showToast('No item selected');
+                showToast('⚠️ No item selected');
                 return;
             }
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -1137,59 +2499,11 @@
         }
 
         // ============================================================
-        // PWA INSTALLATION HANDLER
-        // ============================================================
-        let deferredPrompt;
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('Service Worker registered:', reg))
-                .catch(err => console.log('Service Worker error:', err));
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            const banner = document.getElementById('install-banner');
-            if (banner) banner.classList.add('show');
-        });
-
-        document.getElementById('install-btn')?.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const result = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                document.getElementById('install-banner').classList.remove('show');
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
-            deferredPrompt = null;
-            document.getElementById('install-banner').classList.remove('show');
-        });
-
-        // ============================================================
-        // SHARED LINK DETECTION
-        // ============================================================
-        function detectSharedLink() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const type = urlParams.get('type');
-            const id = urlParams.get('id');
-            if (type && id) {
-                console.log('Shared link detected:', type, id);
-                sharedLinkData = { type, id };
-                return true;
-            }
-            return false;
-        }
-
-        const hasSharedLink = detectSharedLink();
-
-        // ============================================================
-        // GUEST AUTO-LOGIN
+        // GUEST AUTO-LOGIN - Uses platform_stats.all_users
         // ============================================================
         function continueAsGuest() {
             sessionStorage.setItem('guest_session', 'true');
-            showToast('Continuing as Guest...');
+            showToast('👤 Continuing as Guest...');
             autoLoginGuest();
         }
 
@@ -1213,9 +2527,16 @@
                 if (!guestExists) {
                     allUsers.push(Number(GUEST_MOBILE));
                     if (platformData) {
-                        await sb.from('platform_stats').update({ all_users: allUsers }).eq('id', platformData.id);
+                        const { error: updateError } = await sb
+                            .from('platform_stats')
+                            .update({ all_users: allUsers })
+                            .eq('id', platformData.id);
+                        if (updateError) console.error('Error updating platform_stats for guest:', updateError);
                     } else {
-                        await sb.from('platform_stats').insert([{ all_users: allUsers }]);
+                        const { error: insertError } = await sb
+                            .from('platform_stats')
+                            .insert([{ all_users: allUsers }]);
+                        if (insertError) console.error('Error inserting platform_stats for guest:', insertError);
                     }
                 }
 
@@ -1243,7 +2564,7 @@
                 if (data.success) {
                     isGuest = true;
                     await fetchGuestUserData(GUEST_MOBILE);
-                    showToast('Welcome, Guest!');
+                    showToast('👤 Welcome, Guest!');
                     processSharedLinkAfterLogin();
                 } else {
                     const { data: userData } = await sb
@@ -1255,15 +2576,15 @@
                         isGuest = true;
                         currentUser = userData;
                         showHomeScreenAfterLogin();
-                        showToast('Welcome, Guest!');
+                        showToast('👤 Welcome, Guest!');
                         processSharedLinkAfterLogin();
                     } else {
-                        showToast('Guest login failed.');
+                        showToast('⚠️ Guest login failed. Please try again.');
                     }
                 }
             } catch (err) {
                 console.error('Guest login error:', err);
-                showToast('Guest login failed: ' + err.message);
+                showToast('⚠️ Guest login failed: ' + err.message);
             }
         }
 
@@ -1285,13 +2606,14 @@
                     .select()
                     .single();
                 if (insertError) {
-                    showToast('Error creating guest: ' + insertError.message);
+                    showToast('❌ Error creating guest: ' + insertError.message);
                     return;
                 }
                 currentUser = newUser;
             } else {
                 currentUser = data;
             }
+
             showHomeScreenAfterLogin();
         }
 
@@ -1315,7 +2637,7 @@
         function showLogin() {
             resetForm();
             document.getElementById('mobile').focus();
-            showToast('Enter your mobile number to login');
+            showToast('🔐 Enter your mobile number to login');
         }
 
         // ============================================================
@@ -1348,7 +2670,7 @@
                 if (data) {
                     if (overlay) overlay.classList.remove('show');
                     openDetail(data, type);
-                    showToast(`${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
+                    showToast(`📎 ${type === 'JOB' ? 'Job' : 'Profile'} loaded from share link`);
                     if (window.history && window.history.pushState) {
                         window.history.pushState({}, '', window.location.pathname);
                     }
@@ -1356,7 +2678,7 @@
             } catch (err) {
                 console.error('Error processing shared link:', err);
                 if (overlay) overlay.classList.remove('show');
-                showToast('Could not load the shared item');
+                showToast('⚠️ Could not load the shared item');
             }
         }
 
@@ -1415,7 +2737,7 @@
                 case 'instagram':
                 case 'copy':
                     navigator.clipboard.writeText(text).then(() => {
-                        showToast(platform === 'instagram' ? 'Link copied! Open Instagram to share.' : 'Link copied to clipboard!');
+                        showToast(platform === 'instagram' ? '📸 Link copied! Open Instagram to share.' : '📋 Link copied to clipboard!');
                     }).catch(() => {
                         const textarea = document.createElement('textarea');
                         textarea.value = text;
@@ -1423,7 +2745,7 @@
                         textarea.select();
                         document.execCommand('copy');
                         textarea.remove();
-                        showToast(platform === 'instagram' ? 'Link copied! Open Instagram to share.' : 'Link copied to clipboard!');
+                        showToast(platform === 'instagram' ? '📸 Link copied! Open Instagram to share.' : '📋 Link copied to clipboard!');
                     });
                     break;
                 case 'more':
@@ -1431,7 +2753,7 @@
                         navigator.share({ title, text, url }).catch(() => {});
                     } else {
                         navigator.clipboard.writeText(text).then(() => {
-                            showToast('Link copied! Use your device share menu.');
+                            showToast('📋 Link copied! Use your device share menu.');
                         }).catch(() => {
                             const textarea = document.createElement('textarea');
                             textarea.value = text;
@@ -1439,12 +2761,12 @@
                             textarea.select();
                             document.execCommand('copy');
                             textarea.remove();
-                            showToast('Link copied! Use your device share menu.');
+                            showToast('📋 Link copied! Use your device share menu.');
                         });
                     }
                     break;
                 default:
-                    showToast('Share option not available');
+                    showToast('⚠️ Share option not available');
                     return;
             }
             closeShareModal();
@@ -1516,7 +2838,7 @@
                     const selected = new Date(this.value);
                     const maxDate = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
                     if (selected > maxDate) {
-                        alert('Expiry date cannot be more than 45 days from today.');
+                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
                         this.value = maxDate.toISOString().split('T')[0];
                     }
                 });
@@ -1602,7 +2924,7 @@
                 input.addEventListener('focus', function() { this.select(); });
             });
 
-            console.log('JobAd Ready');
+            console.log('✅ JobAd Ready');
 
             const isRootPath = window.location.pathname === '/' || window.location.pathname === '/index.html';
             const shouldAutoLogin = (hasSharedLink || sessionStorage.getItem('guest_session') === 'true') && !isRootPath;
@@ -1632,7 +2954,7 @@
             isChecking = true;
             const mobileInput = document.getElementById('mobile');
             mobileInput.disabled = true;
-            setStatus('Checking...', 'blue');
+            setStatus('⏳ Checking...', 'blue');
 
             try {
                 const { data: activeUser } = await sb
@@ -1645,9 +2967,9 @@
                     isNewUser = false;
                     currentMobile = mobile;
                     document.getElementById('display-mobile').textContent = mobile;
-                    document.getElementById('status-badge').textContent = 'Existing user - Enter PIN';
+                    document.getElementById('status-badge').textContent = '✅ Existing user - Enter PIN';
                     document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
-                    document.getElementById('submitBtn').textContent = 'Login';
+                    document.getElementById('submitBtn').textContent = '🔐 Login';
                     document.getElementById('submitBtn').className = 'btn-primary btn-green';
                     document.getElementById('step1').style.display = 'none';
                     document.getElementById('step2').classList.remove('hidden');
@@ -1655,8 +2977,8 @@
                     document.getElementById('step4').classList.add('hidden');
                     document.getElementById('pin').value = '';
                     document.getElementById('pin').focus();
-                    setStatus('Existing user. Enter your PIN.', 'green');
-                    showToast('Existing user - Enter PIN');
+                    setStatus('✅ Existing user. Enter your PIN.', 'green');
+                    showToast('📱 Existing user - Enter PIN');
                     isChecking = false;
                     mobileInput.disabled = false;
                     return;
@@ -1677,7 +2999,7 @@
                 }
 
                 if (isArchived) {
-                    showToast('Welcome back! Moving from archive to active...');
+                    showToast('📱 Welcome back! Moving from archive to active...');
 
                     const { data: newActive, error: createError } = await sb
                         .from('active_users')
@@ -1693,9 +3015,9 @@
                         isNewUser = false;
                         currentMobile = mobile;
                         document.getElementById('display-mobile').textContent = mobile;
-                        document.getElementById('status-badge').textContent = 'Welcome back!';
+                        document.getElementById('status-badge').textContent = '✅ Welcome back!';
                         document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
-                        document.getElementById('submitBtn').textContent = 'Login';
+                        document.getElementById('submitBtn').textContent = '🔐 Login';
                         document.getElementById('submitBtn').className = 'btn-primary btn-green';
                         document.getElementById('step1').style.display = 'none';
                         document.getElementById('step2').classList.remove('hidden');
@@ -1703,20 +3025,20 @@
                         document.getElementById('step4').classList.add('hidden');
                         document.getElementById('pin').value = '';
                         document.getElementById('pin').focus();
-                        setStatus('Welcome back! Enter your PIN.', 'green');
-                        showToast('Welcome back!');
+                        setStatus('✅ Welcome back! Enter your PIN.', 'green');
+                        showToast('📱 Welcome back!');
                         isChecking = false;
                         mobileInput.disabled = false;
                         return;
                     }
 
-                    showToast('User moved from archive to active!');
+                    showToast('✅ User moved from archive to active!');
                     isNewUser = false;
                     currentMobile = mobile;
                     document.getElementById('display-mobile').textContent = mobile;
-                    document.getElementById('status-badge').textContent = 'Welcome back! Enter PIN';
+                    document.getElementById('status-badge').textContent = '✅ Welcome back! Enter PIN';
                     document.getElementById('status-badge').className = 'text-sm font-medium text-green-600';
-                    document.getElementById('submitBtn').textContent = 'Login';
+                    document.getElementById('submitBtn').textContent = '🔐 Login';
                     document.getElementById('submitBtn').className = 'btn-primary btn-green';
                     document.getElementById('step1').style.display = 'none';
                     document.getElementById('step2').classList.remove('hidden');
@@ -1724,8 +3046,8 @@
                     document.getElementById('step4').classList.add('hidden');
                     document.getElementById('pin').value = '';
                     document.getElementById('pin').focus();
-                    setStatus('Welcome back! Enter your PIN.', 'green');
-                    showToast('Welcome back!');
+                    setStatus('✅ Welcome back! Enter your PIN.', 'green');
+                    showToast('📱 Welcome back!');
                     isChecking = false;
                     mobileInput.disabled = false;
                     return;
@@ -1754,14 +3076,14 @@
         }
 
         async function sendWhatsAppOTP(mobile) {
-            setStatus('Sending OTP via WhatsApp...', 'blue');
+            setStatus('📱 Sending OTP via WhatsApp...', 'blue');
 
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
             sessionStorage.setItem('otp_' + mobile, otp);
             sessionStorage.setItem('otp_expiry_' + mobile, Date.now() + 300000);
 
             const waNumber = formatMobileForWA(mobile);
-            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
+            const message = `Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
             window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
 
             document.getElementById('step1').style.display = 'none';
@@ -1774,8 +3096,8 @@
             document.querySelector('.otp-input').focus();
 
             startOTPTimer();
-            setStatus('OTP sent via WhatsApp!', 'green');
-            showToast('OTP sent via WhatsApp!');
+            setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.', 'green');
+            showToast('💬 OTP sent via WhatsApp!');
         }
 
         function getOTP() {
@@ -1805,7 +3127,7 @@
         async function verifyOTP() {
             const otp = getOTP();
             if (otp.length !== 6) {
-                showToast('Enter complete 6-digit OTP');
+                showToast('⚠️ Enter complete 6-digit OTP');
                 return;
             }
 
@@ -1813,19 +3135,19 @@
             const storedExpiry = sessionStorage.getItem('otp_expiry_' + currentMobile);
 
             if (!storedOtp) {
-                showToast('OTP expired. Please request again.');
+                showToast('❌ OTP expired. Please request again.');
                 return;
             }
 
             if (Date.now() > parseInt(storedExpiry)) {
-                showToast('OTP expired. Please request again.');
+                showToast('❌ OTP expired. Please request again.');
                 sessionStorage.removeItem('otp_' + currentMobile);
                 document.getElementById('resend-otp').disabled = false;
                 return;
             }
 
             if (otp !== storedOtp) {
-                showToast('Invalid OTP. Please try again.');
+                showToast('❌ Invalid OTP. Please try again.');
                 document.querySelectorAll('.otp-input').forEach(el => {
                     el.value = '';
                     el.classList.remove('filled');
@@ -1834,7 +3156,7 @@
                 return;
             }
 
-            showToast('Phone verified successfully!');
+            showToast('✅ Phone verified successfully!');
             sessionStorage.removeItem('otp_' + currentMobile);
             sessionStorage.removeItem('otp_expiry_' + currentMobile);
 
@@ -1844,7 +3166,7 @@
             document.getElementById('reg-pin').value = '';
             document.getElementById('reg-pin-confirm').value = '';
             document.getElementById('reg-pin').focus();
-            setStatus('Set your PIN', 'blue');
+            setStatus('📱 Set your PIN', 'blue');
         }
 
         async function resendOTP() {
@@ -1860,7 +3182,7 @@
 
             document.getElementById('resend-otp').disabled = true;
             startOTPTimer();
-            showToast('OTP resent via WhatsApp!');
+            showToast('🔄 OTP resent via WhatsApp!');
         }
 
         // ============================================================
@@ -1871,20 +3193,20 @@
             const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
 
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                showToast('Enter a valid 4-digit PIN');
+                showToast('⚠️ Enter a valid 4-digit PIN');
                 document.getElementById('reg-pin').focus();
                 return;
             }
 
             if (pin !== confirmPin) {
-                showToast('PINs do not match');
+                showToast('⚠️ PINs do not match');
                 document.getElementById('reg-pin-confirm').value = '';
                 document.getElementById('reg-pin-confirm').focus();
                 return;
             }
 
             document.getElementById('register-btn').disabled = true;
-            document.getElementById('register-btn').textContent = 'Creating...';
+            document.getElementById('register-btn').textContent = '⏳ Creating...';
 
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/register-user`, {
@@ -1915,17 +3237,17 @@
                         }
                     }
 
-                    showToast('Registration successful!');
+                    showToast('✅ Registration successful!');
                     await fetchUserData(currentMobile);
                 } else {
-                    showToast('Registration failed: ' + data.error);
+                    showToast('❌ Registration failed: ' + data.error);
                     document.getElementById('register-btn').disabled = false;
-                    document.getElementById('register-btn').textContent = 'Create Account';
+                    document.getElementById('register-btn').textContent = '✅ Create Account';
                 }
             } catch (err) {
-                showToast('Error: ' + err.message);
+                showToast('❌ Error: ' + err.message);
                 document.getElementById('register-btn').disabled = false;
-                document.getElementById('register-btn').textContent = 'Create Account';
+                document.getElementById('register-btn').textContent = '✅ Create Account';
             }
         }
 
@@ -1935,13 +3257,13 @@
         window.submitPin = async function() {
             const pin = document.getElementById('pin').value.trim();
             if (!pin || pin.length !== 4) {
-                showToast('Enter 4-digit PIN');
+                showToast('⚠️ Enter 4-digit PIN');
                 document.getElementById('pin').focus();
                 return;
             }
 
             document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').textContent = 'Verifying...';
+            document.getElementById('submitBtn').textContent = '⏳ Verifying...';
 
             try {
                 const response = await fetch(`${EDGE_FUNCTION_URL}/login-user`, {
@@ -1955,17 +3277,17 @@
                     isGuest = false;
                     sessionStorage.removeItem('guest_session');
                     await fetchUserData(currentMobile);
-                    showToast('Welcome back!');
+                    showToast('✅ Welcome back!');
                 } else {
-                    showToast('Invalid PIN. Please try again.');
+                    showToast('❌ Invalid PIN. Please try again.');
                     document.getElementById('pin').value = '';
                     document.getElementById('pin').focus();
                 }
             } catch (err) {
-                showToast('Error: ' + err.message);
+                showToast('❌ Error: ' + err.message);
             } finally {
                 document.getElementById('submitBtn').disabled = false;
-                document.getElementById('submitBtn').textContent = 'Login';
+                document.getElementById('submitBtn').textContent = '🔐 Login';
             }
         };
 
@@ -1986,7 +3308,7 @@
                     .select()
                     .single();
                 if (insertError) {
-                    showToast('Error creating user: ' + insertError.message);
+                    showToast('❌ Error creating user: ' + insertError.message);
                     return;
                 }
                 currentUser = newUser;
@@ -2037,7 +3359,7 @@
         // ============================================================
         function openChangePin() {
             if (isGuest) {
-                showToast('Please login to change PIN');
+                showToast('🔐 Please login to change PIN');
                 showLogin();
                 return;
             }
@@ -2053,7 +3375,7 @@
 
         async function saveNewPin() {
             if (isGuest) {
-                showToast('Please login to change PIN');
+                showToast('🔐 Please login to change PIN');
                 showLogin();
                 return;
             }
@@ -2061,12 +3383,12 @@
             const confirmPin = document.getElementById('confirm-pin').value.trim();
 
             if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
-                showToast('Enter a valid 4-digit PIN');
+                showToast('⚠️ Enter a valid 4-digit PIN');
                 return;
             }
 
             if (newPin !== confirmPin) {
-                showToast('PINs do not match');
+                showToast('⚠️ PINs do not match');
                 return;
             }
 
@@ -2079,13 +3401,13 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showToast('PIN changed successfully!');
+                    showToast('✅ PIN changed successfully!');
                     closeChangePin();
                 } else {
-                    showToast('Failed to change PIN: ' + data.error);
+                    showToast('❌ Failed to change PIN: ' + data.error);
                 }
             } catch (err) {
-                showToast('Error: ' + err.message);
+                showToast('❌ Error: ' + err.message);
             }
         }
 
@@ -2104,12 +3426,12 @@
                 const message = `Your JobAd PIN reset code is: *${otp}*\n\nEnter this code to reset your PIN.`;
                 window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
 
-                showToast('PIN reset OTP sent via WhatsApp!');
+                showToast('📱 PIN reset OTP sent via WhatsApp!');
 
                 document.getElementById('step2').classList.add('hidden');
                 document.getElementById('step3').classList.remove('hidden');
                 document.getElementById('wa-display-mobile').textContent = mobile;
-                document.getElementById('verify-btn').textContent = 'Verify & Reset PIN';
+                document.getElementById('verify-btn').textContent = '✅ Verify & Reset PIN';
                 document.getElementById('verify-btn').className = 'btn-primary btn-green';
                 document.getElementById('verify-btn').onclick = function() { verifyResetOTP(); };
                 document.querySelectorAll('.otp-input').forEach(el => el.value = '');
@@ -2123,7 +3445,7 @@
                     window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${newOtp}*`)}`, '_blank');
                     document.getElementById('resend-otp').disabled = true;
                     startOTPTimer();
-                    showToast('Reset OTP resent!');
+                    showToast('🔄 Reset OTP resent!');
                 };
             }
         }
@@ -2131,7 +3453,7 @@
         async function verifyResetOTP() {
             const otp = getOTP();
             if (otp.length !== 6) {
-                showToast('Enter complete 6-digit OTP');
+                showToast('⚠️ Enter complete 6-digit OTP');
                 return;
             }
 
@@ -2140,12 +3462,12 @@
             const storedExpiry = sessionStorage.getItem('reset_otp_expiry_' + mobile);
 
             if (!storedOtp || Date.now() > parseInt(storedExpiry)) {
-                showToast('OTP expired. Please try again.');
+                showToast('❌ OTP expired. Please try again.');
                 return;
             }
 
             if (otp !== storedOtp) {
-                showToast('Invalid OTP. Please try again.');
+                showToast('❌ Invalid OTP. Please try again.');
                 document.querySelectorAll('.otp-input').forEach(el => {
                     el.value = '';
                     el.classList.remove('filled');
@@ -2154,14 +3476,14 @@
                 return;
             }
 
-            showToast('OTP verified! Set your new PIN.');
+            showToast('✅ OTP verified! Set your new PIN.');
             sessionStorage.removeItem('reset_otp_' + mobile);
             sessionStorage.removeItem('reset_otp_expiry_' + mobile);
 
             document.getElementById('step3').classList.add('hidden');
             document.getElementById('step4').classList.remove('hidden');
             document.getElementById('reg-display-mobile').textContent = mobile;
-            document.getElementById('register-btn').textContent = 'Reset PIN';
+            document.getElementById('register-btn').textContent = '💾 Reset PIN';
             document.getElementById('register-btn').className = 'btn-primary btn-yellow';
             document.getElementById('register-btn').onclick = function() { saveResetPIN(); };
             document.getElementById('reg-pin').value = '';
@@ -2174,13 +3496,13 @@
             const confirmPin = document.getElementById('reg-pin-confirm').value.trim();
 
             if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                showToast('Enter a valid 4-digit PIN');
+                showToast('⚠️ Enter a valid 4-digit PIN');
                 document.getElementById('reg-pin').focus();
                 return;
             }
 
             if (pin !== confirmPin) {
-                showToast('PINs do not match');
+                showToast('⚠️ PINs do not match');
                 document.getElementById('reg-pin-confirm').value = '';
                 document.getElementById('reg-pin-confirm').focus();
                 return;
@@ -2195,15 +3517,15 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showToast('PIN reset successfully! Please login with your new PIN.');
+                    showToast('✅ PIN reset successfully! Please login with your new PIN.');
                     resetForm();
                     document.getElementById('mobile').value = currentMobile;
                     document.getElementById('mobile').focus();
                 } else {
-                    showToast('Failed to reset PIN: ' + data.error);
+                    showToast('❌ Failed to reset PIN: ' + data.error);
                 }
             } catch (err) {
-                showToast('Error: ' + err.message);
+                showToast('❌ Error: ' + err.message);
             }
         }
 
@@ -2234,31 +3556,31 @@
             const zoneId = parseInt(zoneSelect.value);
             areaSelect.innerHTML = '<option value="">Select zone first</option>';
             if (!zoneId) {
-                if (areaHint) areaHint.textContent = 'Choose zone first';
+                if (areaHint) areaHint.textContent = '⬆️ Choose zone first';
                 return;
             }
             const areas = getAreasByZone(zoneId);
             if (areas.length === 0) {
                 areaSelect.innerHTML = '<option value="">No areas</option>';
-                if (areaHint) areaHint.textContent = 'No areas for this zone';
+                if (areaHint) areaHint.textContent = '⚠️ No areas for this zone';
                 return;
             }
             areas.forEach(area => {
                 areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
             });
-            if (areaHint) areaHint.textContent = `${areas.length} areas available`;
+            if (areaHint) areaHint.textContent = `✅ ${areas.length} areas available`;
             if (areas.length > 0) areaSelect.value = areas[0].area_id;
         }
 
         async function publishJob() {
             if (!currentUser || isGuest) {
-                showToast('Please login to post jobs');
+                showToast('🔐 Please login to post jobs');
                 showLogin();
                 return;
             }
 
             if (!currentUser.company_name || currentUser.company_name.trim() === '') {
-                showToast('Please set your company name in profile first');
+                showToast('⚠️ Please set your company name in profile first');
                 goToProfile();
                 return;
             }
@@ -2277,22 +3599,22 @@
             const description = document.getElementById('pj-description').value.trim();
             const expiryDate = document.getElementById('pj-expiry').value;
 
-            if (!company) { showToast('Company name is required'); return; }
-            if (!jobTitle) { showToast('Job Title is required'); return; }
-            if (jobTitle.length > 60) { showToast('Job Title max 60 characters'); return; }
-            if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('Enter valid min experience'); return; }
-            if (!salaryRaw || isNaN(parseInt(salaryRaw)) || parseInt(salaryRaw) <= 0) { showToast('Enter valid salary'); return; }
-            if (!zone) { showToast('Please select Job Location Zone'); return; }
-            if (!area) { showToast('Please select Specific Area'); return; }
-            if (!skills) { showToast('Skills are required'); return; }
-            if (skills.length > 200) { showToast('Skills max 200 characters'); return; }
-            if (description.length > 500) { showToast('Description max 500 characters'); return; }
-            if (!expiryDate) { showToast('Please select expiry date'); return; }
+            if (!company) { showToast('⚠️ Company name is required'); return; }
+            if (!jobTitle) { showToast('⚠️ Job Title is required'); return; }
+            if (jobTitle.length > 60) { showToast('⚠️ Job Title max 60 characters'); return; }
+            if (!expRaw || isNaN(parseFloat(expRaw)) || parseFloat(expRaw) < 0) { showToast('⚠️ Enter valid min experience'); return; }
+            if (!salaryRaw || isNaN(parseInt(salaryRaw)) || parseInt(salaryRaw) <= 0) { showToast('⚠️ Enter valid salary'); return; }
+            if (!zone) { showToast('⚠️ Please select Job Location Zone'); return; }
+            if (!area) { showToast('⚠️ Please select Specific Area'); return; }
+            if (!skills) { showToast('⚠️ Skills are required'); return; }
+            if (skills.length > 200) { showToast('⚠️ Skills max 200 characters'); return; }
+            if (description.length > 500) { showToast('⚠️ Description max 500 characters'); return; }
+            if (!expiryDate) { showToast('⚠️ Please select expiry date'); return; }
 
             const selectedDate = new Date(expiryDate);
             const maxDate = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
             if (selectedDate > maxDate) {
-                showToast('Expiry date cannot exceed 45 days from today');
+                showToast('⚠️ Expiry date cannot exceed 45 days from today');
                 return;
             }
 
@@ -2320,16 +3642,16 @@
             try {
                 if (isEditing && editJobId) {
                     await sb.from('active_jobs').update(jobData).eq('job_id', parseInt(editJobId));
-                    showToast('Job updated successfully!');
+                    showToast('✅ Job updated successfully!');
                 } else {
                     jobData.posted_date = new Date().toISOString();
                     await sb.from('active_jobs').insert([jobData]);
-                    showToast('Job published successfully!');
+                    showToast('✅ Job published successfully!');
                 }
 
                 document.getElementById('pj-publish-btn').dataset.editing = 'false';
                 document.getElementById('pj-publish-btn').dataset.jobid = '';
-                document.getElementById('pj-publish-btn').textContent = 'Publish Job';
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
                 document.getElementById('pj-title').value = '';
                 document.getElementById('pj-skills').value = '';
                 document.getElementById('pj-description').value = '';
@@ -2350,7 +3672,7 @@
                 goToProfile();
                 loadMyJobs();
             } catch (err) {
-                showToast('Failed: ' + err.message);
+                showToast('❌ Failed: ' + err.message);
             }
         }
 
@@ -2406,7 +3728,7 @@
                 if (error) throw error;
                 openDetail(data, 'JOB');
             } catch (err) {
-                showToast('Error loading job: ' + err.message);
+                showToast('❌ Error loading job: ' + err.message);
             }
         }
 
@@ -2545,31 +3867,31 @@
         }
 
         // ============================================================
-        // MAKE CALL
+        // makeCall()
         // ============================================================
         function makeCall() {
             if (isGuest || !currentUser) {
                 showLogin();
-                showToast('Please login to make a call');
+                showToast('🔐 Please login to make a call');
                 return;
             }
             if (!currentDetailData) {
-                showToast('No contact available');
+                showToast('⚠️ No contact available');
                 return;
             }
             const contact = currentDetailData.mobile || currentDetailData.contact;
             if (!contact) {
-                showToast('No contact number available');
+                showToast('⚠️ No contact number available');
                 return;
             }
             const isJob = currentDetailType === 'JOB';
             if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
-                showToast('Please set your company name to contact job seekers');
+                showToast('⚠️ Please set your company name to contact job seekers');
                 goToProfile();
                 return;
             }
             if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
-                showToast('Please complete your job seeker profile to contact for jobs');
+                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
                 goToEditSeeker();
                 return;
             }
@@ -2581,31 +3903,31 @@
         }
 
         // ============================================================
-        // SEND WHATSAPP
+        // sendWhatsApp()
         // ============================================================
         function sendWhatsApp() {
             if (isGuest || !currentUser) {
                 showLogin();
-                showToast('Please login to send WhatsApp message');
+                showToast('💬 Please login to send WhatsApp message');
                 return;
             }
             if (!currentDetailData) {
-                showToast('No contact available');
+                showToast('⚠️ No contact available');
                 return;
             }
             const contact = currentDetailData.mobile || currentDetailData.contact;
             if (!contact) {
-                showToast('No contact number available');
+                showToast('⚠️ No contact number available');
                 return;
             }
             const isJob = currentDetailType === 'JOB';
             if (isJob && (!currentUser.company_name || currentUser.company_name.trim() === '')) {
-                showToast('Please set your company name to contact job seekers');
+                showToast('⚠️ Please set your company name to contact job seekers');
                 goToProfile();
                 return;
             }
             if (!isJob && (!currentUser.full_name || currentUser.full_name.trim() === '')) {
-                showToast('Please complete your job seeker profile to contact for jobs');
+                showToast('⚠️ Please complete your job seeker profile to contact for jobs');
                 goToEditSeeker();
                 return;
             }
@@ -2619,16 +3941,16 @@
         }
 
         // ============================================================
-        // ENDORSEMENTS & FLAGS
+        // ENDORSEMENTS & FLAGS FUNCTIONS
         // ============================================================
         async function toggleEndorsement(targetType, targetId, mobile) {
             if (isGuest) {
-                showToast('Please login to recommend');
+                showToast('🔐 Please login to recommend');
                 showLogin();
                 return null;
             }
             if (!currentUser) {
-                showToast('Please login first');
+                showToast('⚠️ Please login first');
                 showLogin();
                 return null;
             }
@@ -2654,14 +3976,14 @@
 
                 if (alreadyEndorsed) {
                     endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
-                    showToast('Endorsement removed');
+                    showToast('👍 Endorsement removed');
                 } else {
                     if (alreadyFlagged) {
                         flags = flags.filter(m => m !== parseInt(targetMobile));
-                        showToast('Flag removed, adding endorsement');
+                        showToast('👎 Flag removed, adding endorsement');
                     }
                     endorsements.push(parseInt(targetMobile));
-                    showToast('Endorsed successfully!');
+                    showToast('👍 Endorsed successfully!');
                 }
 
                 const { error: updateError } = await sb
@@ -2676,19 +3998,19 @@
 
             } catch (err) {
                 console.error('Error toggling endorsement:', err);
-                showToast('Failed to update: ' + err.message);
+                showToast('❌ Failed to update: ' + err.message);
                 return null;
             }
         }
 
         async function toggleFlag(targetType, targetId, mobile) {
             if (isGuest) {
-                showToast('Please login to flag');
+                showToast('🔐 Please login to flag');
                 showLogin();
                 return null;
             }
             if (!currentUser) {
-                showToast('Please login first');
+                showToast('⚠️ Please login first');
                 showLogin();
                 return null;
             }
@@ -2714,14 +4036,14 @@
 
                 if (alreadyFlagged) {
                     flags = flags.filter(m => m !== parseInt(targetMobile));
-                    showToast('Flag removed');
+                    showToast('👎 Flag removed');
                 } else {
                     if (alreadyEndorsed) {
                         endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
-                        showToast('Endorsement removed, adding flag');
+                        showToast('👍 Endorsement removed, adding flag');
                     }
                     flags.push(parseInt(targetMobile));
-                    showToast('Not recommended');
+                    showToast('👎 Not recommended');
                 }
 
                 const { error: updateError } = await sb
@@ -2736,7 +4058,7 @@
 
             } catch (err) {
                 console.error('Error toggling flag:', err);
-                showToast('Failed to update: ' + err.message);
+                showToast('❌ Failed to update: ' + err.message);
                 return null;
             }
         }
@@ -2770,7 +4092,7 @@
 
             } catch (err) {
                 console.error('Error fetching endorsers:', err);
-                showToast('Failed to load endorsers: ' + err.message);
+                showToast('❌ Failed to load endorsers: ' + err.message);
                 return [];
             }
         }
@@ -2804,28 +4126,30 @@
 
             } catch (err) {
                 console.error('Error fetching flaggers:', err);
-                showToast('Failed to load flaggers: ' + err.message);
+                showToast('❌ Failed to load flaggers: ' + err.message);
                 return [];
             }
         }
 
         // ============================================================
-        // VIEW USER PROFILE
+        // VIEW USER PROFILE - Fixed
         // ============================================================
         function viewUserProfile(mobile) {
             closeModal('endorsers-modal');
             closeModal('flaggers-modal');
 
             if (!mobile) {
-                showToast('No user selected');
+                showToast('⚠️ No user selected');
                 return;
             }
-            viewUserDetail(mobile.toString());
+
+            const mobileStr = mobile.toString();
+            viewUserDetail(mobileStr);
         }
 
         async function viewUserDetail(mobile) {
             try {
-                showToast('Loading profile...');
+                showToast('⏳ Loading profile...');
 
                 const { data, error } = await sb
                     .from('active_users')
@@ -2842,14 +4166,30 @@
                     document.getElementById('detail-page').classList.add('hidden-page');
                     setTimeout(() => {
                         openDetail(data, 'SEEKER');
-                        showToast('Profile loaded');
+                        showToast('👤 Profile loaded');
                     }, 100);
                 } else {
-                    showToast('User profile not found');
+                    const { data: userData, error: userError } = await sb
+                        .from('active_users')
+                        .select('*')
+                        .eq('mobile', mobile)
+                        .single();
+
+                    if (userError) throw userError;
+
+                    if (userData) {
+                        document.getElementById('detail-page').classList.add('hidden-page');
+                        setTimeout(() => {
+                            openDetail(userData, 'SEEKER');
+                            showToast('👤 Profile loaded');
+                        }, 100);
+                    } else {
+                        showToast('⚠️ User profile not found');
+                    }
                 }
             } catch (err) {
                 console.error('Error loading user:', err);
-                showToast('Could not load profile: ' + err.message);
+                showToast('⚠️ Could not load profile: ' + err.message);
             }
         }
 
@@ -2858,7 +4198,9 @@
         // ============================================================
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
-            if (modal) modal.remove();
+            if (modal) {
+                modal.remove();
+            }
             document.querySelectorAll('.modal-overlay.show').forEach(el => {
                 el.classList.remove('show');
                 el.style.display = 'none';
@@ -2885,7 +4227,7 @@
             document.querySelector('#endorsers-modal')?.remove();
 
             const modalHtml = `
-                <div class="modal-overlay show" id="endorsers-modal" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:24px;">
+                <div class="modal-overlay show" id="endorsers-modal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:0;">
                     <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
                         <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👍 Endorsed by ${users.length} people</h3>
                         <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">${html}</div>
@@ -2913,7 +4255,7 @@
             document.querySelector('#flaggers-modal')?.remove();
 
             const modalHtml = `
-                <div class="modal-overlay show" id="flaggers-modal" style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:24px;">
+                <div class="modal-overlay show" id="flaggers-modal" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:9999; border-radius:0;">
                     <div class="modal-box" style="background:white; border-radius:20px; padding:24px; max-width:400px; width:90%; max-height:80vh; display:flex; flex-direction:column;">
                         <h3 style="font-size:18px; font-weight:700; margin:0 0 4px 0; color:#1e293b;">👎 Not recommended by ${users.length} people</h3>
                         <div class="user-list" style="flex:1; overflow-y:auto; margin:8px 0;">${html}</div>
@@ -2930,17 +4272,17 @@
         // ============================================================
         async function detailToggleEndorsement() {
             if (isGuest) {
-                showToast('Please login to recommend');
+                showToast('🔐 Please login to recommend');
                 showLogin();
                 return;
             }
             if (!currentUser) {
-                showToast('Please login first');
+                showToast('⚠️ Please login first');
                 showLogin();
                 return;
             }
             if (!currentDetailData || !currentDetailType) {
-                showToast('No item selected');
+                showToast('⚠️ No item selected');
                 return;
             }
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -2954,27 +4296,29 @@
 
         async function detailToggleFlag() {
             if (isGuest) {
-                showToast('Please login to flag');
+                showToast('🔐 Please login to flag');
                 showLogin();
                 return;
             }
             if (!currentUser) {
-                showToast('Please login first');
+                showToast('⚠️ Please login first');
                 showLogin();
                 return;
             }
             if (!currentDetailData || !currentDetailType) {
-                showToast('No item selected');
+                showToast('⚠️ No item selected');
                 return;
             }
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
             const result = await toggleFlag(currentDetailType, targetId, currentUser.mobile);
-            if (result) updateDetailCounts(result.endorsements, result.flags);
+            if (result) {
+                updateDetailCounts(result.endorsements, result.flags);
+            }
         }
 
         async function detailShowEndorsers() {
             if (!currentDetailData || !currentDetailType) {
-                showToast('No item selected');
+                showToast('⚠️ No item selected');
                 return;
             }
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -2983,7 +4327,7 @@
 
         async function detailShowFlaggers() {
             if (!currentDetailData || !currentDetailType) {
-                showToast('No item selected');
+                showToast('⚠️ No item selected');
                 return;
             }
             const targetId = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
@@ -3024,12 +4368,12 @@
 
         function goPostJob() {
             if (isGuest) {
-                showToast('Please login to post jobs');
+                showToast('🔐 Please login to post jobs');
                 showLogin();
                 return;
             }
             if (!currentUser) {
-                showToast('Please login first');
+                showToast('⚠️ Please login first');
                 showLogin();
                 return;
             }
@@ -3040,13 +4384,13 @@
                 document.getElementById('pj-company').value = '';
                 document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = true);
                 document.getElementById('pj-publish-btn').disabled = true;
-                document.getElementById('pj-publish-btn').textContent = 'Complete Recruiter Profile First';
+                document.getElementById('pj-publish-btn').textContent = '⚠️ Complete Recruiter Profile First';
             } else {
                 const warning = document.getElementById('recruiter-warning');
                 if (warning) warning.style.display = 'none';
                 document.querySelectorAll('#postjob-page .form-control').forEach(el => el.disabled = false);
                 document.getElementById('pj-publish-btn').disabled = false;
-                document.getElementById('pj-publish-btn').textContent = 'Publish Job';
+                document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
                 document.getElementById('pj-company').value = currentUser.company_name;
             }
 
@@ -3082,7 +4426,7 @@
 
         function goToProfile() {
             if (isGuest) {
-                showToast('You are viewing as Guest. Login to access profile.');
+                showToast('👤 You are viewing as Guest. Login to access profile.');
                 showLogin();
                 return;
             }
@@ -3101,7 +4445,7 @@
 
         function goToEditSeeker() {
             if (isGuest) {
-                showToast('Please login to create profile');
+                showToast('🔐 Please login to create profile');
                 showLogin();
                 return;
             }
@@ -3139,7 +4483,9 @@
 
         function cancelPostJob() {
             if (document.getElementById('pj-publish-btn').dataset.editing === 'true') {
-                if (confirm('Cancel editing this job?')) closeDetail();
+                if (confirm('Cancel editing this job?')) {
+                    closeDetail();
+                }
             } else if (confirm('Cancel posting this job?')) {
                 goHome();
             }
@@ -3215,7 +4561,7 @@
 
         async function saveEditSeeker() {
             if (isGuest) {
-                showToast('Please login to save profile');
+                showToast('🔐 Please login to save profile');
                 showLogin();
                 return;
             }
@@ -3230,15 +4576,15 @@
             const areaId = parseInt(document.getElementById('edit-seeker-area').value);
             const gender = parseInt(document.getElementById('edit-seeker-gender').value);
             const notice = parseInt(document.getElementById('edit-seeker-notice').value) || 0;
-            if (!name) { showToast('Please enter your full name'); return; }
-            if (name.length > 50) { showToast('Name must be less than 50 characters'); return; }
-            if (title.length > 50) { showToast('Job title must be less than 50 characters'); return; }
-            if (exp && (parseFloat(exp) > 99 || parseFloat(exp) < 0)) { showToast('Experience must be between 0-99 years'); return; }
-            if (salary && parseInt(salary) > 9999999) { showToast('Salary cannot exceed ₹99,99,999'); return; }
-            if (notice > 365 || notice < 0) { showToast('Notice period must be between 0-365 days'); return; }
-            if (skills.length > 100) { showToast('Skills must be less than 100 characters'); return; }
-            if (about.length > 200) { showToast('About Me must be less than 200 characters'); return; }
-            if (!zoneId) { showToast('Please select your zone'); return; }
+            if (!name) { showToast('⚠️ Please enter your full name'); return; }
+            if (name.length > 50) { showToast('⚠️ Name must be less than 50 characters'); return; }
+            if (title.length > 50) { showToast('⚠️ Job title must be less than 50 characters'); return; }
+            if (exp && (parseFloat(exp) > 99 || parseFloat(exp) < 0)) { showToast('⚠️ Experience must be between 0-99 years'); return; }
+            if (salary && parseInt(salary) > 9999999) { showToast('⚠️ Salary cannot exceed ₹99,99,999'); return; }
+            if (notice > 365 || notice < 0) { showToast('⚠️ Notice period must be between 0-365 days'); return; }
+            if (skills.length > 100) { showToast('⚠️ Skills must be less than 100 characters'); return; }
+            if (about.length > 200) { showToast('⚠️ About Me must be less than 200 characters'); return; }
+            if (!zoneId) { showToast('⚠️ Please select your zone'); return; }
             const updates = {
                 full_name: name,
                 job_title: title || '',
@@ -3255,30 +4601,30 @@
             try {
                 await sb.from('active_users').update(updates).eq('mobile', currentUser.mobile);
                 currentUser = { ...currentUser, ...updates };
-                showToast('Job profile saved!');
+                showToast('✅ Job profile saved!');
                 goToProfile();
             } catch (err) {
-                showToast('Failed to save: ' + err.message);
+                showToast('❌ Failed to save: ' + err.message);
             }
         }
 
         async function saveRecruiterProfile() {
             if (isGuest) {
-                showToast('Please login to save profile');
+                showToast('🔐 Please login to save profile');
                 showLogin();
                 return;
             }
             const company = document.getElementById('recruiter-company').value.trim();
-            if (!company) { showToast('Please enter company name'); return; }
-            if (company.length > 100) { showToast('Company name must be less than 100 characters'); return; }
+            if (!company) { showToast('⚠️ Please enter company name'); return; }
+            if (company.length > 100) { showToast('⚠️ Company name must be less than 100 characters'); return; }
             try {
                 await sb.from('active_users').update({ company_name: company, last_active: new Date().toISOString() }).eq('mobile', currentUser.mobile);
                 currentUser.company_name = company;
-                showToast('Recruiter profile activated!');
+                showToast('✅ Recruiter profile activated!');
                 loadProfile();
                 loadMyJobs();
             } catch (err) {
-                showToast('Failed to save: ' + err.message);
+                showToast('❌ Failed to save: ' + err.message);
             }
         }
 
@@ -3307,7 +4653,7 @@
         }
 
         async function fetchFeedData() {
-            console.log('Fetching feed data from Supabase...');
+            console.log('🔄 Fetching feed data from Supabase...');
             try {
                 await autoCleanExpiredJobs();
                 const { data: jobs, error: jobsError } = await sb.from('active_jobs').select('*').limit(50);
@@ -3345,9 +4691,9 @@
                     _raw: user
                 }));
                 feedItems = [...formattedJobs, ...formattedSeekers];
-                console.log(`Loaded ${feedItems.length} items from Supabase`);
+                console.log(`✅ Loaded ${feedItems.length} items from Supabase`);
             } catch (err) {
-                console.error('Error fetching from Supabase:', err.message);
+                console.error('❌ Error fetching from Supabase:', err.message);
                 feedItems = [];
             }
             renderFeed();
@@ -3474,7 +4820,7 @@
                 currentDetailType = type;
                 await showEndorsersModal(type, targetId);
             } else {
-                showToast('Could not find item data');
+                showToast('⚠️ Could not find item data');
             }
         }
 
@@ -3488,7 +4834,7 @@
                 currentDetailType = type;
                 await showFlaggersModal(type, targetId);
             } else {
-                showToast('Could not find item data');
+                showToast('⚠️ Could not find item data');
             }
         }
 
@@ -3581,6 +4927,19 @@
         // ============================================================
         // UI HELPERS
         // ============================================================
+        function showMessage(msg, type) {
+            const el = document.getElementById('msg');
+            if (!el) return;
+            el.textContent = msg;
+            el.className = 'msg msg-' + type;
+            el.classList.remove('hidden');
+        }
+
+        function hideMessage() {
+            const el = document.getElementById('msg');
+            if (el) el.classList.add('hidden');
+        }
+
         function showToast(msg) {
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -3612,9 +4971,9 @@
             document.getElementById('msg').classList.add('hidden');
             document.getElementById('mobile-status').textContent = '';
             document.getElementById('submitBtn').disabled = false;
-            document.getElementById('submitBtn').textContent = 'Login';
+            document.getElementById('submitBtn').textContent = '🔐 Login';
             document.getElementById('register-btn').disabled = false;
-            document.getElementById('register-btn').textContent = 'Create Account';
+            document.getElementById('register-btn').textContent = '✅ Create Account';
             if (otpTimerInterval) clearInterval(otpTimerInterval);
             currentMobile = '';
             currentUser = null;
@@ -3639,16 +4998,16 @@
         window.logout = function() {
             if (confirm('Are you sure you want to logout?')) {
                 resetForm();
-                showToast('Logged out');
+                showToast('👋 Logged out');
             }
         };
 
-        console.log('JobAd App Ready - Using platform_stats.all_users with total and 30-day tracking');
+        console.log('✅ JobAd App Ready - Using platform_stats.all_users');
 
         if (hasSharedLink) {
             setTimeout(() => {
                 if (!sharedLinkProcessed && currentUser) {
-                    console.log('Fallback: Processing shared link after delay');
+                    console.log('🔄 Fallback: Processing shared link after delay');
                     processSharedLinkAfterLogin();
                 }
             }, 3000);
