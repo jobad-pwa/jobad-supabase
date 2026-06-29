@@ -1987,13 +1987,13 @@
                             <span class="action-label">WhatsApp</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()" disabled>
+                            <button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()">
                                 <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
                             </button>
                             <span class="action-label">Recommend</span>
                         </div>
                         <div class="action-group">
-                            <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()" disabled>
+                            <button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()">
                                 <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>
                             </button>
                             <span class="action-label">Not Rec</span>
@@ -4197,7 +4197,7 @@
         }
 
         // ============================================================
-        // ENDORSEMENTS & FLAGS
+        // ENDORSEMENTS & FLAGS - Fixed for both jobs and seekers
         // ============================================================
         async function toggleEndorsement(targetType, targetId, mobile) {
             if (isGuest) {
@@ -4216,6 +4216,7 @@
             const targetMobile = currentUser.mobile;
 
             try {
+                // Get current endorsements and flags
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements, flags')
@@ -4227,18 +4228,20 @@
                 let endorsements = data.endorsements || [];
                 let flags = data.flags || [];
 
-                const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
-                const alreadyFlagged = flags.includes(parseInt(targetMobile));
+                // Convert to string for comparison to handle BigInt
+                const targetMobileStr = String(targetMobile);
+                const alreadyEndorsed = endorsements.some(m => String(m) === targetMobileStr);
+                const alreadyFlagged = flags.some(m => String(m) === targetMobileStr);
 
                 if (alreadyEndorsed) {
-                    endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
+                    endorsements = endorsements.filter(m => String(m) !== targetMobileStr);
                     showToast('👍 Endorsement removed');
                 } else {
                     if (alreadyFlagged) {
-                        flags = flags.filter(m => m !== parseInt(targetMobile));
+                        flags = flags.filter(m => String(m) !== targetMobileStr);
                         showToast('👎 Flag removed, adding endorsement');
                     }
-                    endorsements.push(parseInt(targetMobile));
+                    endorsements.push(Number(targetMobile));
                     showToast('👍 Endorsed successfully!');
                 }
 
@@ -4249,6 +4252,15 @@
 
                 if (updateError) throw updateError;
 
+                // Update local data
+                if (currentDetailData && currentDetailType === targetType) {
+                    currentDetailData.endorsements = endorsements;
+                    currentDetailData.flags = flags;
+                    updateDetailStats();
+                    updateDetailCounts(endorsements, flags);
+                }
+
+                // Refresh feed data
                 await fetchFeedData();
                 return { endorsements, flags };
 
@@ -4287,18 +4299,19 @@
                 let endorsements = data.endorsements || [];
                 let flags = data.flags || [];
 
-                const alreadyFlagged = flags.includes(parseInt(targetMobile));
-                const alreadyEndorsed = endorsements.includes(parseInt(targetMobile));
+                const targetMobileStr = String(targetMobile);
+                const alreadyFlagged = flags.some(m => String(m) === targetMobileStr);
+                const alreadyEndorsed = endorsements.some(m => String(m) === targetMobileStr);
 
                 if (alreadyFlagged) {
-                    flags = flags.filter(m => m !== parseInt(targetMobile));
+                    flags = flags.filter(m => String(m) !== targetMobileStr);
                     showToast('👎 Flag removed');
                 } else {
                     if (alreadyEndorsed) {
-                        endorsements = endorsements.filter(m => m !== parseInt(targetMobile));
+                        endorsements = endorsements.filter(m => String(m) !== targetMobileStr);
                         showToast('👍 Endorsement removed, adding flag');
                     }
-                    flags.push(parseInt(targetMobile));
+                    flags.push(Number(targetMobile));
                     showToast('👎 Not recommended');
                 }
 
@@ -4308,6 +4321,13 @@
                     .eq(idField, targetId);
 
                 if (updateError) throw updateError;
+
+                if (currentDetailData && currentDetailType === targetType) {
+                    currentDetailData.endorsements = endorsements;
+                    currentDetailData.flags = flags;
+                    updateDetailStats();
+                    updateDetailCounts(endorsements, flags);
+                }
 
                 await fetchFeedData();
                 return { endorsements, flags };
@@ -4341,7 +4361,7 @@
                 const { data: users, error: userError } = await sb
                     .from('active_users')
                     .select('mobile, full_name, gender')
-                    .in('mobile', endorsements.map(m => m.toString()));
+                    .in('mobile', endorsements.map(m => String(m)));
 
                 if (userError) throw userError;
                 return users || [];
@@ -4375,7 +4395,7 @@
                 const { data: users, error: userError } = await sb
                     .from('active_users')
                     .select('mobile, full_name, gender')
-                    .in('mobile', flags.map(m => m.toString()));
+                    .in('mobile', flags.map(m => String(m)));
 
                 if (userError) throw userError;
                 return users || [];
@@ -4399,7 +4419,7 @@
                 return;
             }
 
-            const mobileStr = mobile.toString();
+            const mobileStr = String(mobile);
             viewUserDetail(mobileStr);
         }
 
@@ -4410,7 +4430,7 @@
                 const { data, error } = await sb
                     .from('active_users')
                     .select('*')
-                    .eq('mobile', mobile.toString())
+                    .eq('mobile', String(mobile))
                     .maybeSingle();
 
                 if (error) throw error;
@@ -4428,7 +4448,7 @@
                     const { data: userData, error: userError } = await sb
                         .from('active_users')
                         .select('*')
-                        .eq('mobile', mobile)
+                        .eq('mobile', String(mobile))
                         .single();
 
                     if (userError) throw userError;
@@ -4594,8 +4614,9 @@
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
 
             if (currentUser && !isGuest) {
-                const userEndorsed = endorsements.includes(parseInt(currentUser.mobile));
-                const userFlagged = flags.includes(parseInt(currentUser.mobile));
+                const targetMobileStr = String(currentUser.mobile);
+                const userEndorsed = endorsements.some(m => String(m) === targetMobileStr);
+                const userFlagged = flags.some(m => String(m) === targetMobileStr);
 
                 const endorseBtn = document.getElementById('detail-endorse-btn');
                 const flagBtn = document.getElementById('detail-flag-btn');
@@ -5258,7 +5279,7 @@
             }
         };
 
-        console.log('✅ JobAd App Ready - Jobs show only totals, Seekers show 30-day + totals');
+        console.log('✅ JobAd App Ready - Recommend and Not Rec buttons fixed for both jobs and seekers');
 
         if (hasSharedLink) {
             setTimeout(() => {
