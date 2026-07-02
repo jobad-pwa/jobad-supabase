@@ -1788,10 +1788,6 @@
                             <label class="form-label">Job Location Zone <span class="required">*</span></label>
                             <select class="form-control" id="pj-zone" onchange="updatePostAreas()">
                                 <option value="">-- Select Zone --</option>
-                                <option value="100">Hyderabad</option>
-                                <option value="200">North Telangana</option>
-                                <option value="300">East Telangana</option>
-                                <option value="400">South Telangana</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -2120,99 +2116,6 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // ZONE & AREA DATA
-        // ============================================================
-        const ZONES = [
-            { zone_id: 100, zone_name: "Hyderabad" },
-            { zone_id: 200, zone_name: "North Telangana" },
-            { zone_id: 300, zone_name: "East Telangana" },
-            { zone_id: 400, zone_name: "South Telangana" }
-        ];
-
-        const AREAS = [
-            { area_id: 100000, zone_id: 100, area_name: "All Hyderabad" },
-            { area_id: 200000, zone_id: 200, area_name: "All North Telangana" },
-            { area_id: 300000, zone_id: 300, area_name: "All East Telangana" },
-            { area_id: 400000, zone_id: 400, area_name: "All South Telangana" },
-            { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
-            { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
-            { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
-            { area_id: 100004, zone_id: 100, area_name: "Gachibowli" },
-            { area_id: 100005, zone_id: 100, area_name: "Hitech City" },
-            { area_id: 100006, zone_id: 100, area_name: "Miyapur" },
-            { area_id: 100007, zone_id: 100, area_name: "Uppal" },
-            { area_id: 100008, zone_id: 100, area_name: "LB Nagar" },
-            { area_id: 100009, zone_id: 100, area_name: "Dilsukhnagar" },
-            { area_id: 100995, zone_id: 100, area_name: "Shamshabad" },
-            { area_id: 100996, zone_id: 100, area_name: "Jadcharla" },
-            { area_id: 100997, zone_id: 100, area_name: "Medak" },
-            { area_id: 100998, zone_id: 100, area_name: "Sangareddy" },
-            { area_id: 100999, zone_id: 100, area_name: "Zahirabad" },
-            { area_id: 200001, zone_id: 200, area_name: "Adilabad" },
-            { area_id: 200002, zone_id: 200, area_name: "Asifabad" },
-            { area_id: 200003, zone_id: 200, area_name: "Mancherial" },
-            { area_id: 200004, zone_id: 200, area_name: "Nirmal" },
-            { area_id: 200005, zone_id: 200, area_name: "Nizamabad" },
-            { area_id: 200006, zone_id: 200, area_name: "Jagtial" },
-            { area_id: 200007, zone_id: 200, area_name: "Peddapalli" },
-            { area_id: 200008, zone_id: 200, area_name: "Karimnagar" },
-            { area_id: 200009, zone_id: 200, area_name: "Sircilla" },
-            { area_id: 200010, zone_id: 200, area_name: "Kamareddy" },
-            { area_id: 200011, zone_id: 200, area_name: "Siddipet" },
-            { area_id: 300001, zone_id: 300, area_name: "Warangal" },
-            { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
-            { area_id: 300003, zone_id: 300, area_name: "Khammam" },
-            { area_id: 300004, zone_id: 300, area_name: "Bhupalpally" },
-            { area_id: 300005, zone_id: 300, area_name: "Mulugu" },
-            { area_id: 300006, zone_id: 300, area_name: "Mahabubabad" },
-            { area_id: 300007, zone_id: 300, area_name: "Kothagudem" },
-            { area_id: 300008, zone_id: 300, area_name: "Bhuvanagiri" },
-            { area_id: 300009, zone_id: 300, area_name: "Jangaon" },
-            { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
-            { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
-            { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
-            { area_id: 400004, zone_id: 400, area_name: "Nagarkurnool" },
-            { area_id: 400005, zone_id: 400, area_name: "Vikarabad" },
-            { area_id: 400006, zone_id: 400, area_name: "Narayanpet" },
-            { area_id: 400007, zone_id: 400, area_name: "Wanaparthy" },
-            { area_id: 400008, zone_id: 400, area_name: "Gadwal" }
-        ];
-
-        function getZoneName(id) {
-            const z = ZONES.find(z => z.zone_id === id);
-            return z ? z.zone_name : 'Unknown';
-        }
-
-        function getAreaName(id) {
-            const a = AREAS.find(a => a.area_id === id);
-            return a ? a.area_name : '';
-        }
-
-        function getAreasByZone(zoneId) {
-            return AREAS.filter(a => a.zone_id === zoneId);
-        }
-
-        function populateEditZones() {
-            const select = document.getElementById('edit-seeker-zone');
-            select.innerHTML = '<option value="">-- Select --</option>';
-            ZONES.forEach(zone => {
-                select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
-            });
-        }
-
-        function updateEditAreas() {
-            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
-            const areaSelect = document.getElementById('edit-seeker-area');
-            areaSelect.innerHTML = '<option value="">Select zone first</option>';
-            if (zoneId) {
-                const areas = getAreasByZone(zoneId);
-                areas.forEach(area => {
-                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-                });
-            }
-        }
-
-        // ============================================================
         // SALARY FORMATTER
         // ============================================================
         function formatSalaryDisplay(value) {
@@ -2333,7 +2236,6 @@
                 const viewCol = getViewColumn(targetType);
                 const view30Col = getView30Column(targetType);
 
-                // For jobs: only update 'views'
                 if (targetType === 'JOB') {
                     const { data, error } = await sb
                         .from(table)
@@ -2389,7 +2291,6 @@
                     return { total: newTotal };
                 }
 
-                // For seekers: update both total and 30-day
                 const { data, error } = await sb
                     .from(table)
                     .select(`${viewCol}, ${view30Col}`)
@@ -2466,7 +2367,6 @@
                 const callCol = getCallColumn(targetType);
                 const call30Col = getCall30Column(targetType);
 
-                // For jobs: only update 'calls'
                 if (targetType === 'JOB') {
                     const { data, error } = await sb
                         .from(table)
@@ -2503,7 +2403,6 @@
                     return { total: newTotal };
                 }
 
-                // For seekers: update both total and 30-day
                 const { data, error } = await sb
                     .from(table)
                     .select(`${callCol}, ${call30Col}`)
@@ -2558,7 +2457,6 @@
                 const waCol = getWhatsAppColumn(targetType);
                 const wa30Col = getWhatsApp30Column(targetType);
 
-                // For jobs: only update 'whatsapp'
                 if (targetType === 'JOB') {
                     const { data, error } = await sb
                         .from(table)
@@ -2595,7 +2493,6 @@
                     return { total: newTotal };
                 }
 
-                // For seekers: update both total and 30-day
                 const { data, error } = await sb
                     .from(table)
                     .select(`${waCol}, ${wa30Col}`)
@@ -2727,17 +2624,14 @@
             const wa30Col = getWhatsApp30Column(currentDetailType);
             const isSeeker = currentDetailType === 'SEEKER';
 
-            // Row 1 - Always show
             document.getElementById('detail-total-popularity').textContent = totalPopularity;
             document.getElementById('detail-flags-count').textContent = flags.length || 0;
             document.getElementById('detail-shares').textContent = shareCount;
 
-            // Show/hide 30-day and total rows based on type
             const row30 = document.getElementById('detail-30day-row');
             const rowTotal = document.getElementById('detail-total-row');
 
             if (isSeeker) {
-                // Show both rows for seekers
                 row30.style.display = 'block';
                 rowTotal.style.display = 'block';
                 
@@ -2749,11 +2643,9 @@
                 document.getElementById('detail-calls-total').textContent = currentDetailData[callCol] || 0;
                 document.getElementById('detail-wa-total').textContent = currentDetailData[waCol] || 0;
             } else {
-                // Hide 30-day row for jobs, show only total row
                 row30.style.display = 'none';
                 rowTotal.style.display = 'block';
                 
-                // For jobs, total row shows the actual counts
                 document.getElementById('detail-views-total').textContent = currentDetailData[viewCol] || 0;
                 document.getElementById('detail-calls-total').textContent = currentDetailData[callCol] || 0;
                 document.getElementById('detail-wa-total').textContent = currentDetailData[waCol] || 0;
@@ -3047,166 +2939,6 @@
                 openShareModal();
             }
         }
-
-        // ============================================================
-        // INIT
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const aboutTextarea = document.getElementById('edit-seeker-about');
-            const charCount = document.getElementById('char-count');
-            if (aboutTextarea && charCount) {
-                aboutTextarea.addEventListener('input', function() {
-                    charCount.textContent = this.value.length;
-                });
-            }
-
-            const salaryInput = document.getElementById('edit-seeker-salary');
-            if (salaryInput) {
-                salaryInput.addEventListener('input', function() {
-                    const rawValue = parseSalaryValue(this.value);
-                    if (rawValue) {
-                        this.value = formatSalaryDisplay(rawValue);
-                        this.setSelectionRange(this.value.length, this.value.length);
-                    }
-                });
-            }
-
-            populateEditZones();
-
-            setupCounter('pj-title', 'pj-title-counter', 60);
-            setupCounter('pj-skills', 'pj-skills-counter', 200);
-            setupCounter('pj-description', 'pj-desc-counter', 500);
-
-            const pjSalary = document.getElementById('pj-salary');
-            if (pjSalary) {
-                pjSalary.addEventListener('input', function() {
-                    const raw = this.value.replace(/[^0-9]/g, '');
-                    if (raw) {
-                        this.value = Number(raw).toLocaleString('en-IN');
-                    } else {
-                        this.value = '';
-                    }
-                });
-            }
-
-            const expiryInput = document.getElementById('pj-expiry');
-            if (expiryInput) {
-                const d = new Date();
-                d.setDate(d.getDate() + 30);
-                expiryInput.value = d.toISOString().split('T')[0];
-                expiryInput.max = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                expiryInput.min = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                expiryInput.addEventListener('change', function() {
-                    const selected = new Date(this.value);
-                    const maxDate = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
-                    if (selected > maxDate) {
-                        alert('⚠️ Expiry date cannot be more than 45 days from today.');
-                        this.value = maxDate.toISOString().split('T')[0];
-                    }
-                });
-            }
-
-            const zoneSelect = document.getElementById('pj-zone');
-            if (zoneSelect) {
-                zoneSelect.value = '100';
-                updatePostAreas();
-            }
-
-            autoCleanExpiredJobs();
-
-            const mobileInput = document.getElementById('mobile');
-            if (mobileInput) {
-                mobileInput.addEventListener('input', function(e) {
-                    const mobile = this.value.trim();
-                    if (mobile.length === 10) {
-                        autoCheckMobile(mobile);
-                    } else if (mobile.length > 0 && mobile.length < 10) {
-                        setStatus('Enter 10 digits', 'gray');
-                        document.getElementById('step2').classList.add('hidden');
-                        document.getElementById('step3').classList.add('hidden');
-                        document.getElementById('step4').classList.add('hidden');
-                        document.getElementById('step1').style.display = 'block';
-                    } else {
-                        document.getElementById('step2').classList.add('hidden');
-                        document.getElementById('step3').classList.add('hidden');
-                        document.getElementById('step4').classList.add('hidden');
-                        document.getElementById('step1').style.display = 'block';
-                        document.getElementById('mobile-status').textContent = '';
-                    }
-                });
-            }
-
-            document.getElementById('pin').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') submitPin();
-            });
-
-            document.getElementById('reg-pin').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') document.getElementById('reg-pin-confirm').focus();
-            });
-
-            document.getElementById('reg-pin-confirm').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') registerUser();
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('.header-right')) closeDropdown();
-            });
-
-            // OTP input handling
-            document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
-                input.addEventListener('input', function(e) {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value.length === 1) {
-                        this.classList.add('filled');
-                        if (index < arr.length - 1) {
-                            arr[index + 1].focus();
-                        } else {
-                            const allFilled = Array.from(arr).every(el => el.value.length === 1);
-                            if (allFilled) verifyOTP();
-                        }
-                    } else {
-                        this.classList.remove('filled');
-                    }
-                });
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-                        arr[index - 1].focus();
-                        arr[index - 1].classList.remove('filled');
-                    }
-                    if (e.key === 'Enter') {
-                        const allFilled = Array.from(arr).every(el => el.value.length === 1);
-                        if (allFilled) {
-                            verifyOTP();
-                        } else {
-                            const firstEmpty = Array.from(arr).find(el => el.value.length === 0);
-                            if (firstEmpty) firstEmpty.focus();
-                        }
-                    }
-                });
-                input.addEventListener('focus', function() { this.select(); });
-            });
-
-            console.log('✅ JobAd Ready');
-
-            const isRootPath = window.location.pathname === '/' || window.location.pathname === '/index.html';
-            const shouldAutoLogin = (hasSharedLink || sessionStorage.getItem('guest_session') === 'true') && !isRootPath;
-
-            if (shouldAutoLogin) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('home-page').classList.remove('hidden-page');
-                if (hasSharedLink) {
-                    document.getElementById('loading-overlay').classList.add('show');
-                }
-                autoLoginGuest();
-            } else {
-                document.getElementById('login-screen').style.display = 'flex';
-                document.getElementById('mobile').focus();
-                document.getElementById('home-page').classList.add('hidden-page');
-                if (isRootPath) {
-                    sessionStorage.removeItem('guest_session');
-                }
-            }
-        });
 
         // ============================================================
         // AUTO CHECK MOBILE
@@ -4074,9 +3806,7 @@
             const postedDate = data.posted_date || data.created_at || data.last_active;
             document.getElementById('detail-posted').textContent = postedDate ? new Date(postedDate).toLocaleString('en-IN') : '—';
 
-            // Update all detail stats
             updateDetailStats();
-
             updateDetailCounts(data.endorsements || [], data.flags || []);
 
             const callBtn = document.getElementById('detail-call-btn');
@@ -4197,7 +3927,7 @@
         }
 
         // ============================================================
-        // ENDORSEMENTS & FLAGS - Fixed for both jobs and seekers
+        // ENDORSEMENTS & FLAGS
         // ============================================================
         async function toggleEndorsement(targetType, targetId, mobile) {
             if (isGuest) {
@@ -4216,7 +3946,6 @@
             const targetMobile = currentUser.mobile;
 
             try {
-                // Get current endorsements and flags
                 const { data, error } = await sb
                     .from(table)
                     .select('endorsements, flags')
@@ -4228,7 +3957,6 @@
                 let endorsements = data.endorsements || [];
                 let flags = data.flags || [];
 
-                // Convert to string for comparison to handle BigInt
                 const targetMobileStr = String(targetMobile);
                 const alreadyEndorsed = endorsements.some(m => String(m) === targetMobileStr);
                 const alreadyFlagged = flags.some(m => String(m) === targetMobileStr);
@@ -4252,7 +3980,6 @@
 
                 if (updateError) throw updateError;
 
-                // Update local data
                 if (currentDetailData && currentDetailType === targetType) {
                     currentDetailData.endorsements = endorsements;
                     currentDetailData.flags = flags;
@@ -4260,7 +3987,6 @@
                     updateDetailCounts(endorsements, flags);
                 }
 
-                // Refresh feed data
                 await fetchFeedData();
                 return { endorsements, flags };
 
@@ -5279,7 +5005,108 @@
             }
         };
 
-        console.log('✅ JobAd App Ready - Recommend and Not Rec buttons fixed for both jobs and seekers');
+        // ============================================================
+        // 🔴🔴🔴 ZONE & AREA DATA - EDIT HERE (AT THE BOTTOM) 🔴🔴🔴
+        // ============================================================
+        // To add a new zone, add a new object to the ZONES array.
+        // To add areas to a zone, add objects to the AREAS array.
+        // ============================================================
+        const ZONES = [
+            { zone_id: 100, zone_name: "Hyderabad" },
+            { zone_id: 200, zone_name: "North Telangana" },
+            { zone_id: 300, zone_name: "East Telangana" },
+            { zone_id: 400, zone_name: "South Telangana" }
+        ];
+
+        const AREAS = [
+            { area_id: 100000, zone_id: 100, area_name: "All Hyderabad" },
+            { area_id: 200000, zone_id: 200, area_name: "All North Telangana" },
+            { area_id: 300000, zone_id: 300, area_name: "All East Telangana" },
+            { area_id: 400000, zone_id: 400, area_name: "All South Telangana" },
+            { area_id: 100001, zone_id: 100, area_name: "Kukatpally" },
+            { area_id: 100002, zone_id: 100, area_name: "Madhapur" },
+            { area_id: 100003, zone_id: 100, area_name: "Kondapur" },
+            { area_id: 100004, zone_id: 100, area_name: "Gachibowli" },
+            { area_id: 100005, zone_id: 100, area_name: "Hitech City" },
+            { area_id: 100006, zone_id: 100, area_name: "Miyapur" },
+            { area_id: 100007, zone_id: 100, area_name: "Uppal" },
+            { area_id: 100008, zone_id: 100, area_name: "LB Nagar" },
+            { area_id: 100009, zone_id: 100, area_name: "Dilsukhnagar" },
+            { area_id: 100995, zone_id: 100, area_name: "Shamshabad" },
+            { area_id: 100996, zone_id: 100, area_name: "Jadcharla" },
+            { area_id: 100997, zone_id: 100, area_name: "Medak" },
+            { area_id: 100998, zone_id: 100, area_name: "Sangareddy" },
+            { area_id: 100999, zone_id: 100, area_name: "Zahirabad" },
+            { area_id: 200001, zone_id: 200, area_name: "Adilabad" },
+            { area_id: 200002, zone_id: 200, area_name: "Asifabad" },
+            { area_id: 200003, zone_id: 200, area_name: "Mancherial" },
+            { area_id: 200004, zone_id: 200, area_name: "Nirmal" },
+            { area_id: 200005, zone_id: 200, area_name: "Nizamabad" },
+            { area_id: 200006, zone_id: 200, area_name: "Jagtial" },
+            { area_id: 200007, zone_id: 200, area_name: "Peddapalli" },
+            { area_id: 200008, zone_id: 200, area_name: "Karimnagar" },
+            { area_id: 200009, zone_id: 200, area_name: "Sircilla" },
+            { area_id: 200010, zone_id: 200, area_name: "Kamareddy" },
+            { area_id: 200011, zone_id: 200, area_name: "Siddipet" },
+            { area_id: 300001, zone_id: 300, area_name: "Warangal" },
+            { area_id: 300002, zone_id: 300, area_name: "Hanumakonda" },
+            { area_id: 300003, zone_id: 300, area_name: "Khammam" },
+            { area_id: 300004, zone_id: 300, area_name: "Bhupalpally" },
+            { area_id: 300005, zone_id: 300, area_name: "Mulugu" },
+            { area_id: 300006, zone_id: 300, area_name: "Mahabubabad" },
+            { area_id: 300007, zone_id: 300, area_name: "Kothagudem" },
+            { area_id: 300008, zone_id: 300, area_name: "Bhuvanagiri" },
+            { area_id: 300009, zone_id: 300, area_name: "Jangaon" },
+            { area_id: 400001, zone_id: 400, area_name: "Mahabubnagar" },
+            { area_id: 400002, zone_id: 400, area_name: "Nalgonda" },
+            { area_id: 400003, zone_id: 400, area_name: "Suryapet" },
+            { area_id: 400004, zone_id: 400, area_name: "Nagarkurnool" },
+            { area_id: 400005, zone_id: 400, area_name: "Vikarabad" },
+            { area_id: 400006, zone_id: 400, area_name: "Narayanpet" },
+            { area_id: 400007, zone_id: 400, area_name: "Wanaparthy" },
+            { area_id: 400008, zone_id: 400, area_name: "Gadwal" }
+        ];
+
+        // ============================================================
+        // ZONE HELPER FUNCTIONS (defined after data)
+        // ============================================================
+        function getZoneName(id) {
+            const z = ZONES.find(z => z.zone_id === id);
+            return z ? z.zone_name : 'Unknown';
+        }
+
+        function getAreaName(id) {
+            const a = AREAS.find(a => a.area_id === id);
+            return a ? a.area_name : '';
+        }
+
+        function getAreasByZone(zoneId) {
+            return AREAS.filter(a => a.zone_id === zoneId);
+        }
+
+        function populateEditZones() {
+            const select = document.getElementById('edit-seeker-zone');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Select --</option>';
+            ZONES.forEach(zone => {
+                select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
+            });
+        }
+
+        function updateEditAreas() {
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            const areaSelect = document.getElementById('edit-seeker-area');
+            areaSelect.innerHTML = '<option value="">Select zone first</option>';
+            if (zoneId) {
+                const areas = getAreasByZone(zoneId);
+                areas.forEach(area => {
+                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+                });
+            }
+        }
+
+        console.log('✅ JobAd App Ready');
+        console.log(`📍 Loaded ${ZONES.length} zones with ${AREAS.length} areas`);
 
         if (hasSharedLink) {
             setTimeout(() => {
