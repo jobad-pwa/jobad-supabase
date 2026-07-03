@@ -3656,8 +3656,8 @@
                 d.setDate(d.getDate() + 30);
                 document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
                 document.getElementById('pj-gender').value = '0';
-                // Default zone to Hyderabad (500)
-                document.getElementById('pj-zone').value = '500';
+                // Default zone to Hyderabad (5001)
+                document.getElementById('pj-zone').value = '5001';
                 updatePostAreas();
 
                 fetchFeedData();
@@ -4407,8 +4407,8 @@
                 document.getElementById('pj-salary').value = '';
                 document.getElementById('pj-experience').value = '3.5';
                 document.getElementById('pj-gender').value = '0';
-                // Default zone to Hyderabad (500)
-                document.getElementById('pj-zone').value = '500';
+                // Default zone to Hyderabad (5001)
+                document.getElementById('pj-zone').value = '5001';
                 updatePostAreas();
                 const d = new Date();
                 d.setDate(d.getDate() + 30);
@@ -4910,7 +4910,7 @@
                     }
                 })
                 .catch(() => {
-                    selectZone(500, 'Hyderabad');
+                    selectZone(5001, 'Hyderabad');
                     document.getElementById('zone-search').value = 'Hyderabad (Default)';
                 });
         }
