@@ -2,10 +2,126 @@
 // Centralized zone and area data - update once, use everywhere
 
 export const ZONES = [
-  { zone_id: 100, zone_name: "Hyderabad" },
-  { zone_id: 200, zone_name: "North Telangana" },
-  { zone_id: 300, zone_name: "East Telangana" },
-  { zone_id: 400, zone_name: "South Telangana" }
+    // Nellore (5241)
+    { zone_id: 5241, zone_name: "Nellore" },
+    // Hyderabad (5001)
+    { zone_id: 5001, zone_name: "Hyderabad" },
+    // Vikarabad (5012)
+    { zone_id: 5012, zone_name: "Vikarabad" },
+    // Medak (5021)
+    { zone_id: 5021, zone_name: "Medak" },
+    // Sangareddy (5022)
+    { zone_id: 5022, zone_name: "Sangareddy" },
+    // Siddipet (5023)
+    { zone_id: 5023, zone_name: "Siddipet" },
+    // Kamareddy (5031)
+    { zone_id: 5031, zone_name: "Kamareddy" },
+    // Nizamabad (5032)
+    { zone_id: 5032, zone_name: "Nizamabad" },
+    // Adilabad (5041)
+    { zone_id: 5041, zone_name: "Adilabad" },
+    // Asifabad (5042)
+    { zone_id: 5042, zone_name: "Asifabad" },
+    // Mancherial (5043)
+    { zone_id: 5043, zone_name: "Mancherial" },
+    // Nirmal (5044)
+    { zone_id: 5044, zone_name: "Nirmal" },
+    // Jagtial (5051)
+    { zone_id: 5051, zone_name: "Jagtial" },
+    // Karimnagar (5052)
+    { zone_id: 5052, zone_name: "Karimnagar" },
+    // Peddapalli (5053)
+    { zone_id: 5053, zone_name: "Peddapalli" },
+    // Sircilla (5054)
+    { zone_id: 5054, zone_name: "Sircilla" },
+    // Hanumakonda (5061)
+    { zone_id: 5061, zone_name: "Hanumakonda" },
+    // Jangaon (5062)
+    { zone_id: 5062, zone_name: "Jangaon" },
+    // Bhupalpally (5063)
+    { zone_id: 5063, zone_name: "Bhupalpally" },
+    // Mahabubabad (5064)
+    { zone_id: 5064, zone_name: "Mahabubabad" },
+    // Mulugu (5065)
+    { zone_id: 5065, zone_name: "Mulugu" },
+    // Warangal (5066)
+    { zone_id: 5066, zone_name: "Warangal" },
+    // Kothagudem (5071)
+    { zone_id: 5071, zone_name: "Kothagudem" },
+    // Khammam (5072)
+    { zone_id: 5072, zone_name: "Khammam" },
+    // Nalgonda (5081)
+    { zone_id: 5081, zone_name: "Nalgonda" },
+    // Suryapet (5082)
+    { zone_id: 5082, zone_name: "Suryapet" },
+    // Bhongir (5083)
+    { zone_id: 5083, zone_name: "Bhongir" },
+    // Gadwal (5091)
+    { zone_id: 5091, zone_name: "Gadwal" },
+    // Mahabubnagar (5092)
+    { zone_id: 5092, zone_name: "Mahabubnagar" },
+    // Nagarkurnool (5093)
+    { zone_id: 5093, zone_name: "Nagarkurnool" },
+    // Narayanpet (5094)
+    { zone_id: 5094, zone_name: "Narayanpet" },
+    // Wanaparthy (5095)
+    { zone_id: 5095, zone_name: "Wanaparthy" },
+    // Anantapuram (5151)
+    { zone_id: 5151, zone_name: "Anantapuram" },
+    // Puttaparthi (5152)
+    { zone_id: 5152, zone_name: "Puttaparthi" },
+    // Kadapa (5161)
+    { zone_id: 5161, zone_name: "Kadapa" },
+    // Rayachoti (5162)
+    { zone_id: 5162, zone_name: "Rayachoti" },
+    // Chittoor (5171)
+    { zone_id: 5171, zone_name: "Chittoor" },
+    // Madanapalle (5172)
+    { zone_id: 5172, zone_name: "Madanapalle" },
+    // Tirupati (5173)
+    { zone_id: 5173, zone_name: "Tirupati" },
+    // Kurnool (5181)
+    { zone_id: 5181, zone_name: "Kurnool" },
+    // Nandyal (5182)
+    { zone_id: 5182, zone_name: "Nandyal" },
+    // Vijayawada (5201)
+    { zone_id: 5201, zone_name: "Vijayawada" },
+    // Machilipatnam (5211)
+    { zone_id: 5211, zone_name: "Machilipatnam" },
+    // Guntur (5221)
+    { zone_id: 5221, zone_name: "Guntur" },
+    // Bapatla (5222)
+    { zone_id: 5222, zone_name: "Bapatla" },
+    // Narasaraopeta (5223)
+    { zone_id: 5223, zone_name: "Narasaraopeta" },
+    // Ongole (5231)
+    { zone_id: 5231, zone_name: "Ongole" },
+    // Markapuram (5232)
+    { zone_id: 5232, zone_name: "Markapuram" },
+    // Visakhapatnam (5301)
+    { zone_id: 5301, zone_name: "Visakhapatnam" },
+    // Anakapalli (5311)
+    { zone_id: 5311, zone_name: "Anakapalli" },
+    // Paderu (5312)
+    { zone_id: 5312, zone_name: "Paderu" },
+    // Srikakulam (5321)
+    { zone_id: 5321, zone_name: "Srikakulam" },
+    // Kakinada (5331)
+    { zone_id: 5331, zone_name: "Kakinada" },
+    // Rajahmundry (5332)
+    { zone_id: 5332, zone_name: "Rajahmundry" },
+    // Amalapuram (5333)
+    { zone_id: 5333, zone_name: "Amalapuram" },
+    // Rampachodavaram (5334)
+    { zone_id: 5334, zone_name: "Rampachodavaram" },
+    // Eluru (5341)
+    { zone_id: 5341, zone_name: "Eluru" },
+    // Bhimavaram (5342)
+    { zone_id: 5342, zone_name: "Bhimavaram" },
+    // Vizianagaram (5351)
+    { zone_id: 5351, zone_name: "Vizianagaram" },
+    // Parvathipuram (5352)
+    { zone_id: 5352, zone_name: "Parvathipuram" }
 ];
 
 export const AREAS = [
