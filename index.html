@@ -1365,6 +1365,9 @@
     </style>
 </head>
 <body>
+    <!-- All HTML content remains the same as your original working version -->
+    <!-- ... (keeping all HTML structure from your original code) ... -->
+    
     <div class="card">
         <!-- LOADING OVERLAY -->
         <div class="loading-overlay" id="loading-overlay">
@@ -2116,7 +2119,7 @@
         const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // ============================================================
-        // ZONE & AREA DATA - COMPLETE LIST (ALL TELANGANA & ANDHRA PRADESH)
+        // ZONE & AREA DATA - COMPLETE LIST
         // ============================================================
         const ZONES = [
             { zone_id: 5001, zone_name: "Hyderabad" },
@@ -2431,6 +2434,9 @@
             { area_id: 53550101, zone_id: 5352, area_name: "Parvathipuram" }
         ];
 
+        // ============================================================
+        // HELPER FUNCTIONS
+        // ============================================================
         function getZoneName(id) {
             const z = ZONES.find(z => z.zone_id === id);
             return z ? z.zone_name : 'Unknown';
@@ -2442,13 +2448,17 @@
         }
 
         function getAreasByZone(zoneId) {
-            return AREAS.filter(a => a.zone_id === zoneId);
+            // Return areas sorted alphabetically by area_name
+            return AREAS.filter(a => a.zone_id === zoneId)
+                       .sort((a, b) => a.area_name.localeCompare(b.area_name));
         }
 
         function populateEditZones() {
             const select = document.getElementById('edit-seeker-zone');
             select.innerHTML = '<option value="">-- Select --</option>';
-            ZONES.forEach(zone => {
+            // Sort zones alphabetically
+            const sortedZones = [...ZONES].sort((a, b) => a.zone_name.localeCompare(b.zone_name));
+            sortedZones.forEach(zone => {
                 select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
             });
         }
@@ -5192,7 +5202,7 @@
         }
 
         // ============================================================
-        // SEARCHABLE ZONE - Fixed: Removed (Detected) and (Default) suffixes
+        // SEARCHABLE ZONE - FIXED: No duplicate entries, no suffixes
         // ============================================================
         function searchZone() {
             const input = document.getElementById('zone-search');
@@ -5203,6 +5213,7 @@
                 suggestions.classList.remove('show');
                 return;
             }
+            // Use Set to remove duplicates
             const seen = new Set();
             const matches = ZONES.filter(zone => {
                 if (seen.has(zone.zone_id)) return false;
@@ -5234,6 +5245,7 @@
             document.getElementById('zone-status').textContent = zoneName;
             const areaSelect = document.getElementById('filter-area');
             if (areaSelect) {
+                // Get areas sorted alphabetically
                 const areas = getAreasByZone(zoneId);
                 areaSelect.innerHTML = '<option value="ALL">All areas</option>';
                 areas.forEach(area => {
@@ -5262,13 +5274,13 @@
                     );
                     if (matched) {
                         selectZone(matched.zone_id, matched.zone_name);
-                        // No suffix added
+                        // NO suffix added - just the zone name
                         document.getElementById('zone-search').value = matched.zone_name;
                     }
                 })
                 .catch(() => {
                     selectZone(5001, 'Hyderabad');
-                    // No suffix added
+                    // NO suffix added - just the zone name
                     document.getElementById('zone-search').value = 'Hyderabad';
                 });
         }
@@ -5388,6 +5400,7 @@
                 });
             }
 
+            // Populate zones with alphabetical sorting
             populateEditZones();
 
             setupCounter('pj-title', 'pj-title-counter', 60);
@@ -5425,7 +5438,9 @@
 
             const zoneSelect = document.getElementById('pj-zone');
             if (zoneSelect) {
-                ZONES.forEach(zone => {
+                // Sort zones alphabetically
+                const sortedZones = [...ZONES].sort((a, b) => a.zone_name.localeCompare(b.zone_name));
+                sortedZones.forEach(zone => {
                     zoneSelect.innerHTML += `<option value="${zone.zone_id}">${zone.zone_name}</option>`;
                 });
                 zoneSelect.value = '5001';
@@ -5505,7 +5520,7 @@
                 input.addEventListener('focus', function() { this.select(); });
             });
 
-            console.log('✅ JobAd Ready - All zones and areas loaded!');
+            console.log('✅ JobAd Ready - All zones and areas loaded with alphabetical sorting!');
 
             const isRootPath = window.location.pathname === '/' || window.location.pathname === '/index.html';
             const shouldAutoLogin = (hasSharedLink || sessionStorage.getItem('guest_session') === 'true') && !isRootPath;
@@ -5527,7 +5542,7 @@
             }
         });
 
-        console.log('✅ JobAd App Ready - Complete with all zones and areas!');
+        console.log('✅ JobAd App Ready - Complete with all zones and areas, alphabetically sorted!');
 
         if (hasSharedLink) {
             setTimeout(() => {
