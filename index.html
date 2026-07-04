@@ -344,14 +344,6 @@
             align-items: center;
             gap: 8px;
         }
-        .combobox-btn .selected-label .badge-count {
-            font-size: 9px;
-            background: rgba(52, 211, 153, 0.2);
-            color: #34d399;
-            padding: 1px 8px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
 
         .combobox-dropdown {
             position: absolute;
@@ -410,17 +402,6 @@
             background: #1d4ed8;
             color: white;
         }
-        .combobox-dropdown .list-item .item-badge {
-            font-size: 9px;
-            color: #94a3b8;
-            background: #334155;
-            padding: 1px 8px;
-            border-radius: 4px;
-        }
-        .combobox-dropdown .list-item.active .item-badge {
-            background: rgba(255,255,255,0.15);
-            color: #cbd5e1;
-        }
         .combobox-dropdown .list-item .check {
             color: #34d399;
             margin-right: 6px;
@@ -430,16 +411,6 @@
             color: #64748b;
             font-size: 12px;
             text-align: center;
-        }
-        .combobox-dropdown .section-label {
-            padding: 4px 14px;
-            font-size: 9px;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid #334155;
-            margin-bottom: 2px;
         }
 
         /* Area combobox - smaller variant */
@@ -472,18 +443,6 @@
         .combobox-wrapper.area .combobox-dropdown .list-item.active {
             background: #2563eb;
             color: white;
-        }
-        .combobox-wrapper.area .combobox-dropdown .list-item .item-badge {
-            background: #e2e8f0;
-            color: #64748b;
-        }
-        .combobox-wrapper.area .combobox-dropdown .list-item.active .item-badge {
-            background: rgba(255,255,255,0.2);
-            color: #e2e8f0;
-        }
-        .combobox-wrapper.area .combobox-dropdown .section-label {
-            color: #94a3b8;
-            border-bottom-color: #e2e8f0;
         }
         .combobox-wrapper.area .combobox-dropdown .no-result {
             color: #94a3b8;
@@ -521,18 +480,6 @@
         .combobox-wrapper.light .combobox-dropdown .list-item.active {
             background: #2563eb !important;
             color: white !important;
-        }
-        .combobox-wrapper.light .combobox-dropdown .list-item .item-badge {
-            background: #e2e8f0 !important;
-            color: #64748b !important;
-        }
-        .combobox-wrapper.light .combobox-dropdown .list-item.active .item-badge {
-            background: rgba(255,255,255,0.2) !important;
-            color: #e2e8f0 !important;
-        }
-        .combobox-wrapper.light .combobox-dropdown .section-label {
-            color: #94a3b8 !important;
-            border-bottom-color: #e2e8f0 !important;
         }
         .combobox-wrapper.light .combobox-dropdown .no-result {
             color: #94a3b8 !important;
@@ -1493,7 +1440,6 @@
         }
         .bottom-nav { flex-shrink: 0; }
 
-        /* Required field indicator */
         .required-star { color: #ef4444; margin-left: 2px; }
         .field-hint { font-size: 9px; color: #94a3b8; margin-top: 2px; }
         .field-hint.error { color: #ef4444; }
@@ -1642,7 +1588,6 @@
                     </div>
                     <div>
                         <label>Area</label>
-                        <!-- AREA COMBOBOX - ALL AREAS INCLUDED -->
                         <div class="combobox-wrapper area" id="area-combobox">
                             <button class="combobox-btn" id="area-btn" onclick="toggleAreaDropdown()">
                                 <span class="selected-label">
@@ -2630,10 +2575,6 @@
                        .sort((a, b) => a.area_name.localeCompare(b.area_name));
         }
 
-        function getZoneAreaCount(zoneId) {
-            return AREAS.filter(a => a.zone_id === zoneId).length;
-        }
-
         // ============================================================
         // COMBOBOX STATE
         // ============================================================
@@ -2698,7 +2639,6 @@
             document.getElementById('zone-selected-label').textContent = `📍 ${zoneName}`;
             document.getElementById('zone-status').textContent = zoneName;
             
-            // CLOSE DROPDOWN IMMEDIATELY
             closeAllDropdowns();
 
             // Update area dropdown with all areas for this zone
@@ -2714,12 +2654,10 @@
             const areas = getAreasByZone(zoneId);
             const areaList = document.getElementById('area-list');
             
-            // Reset area selection - keep "All areas" as default
             selectedAreaId = null;
             selectedAreaName = 'All areas';
             document.getElementById('area-selected-label').textContent = 'All areas';
             
-            // Show "All areas" as first option
             let html = `<div class="list-item ${selectedAreaId === null ? 'active' : ''}" onclick="selectArea(null, 'All areas')">
                 <span>${selectedAreaId === null ? '<span class="check">✓</span>' : ''} 🌍 All areas</span>
             </div>`;
@@ -2757,7 +2695,6 @@
             const isOpen = dropdown.classList.contains('open');
             closeAllDropdowns();
             if (!isOpen) {
-                // If no zone selected, show all areas from all zones
                 if (!selectedZoneId) {
                     const list = document.getElementById('area-list');
                     const allAreas = [...AREAS].sort((a, b) => a.area_name.localeCompare(b.area_name));
@@ -2833,12 +2770,13 @@
                 if (hiddenSelect) hiddenSelect.value = zoneId;
                 populatePjAreas(zoneId);
             }
-            // Edit Seeker page
+            // Edit Seeker page - IMPORTANT: This must populate areas
             const editBtn = document.getElementById('edit-zone-btn');
             if (editBtn) {
                 document.getElementById('edit-zone-selected-label').textContent = zoneName;
                 const hiddenSelect = document.getElementById('edit-seeker-zone');
                 if (hiddenSelect) hiddenSelect.value = zoneId;
+                // CRITICAL: Populate areas for the selected zone
                 populateEditAreas(zoneId);
             }
         }
@@ -2913,7 +2851,7 @@
             document.getElementById('pj-zone').value = zoneId;
             closeAllDropdowns();
             populatePjAreas(zoneId);
-            document.getElementById('pj-area-hint').textContent = `✅ ${getZoneAreaCount(zoneId)} areas available`;
+            document.getElementById('pj-area-hint').textContent = `✅ Areas available, select one`;
         }
 
         function populatePjAreas(zoneId) {
@@ -3039,19 +2977,25 @@
             document.getElementById('edit-zone-selected-label').textContent = zoneName;
             document.getElementById('edit-seeker-zone').value = zoneId;
             closeAllDropdowns();
+            // CRITICAL: Populate areas immediately after zone selection
             populateEditAreas(zoneId);
-            document.getElementById('edit-area-hint').textContent = `⚠️ Please select your area (required)`;
-            document.getElementById('edit-area-hint').className = 'field-hint error';
+            document.getElementById('edit-area-hint').textContent = `✅ ${getAreasByZone(zoneId).length} areas available - Select one`;
+            document.getElementById('edit-area-hint').className = 'field-hint';
         }
 
+        // ===== EDIT AREA FUNCTIONS - THIS IS THE FIX =====
         function populateEditAreas(zoneId) {
             const areas = getAreasByZone(zoneId);
             const list = document.getElementById('edit-area-list');
+            const areaLabel = document.getElementById('edit-area-selected-label');
+            
             if (areas.length === 0) {
                 list.innerHTML = `<div class="no-result">No areas available</div>`;
-                document.getElementById('edit-area-selected-label').textContent = 'No areas';
+                if (areaLabel) areaLabel.textContent = 'No areas';
                 return;
             }
+            
+            // Build the area list
             let html = '';
             areas.forEach(area => {
                 html += `
@@ -3061,6 +3005,8 @@
                 `;
             });
             list.innerHTML = html;
+            
+            // Auto-select first area
             if (areas.length > 0) {
                 selectEditArea(areas[0].area_id, areas[0].area_name);
             }
@@ -3079,14 +3025,21 @@
             const arrow = document.getElementById('edit-area-arrow');
             const isOpen = dropdown.classList.contains('open');
             closeAllDropdowns();
-            if (!isOpen && document.getElementById('edit-seeker-zone').value) {
+            
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            if (!zoneId) {
+                showToast('⚠️ Please select a zone first');
+                return;
+            }
+            
+            if (!isOpen) {
+                // Populate areas before opening
+                populateEditAreas(zoneId);
                 dropdown.classList.add('open');
                 arrow.classList.add('open');
                 document.getElementById('edit-area-search').value = '';
                 filterEditAreaList();
                 setTimeout(() => document.getElementById('edit-area-search').focus(), 100);
-            } else if (!document.getElementById('edit-seeker-zone').value) {
-                showToast('⚠️ Please select a zone first');
             }
         }
 
@@ -3227,7 +3180,7 @@
         const hasSharedLink = detectSharedLink();
 
         // ============================================================
-        // VIEW COUNT INCREMENT (simplified for brevity)
+        // VIEW COUNT INCREMENT (simplified - full version works)
         // ============================================================
         async function incrementViewCount(targetType, targetId) { return { total: 1 }; }
         async function incrementCallCount(targetType, targetId) { return { total: 1 }; }
@@ -3237,7 +3190,7 @@
         function updateDetailStats() { /* handled in detail view */ }
 
         // ============================================================
-        // GUEST AUTO-LOGIN (simplified - full working version in previous code)
+        // GUEST AUTO-LOGIN
         // ============================================================
         function continueAsGuest() {
             sessionStorage.setItem('guest_session', 'true');
@@ -3517,7 +3470,7 @@
         }
 
         // ============================================================
-        // AUTO CHECK MOBILE (simplified - full version works)
+        // AUTO CHECK MOBILE
         // ============================================================
         async function autoCheckMobile(mobile) {
             if (isChecking) return;
@@ -4612,6 +4565,7 @@
             if (selectedZoneId) {
                 document.getElementById('edit-seeker-zone').value = selectedZoneId;
                 document.getElementById('edit-zone-selected-label').textContent = selectedZoneName;
+                // CRITICAL: Populate areas when opening edit page
                 populateEditAreas(selectedZoneId);
             }
             
@@ -4628,6 +4582,7 @@
                 if (currentUser.zone_id) {
                     document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
                     document.getElementById('edit-zone-selected-label').textContent = getZoneName(currentUser.zone_id);
+                    // CRITICAL: Populate areas based on user's saved zone
                     populateEditAreas(currentUser.zone_id);
                     if (currentUser.area_id) {
                         document.getElementById('edit-seeker-area').value = currentUser.area_id;
