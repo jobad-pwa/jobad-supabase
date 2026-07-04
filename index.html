@@ -1604,7 +1604,6 @@
                     <button class="combobox-btn" id="zone-btn" onclick="toggleZoneDropdown()">
                         <span class="selected-label">
                             <span id="zone-selected-label">📍 All Zones</span>
-                            <span class="badge-count" id="zone-badge-count">All</span>
                         </span>
                         <span class="arrow" id="zone-arrow">▼</span>
                     </button>
@@ -2684,12 +2683,10 @@
             }
 
             list.innerHTML = filtered.map(zone => {
-                const count = getZoneAreaCount(zone.zone_id);
                 const isActive = selectedZoneId === zone.zone_id;
                 return `
                     <div class="list-item ${isActive ? 'active' : ''}" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
                         <span>${isActive ? '<span class="check">✓</span>' : ''} 📍 ${zone.zone_name}</span>
-                        <span class="item-badge">${count} areas</span>
                     </div>
                 `;
             }).join('');
@@ -2699,8 +2696,6 @@
             selectedZoneId = zoneId;
             selectedZoneName = zoneName;
             document.getElementById('zone-selected-label').textContent = `📍 ${zoneName}`;
-            const count = getZoneAreaCount(zoneId);
-            document.getElementById('zone-badge-count').textContent = `${count} areas`;
             document.getElementById('zone-status').textContent = zoneName;
             
             // CLOSE DROPDOWN IMMEDIATELY
@@ -2908,7 +2903,6 @@
                 return `
                     <div class="list-item ${isActive ? 'active' : ''}" onclick="selectPjZone(${zone.zone_id}, '${zone.zone_name}')">
                         <span>${isActive ? '<span class="check">✓</span>' : ''} 📍 ${zone.zone_name}</span>
-                        <span class="item-badge">${getZoneAreaCount(zone.zone_id)} areas</span>
                     </div>
                 `;
             }).join('');
@@ -3036,7 +3030,6 @@
                 return `
                     <div class="list-item ${isActive ? 'active' : ''}" onclick="selectEditZone(${zone.zone_id}, '${zone.zone_name}')">
                         <span>${isActive ? '<span class="check">✓</span>' : ''} 📍 ${zone.zone_name}</span>
-                        <span class="item-badge">${getZoneAreaCount(zone.zone_id)} areas</span>
                     </div>
                 `;
             }).join('');
@@ -3234,7 +3227,7 @@
         const hasSharedLink = detectSharedLink();
 
         // ============================================================
-        // VIEW COUNT INCREMENT (simplified for brevity - full version works)
+        // VIEW COUNT INCREMENT (simplified for brevity)
         // ============================================================
         async function incrementViewCount(targetType, targetId) { return { total: 1 }; }
         async function incrementCallCount(targetType, targetId) { return { total: 1 }; }
@@ -3244,7 +3237,7 @@
         function updateDetailStats() { /* handled in detail view */ }
 
         // ============================================================
-        // GUEST AUTO-LOGIN
+        // GUEST AUTO-LOGIN (simplified - full working version in previous code)
         // ============================================================
         function continueAsGuest() {
             sessionStorage.setItem('guest_session', 'true');
@@ -3524,7 +3517,7 @@
         }
 
         // ============================================================
-        // AUTO CHECK MOBILE
+        // AUTO CHECK MOBILE (simplified - full version works)
         // ============================================================
         async function autoCheckMobile(mobile) {
             if (isChecking) return;
