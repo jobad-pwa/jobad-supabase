@@ -313,75 +313,183 @@
         .page-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         .home-top { flex-shrink: 0; padding-bottom: 6px; }
-        .zone-filter {
-            background: #0f172a;
-            border-radius: 12px;
-            padding: 8px 12px;
+
+        /* ===== SEARCHABLE DROPDOWN (COMBOBOX) STYLES ===== */
+        .combobox-wrapper {
+            position: relative;
             margin-bottom: 8px;
         }
-        .zone-filter .header {
+        .combobox-btn {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 8px 14px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
+            justify-content: space-between;
+            transition: border-color 0.2s;
         }
-        .zone-filter .header label {
-            font-size: 9px;
-            font-weight: 700;
+        .combobox-btn:hover { border-color: #3b82f6; }
+        .combobox-btn .arrow {
+            font-size: 12px;
             color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            transition: transform 0.2s;
         }
-        .zone-filter .header span {
-            font-size: 8px;
+        .combobox-btn .arrow.open { transform: rotate(180deg); }
+        .combobox-btn .selected-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .combobox-btn .selected-label .badge-count {
+            font-size: 9px;
             background: rgba(52, 211, 153, 0.2);
             color: #34d399;
             padding: 1px 8px;
             border-radius: 4px;
             font-weight: 700;
         }
-        .zone-filter .search-wrapper { position: relative; }
-        .zone-filter .search-wrapper input {
-            width: 100%;
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 5px 12px;
-            font-size: 11px;
-            color: white;
-            font-weight: 600;
-            outline: none;
-            margin-bottom: 0;
-        }
-        .zone-filter .search-wrapper input::placeholder { color: #64748b; }
-        .zone-filter .search-wrapper input:focus { border-color: #3b82f6; }
-        .zone-filter .suggestions {
+
+        .combobox-dropdown {
             position: absolute;
-            top: 100%;
+            top: calc(100% + 4px);
             left: 0;
             right: 0;
             background: #1e293b;
             border: 1px solid #334155;
-            border-radius: 10px;
-            margin-top: 4px;
-            max-height: 150px;
-            overflow-y: auto;
-            z-index: 50;
+            border-radius: 12px;
+            z-index: 100;
+            max-height: 220px;
             display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-        .zone-filter .suggestions.show { display: block; }
-        .zone-filter .suggestions .item {
-            padding: 6px 12px;
+        .combobox-dropdown.open { display: flex; }
+
+        .combobox-dropdown .search-input {
+            padding: 8px 12px;
+            border: none;
+            border-bottom: 1px solid #334155;
+            background: transparent;
+            color: white;
+            font-size: 12px;
+            outline: none;
+            flex-shrink: 0;
+        }
+        .combobox-dropdown .search-input::placeholder {
+            color: #64748b;
+        }
+        .combobox-dropdown .search-input:focus {
+            border-bottom-color: #3b82f6;
+        }
+
+        .combobox-dropdown .list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+        .combobox-dropdown .list-container::-webkit-scrollbar { width: 3px; }
+        .combobox-dropdown .list-container::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+
+        .combobox-dropdown .list-item {
+            padding: 6px 14px;
             font-size: 12px;
             color: #e2e8f0;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
         }
-        .zone-filter .suggestions .item:hover { background: #334155; }
-        .zone-filter .suggestions .no-result {
-            padding: 8px 12px;
-            font-size: 12px;
+        .combobox-dropdown .list-item:hover { background: #334155; }
+        .combobox-dropdown .list-item.active {
+            background: #1d4ed8;
+            color: white;
+        }
+        .combobox-dropdown .list-item .item-badge {
+            font-size: 9px;
+            color: #94a3b8;
+            background: #334155;
+            padding: 1px 8px;
+            border-radius: 4px;
+        }
+        .combobox-dropdown .list-item.active .item-badge {
+            background: rgba(255,255,255,0.15);
+            color: #cbd5e1;
+        }
+        .combobox-dropdown .list-item .check {
+            color: #34d399;
+            margin-right: 6px;
+        }
+        .combobox-dropdown .no-result {
+            padding: 12px 14px;
             color: #64748b;
+            font-size: 12px;
             text-align: center;
+        }
+        .combobox-dropdown .section-label {
+            padding: 4px 14px;
+            font-size: 9px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #334155;
+            margin-bottom: 2px;
+        }
+
+        /* Area combobox - smaller variant */
+        .combobox-wrapper.area .combobox-btn {
+            background: #f8fafc;
+            color: #1e293b;
+            border-color: #e2e8f0;
+            font-size: 11px;
+            padding: 5px 10px;
+        }
+        .combobox-wrapper.area .combobox-btn:hover { border-color: #3b82f6; }
+        .combobox-wrapper.area .combobox-dropdown {
+            background: white;
+            border-color: #e2e8f0;
+        }
+        .combobox-wrapper.area .combobox-dropdown .search-input {
+            background: #f8fafc;
+            color: #1e293b;
+            border-bottom-color: #e2e8f0;
+        }
+        .combobox-wrapper.area .combobox-dropdown .search-input::placeholder {
+            color: #94a3b8;
+        }
+        .combobox-wrapper.area .combobox-dropdown .list-item {
+            color: #1e293b;
+        }
+        .combobox-wrapper.area .combobox-dropdown .list-item:hover {
+            background: #f1f5f9;
+        }
+        .combobox-wrapper.area .combobox-dropdown .list-item.active {
+            background: #2563eb;
+            color: white;
+        }
+        .combobox-wrapper.area .combobox-dropdown .list-item .item-badge {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        .combobox-wrapper.area .combobox-dropdown .list-item.active .item-badge {
+            background: rgba(255,255,255,0.2);
+            color: #e2e8f0;
+        }
+        .combobox-wrapper.area .combobox-dropdown .section-label {
+            color: #94a3b8;
+            border-bottom-color: #e2e8f0;
+        }
+        .combobox-wrapper.area .combobox-dropdown .no-result {
+            color: #94a3b8;
         }
 
         .type-buttons {
@@ -1365,9 +1473,6 @@
     </style>
 </head>
 <body>
-    <!-- All HTML content remains the same as your original working version -->
-    <!-- ... (keeping all HTML structure from your original code) ... -->
-    
     <div class="card">
         <!-- LOADING OVERLAY -->
         <div class="loading-overlay" id="loading-overlay">
@@ -1467,14 +1572,18 @@
                 </div>
 
                 <div class="home-top">
-                    <div class="zone-filter">
-                        <div class="header">
-                            <label>📍 Filter by Zone</label>
-                            <span id="zone-status">All Zones</span>
-                        </div>
-                        <div class="search-wrapper">
-                            <input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()">
-                            <div class="suggestions" id="zone-suggestions"></div>
+                    <!-- ZONE COMBOBOX (Searchable Dropdown) -->
+                    <div class="combobox-wrapper" id="zone-combobox">
+                        <button class="combobox-btn" id="zone-btn" onclick="toggleZoneDropdown()">
+                            <span class="selected-label">
+                                <span id="zone-selected-label">📍 All Zones</span>
+                                <span class="badge-count" id="zone-badge-count">60+</span>
+                            </span>
+                            <span class="arrow" id="zone-arrow">▼</span>
+                        </button>
+                        <div class="combobox-dropdown" id="zone-dropdown">
+                            <input type="text" class="search-input" id="zone-search" placeholder="🔍 Search zones..." oninput="filterZoneList()" onfocus="filterZoneList()">
+                            <div class="list-container" id="zone-list"></div>
                         </div>
                     </div>
 
@@ -1507,9 +1616,19 @@
                         </div>
                         <div>
                             <label>Area</label>
-                            <select id="filter-area" onchange="onAreaFilterChange()">
-                                <option value="ALL">All areas</option>
-                            </select>
+                            <!-- AREA COMBOBOX (Searchable Dropdown) -->
+                            <div class="combobox-wrapper area" id="area-combobox">
+                                <button class="combobox-btn" id="area-btn" onclick="toggleAreaDropdown()">
+                                    <span class="selected-label">
+                                        <span id="area-selected-label">All areas</span>
+                                    </span>
+                                    <span class="arrow" id="area-arrow">▼</span>
+                                </button>
+                                <div class="combobox-dropdown" id="area-dropdown">
+                                    <input type="text" class="search-input" id="area-search" placeholder="🔍 Search areas..." oninput="filterAreaList()" onfocus="filterAreaList()">
+                                    <div class="list-container" id="area-list"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1701,15 +1820,33 @@
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                         <div class="edit-field">
                             <label>Zone *</label>
-                            <select id="edit-seeker-zone" onchange="updateEditAreas()">
-                                <option value="">-- Select --</option>
-                            </select>
+                            <div class="combobox-wrapper" id="edit-zone-combobox">
+                                <button class="combobox-btn" id="edit-zone-btn" onclick="toggleEditZoneDropdown()" style="background:#f8fafc; color:#1e293b; border-color:#e2e8f0; font-size:13px; padding:8px 12px;">
+                                    <span class="selected-label">
+                                        <span id="edit-zone-selected-label">-- Select --</span>
+                                    </span>
+                                    <span class="arrow" id="edit-zone-arrow">▼</span>
+                                </button>
+                                <div class="combobox-dropdown" id="edit-zone-dropdown" style="background:white; border-color:#e2e8f0;">
+                                    <input type="text" class="search-input" id="edit-zone-search" placeholder="🔍 Search zones..." oninput="filterEditZoneList()" onfocus="filterEditZoneList()" style="background:#f8fafc; color:#1e293b; border-bottom-color:#e2e8f0;">
+                                    <div class="list-container" id="edit-zone-list"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="edit-field">
                             <label>Area *</label>
-                            <select id="edit-seeker-area">
-                                <option value="">Select zone first</option>
-                            </select>
+                            <div class="combobox-wrapper area" id="edit-area-combobox">
+                                <button class="combobox-btn" id="edit-area-btn" onclick="toggleEditAreaDropdown()" style="background:#f8fafc; color:#1e293b; border-color:#e2e8f0; font-size:13px; padding:8px 12px;">
+                                    <span class="selected-label">
+                                        <span id="edit-area-selected-label">Select zone first</span>
+                                    </span>
+                                    <span class="arrow" id="edit-area-arrow">▼</span>
+                                </button>
+                                <div class="combobox-dropdown" id="edit-area-dropdown" style="background:white; border-color:#e2e8f0;">
+                                    <input type="text" class="search-input" id="edit-area-search" placeholder="🔍 Search areas..." oninput="filterEditAreaList()" onfocus="filterEditAreaList()" style="background:#f8fafc; color:#1e293b; border-bottom-color:#e2e8f0;">
+                                    <div class="list-container" id="edit-area-list"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="edit-field">
@@ -1789,15 +1926,33 @@
                     <div class="grid-2">
                         <div class="form-group">
                             <label class="form-label">Job Location Zone <span class="required">*</span></label>
-                            <select class="form-control" id="pj-zone" onchange="updatePostAreas()">
-                                <option value="">-- Select Zone --</option>
-                            </select>
+                            <div class="combobox-wrapper" id="pj-zone-combobox">
+                                <button class="combobox-btn" id="pj-zone-btn" onclick="togglePjZoneDropdown()" style="background:#f8fafc; color:#1e293b; border-color:#e2e8f0; font-size:13px; padding:8px 12px;">
+                                    <span class="selected-label">
+                                        <span id="pj-zone-selected-label">-- Select Zone --</span>
+                                    </span>
+                                    <span class="arrow" id="pj-zone-arrow">▼</span>
+                                </button>
+                                <div class="combobox-dropdown" id="pj-zone-dropdown" style="background:white; border-color:#e2e8f0;">
+                                    <input type="text" class="search-input" id="pj-zone-search" placeholder="🔍 Search zones..." oninput="filterPjZoneList()" onfocus="filterPjZoneList()" style="background:#f8fafc; color:#1e293b; border-bottom-color:#e2e8f0;">
+                                    <div class="list-container" id="pj-zone-list"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Specific Area <span class="required">*</span></label>
-                            <select class="form-control" id="pj-area">
-                                <option value="">Select zone first</option>
-                            </select>
+                            <div class="combobox-wrapper area" id="pj-area-combobox">
+                                <button class="combobox-btn" id="pj-area-btn" onclick="togglePjAreaDropdown()" style="background:#f8fafc; color:#1e293b; border-color:#e2e8f0; font-size:13px; padding:8px 12px;">
+                                    <span class="selected-label">
+                                        <span id="pj-area-selected-label">Select zone first</span>
+                                    </span>
+                                    <span class="arrow" id="pj-area-arrow">▼</span>
+                                </button>
+                                <div class="combobox-dropdown" id="pj-area-dropdown" style="background:white; border-color:#e2e8f0;">
+                                    <input type="text" class="search-input" id="pj-area-search" placeholder="🔍 Search areas..." oninput="filterPjAreaList()" onfocus="filterPjAreaList()" style="background:#f8fafc; color:#1e293b; border-bottom-color:#e2e8f0;">
+                                    <div class="list-container" id="pj-area-list"></div>
+                                </div>
+                            </div>
                             <div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div>
                         </div>
                     </div>
@@ -1918,7 +2073,6 @@
 
                     <!-- DETAIL STATS -->
                     <div class="detail-stats" id="detail-stats-container">
-                        <!-- Row 1: Popularity, Flags, Shares -->
                         <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
                             <div class="stat-item" onclick="detailShowEndorsers()">
                                 <div class="number" id="detail-total-popularity">0</div>
@@ -1934,7 +2088,6 @@
                             </div>
                         </div>
                         
-                        <!-- Row 2 & 3: Dynamic - shown/hidden based on type -->
                         <div id="detail-30day-row" style="border-top:1px solid #f1f5f9; padding-top:6px; display:none;">
                             <div class="stat-row-label">📊 Last 30 Days</div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px; margin-top:2px;">
@@ -2448,31 +2601,473 @@
         }
 
         function getAreasByZone(zoneId) {
-            // Return areas sorted alphabetically by area_name
             return AREAS.filter(a => a.zone_id === zoneId)
                        .sort((a, b) => a.area_name.localeCompare(b.area_name));
         }
 
-        function populateEditZones() {
-            const select = document.getElementById('edit-seeker-zone');
-            select.innerHTML = '<option value="">-- Select --</option>';
-            // Sort zones alphabetically
-            const sortedZones = [...ZONES].sort((a, b) => a.zone_name.localeCompare(b.zone_name));
-            sortedZones.forEach(zone => {
-                select.innerHTML += `<option value="${zone.zone_id}">📍 ${zone.zone_name}</option>`;
-            });
+        function getZoneAreaCount(zoneId) {
+            return AREAS.filter(a => a.zone_id === zoneId).length;
         }
 
-        function updateEditAreas() {
-            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
-            const areaSelect = document.getElementById('edit-seeker-area');
-            areaSelect.innerHTML = '<option value="">Select zone first</option>';
-            if (zoneId) {
-                const areas = getAreasByZone(zoneId);
-                areas.forEach(area => {
-                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-                });
+        // ============================================================
+        // COMBOBOX STATE
+        // ============================================================
+        let selectedZoneId = null;
+        let selectedAreaId = null;
+        let selectedZoneName = 'All Zones';
+
+        // ============================================================
+        // ZONE COMBOBOX (Home)
+        // ============================================================
+        function toggleZoneDropdown() {
+            const dropdown = document.getElementById('zone-dropdown');
+            const arrow = document.getElementById('zone-arrow');
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen) {
+                dropdown.classList.add('open');
+                arrow.classList.add('open');
+                document.getElementById('zone-search').value = '';
+                filterZoneList();
+                setTimeout(() => document.getElementById('zone-search').focus(), 100);
             }
+        }
+
+        function filterZoneList() {
+            const search = document.getElementById('zone-search').value.toLowerCase().trim();
+            const list = document.getElementById('zone-list');
+            const sortedZones = [...ZONES].sort((a, b) => a.zone_name.localeCompare(b.zone_name));
+            
+            let filtered = sortedZones;
+            if (search) {
+                filtered = sortedZones.filter(z => z.zone_name.toLowerCase().includes(search));
+            }
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="no-result">No zones found</div>`;
+                return;
+            }
+
+            list.innerHTML = filtered.map(zone => {
+                const count = getZoneAreaCount(zone.zone_id);
+                const isActive = selectedZoneId === zone.zone_id;
+                return `
+                    <div class="list-item ${isActive ? 'active' : ''}" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
+                        <span>${isActive ? '<span class="check">✓</span>' : ''} 📍 ${zone.zone_name}</span>
+                        <span class="item-badge">${count} areas</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectZone(zoneId, zoneName) {
+            selectedZoneId = zoneId;
+            selectedZoneName = zoneName;
+            document.getElementById('zone-selected-label').textContent = `📍 ${zoneName}`;
+            const count = getZoneAreaCount(zoneId);
+            document.getElementById('zone-badge-count').textContent = `${count} areas`;
+            document.getElementById('zone-status').textContent = zoneName;
+            
+            // Close dropdown
+            document.getElementById('zone-dropdown').classList.remove('open');
+            document.getElementById('zone-arrow').classList.remove('open');
+
+            // Update area dropdown
+            populateAreaDropdown(zoneId);
+            
+            // Sync to other pages
+            syncZoneToAllPages(zoneId, zoneName);
+            
+            renderFeed();
+        }
+
+        function populateAreaDropdown(zoneId) {
+            const areas = getAreasByZone(zoneId);
+            const areaList = document.getElementById('area-list');
+            const areaBtn = document.getElementById('area-btn');
+            
+            // Reset area selection
+            selectedAreaId = null;
+            
+            if (areas.length === 0) {
+                areaList.innerHTML = `<div class="no-result">No areas available</div>`;
+                document.getElementById('area-selected-label').textContent = 'No areas';
+                return;
+            }
+
+            areaList.innerHTML = areas.map(area => {
+                const isActive = selectedAreaId === area.area_id;
+                return `
+                    <div class="list-item ${isActive ? 'active' : ''}" onclick="selectArea(${area.area_id}, '${area.area_name}')">
+                        <span>${isActive ? '<span class="check">✓</span>' : ''} ${area.area_name}</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Select first area by default
+            if (areas.length > 0 && !selectedAreaId) {
+                selectArea(areas[0].area_id, areas[0].area_name);
+            }
+            
+            document.getElementById('area-selected-label').textContent = 'All areas';
+            document.getElementById('area-dropdown').classList.remove('open');
+            document.getElementById('area-arrow').classList.remove('open');
+        }
+
+        function selectArea(areaId, areaName) {
+            selectedAreaId = areaId;
+            document.getElementById('area-selected-label').textContent = areaName;
+            document.getElementById('area-dropdown').classList.remove('open');
+            document.getElementById('area-arrow').classList.remove('open');
+            syncAreaToAllPages(areaId, areaName);
+            renderFeed();
+        }
+
+        function toggleAreaDropdown() {
+            const dropdown = document.getElementById('area-dropdown');
+            const arrow = document.getElementById('area-arrow');
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen && selectedZoneId) {
+                dropdown.classList.add('open');
+                arrow.classList.add('open');
+                document.getElementById('area-search').value = '';
+                filterAreaList();
+                setTimeout(() => document.getElementById('area-search').focus(), 100);
+            } else if (!selectedZoneId) {
+                showToast('⚠️ Please select a zone first');
+            }
+        }
+
+        function filterAreaList() {
+            const search = document.getElementById('area-search').value.toLowerCase().trim();
+            const list = document.getElementById('area-list');
+            if (!selectedZoneId) {
+                list.innerHTML = `<div class="no-result">Select a zone first</div>`;
+                return;
+            }
+            let areas = getAreasByZone(selectedZoneId);
+            if (search) {
+                areas = areas.filter(a => a.area_name.toLowerCase().includes(search));
+            }
+            if (areas.length === 0) {
+                list.innerHTML = `<div class="no-result">No areas found</div>`;
+                return;
+            }
+            list.innerHTML = areas.map(area => {
+                const isActive = selectedAreaId === area.area_id;
+                return `
+                    <div class="list-item ${isActive ? 'active' : ''}" onclick="selectArea(${area.area_id}, '${area.area_name}')">
+                        <span>${isActive ? '<span class="check">✓</span>' : ''} ${area.area_name}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        // SYNC ZONE/AREA TO ALL PAGES
+        // ============================================================
+        function syncZoneToAllPages(zoneId, zoneName) {
+            // Post Job page
+            const pjBtn = document.getElementById('pj-zone-btn');
+            if (pjBtn) {
+                document.getElementById('pj-zone-selected-label').textContent = zoneName;
+                // Update hidden select for form submission
+                const hiddenSelect = document.getElementById('pj-zone');
+                if (hiddenSelect) hiddenSelect.value = zoneId;
+                // Update areas
+                populatePjAreas(zoneId);
+            }
+            // Edit Seeker page
+            const editBtn = document.getElementById('edit-zone-btn');
+            if (editBtn) {
+                document.getElementById('edit-zone-selected-label').textContent = zoneName;
+                // Update hidden select
+                const hiddenSelect = document.getElementById('edit-seeker-zone');
+                if (hiddenSelect) hiddenSelect.value = zoneId;
+                populateEditAreas(zoneId);
+            }
+        }
+
+        function syncAreaToAllPages(areaId, areaName) {
+            // Post Job page
+            const pjAreaBtn = document.getElementById('pj-area-btn');
+            if (pjAreaBtn) {
+                document.getElementById('pj-area-selected-label').textContent = areaName;
+                const hiddenSelect = document.getElementById('pj-area');
+                if (hiddenSelect) hiddenSelect.value = areaId;
+            }
+            // Edit Seeker page
+            const editAreaBtn = document.getElementById('edit-area-btn');
+            if (editAreaBtn) {
+                document.getElementById('edit-area-selected-label').textContent = areaName;
+                const hiddenSelect = document.getElementById('edit-seeker-area');
+                if (hiddenSelect) hiddenSelect.value = areaId;
+            }
+        }
+
+        // ============================================================
+        // POST JOB - ZONE COMBOBOX
+        // ============================================================
+        function togglePjZoneDropdown() {
+            const dropdown = document.getElementById('pj-zone-dropdown');
+            const arrow = document.getElementById('pj-zone-arrow');
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen) {
+                dropdown.classList.add('open');
+                arrow.classList.add('open');
+                document.getElementById('pj-zone-search').value = '';
+                filterPjZoneList();
+                setTimeout(() => document.getElementById('pj-zone-search').focus(), 100);
+            }
+        }
+
+        function filterPjZoneList() {
+            const search = document.getElementById('pj-zone-search').value.toLowerCase().trim();
+            const list = document.getElementById('pj-zone-list');
+            const sortedZones = [...ZONES].sort((a, b) => a.zone_name.localeCompare(b.zone_name));
+            let filtered = sortedZones;
+            if (search) filtered = sortedZones.filter(z => z.zone_name.toLowerCase().includes(search));
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="no-result">No zones found</div>`;
+                return;
+            }
+            const currentZone = document.getElementById('pj-zone-selected-label').textContent;
+            list.innerHTML = filtered.map(zone => {
+                const isActive = currentZone === zone.zone_name;
+                return `
+                    <div class="list-item ${isActive ? 'active' : ''}" onclick="selectPjZone(${zone.zone_id}, '${zone.zone_name}')">
+                        <span>${isActive ? '<span class="check">✓</span>' : ''} 📍 ${zone.zone_name}</span>
+                        <span class="item-badge">${getZoneAreaCount(zone.zone_id)} areas</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectPjZone(zoneId, zoneName) {
+            document.getElementById('pj-zone-selected-label').textContent = zoneName;
+            document.getElementById('pj-zone').value = zoneId;
+            document.getElementById('pj-zone-dropdown').classList.remove('open');
+            document.getElementById('pj-zone-arrow').classList.remove('open');
+            populatePjAreas(zoneId);
+            document.getElementById('pj-area-hint').textContent = `✅ ${getZoneAreaCount(zoneId)} areas available`;
+        }
+
+        function populatePjAreas(zoneId) {
+            const areas = getAreasByZone(zoneId);
+            const list = document.getElementById('pj-area-list');
+            if (areas.length === 0) {
+                list.innerHTML = `<div class="no-result">No areas available</div>`;
+                document.getElementById('pj-area-selected-label').textContent = 'No areas';
+                return;
+            }
+            list.innerHTML = areas.map(area => `
+                <div class="list-item" onclick="selectPjArea(${area.area_id}, '${area.area_name}')">
+                    <span>${area.area_name}</span>
+                </div>
+            `).join('');
+            // Select first area
+            if (areas.length > 0) {
+                selectPjArea(areas[0].area_id, areas[0].area_name);
+            }
+        }
+
+        function selectPjArea(areaId, areaName) {
+            document.getElementById('pj-area-selected-label').textContent = areaName;
+            document.getElementById('pj-area').value = areaId;
+            document.getElementById('pj-area-dropdown').classList.remove('open');
+            document.getElementById('pj-area-arrow').classList.remove('open');
+        }
+
+        function togglePjAreaDropdown() {
+            const dropdown = document.getElementById('pj-area-dropdown');
+            const arrow = document.getElementById('pj-area-arrow');
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen && document.getElementById('pj-zone').value) {
+                dropdown.classList.add('open');
+                arrow.classList.add('open');
+                document.getElementById('pj-area-search').value = '';
+                filterPjAreaList();
+                setTimeout(() => document.getElementById('pj-area-search').focus(), 100);
+            } else if (!document.getElementById('pj-zone').value) {
+                showToast('⚠️ Please select a zone first');
+            }
+        }
+
+        function filterPjAreaList() {
+            const search = document.getElementById('pj-area-search').value.toLowerCase().trim();
+            const list = document.getElementById('pj-area-list');
+            const zoneId = parseInt(document.getElementById('pj-zone').value);
+            if (!zoneId) {
+                list.innerHTML = `<div class="no-result">Select a zone first</div>`;
+                return;
+            }
+            let areas = getAreasByZone(zoneId);
+            if (search) areas = areas.filter(a => a.area_name.toLowerCase().includes(search));
+            if (areas.length === 0) {
+                list.innerHTML = `<div class="no-result">No areas found</div>`;
+                return;
+            }
+            const currentArea = document.getElementById('pj-area-selected-label').textContent;
+            list.innerHTML = areas.map(area => {
+                const isActive = currentArea === area.area_name;
+                return `
+                    <div class="list-item ${isActive ? 'active' : ''}" onclick="selectPjArea(${area.area_id}, '${area.area_name}')">
+                        <span>${isActive ? '<span class="check">✓</span>' : ''} ${area.area_name}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        // EDIT SEEKER - ZONE COMBOBOX
+        // ============================================================
+        function toggleEditZoneDropdown() {
+            const dropdown = document.getElementById('edit-zone-dropdown');
+            const arrow = document.getElementById('edit-zone-arrow');
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen) {
+                dropdown.classList.add('open');
+                arrow.classList.add('open');
+                document.getElementById('edit-zone-search').value = '';
+                filterEditZoneList();
+                setTimeout(() => document.getElementById('edit-zone-search').focus(), 100);
+            }
+        }
+
+        function filterEditZoneList() {
+            const search = document.getElementById('edit-zone-search').value.toLowerCase().trim();
+            const list = document.getElementById('edit-zone-list');
+            const sortedZones = [...ZONES].sort((a, b) => a.zone_name.localeCompare(b.zone_name));
+            let filtered = sortedZones;
+            if (search) filtered = sortedZones.filter(z => z.zone_name.toLowerCase().includes(search));
+            if (filtered.length === 0) {
+                list.innerHTML = `<div class="no-result">No zones found</div>`;
+                return;
+            }
+            const currentZone = document.getElementById('edit-zone-selected-label').textContent;
+            list.innerHTML = filtered.map(zone => {
+                const isActive = currentZone === zone.zone_name;
+                return `
+                    <div class="list-item ${isActive ? 'active' : ''}" onclick="selectEditZone(${zone.zone_id}, '${zone.zone_name}')">
+                        <span>${isActive ? '<span class="check">✓</span>' : ''} 📍 ${zone.zone_name}</span>
+                        <span class="item-badge">${getZoneAreaCount(zone.zone_id)} areas</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectEditZone(zoneId, zoneName) {
+            document.getElementById('edit-zone-selected-label').textContent = zoneName;
+            document.getElementById('edit-seeker-zone').value = zoneId;
+            document.getElementById('edit-zone-dropdown').classList.remove('open');
+            document.getElementById('edit-zone-arrow').classList.remove('open');
+            populateEditAreas(zoneId);
+        }
+
+        function populateEditAreas(zoneId) {
+            const areas = getAreasByZone(zoneId);
+            const list = document.getElementById('edit-area-list');
+            if (areas.length === 0) {
+                list.innerHTML = `<div class="no-result">No areas available</div>`;
+                document.getElementById('edit-area-selected-label').textContent = 'No areas';
+                return;
+            }
+            list.innerHTML = areas.map(area => `
+                <div class="list-item" onclick="selectEditArea(${area.area_id}, '${area.area_name}')">
+                    <span>${area.area_name}</span>
+                </div>
+            `).join('');
+            if (areas.length > 0) {
+                selectEditArea(areas[0].area_id, areas[0].area_name);
+            }
+        }
+
+        function selectEditArea(areaId, areaName) {
+            document.getElementById('edit-area-selected-label').textContent = areaName;
+            document.getElementById('edit-seeker-area').value = areaId;
+            document.getElementById('edit-area-dropdown').classList.remove('open');
+            document.getElementById('edit-area-arrow').classList.remove('open');
+        }
+
+        function toggleEditAreaDropdown() {
+            const dropdown = document.getElementById('edit-area-dropdown');
+            const arrow = document.getElementById('edit-area-arrow');
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+            if (!isOpen && document.getElementById('edit-seeker-zone').value) {
+                dropdown.classList.add('open');
+                arrow.classList.add('open');
+                document.getElementById('edit-area-search').value = '';
+                filterEditAreaList();
+                setTimeout(() => document.getElementById('edit-area-search').focus(), 100);
+            } else if (!document.getElementById('edit-seeker-zone').value) {
+                showToast('⚠️ Please select a zone first');
+            }
+        }
+
+        function filterEditAreaList() {
+            const search = document.getElementById('edit-area-search').value.toLowerCase().trim();
+            const list = document.getElementById('edit-area-list');
+            const zoneId = parseInt(document.getElementById('edit-seeker-zone').value);
+            if (!zoneId) {
+                list.innerHTML = `<div class="no-result">Select a zone first</div>`;
+                return;
+            }
+            let areas = getAreasByZone(zoneId);
+            if (search) areas = areas.filter(a => a.area_name.toLowerCase().includes(search));
+            if (areas.length === 0) {
+                list.innerHTML = `<div class="no-result">No areas found</div>`;
+                return;
+            }
+            const currentArea = document.getElementById('edit-area-selected-label').textContent;
+            list.innerHTML = areas.map(area => {
+                const isActive = currentArea === area.area_name;
+                return `
+                    <div class="list-item ${isActive ? 'active' : ''}" onclick="selectEditArea(${area.area_id}, '${area.area_name}')">
+                        <span>${isActive ? '<span class="check">✓</span>' : ''} ${area.area_name}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================================
+        // CLOSE ALL DROPDOWNS
+        // ============================================================
+        function closeAllDropdowns() {
+            document.querySelectorAll('.combobox-dropdown').forEach(d => d.classList.remove('open'));
+            document.querySelectorAll('.combobox-btn .arrow').forEach(a => a.classList.remove('open'));
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.combobox-wrapper')) {
+                closeAllDropdowns();
+            }
+        });
+
+        // ============================================================
+        // AUTO DETECT LOCATION
+        // ============================================================
+        function autoDetectLocation() {
+            fetch('https://ipapi.co/json/')
+                .then(res => res.json())
+                .then(data => {
+                    const city = data.city || '';
+                    const matched = ZONES.find(zone =>
+                        city.toLowerCase().includes(zone.zone_name.toLowerCase()) ||
+                        zone.zone_name.toLowerCase().includes(city.toLowerCase())
+                    );
+                    if (matched) {
+                        selectZone(matched.zone_id, matched.zone_name);
+                    }
+                })
+                .catch(() => {
+                    selectZone(5001, 'Hyderabad');
+                });
         }
 
         // ============================================================
@@ -2498,8 +3093,6 @@
         let isGuest = false;
         let isChecking = false;
         let currentFilter = 'BOTH';
-        let selectedZoneId = null;
-        let selectedAreaId = null;
         let feedItems = [];
         let currentPage = 'home';
         let currentDetailData = null;
@@ -3903,27 +4496,7 @@
         }
 
         function updatePostAreas() {
-            const zoneSelect = document.getElementById('pj-zone');
-            const areaSelect = document.getElementById('pj-area');
-            const areaHint = document.getElementById('pj-area-hint');
-            if (!zoneSelect || !areaSelect) return;
-            const zoneId = parseInt(zoneSelect.value);
-            areaSelect.innerHTML = '<option value="">Select zone first</option>';
-            if (!zoneId) {
-                if (areaHint) areaHint.textContent = '⬆️ Choose zone first';
-                return;
-            }
-            const areas = getAreasByZone(zoneId);
-            if (areas.length === 0) {
-                areaSelect.innerHTML = '<option value="">No areas</option>';
-                if (areaHint) areaHint.textContent = '⚠️ No areas for this zone';
-                return;
-            }
-            areas.forEach(area => {
-                areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-            });
-            if (areaHint) areaHint.textContent = `✅ ${areas.length} areas available`;
-            if (areas.length > 0) areaSelect.value = areas[0].area_id;
+            // This is now handled by the combobox sync
         }
 
         async function publishJob() {
@@ -4016,8 +4589,18 @@
                 d.setDate(d.getDate() + 30);
                 document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
                 document.getElementById('pj-gender').value = '0';
-                document.getElementById('pj-zone').value = '5001';
-                updatePostAreas();
+                if (!document.getElementById('pj-zone').value) {
+                    document.getElementById('pj-zone').value = '5001';
+                }
+                // Update area combobox
+                const zoneId = parseInt(document.getElementById('pj-zone').value);
+                if (zoneId) {
+                    const areas = getAreasByZone(zoneId);
+                    if (areas.length > 0 && !document.getElementById('pj-area').value) {
+                        document.getElementById('pj-area').value = areas[0].area_id;
+                        document.getElementById('pj-area-selected-label').textContent = areas[0].area_name;
+                    }
+                }
 
                 fetchFeedData();
                 goToProfile();
@@ -4755,6 +5338,18 @@
                 document.getElementById('pj-publish-btn').disabled = false;
                 document.getElementById('pj-publish-btn').textContent = '📤 Publish Job';
                 document.getElementById('pj-company').value = currentUser.company_name;
+                
+                // Sync zone from home page if selected
+                if (selectedZoneId) {
+                    document.getElementById('pj-zone').value = selectedZoneId;
+                    document.getElementById('pj-zone-selected-label').textContent = selectedZoneName;
+                    populatePjAreas(selectedZoneId);
+                } else {
+                    // Default to Hyderabad
+                    document.getElementById('pj-zone').value = '5001';
+                    document.getElementById('pj-zone-selected-label').textContent = 'Hyderabad';
+                    populatePjAreas(5001);
+                }
             }
 
             document.getElementById('pj-publish-btn').dataset.editing = 'false';
@@ -4766,8 +5361,6 @@
                 document.getElementById('pj-salary').value = '';
                 document.getElementById('pj-experience').value = '3.5';
                 document.getElementById('pj-gender').value = '0';
-                document.getElementById('pj-zone').value = '5001';
-                updatePostAreas();
                 const d = new Date();
                 d.setDate(d.getDate() + 30);
                 document.getElementById('pj-expiry').value = d.toISOString().split('T')[0];
@@ -4818,7 +5411,14 @@
             document.getElementById('edit-seeker-page').classList.remove('hidden-page');
             document.getElementById('postjob-page').classList.add('hidden-page');
             document.getElementById('detail-page').classList.add('hidden-page');
-            populateEditZones();
+            
+            // Sync zone from home page if selected
+            if (selectedZoneId) {
+                document.getElementById('edit-seeker-zone').value = selectedZoneId;
+                document.getElementById('edit-zone-selected-label').textContent = selectedZoneName;
+                populateEditAreas(selectedZoneId);
+            }
+            
             if (currentUser) {
                 document.getElementById('edit-seeker-name').value = currentUser.full_name || '';
                 document.getElementById('edit-seeker-title').value = currentUser.job_title || '';
@@ -4831,9 +5431,11 @@
                 document.getElementById('edit-seeker-notice').value = currentUser.notice_period_days || '';
                 if (currentUser.zone_id) {
                     document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
-                    updateEditAreas();
+                    document.getElementById('edit-zone-selected-label').textContent = getZoneName(currentUser.zone_id);
+                    populateEditAreas(currentUser.zone_id);
                     if (currentUser.area_id) {
                         document.getElementById('edit-seeker-area').value = currentUser.area_id;
+                        document.getElementById('edit-area-selected-label').textContent = getAreaName(currentUser.area_id);
                     }
                 }
             }
@@ -5202,104 +5804,6 @@
         }
 
         // ============================================================
-        // SEARCHABLE ZONE - FIXED: No duplicate entries, no suffixes
-        // ============================================================
-        function searchZone() {
-            const input = document.getElementById('zone-search');
-            const suggestions = document.getElementById('zone-suggestions');
-            if (!input || !suggestions) return;
-            const query = input.value.toLowerCase().trim();
-            if (!query) {
-                suggestions.classList.remove('show');
-                return;
-            }
-            // Use Set to remove duplicates
-            const seen = new Set();
-            const matches = ZONES.filter(zone => {
-                if (seen.has(zone.zone_id)) return false;
-                if (zone.zone_name.toLowerCase().includes(query)) {
-                    seen.add(zone.zone_id);
-                    return true;
-                }
-                return false;
-            });
-            if (matches.length === 0) {
-                suggestions.innerHTML = '<div class="no-result">No zones found</div>';
-                suggestions.classList.add('show');
-                return;
-            }
-            suggestions.innerHTML = matches.map(zone => `
-                <div class="item" onclick="selectZone(${zone.zone_id}, '${zone.zone_name}')">
-                    📍 ${zone.zone_name}
-                </div>
-            `).join('');
-            suggestions.classList.add('show');
-        }
-
-        function selectZone(zoneId, zoneName) {
-            document.getElementById('zone-search').value = zoneName;
-            const suggestions = document.getElementById('zone-suggestions');
-            if (suggestions) suggestions.classList.remove('show');
-            selectedZoneId = zoneId;
-            selectedAreaId = null;
-            document.getElementById('zone-status').textContent = zoneName;
-            const areaSelect = document.getElementById('filter-area');
-            if (areaSelect) {
-                // Get areas sorted alphabetically
-                const areas = getAreasByZone(zoneId);
-                areaSelect.innerHTML = '<option value="ALL">All areas</option>';
-                areas.forEach(area => {
-                    areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-                });
-            }
-            renderFeed();
-        }
-
-        function onAreaFilterChange() {
-            const areaSelect = document.getElementById('filter-area');
-            if (areaSelect) {
-                selectedAreaId = areaSelect.value !== 'ALL' ? parseInt(areaSelect.value) : null;
-            }
-            renderFeed();
-        }
-
-        function autoDetectLocation() {
-            fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(data => {
-                    const city = data.city || '';
-                    const matched = ZONES.find(zone =>
-                        city.toLowerCase().includes(zone.zone_name.toLowerCase()) ||
-                        zone.zone_name.toLowerCase().includes(city.toLowerCase())
-                    );
-                    if (matched) {
-                        selectZone(matched.zone_id, matched.zone_name);
-                        // NO suffix added - just the zone name
-                        document.getElementById('zone-search').value = matched.zone_name;
-                    }
-                })
-                .catch(() => {
-                    selectZone(5001, 'Hyderabad');
-                    // NO suffix added - just the zone name
-                    document.getElementById('zone-search').value = 'Hyderabad';
-                });
-        }
-
-        document.addEventListener('click', function(e) {
-            const wrapper = document.querySelector('.zone-filter .search-wrapper');
-            if (wrapper && !wrapper.contains(e.target)) {
-                document.getElementById('zone-suggestions').classList.remove('show');
-            }
-        });
-
-        document.getElementById('zone-search').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const firstItem = document.querySelector('#zone-suggestions .item');
-                if (firstItem) firstItem.click();
-            }
-        });
-
-        // ============================================================
         // UI HELPERS
         // ============================================================
         function showMessage(msg, type) {
@@ -5400,9 +5904,6 @@
                 });
             }
 
-            // Populate zones with alphabetical sorting
-            populateEditZones();
-
             setupCounter('pj-title', 'pj-title-counter', 60);
             setupCounter('pj-skills', 'pj-skills-counter', 200);
             setupCounter('pj-description', 'pj-desc-counter', 500);
@@ -5434,17 +5935,6 @@
                         this.value = maxDate.toISOString().split('T')[0];
                     }
                 });
-            }
-
-            const zoneSelect = document.getElementById('pj-zone');
-            if (zoneSelect) {
-                // Sort zones alphabetically
-                const sortedZones = [...ZONES].sort((a, b) => a.zone_name.localeCompare(b.zone_name));
-                sortedZones.forEach(zone => {
-                    zoneSelect.innerHTML += `<option value="${zone.zone_id}">${zone.zone_name}</option>`;
-                });
-                zoneSelect.value = '5001';
-                updatePostAreas();
             }
 
             autoCleanExpiredJobs();
@@ -5520,7 +6010,7 @@
                 input.addEventListener('focus', function() { this.select(); });
             });
 
-            console.log('✅ JobAd Ready - All zones and areas loaded with alphabetical sorting!');
+            console.log('✅ JobAd Ready - Searchable Combobox for Zones and Areas!');
 
             const isRootPath = window.location.pathname === '/' || window.location.pathname === '/index.html';
             const shouldAutoLogin = (hasSharedLink || sessionStorage.getItem('guest_session') === 'true') && !isRootPath;
@@ -5542,7 +6032,7 @@
             }
         });
 
-        console.log('✅ JobAd App Ready - Complete with all zones and areas, alphabetically sorted!');
+        console.log('✅ JobAd App Ready - Complete with searchable dropdowns!');
 
         if (hasSharedLink) {
             setTimeout(() => {
