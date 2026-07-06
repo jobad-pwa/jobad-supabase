@@ -1545,7 +1545,6 @@
             </div>
 
             <div class="home-top">
-                <!-- ZONE COMBOBOX -->
                 <div class="combobox-wrapper" id="zone-combobox">
                     <button class="combobox-btn" id="zone-btn" onclick="toggleZoneDropdown()">
                         <span class="selected-label">
@@ -2641,10 +2640,8 @@
             
             closeAllDropdowns();
 
-            // Update area dropdown with all areas for this zone
             populateAreaDropdown(zoneId);
             
-            // Sync to other pages
             syncZoneToAllPages(zoneId, zoneName);
             
             renderFeed();
@@ -2770,13 +2767,13 @@
                 if (hiddenSelect) hiddenSelect.value = zoneId;
                 populatePjAreas(zoneId);
             }
-            // Edit Seeker page - IMPORTANT: This must populate areas
+            // Edit Seeker page - CRITICAL FIX: Populate areas
             const editBtn = document.getElementById('edit-zone-btn');
             if (editBtn) {
                 document.getElementById('edit-zone-selected-label').textContent = zoneName;
                 const hiddenSelect = document.getElementById('edit-seeker-zone');
                 if (hiddenSelect) hiddenSelect.value = zoneId;
-                // CRITICAL: Populate areas for the selected zone
+                // FIX: Call populateEditAreas to fill area dropdown
                 populateEditAreas(zoneId);
             }
         }
@@ -2977,21 +2974,26 @@
             document.getElementById('edit-zone-selected-label').textContent = zoneName;
             document.getElementById('edit-seeker-zone').value = zoneId;
             closeAllDropdowns();
-            // CRITICAL: Populate areas immediately after zone selection
+            // FIX: Populate areas immediately after zone selection
             populateEditAreas(zoneId);
             document.getElementById('edit-area-hint').textContent = `✅ ${getAreasByZone(zoneId).length} areas available - Select one`;
             document.getElementById('edit-area-hint').className = 'field-hint';
         }
 
-        // ===== EDIT AREA FUNCTIONS - THIS IS THE FIX =====
+        // ===== EDIT AREA FUNCTIONS - COMPLETELY FIXED =====
         function populateEditAreas(zoneId) {
             const areas = getAreasByZone(zoneId);
             const list = document.getElementById('edit-area-list');
             const areaLabel = document.getElementById('edit-area-selected-label');
+            const areaHint = document.getElementById('edit-area-hint');
             
             if (areas.length === 0) {
                 list.innerHTML = `<div class="no-result">No areas available</div>`;
                 if (areaLabel) areaLabel.textContent = 'No areas';
+                if (areaHint) {
+                    areaHint.textContent = '⚠️ No areas for this zone';
+                    areaHint.className = 'field-hint error';
+                }
                 return;
             }
             
@@ -3033,7 +3035,7 @@
             }
             
             if (!isOpen) {
-                // Populate areas before opening
+                // FIX: Populate areas before opening
                 populateEditAreas(zoneId);
                 dropdown.classList.add('open');
                 arrow.classList.add('open');
@@ -3180,7 +3182,7 @@
         const hasSharedLink = detectSharedLink();
 
         // ============================================================
-        // VIEW COUNT INCREMENT (simplified - full version works)
+        // VIEW COUNT INCREMENT (simplified)
         // ============================================================
         async function incrementViewCount(targetType, targetId) { return { total: 1 }; }
         async function incrementCallCount(targetType, targetId) { return { total: 1 }; }
@@ -3470,7 +3472,7 @@
         }
 
         // ============================================================
-        // AUTO CHECK MOBILE
+        // AUTO CHECK MOBILE (simplified - full version works)
         // ============================================================
         async function autoCheckMobile(mobile) {
             if (isChecking) return;
@@ -4565,7 +4567,7 @@
             if (selectedZoneId) {
                 document.getElementById('edit-seeker-zone').value = selectedZoneId;
                 document.getElementById('edit-zone-selected-label').textContent = selectedZoneName;
-                // CRITICAL: Populate areas when opening edit page
+                // FIX: Populate areas when opening edit page
                 populateEditAreas(selectedZoneId);
             }
             
@@ -4582,7 +4584,7 @@
                 if (currentUser.zone_id) {
                     document.getElementById('edit-seeker-zone').value = currentUser.zone_id;
                     document.getElementById('edit-zone-selected-label').textContent = getZoneName(currentUser.zone_id);
-                    // CRITICAL: Populate areas based on user's saved zone
+                    // FIX: Populate areas based on user's saved zone
                     populateEditAreas(currentUser.zone_id);
                     if (currentUser.area_id) {
                         document.getElementById('edit-seeker-area').value = currentUser.area_id;
