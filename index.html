@@ -15,8 +15,8 @@
 .card{max-width:400px;width:100%;background:#fff;border-radius:24px;padding:20px 18px 10px;box-shadow:0 4px 20px rgba(0,0,0,.1);display:flex;flex-direction:column;height:95vh;max-height:780px;position:relative;overflow:hidden}
 .hidden,.hidden-page{display:none}
 
-/* ===== LAYOUT - ALL PAGES USE FLEX COLUMN ===== */
-.home-container, .profile-container, .edit-container, .postjob-container, .detail-container {
+/* ===== LAYOUT - FLEX + JAVASCRIPT HEIGHT ===== */
+.home-container,.profile-container,.edit-container,.postjob-container,.detail-container {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -25,8 +25,8 @@
     position: relative;
 }
 
-/* ===== HEADERS - FIXED AT TOP ===== */
-.home-header, .profile-header, .edit-header, .postjob-header, .detail-header {
+/* Fixed elements - they just sit at their natural height */
+.home-header,.profile-header,.edit-header,.postjob-header,.detail-header {
     flex-shrink: 0;
     display: flex;
     justify-content: space-between;
@@ -36,20 +36,62 @@
     background: #fff;
     z-index: 10;
     position: relative;
-    min-height: 44px;
 }
 
-/* ===== SCROLLABLE CONTENT AREA ===== */
-.scroll-content {
-    flex: 1;
+.guest-banner {
+    flex-shrink: 0;
+    background: linear-gradient(135deg,#2563eb,#1d4ed8);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.install-banner {
+    flex-shrink: 0;
+    background: linear-gradient(135deg,#2563eb,#1d4ed8);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+.install-banner.hidden-banner { display: none; }
+
+.home-top {
+    flex-shrink: 0;
+    padding-bottom: 6px;
+}
+
+/* MIDDLE CONTENT - HEIGHT SET BY JAVASCRIPT FOR ALL PAGES */
+.page-content {
     overflow-y: auto;
-    overflow-x: hidden;
     padding: 8px 0 4px;
     -webkit-overflow-scrolling: touch;
-    min-height: 0;
+    display: block;
+    /* Height will be set by JavaScript */
 }
 
-/* ===== BOTTOM NAV - FIXED ===== */
+/* SCROLLBAR STYLING */
+.page-content::-webkit-scrollbar {
+    width: 3px;
+}
+.page-content::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+.page-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* BOTTOM NAV - FIXED AT BOTTOM */
 .bottom-nav {
     flex-shrink: 0;
     display: flex;
@@ -60,23 +102,11 @@
     background: #fff;
     position: relative;
     z-index: 10;
-    min-height: 44px;
 }
 
 /* ===== REST OF STYLES ===== */
 .input-field{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:12px;text-align:center;background:#fff;transition:border-color .2s}.input-field:focus{border-color:#2563eb;outline:2px solid #93c5fd;outline-offset:-1px}.btn-primary{width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:background .2s}.btn-primary:hover{background:#1d4ed8}.btn-primary:disabled{opacity:.5;cursor:not-allowed}.btn-back{background:#6b7280;margin-top:8px;width:100%;padding:14px;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer}.btn-back:hover{background:#4b5563}.btn-green{background:#16a34a}.btn-green:hover{background:#15803d}.btn-yellow{background:#d97706}.btn-yellow:hover{background:#b45309}.msg{margin-top:16px;padding:12px;border-radius:12px;text-align:center;font-size:14px}.msg-green{background:#dcfce7;color:#166534}.msg-red{background:#fee2e2;color:#991b1b}.msg-blue{background:#dbeafe;color:#1e40af}.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;z-index:1000;animation:fadeOut 2s ease forwards;white-space:nowrap}@keyframes fadeOut{0%{opacity:1;transform:translateX(-50%) translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px);visibility:hidden}}.mobile-display{font-size:20px;font-weight:700;color:#1e293b;padding:4px 0}.fade-in{animation:fadeIn .3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}#login-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center}#login-screen h1{font-size:40px;font-weight:900;color:#2563eb;margin:0 0 4px}.mobile-status{font-size:12px;color:#94a3b8;margin-top:4px}.pin-login-input{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;text-align:center;letter-spacing:8px;margin:8px 0 12px;background:#fff;transition:border-color .2s}.pin-login-input:focus{border-color:#2563eb;outline:2px solid #93c5fd}.otp-input-group{display:flex;gap:8px;justify-content:center;margin:12px 0}.otp-input-group input{width:48px;height:56px;text-align:center;font-size:24px;font-weight:700;border-radius:12px;border:2px solid #e2e8f0;background:#fff}.otp-input-group input:focus{border-color:#2563eb;outline:0}.otp-input-group input.filled{border-color:#16a34a;background:#f0fdf4}.timer-text{font-size:13px;color:#64748b;margin-top:8px}.resend-btn{background:0 0;border:none;color:#2563eb;font-weight:600;cursor:pointer;padding:4px;font-size:14px}.resend-btn:disabled{opacity:.5;cursor:not-allowed}
 .home-header .logo,.profile-header .logo,.edit-header .logo,.postjob-header .logo,.detail-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}.home-header .header-right{display:flex;align-items:center;gap:8px;position:relative}.home-header .avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:.2s;padding:0}.home-header .avatar-btn:hover{border-color:#2563eb;background:#eff6ff}.home-header .avatar-btn.male{color:#2563eb;border-color:#2563eb}.home-header .avatar-btn.female{color:#ec4899;border-color:#ec4899}.home-header .avatar-btn.other{color:#8b5cf6;border-color:#8b5cf6}.profile-dropdown{position:absolute;top:44px;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;z-index:100;display:none;overflow:hidden}.profile-dropdown.show{display:block}.profile-dropdown .dropdown-item{padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#1e293b;cursor:pointer;border:none;background:0 0;width:100%;text-align:left;transition:.15s}.profile-dropdown .dropdown-item:hover{background:#f8fafc}.profile-dropdown .dropdown-divider{height:1px;background:#e2e8f0;margin:4px 12px}.profile-dropdown .dropdown-item.danger{color:#dc2626}.profile-dropdown .dropdown-item.danger:hover{background:#fef2f2}
-.guest-banner{flex-shrink:0;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:8px 14px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap}
-.guest-banner .text{font-size:11px;font-weight:500}
-.guest-banner .btn-login{background:#fff;color:#2563eb;border:none;padding:4px 14px;border-radius:6px;font-weight:600;font-size:11px;cursor:pointer;width:auto;white-space:nowrap}
-.guest-banner .btn-login:hover{background:#f0f0f0}
-.install-banner{flex-shrink:0;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:10px 16px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.install-banner.hidden-banner{display:none}
-.install-banner .text{font-size:12px;font-weight:500}
-.install-banner .btn-install{background:#fff;color:#2563eb;border:none;padding:6px 16px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;width:auto}
-.install-banner .btn-install:hover{background:#f0f0f0}
-.install-banner .btn-close{background:0 0;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:0 4px;width:auto}
-.install-banner .btn-close:hover{color:#fff}
 .zone-filter{background:#0f172a;border-radius:12px;padding:8px 12px;margin-bottom:8px}
 .zone-filter .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .zone-filter .header label{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em}
@@ -119,6 +149,14 @@
 .feed-card .action-row .share-btn:hover{background:#1da851;transform:scale(1.05)}
 .feed-card .action-row .share-btn svg{width:18px;height:18px;fill:#fff}
 .no-records{text-align:center;padding:30px 0;color:#94a3b8;font-size:13px}
+.guest-banner .text{font-size:11px;font-weight:500}
+.guest-banner .btn-login{background:#fff;color:#2563eb;border:none;padding:4px 14px;border-radius:6px;font-weight:600;font-size:11px;cursor:pointer;width:auto;white-space:nowrap}
+.guest-banner .btn-login:hover{background:#f0f0f0}
+.install-banner .text{font-size:12px;font-weight:500}
+.install-banner .btn-install{background:#fff;color:#2563eb;border:none;padding:6px 16px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;width:auto}
+.install-banner .btn-install:hover{background:#f0f0f0}
+.install-banner .btn-close{background:0 0;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:0 4px;width:auto}
+.install-banner .btn-close:hover{color:#fff}
 .profile-header-card{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:16px;padding:16px 20px;color:#fff;margin-bottom:16px}
 .profile-header-card .welcome{font-size:11px;opacity:.8;font-weight:500;text-transform:uppercase;letter-spacing:.05em}
 .profile-header-card .mobile{font-size:22px;font-weight:700;margin:2px 0}
@@ -258,18 +296,6 @@
 .bottom-nav .nav-item.active{color:#2563eb}
 .bottom-nav .nav-item .icon{font-size:18px;margin-bottom:1px}
 .bottom-nav .nav-item .label{font-size:8px;text-transform:uppercase;letter-spacing:.05em}
-
-/* ===== SCROLLBAR STYLING ===== */
-.scroll-content::-webkit-scrollbar {
-    width: 3px;
-}
-.scroll-content::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-.scroll-content::-webkit-scrollbar-track {
-    background: transparent;
-}
 </style>
 </head>
 <body>
@@ -285,19 +311,19 @@
 <div id="msg" class="hidden"></div></div>
 
 <!-- HOME -->
-<div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span id="avatar-symbol">👤</span></button><div class="profile-dropdown" id="profile-dropdown"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div><div class="guest-banner" id="guest-banner"><span class="text">👋 Welcome, Guest! You're viewing as a guest. Sign up to interact.</span><button class="btn-login" onclick="showLogin()">🔐 Login</button></div><div class="install-banner" id="install-banner"><span class="text">📲 Install JobAd app</span><div><button class="btn-install" id="install-btn" onclick="installApp()">Install</button><button class="btn-close" onclick="document.getElementById('install-banner').classList.add('hidden-banner')">✕</button></div></div><div class="home-top"><div class="zone-filter"><div class="header"><label>📍 Filter by Zone</label><span id="zone-status">All Zones</span></div><div class="search-wrapper"><input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()"><div class="suggestions" id="zone-suggestions"></div></div></div><div class="type-buttons"><button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button><button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button><button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button></div><div class="filter-row"><div><label>Job Title</label><input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()"></div><div><label>Experience</label><select id="filter-exp" onchange="renderFeed()"><option value="ALL">Any</option><option value="0-2">0-2 Years</option><option value="3-5">3-5 Years</option><option value="5+">5+ Years</option></select></div></div><div class="filter-row"><div><label>Skills</label><input type="text" id="filter-skills" placeholder="Eg: python" oninput="renderFeed()"></div><div><label>Area</label><select id="filter-area" onchange="onAreaFilterChange()"><option value="ALL">All areas</option></select></div></div><div class="results-count"><span id="results-count">Showing 0 Records</span></div></div><div class="scroll-content" id="home-page-content"><div id="feed-container" class="feed-container"></div></div><div class="bottom-nav"><button class="nav-item active" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
+<div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span id="avatar-symbol">👤</span></button><div class="profile-dropdown" id="profile-dropdown"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div><div class="guest-banner" id="guest-banner"><span class="text">👋 Welcome, Guest! You're viewing as a guest. Sign up to interact.</span><button class="btn-login" onclick="showLogin()">🔐 Login</button></div><div class="install-banner" id="install-banner"><span class="text">📲 Install JobAd app</span><div><button class="btn-install" id="install-btn" onclick="installApp()">Install</button><button class="btn-close" onclick="document.getElementById('install-banner').classList.add('hidden-banner')">✕</button></div></div><div class="home-top"><div class="zone-filter"><div class="header"><label>📍 Filter by Zone</label><span id="zone-status">All Zones</span></div><div class="search-wrapper"><input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="searchZone()"><div class="suggestions" id="zone-suggestions"></div></div></div><div class="type-buttons"><button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button><button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button><button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button></div><div class="filter-row"><div><label>Job Title</label><input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()"></div><div><label>Experience</label><select id="filter-exp" onchange="renderFeed()"><option value="ALL">Any</option><option value="0-2">0-2 Years</option><option value="3-5">3-5 Years</option><option value="5+">5+ Years</option></select></div></div><div class="filter-row"><div><label>Skills</label><input type="text" id="filter-skills" placeholder="Eg: python" oninput="renderFeed()"></div><div><label>Area</label><select id="filter-area" onchange="onAreaFilterChange()"><option value="ALL">All areas</option></select></div></div><div class="results-count"><span id="results-count">Showing 0 Records</span></div></div><div class="page-content" id="home-page-content"><div id="feed-container" class="feed-container"></div></div><div class="bottom-nav"><button class="nav-item active" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- PROFILE -->
-<div id="profile-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn-profile" onclick="toggleDropdown()"><span id="avatar-symbol-profile">👤</span></button><div class="profile-dropdown" id="profile-dropdown-profile"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div><div class="scroll-content" id="profile-page-content"><div class="profile-header-card"><div class="welcome">Welcome,</div><div class="mobile" id="profile-mobile">--</div><span class="badge" id="profile-badge">⭐ Member</span></div><div class="profile-section" id="seeker-section"><div class="section-header"><span class="section-title">👤 Job Seeker Profile</span><span class="section-badge" id="seeker-badge">⚠️ Required to Apply</span></div><div class="section-desc" id="seeker-desc">Complete your job profile to get matched with relevant jobs.</div><div id="seeker-input-area"><button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%">+ Create Job Profile</button></div><div id="seeker-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px"><strong id="seeker-display-name">--</strong><span style="color:#64748b;font-size:11px" id="seeker-display-title">--</span></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;font-size:11px;color:#475569"><span>📅 <span id="seeker-display-exp">--</span> yrs</span><span>💰 <span id="seeker-display-salary">--</span></span><span>📋 <span id="seeker-display-notice">--</span> days</span><span>📍 <span id="seeker-display-location">--</span></span></div><div style="margin-top:4px;font-size:11px;color:#475569"><span style="font-weight:600">Skills:</span> <span id="seeker-display-skills">--</span></div><div style="margin-top:4px;font-size:11px;color:#64748b;border-top:1px solid #e2e8f0;padding-top:4px"><span id="seeker-display-about">--</span></div></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="goToEditSeeker()">✏️ Edit Profile</button></div></div><div class="profile-section" id="recruiter-section"><div class="section-header"><span class="section-title">🏢 Recruiter Profile</span><span class="section-badge" id="recruiter-badge">⚠️ Required to Post Jobs</span></div><div class="section-desc" id="recruiter-desc">Create your recruiter profile to post jobs and find candidates.</div><div id="recruiter-input-area"><div class="section-input"><input type="text" id="recruiter-company" placeholder="Company Name" maxlength="100"><button class="section-btn section-btn-green" onclick="saveRecruiterProfile()">Save & Activate</button></div></div><div id="recruiter-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><p><strong id="recruiter-display-company">--</strong></p><p style="color:#64748b;margin-top:2px">✅ Recruiter profile active</p></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="editRecruiterProfile()">✏️ Edit Company</button><div id="my-jobs-container" style="margin-top:10px;border-top:1px solid #e2e8f0;padding-top:10px"><p style="font-size:11px;font-weight:600;color:#1e293b">📋 My Posted Jobs</p><div id="my-jobs-list"></div></div></div></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item active" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
+<div id="profile-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn-profile" onclick="toggleDropdown()"><span id="avatar-symbol-profile">👤</span></button><div class="profile-dropdown" id="profile-dropdown-profile"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div><div class="page-content" id="profile-page-content"><div class="profile-header-card"><div class="welcome">Welcome,</div><div class="mobile" id="profile-mobile">--</div><span class="badge" id="profile-badge">⭐ Member</span></div><div class="profile-section" id="seeker-section"><div class="section-header"><span class="section-title">👤 Job Seeker Profile</span><span class="section-badge" id="seeker-badge">⚠️ Required to Apply</span></div><div class="section-desc" id="seeker-desc">Complete your job profile to get matched with relevant jobs.</div><div id="seeker-input-area"><button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%">+ Create Job Profile</button></div><div id="seeker-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px"><strong id="seeker-display-name">--</strong><span style="color:#64748b;font-size:11px" id="seeker-display-title">--</span></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;font-size:11px;color:#475569"><span>📅 <span id="seeker-display-exp">--</span> yrs</span><span>💰 <span id="seeker-display-salary">--</span></span><span>📋 <span id="seeker-display-notice">--</span> days</span><span>📍 <span id="seeker-display-location">--</span></span></div><div style="margin-top:4px;font-size:11px;color:#475569"><span style="font-weight:600">Skills:</span> <span id="seeker-display-skills">--</span></div><div style="margin-top:4px;font-size:11px;color:#64748b;border-top:1px solid #e2e8f0;padding-top:4px"><span id="seeker-display-about">--</span></div></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="goToEditSeeker()">✏️ Edit Profile</button></div></div><div class="profile-section" id="recruiter-section"><div class="section-header"><span class="section-title">🏢 Recruiter Profile</span><span class="section-badge" id="recruiter-badge">⚠️ Required to Post Jobs</span></div><div class="section-desc" id="recruiter-desc">Create your recruiter profile to post jobs and find candidates.</div><div id="recruiter-input-area"><div class="section-input"><input type="text" id="recruiter-company" placeholder="Company Name" maxlength="100"><button class="section-btn section-btn-green" onclick="saveRecruiterProfile()">Save & Activate</button></div></div><div id="recruiter-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><p><strong id="recruiter-display-company">--</strong></p><p style="color:#64748b;margin-top:2px">✅ Recruiter profile active</p></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="editRecruiterProfile()">✏️ Edit Company</button><div id="my-jobs-container" style="margin-top:10px;border-top:1px solid #e2e8f0;padding-top:10px"><p style="font-size:11px;font-weight:600;color:#1e293b">📋 My Posted Jobs</p><div id="my-jobs-list"></div></div></div></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item active" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- EDIT SEEKER -->
-<div id="edit-seeker-page" class="hidden-page"><div class="home-container"><div class="edit-page-header"><h2>👤 Job Seeker Profile</h2><button class="cancel-btn" onclick="goToProfile()">Cancel</button></div><div class="scroll-content" id="edit-seeker-page-content"><div class="edit-hint"><div class="hint-title">📍 Why select your location?</div><div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div></div><div class="edit-field"><label>Full Name *</label><input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50"></div><div style="display:grid;grid-template-columns:2fr 1fr;gap:10px"><div class="edit-field"><label>Job Title *</label><input type="text" id="edit-seeker-title" placeholder="Job title" maxlength="50"></div><div class="edit-field"><label>Gender</label><select id="edit-seeker-gender"><option value="0">Not Specified</option><option value="1">Female</option><option value="2">Male</option></select></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Experience (Years)</label><input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="0.5"></div><div class="edit-field"><label>Expected Monthly Salary</label><div class="salary-input-wrapper"><span class="currency-symbol">₹</span><input type="text" id="edit-seeker-salary" placeholder="50,000" inputmode="numeric"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Notice (days)</label><input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1"></div><div class="edit-field"><label>Skills (comma)</label><input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Zone *</label><select id="edit-seeker-zone" onchange="updateEditAreas()"><option value="">-- Select --</option></select></div><div class="edit-field"><label>Area *</label><select id="edit-seeker-area"><option value="">Select zone first</option></select></div></div><div class="edit-field"><label>About Me <span style="font-size:9px;color:#94a3b8">(max 200 chars)</span></label><textarea id="edit-seeker-about" rows="4" placeholder="Write about yourself..." maxlength="200"></textarea><div class="char-counter"><span id="char-count">0</span> / 200</div></div><button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item active" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
+<div id="edit-seeker-page" class="hidden-page"><div class="home-container"><div class="edit-page-header"><h2>👤 Job Seeker Profile</h2><button class="cancel-btn" onclick="goToProfile()">Cancel</button></div><div class="page-content" id="edit-seeker-page-content"><div class="edit-hint"><div class="hint-title">📍 Why select your location?</div><div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div></div><div class="edit-field"><label>Full Name *</label><input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50"></div><div style="display:grid;grid-template-columns:2fr 1fr;gap:10px"><div class="edit-field"><label>Job Title *</label><input type="text" id="edit-seeker-title" placeholder="Job title" maxlength="50"></div><div class="edit-field"><label>Gender</label><select id="edit-seeker-gender"><option value="0">Not Specified</option><option value="1">Female</option><option value="2">Male</option></select></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Experience (Years)</label><input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="0.5"></div><div class="edit-field"><label>Expected Monthly Salary</label><div class="salary-input-wrapper"><span class="currency-symbol">₹</span><input type="text" id="edit-seeker-salary" placeholder="50,000" inputmode="numeric"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Notice (days)</label><input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1"></div><div class="edit-field"><label>Skills (comma)</label><input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Zone *</label><select id="edit-seeker-zone" onchange="updateEditAreas()"><option value="">-- Select --</option></select></div><div class="edit-field"><label>Area *</label><select id="edit-seeker-area"><option value="">Select zone first</option></select></div></div><div class="edit-field"><label>About Me <span style="font-size:9px;color:#94a3b8">(max 200 chars)</span></label><textarea id="edit-seeker-about" rows="4" placeholder="Write about yourself..." maxlength="200"></textarea><div class="char-counter"><span id="char-count">0</span> / 200</div></div><button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item active" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- POST JOB -->
-<div id="postjob-page" class="hidden-page"><div class="postjob-container"><div class="postjob-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="cancelPostJob()">Cancel</button></div><div class="scroll-content" id="postjob-scroll"><div id="recruiter-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name in the profile to post jobs.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div><div class="form-group"><label class="form-label">Company <span class="required">*</span></label><input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100"></div><div class="grid-2"><div class="form-group"><label class="form-label">Job Title <span class="required">*</span></label><input class="form-control" type="text" id="pj-title" placeholder="e.g., Senior Developer" maxlength="60"><div class="inline-hint"><span></span><span id="pj-title-counter">0/60</span></div></div><div class="form-group"><label class="form-label">Min Experience (Years) <span class="required">*</span></label><input class="form-control" type="number" id="pj-experience" placeholder="e.g. 3.5" min="0" max="50" step="0.5" value="3.5"></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Max Monthly Salary (₹) <span class="required">*</span></label><div class="salary-wrap"><span class="rupee">₹</span><input class="form-control" type="text" id="pj-salary" placeholder="1,50,000" value="1,50,000"></div></div><div class="form-group"><label class="form-label">Gender Preference</label><select class="form-control" id="pj-gender"><option value="0">No Preference</option><option value="1">Female</option><option value="2">Male</option></select></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Job Location Zone <span class="required">*</span></label><select class="form-control" id="pj-zone" onchange="updatePostAreas()"><option value="">-- Select Zone --</option></select></div><div class="form-group"><label class="form-label">Specific Area <span class="required">*</span></label><select class="form-control" id="pj-area"><option value="">Select zone first</option></select><div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Skills (comma separated) <span class="required">*</span></label><input class="form-control" type="text" id="pj-skills" placeholder="Python, AWS, Docker" maxlength="200"><div class="inline-hint"><span></span><span id="pj-skills-counter">0/200</span></div></div><div class="form-group"><label class="form-label">Expiry Date <span class="required">*</span></label><input class="form-control" type="date" id="pj-expiry"><div class="inline-hint"><span>⏳ Auto: +30 days</span><span id="expiry-hint">max 45 days</span></div></div></div><div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="pj-description" rows="5" placeholder="Job details..." maxlength="500"></textarea><div class="inline-hint"><span></span><span id="pj-desc-counter">0/500</span></div></div><button class="publish-btn" id="pj-publish-btn" onclick="publishJob()">📤 Publish Job</button><div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item active" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
+<div id="postjob-page" class="hidden-page"><div class="postjob-container"><div class="postjob-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="cancelPostJob()">Cancel</button></div><div class="page-content" id="postjob-scroll"><div id="recruiter-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name in the profile to post jobs.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div><div class="form-group"><label class="form-label">Company <span class="required">*</span></label><input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100"></div><div class="grid-2"><div class="form-group"><label class="form-label">Job Title <span class="required">*</span></label><input class="form-control" type="text" id="pj-title" placeholder="e.g., Senior Developer" maxlength="60"><div class="inline-hint"><span></span><span id="pj-title-counter">0/60</span></div></div><div class="form-group"><label class="form-label">Min Experience (Years) <span class="required">*</span></label><input class="form-control" type="number" id="pj-experience" placeholder="e.g. 3.5" min="0" max="50" step="0.5" value="3.5"></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Max Monthly Salary (₹) <span class="required">*</span></label><div class="salary-wrap"><span class="rupee">₹</span><input class="form-control" type="text" id="pj-salary" placeholder="1,50,000" value="1,50,000"></div></div><div class="form-group"><label class="form-label">Gender Preference</label><select class="form-control" id="pj-gender"><option value="0">No Preference</option><option value="1">Female</option><option value="2">Male</option></select></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Job Location Zone <span class="required">*</span></label><select class="form-control" id="pj-zone" onchange="updatePostAreas()"><option value="">-- Select Zone --</option></select></div><div class="form-group"><label class="form-label">Specific Area <span class="required">*</span></label><select class="form-control" id="pj-area"><option value="">Select zone first</option></select><div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Skills (comma separated) <span class="required">*</span></label><input class="form-control" type="text" id="pj-skills" placeholder="Python, AWS, Docker" maxlength="200"><div class="inline-hint"><span></span><span id="pj-skills-counter">0/200</span></div></div><div class="form-group"><label class="form-label">Expiry Date <span class="required">*</span></label><input class="form-control" type="date" id="pj-expiry"><div class="inline-hint"><span>⏳ Auto: +30 days</span><span id="expiry-hint">max 45 days</span></div></div></div><div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="pj-description" rows="5" placeholder="Job details..." maxlength="500"></textarea><div class="inline-hint"><span></span><span id="pj-desc-counter">0/500</span></div></div><button class="publish-btn" id="pj-publish-btn" onclick="publishJob()">📤 Publish Job</button><div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item active" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- DETAIL -->
-<div id="detail-page" class="hidden-page"><div class="detail-container"><div class="detail-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="closeDetail()">Close</button></div><div class="scroll-content" id="detail-scroll"><div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div><h3 style="font-size:16px;font-weight:700;color:#0f172a;margin:0" id="detail-title">Title</h3><p style="font-size:11px;color:#64748b;margin:2px 0 0" id="detail-company">Company</p></div><span id="detail-type-badge"></span></div><div id="detail-job-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name to contact job seekers.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div><div id="detail-seeker-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Job Seeker Profile Required</strong> Please complete your job seeker profile to apply/contact for jobs.</div><button class="btn-action" onclick="goToEditSeeker()">Create Profile</button></div><div class="grid-2" style="gap:8px"><div class="detail-field"><label>Experience</label><div class="value" id="detail-exp">--</div></div><div class="detail-field"><label>Salary</label><div class="value" id="detail-salary">--</div></div></div><div class="detail-field" id="detail-gender-field"><label>Gender Preference</label><div class="value" id="detail-gender">--</div></div><div class="grid-2" style="gap:8px"><div class="detail-field"><label>Zone</label><div class="value" id="detail-zone">--</div></div><div class="detail-field"><label>Area</label><div class="value" id="detail-area">--</div></div></div><div class="detail-field"><label>Skills</label><div class="value" id="detail-skills">--</div></div><div class="detail-field" id="detail-expiry-field"><label>Expiry Date</label><div class="value" id="detail-expiry">--</div></div><div class="detail-field" id="detail-notice-field"><label>Notice Period</label><div class="value" id="detail-notice">--</div></div><div class="detail-field"><label>Description / About</label><div class="value-multiline" id="detail-desc">--</div></div><div class="detail-field"><label>Posted / Active Since</label><div class="value" id="detail-posted">--</div></div><div class="detail-stats" id="detail-stats-container"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div class="stat-item" onclick="detailShowEndorsers()"><div class="number" id="detail-total-popularity">0</div><div class="label">⭐ Popularity</div></div><div class="stat-item" onclick="detailShowFlaggers()"><div class="number" id="detail-flags-count">0</div><div class="label">👎 Flags</div></div><div class="stat-item"><div class="number" id="detail-shares">0</div><div class="label">📤 Shares</div></div></div><div id="detail-30day-row" style="border-top:1px solid #f1f5f9;padding-top:6px;display:none"><div class="stat-row-label">📊 Last 30 Days</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:2px"><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg><span id="detail-views-30d" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span id="detail-calls-30d" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span id="detail-wa-30d" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div></div></div><div id="detail-total-row" style="border-top:1px solid #f1f5f9;padding-top:6px;display:none"><div class="stat-row-label">📈 Total (All Time)</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:2px"><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg><span id="detail-views-total" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span id="detail-calls-total" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span id="detail-wa-total" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div></div></div></div><div class="detail-actions"><div class="action-group"><button class="btn-call" id="detail-call-btn" onclick="makeCall()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><span class="action-label">Call</span></div><div class="action-group"><button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button><span class="action-label">WhatsApp</span></div><div class="action-group"><button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><span class="action-label">Recommend</span></div><div class="action-group"><button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button><span class="action-label">Not Rec</span></div><div class="action-group"><button class="btn-share" id="detail-share-btn" onclick="handleShareClick()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button><span class="action-label">Share</span></div><div class="action-group"><button class="btn-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span class="action-label">Close</span></div></div><div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
+<div id="detail-page" class="hidden-page"><div class="detail-container"><div class="detail-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="closeDetail()">Close</button></div><div class="page-content" id="detail-scroll"><div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div><h3 style="font-size:16px;font-weight:700;color:#0f172a;margin:0" id="detail-title">Title</h3><p style="font-size:11px;color:#64748b;margin:2px 0 0" id="detail-company">Company</p></div><span id="detail-type-badge"></span></div><div id="detail-job-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name to contact job seekers.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div><div id="detail-seeker-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Job Seeker Profile Required</strong> Please complete your job seeker profile to apply/contact for jobs.</div><button class="btn-action" onclick="goToEditSeeker()">Create Profile</button></div><div class="grid-2" style="gap:8px"><div class="detail-field"><label>Experience</label><div class="value" id="detail-exp">--</div></div><div class="detail-field"><label>Salary</label><div class="value" id="detail-salary">--</div></div></div><div class="detail-field" id="detail-gender-field"><label>Gender Preference</label><div class="value" id="detail-gender">--</div></div><div class="grid-2" style="gap:8px"><div class="detail-field"><label>Zone</label><div class="value" id="detail-zone">--</div></div><div class="detail-field"><label>Area</label><div class="value" id="detail-area">--</div></div></div><div class="detail-field"><label>Skills</label><div class="value" id="detail-skills">--</div></div><div class="detail-field" id="detail-expiry-field"><label>Expiry Date</label><div class="value" id="detail-expiry">--</div></div><div class="detail-field" id="detail-notice-field"><label>Notice Period</label><div class="value" id="detail-notice">--</div></div><div class="detail-field"><label>Description / About</label><div class="value-multiline" id="detail-desc">--</div></div><div class="detail-field"><label>Posted / Active Since</label><div class="value" id="detail-posted">--</div></div><div class="detail-stats" id="detail-stats-container"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><div class="stat-item" onclick="detailShowEndorsers()"><div class="number" id="detail-total-popularity">0</div><div class="label">⭐ Popularity</div></div><div class="stat-item" onclick="detailShowFlaggers()"><div class="number" id="detail-flags-count">0</div><div class="label">👎 Flags</div></div><div class="stat-item"><div class="number" id="detail-shares">0</div><div class="label">📤 Shares</div></div></div><div id="detail-30day-row" style="border-top:1px solid #f1f5f9;padding-top:6px;display:none"><div class="stat-row-label">📊 Last 30 Days</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:2px"><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg><span id="detail-views-30d" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span id="detail-calls-30d" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span id="detail-wa-30d" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div></div></div><div id="detail-total-row" style="border-top:1px solid #f1f5f9;padding-top:6px;display:none"><div class="stat-row-label">📈 Total (All Time)</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:2px"><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg><span id="detail-views-total" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg><span id="detail-calls-total" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div><div style="text-align:center;padding:4px;display:flex;align-items:center;justify-content:center;gap:4px"><svg viewBox="0 0 24 24" width="14" height="14" fill="#64748b"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span id="detail-wa-total" style="font-size:13px;font-weight:600;color:#1e293b">0</span></div></div></div></div><div class="detail-actions"><div class="action-group"><button class="btn-call" id="detail-call-btn" onclick="makeCall()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><span class="action-label">Call</span></div><div class="action-group"><button class="btn-whatsapp" id="detail-wa-btn" onclick="sendWhatsApp()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></button><span class="action-label">WhatsApp</span></div><div class="action-group"><button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><span class="action-label">Recommend</span></div><div class="action-group"><button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button><span class="action-label">Not Rec</span></div><div class="action-group"><button class="btn-share" id="detail-share-btn" onclick="handleShareClick()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button><span class="action-label">Share</span></div><div class="action-group"><button class="btn-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span class="action-label">Close</span></div></div><div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- MODALS -->
 <div class="modal-overlay" id="change-pin-modal"><div class="modal-box"><h3>🔑 Change PIN</h3><p>Enter your new 4-digit PIN</p><input type="password" id="new-pin" class="input-field" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric"><input type="password" id="confirm-pin" class="input-field" placeholder="Confirm PIN" maxlength="4" inputmode="numeric"><div style="display:flex;gap:8px;margin-top:8px"><button class="btn-back" style="margin:0" onclick="closeChangePin()">Cancel</button><button class="btn-primary" onclick="saveNewPin()">Save PIN</button></div></div></div>
@@ -316,13 +342,14 @@ const GUEST_PIN='1234';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // ============================================================
-// ZONE & AREA DATA (same as before - keeping it short for brevity)
+// ZONE & AREA DATA
 // ============================================================
 const ZONES=[{zone_id:5001,zone_name:"Hyderabad"},{zone_id:5012,zone_name:"Vikarabad"},{zone_id:5021,zone_name:"Medak"},{zone_id:5022,zone_name:"Sangareddy"},{zone_id:5023,zone_name:"Siddipet"},{zone_id:5031,zone_name:"Kamareddy"},{zone_id:5032,zone_name:"Nizamabad"},{zone_id:5041,zone_name:"Adilabad"},{zone_id:5042,zone_name:"Asifabad"},{zone_id:5043,zone_name:"Mancherial"},{zone_id:5044,zone_name:"Nirmal"},{zone_id:5051,zone_name:"Jagtial"},{zone_id:5052,zone_name:"Karimnagar"},{zone_id:5053,zone_name:"Peddapalli"},{zone_id:5054,zone_name:"Sircilla"},{zone_id:5061,zone_name:"Hanumakonda"},{zone_id:5062,zone_name:"Jangaon"},{zone_id:5063,zone_name:"Bhupalpally"},{zone_id:5064,zone_name:"Mahabubabad"},{zone_id:5065,zone_name:"Mulugu"},{zone_id:5066,zone_name:"Warangal"},{zone_id:5071,zone_name:"Kothagudem"},{zone_id:5072,zone_name:"Khammam"},{zone_id:5081,zone_name:"Nalgonda"},{zone_id:5082,zone_name:"Suryapet"},{zone_id:5083,zone_name:"Bhongir"},{zone_id:5091,zone_name:"Gadwal"},{zone_id:5092,zone_name:"Mahabubnagar"},{zone_id:5093,zone_name:"Nagarkurnool"},{zone_id:5094,zone_name:"Narayanpet"},{zone_id:5095,zone_name:"Wanaparthy"},{zone_id:5151,zone_name:"Anantapuram"},{zone_id:5152,zone_name:"Puttaparthi"},{zone_id:5161,zone_name:"Kadapa"},{zone_id:5162,zone_name:"Rayachoti"},{zone_id:5171,zone_name:"Chittoor"},{zone_id:5172,zone_name:"Madanapalle"},{zone_id:5173,zone_name:"Tirupati"},{zone_id:5181,zone_name:"Kurnool"},{zone_id:5182,zone_name:"Nandyal"},{zone_id:5201,zone_name:"Vijayawada"},{zone_id:5211,zone_name:"Machilipatnam"},{zone_id:5221,zone_name:"Guntur"},{zone_id:5222,zone_name:"Bapatla"},{zone_id:5223,zone_name:"Narasaraopeta"},{zone_id:5231,zone_name:"Ongole"},{zone_id:5232,zone_name:"Markapuram"},{zone_id:5241,zone_name:"Nellore"},{zone_id:5301,zone_name:"Visakhapatnam"},{zone_id:5311,zone_name:"Anakapalli"},{zone_id:5312,zone_name:"Paderu"},{zone_id:5321,zone_name:"Srikakulam"},{zone_id:5331,zone_name:"Kakinada"},{zone_id:5332,zone_name:"Rajahmundry"},{zone_id:5333,zone_name:"Amalapuram"},{zone_id:5334,zone_name:"Rampachodavaram"},{zone_id:5341,zone_name:"Eluru"},{zone_id:5342,zone_name:"Bhimavaram"},{zone_id:5351,zone_name:"Vizianagaram"},{zone_id:5352,zone_name:"Parvathipuram"}];
 
 const AREAS=[
-// ... (all areas from original code - keeping for brevity)
-];
+{area_id:52400101,zone_id:5241,area_name:"Nellore Urban"},{area_id:52400201,zone_id:5241,area_name:"Nellore Rural"},{area_id:52430501,zone_id:5241,area_name:"Buchireddypalem"},{area_id:52431401,zone_id:5241,area_name:"Indukurpet"},{area_id:52413701,zone_id:5241,area_name:"Kovur"},{area_id:52440501,zone_id:5241,area_name:"Manubolu"},{area_id:52434401,zone_id:5241,area_name:"Muthukur/Krishnapatnam"},{area_id:52434501,zone_id:5241,area_name:"Podalakur"},{area_id:52440801,zone_id:5241,area_name:"Rapur"},{area_id:52440701,zone_id:5241,area_name:"Sydapuram"},{area_id:52431101,zone_id:5241,area_name:"Thotapalli Gudur"},{area_id:52432001,zone_id:5241,area_name:"Venkatachalam"},{area_id:52420101,zone_id:5241,area_name:"Kavali"},{area_id:52431501,zone_id:5241,area_name:"Allur"},{area_id:52414201,zone_id:5241,area_name:"Bogole"},{area_id:52424001,zone_id:5241,area_name:"Dagadarthi"},{area_id:52423001,zone_id:5241,area_name:"Duttalur"},{area_id:52422301,zone_id:5241,area_name:"Jaladanki"},{area_id:52422401,zone_id:5241,area_name:"Kaligiri"},{area_id:52431601,zone_id:5241,area_name:"Kodavalur"},{area_id:52423901,zone_id:5241,area_name:"Kondapuram"},{area_id:52422701,zone_id:5241,area_name:"Varikuntapadu"},{area_id:52431801,zone_id:5241,area_name:"Vidavalur"},{area_id:52422801,zone_id:5241,area_name:"Vinjamur"},{area_id:52422201,zone_id:5241,area_name:"Atmakur"},{area_id:52430201,zone_id:5241,area_name:"Ananthasagaram"},{area_id:52430401,zone_id:5241,area_name:"AS Peta"},{area_id:52434101,zone_id:5241,area_name:"Chejerla"},{area_id:52434201,zone_id:5241,area_name:"Kaluvoya"},{area_id:52431201,zone_id:5241,area_name:"Marripadu"},{area_id:52430801,zone_id:5241,area_name:"Sangam"},{area_id:52423201,zone_id:5241,area_name:"Seetharamapuram"},{area_id:52422601,zone_id:5241,area_name:"Udayagiri"},{area_id:52410101,zone_id:5241,area_name:"Gudur"},{area_id:52441201,zone_id:5241,area_name:"Chillakur"},{area_id:52441101,zone_id:5241,area_name:"Kota"},
+{area_id:50000101,zone_id:5001,area_name:"Abids"},{area_id:50000102,zone_id:5001,area_name:"Koti"},{area_id:50000103,zone_id:5001,area_name:"Nampally"},{area_id:50000201,zone_id:5001,area_name:"Charminar"},{area_id:50000301,zone_id:5001,area_name:"Secunderabad"},{area_id:50000401,zone_id:5001,area_name:"Khairatabad"},{area_id:50000501,zone_id:5001,area_name:"Jalpally"},{area_id:50000502,zone_id:5001,area_name:"Chandrayangutta"},{area_id:50000503,zone_id:5001,area_name:"Barkas"},{area_id:50000504,zone_id:5001,area_name:"Balapur"},{area_id:50000505,zone_id:5001,area_name:"Pahadi Shareef"},{area_id:50000701,zone_id:5001,area_name:"Tarnaka"},{area_id:50000702,zone_id:5001,area_name:"Habsiguda"},{area_id:50000801,zone_id:5001,area_name:"Shaikpet"},{area_id:50000802,zone_id:5001,area_name:"Tolichowki"},{area_id:50001001,zone_id:5001,area_name:"Alwal"},{area_id:50001002,zone_id:5001,area_name:"Bolarum"},{area_id:50001101,zone_id:5001,area_name:"Bowenpally"},{area_id:50001301,zone_id:5001,area_name:"Amberpet"},{area_id:50001501,zone_id:5001,area_name:"Trimulgherry"},{area_id:50001601,zone_id:5001,area_name:"Begumpet"},{area_id:50001801,zone_id:5001,area_name:"Sanathnagar"},{area_id:50002001,zone_id:5001,area_name:"Musheerabad"},{area_id:50002601,zone_id:5001,area_name:"Marredpally"},{area_id:50002701,zone_id:5001,area_name:"Kachiguda"},{area_id:50002801,zone_id:5001,area_name:"Mehdipatnam"},{area_id:50002901,zone_id:5001,area_name:"Himayatnagar"},{area_id:50002902,zone_id:5001,area_name:"Domalguda"},{area_id:50002903,zone_id:5001,area_name:"Narayanaguda"},{area_id:50003001,zone_id:5001,area_name:"Rajendranagar"},{area_id:50003201,zone_id:5001,area_name:"Gachibowli"},{area_id:50003301,zone_id:5001,area_name:"Jubilee Hills"},{area_id:50003401,zone_id:5001,area_name:"Banjara Hills"},{area_id:50003501,zone_id:5001,area_name:"Saroornagar"},{area_id:50003601,zone_id:5001,area_name:"Malakpet"},{area_id:50003701,zone_id:5001,area_name:"Balanagar"},{area_id:50003801,zone_id:5001,area_name:"Ameerpet"},{area_id:50003802,zone_id:5001,area_name:"Sanjeeva Reddy Nagar"},{area_id:50003901,zone_id:5001,area_name:"Uppal"},{area_id:50003902,zone_id:5001,area_name:"Peerzadiguda"},{area_id:50004701,zone_id:5001,area_name:"Malkajgiri"},{area_id:50004702,zone_id:5001,area_name:"Safilguda"},{area_id:50004801,zone_id:5001,area_name:"Attapur"},{area_id:50004901,zone_id:5001,area_name:"Miyapur"},{area_id:50004902,zone_id:5001,area_name:"Hafeezpet"},{area_id:50005001,zone_id:5001,area_name:"Chanda Nagar"},{area_id:50005101,zone_id:5001,area_name:"Cherlapally"},{area_id:50005301,zone_id:5001,area_name:"Old City (Falaknuma)"},{area_id:50005501,zone_id:5001,area_name:"Quthbullapur"},{area_id:50005901,zone_id:5001,area_name:"Santoshnagar"},{area_id:50005902,zone_id:5001,area_name:"Saidabad"},{area_id:50006001,zone_id:5001,area_name:"Dilsukhnagar"},{area_id:50006201,zone_id:5001,area_name:"Kapra"},{area_id:50006202,zone_id:5001,area_name:"A.S. Rao Nagar"},{area_id:50006401,zone_id:5001,area_name:"Bahadurpura"},{area_id:50006701,zone_id:5001,area_name:"Jeedimetla"},{area_id:50006801,zone_id:5001,area_name:"Nagole"},{area_id:50007001,zone_id:5001,area_name:"Vanasthalipuram"},{area_id:50007201,zone_id:5001,area_name:"Kukatpally"},{area_id:50007401,zone_id:5001,area_name:"L.B. Nagar"},{area_id:50007501,zone_id:5001,area_name:"Narsingi"},{area_id:50007502,zone_id:5001,area_name:"Kokapet"},{area_id:50007601,zone_id:5001,area_name:"Nacharam"},{area_id:50008101,zone_id:5001,area_name:"Madhapur"},{area_id:50008201,zone_id:5001,area_name:"Somajiguda"},{area_id:50008401,zone_id:5001,area_name:"Kondapur"},{area_id:50008801,zone_id:5001,area_name:"Pocharam"},{area_id:50008901,zone_id:5001,area_name:"Manikonda"},{area_id:50009001,zone_id:5001,area_name:"Nizampet"},{area_id:50009002,zone_id:5001,area_name:"Bachupally"},{area_id:50009201,zone_id:5001,area_name:"Boduppal"},{area_id:50009401,zone_id:5001,area_name:"Sainikpuri"},{area_id:50009501,zone_id:5001,area_name:"Koti"},{area_id:50010001,zone_id:5001,area_name:"Kompally"},{area_id:50010101,zone_id:5001,area_name:"Shamirpet"},{area_id:50110101,zone_id:5001,area_name:"Chevella"},{area_id:50120301,zone_id:5001,area_name:"Shankarpally"},{area_id:50120302,zone_id:5001,area_name:"Mokila"},{area_id:50121801,zone_id:5001,area_name:"Shamshabad"},{area_id:50130101,zone_id:5001,area_name:"Ghatkesar"},{area_id:50135901,zone_id:5001,area_name:"Maheshwaram"},{area_id:50135902,zone_id:5001,area_name:"Tukkuguda"},{area_id:50140101,zone_id:5001,area_name:"Medchal"},{area_id:50140102,zone_id:5001,area_name:"Gundlapochampally"},{area_id:50150401,zone_id:5001,area_name:"Moinabad"},{area_id:50150501,zone_id:5001,area_name:"Hayathnagar"},{area_id:50150601,zone_id:5001,area_name:"Ibrahimpatnam"},{area_id:50151001,zone_id:5001,area_name:"Bongloor"},{area_id:50203201,zone_id:5001,area_name:"Tellapur"},{area_id:50203202,zone_id:5001,area_name:"Ameenpur"},{area_id:50231901,zone_id:5001,area_name:"Patancheru"},
+{area_id:50110101,zone_id:5012,area_name:"Vikarabad"},{area_id:50211001,zone_id:5021,area_name:"Medak"},{area_id:50200101,zone_id:5022,area_name:"Sangareddy"},{area_id:50210301,zone_id:5023,area_name:"Siddipet"},{area_id:50311101,zone_id:5031,area_name:"Kamareddy"},{area_id:50300101,zone_id:5032,area_name:"Nizamabad"},{area_id:50400101,zone_id:5041,area_name:"Adilabad"},{area_id:50429301,zone_id:5042,area_name:"Asifabad"},{area_id:50420801,zone_id:5043,area_name:"Mancherial"},{area_id:50410601,zone_id:5044,area_name:"Nirmal"},{area_id:50532701,zone_id:5051,area_name:"Jagtial"},{area_id:50500101,zone_id:5052,area_name:"Karimnagar"},{area_id:50517201,zone_id:5053,area_name:"Peddapalli"},{area_id:50530101,zone_id:5054,area_name:"Sircilla"},{area_id:50600101,zone_id:5061,area_name:"Hanumakonda"},{area_id:50616701,zone_id:5062,area_name:"Jangaon"},{area_id:50616901,zone_id:5063,area_name:"Bhupalpally"},{area_id:50610101,zone_id:5064,area_name:"Mahabubabad"},{area_id:50634301,zone_id:5065,area_name:"Mulugu"},{area_id:50600201,zone_id:5066,area_name:"Warangal"},{area_id:50710101,zone_id:5071,area_name:"Kothagudem"},{area_id:50700101,zone_id:5072,area_name:"Khammam"},{area_id:50800101,zone_id:5081,area_name:"Nalgonda"},{area_id:50821301,zone_id:5082,area_name:"Suryapet"},{area_id:50811601,zone_id:5083,area_name:"Bhongir"},{area_id:50912501,zone_id:5091,area_name:"Gadwal"},{area_id:50900101,zone_id:5092,area_name:"Mahabubnagar"},{area_id:50920801,zone_id:5093,area_name:"Nagarkurnool"},{area_id:50921001,zone_id:5094,area_name:"Narayanpet"},{area_id:50910301,zone_id:5095,area_name:"Wanaparthy"},{area_id:51500101,zone_id:5151,area_name:"Anantapuram"},{area_id:51513401,zone_id:5152,area_name:"Puttaparthi"},{area_id:51600101,zone_id:5161,area_name:"Kadapa"},{area_id:51626901,zone_id:5162,area_name:"Rayachoti"},{area_id:51700101,zone_id:5171,area_name:"Chittoor"},{area_id:51732501,zone_id:5172,area_name:"Madanapalle"},{area_id:51750101,zone_id:5173,area_name:"Tirupati"},{area_id:51800101,zone_id:5181,area_name:"Kurnool"},{area_id:51850101,zone_id:5182,area_name:"Nandyal"},{area_id:52000101,zone_id:5201,area_name:"Vijayawada"},{area_id:52100101,zone_id:5211,area_name:"Machilipatnam"},{area_id:52200101,zone_id:5221,area_name:"Guntur"},{area_id:52210101,zone_id:5222,area_name:"Bapatla"},{area_id:52260101,zone_id:5223,area_name:"Narasaraopeta"},{area_id:52300101,zone_id:5231,area_name:"Ongole"},{area_id:52331601,zone_id:5232,area_name:"Markapuram"},{area_id:53000101,zone_id:5301,area_name:"Visakhapatnam"},{area_id:53100101,zone_id:5311,area_name:"Anakapalli"},{area_id:53102401,zone_id:5312,area_name:"Paderu"},{area_id:53200101,zone_id:5321,area_name:"Srikakulam"},{area_id:53300101,zone_id:5331,area_name:"Kakinada"},{area_id:53310101,zone_id:5332,area_name:"Rajahmundry"},{area_id:53320101,zone_id:5333,area_name:"Amalapuram"},{area_id:53328801,zone_id:5334,area_name:"Rampachodavaram"},{area_id:53400101,zone_id:5341,area_name:"Eluru"},{area_id:53420101,zone_id:5342,area_name:"Bhimavaram"},{area_id:53500101,zone_id:5351,area_name:"Vizianagaram"},{area_id:53550101,zone_id:5352,area_name:"Parvathipuram"}];
 
 // ============================================================
 // HELPER FUNCTIONS
@@ -400,6 +427,127 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 // ============================================================
+// CRITICAL: FIX SCROLLING WITH JAVASCRIPT HEIGHT CALCULATION
+// ============================================================
+function fixLayoutHeight() {
+    // Find which page is visible
+    const homePage = document.getElementById('home-page');
+    const profilePage = document.getElementById('profile-page');
+    const editPage = document.getElementById('edit-seeker-page');
+    const postJobPage = document.getElementById('postjob-page');
+    const detailPage = document.getElementById('detail-page');
+    
+    let container, content, header, guestBanner, installBanner, topSection, bottomNav;
+    
+    if (!homePage.classList.contains('hidden-page')) {
+        container = document.querySelector('.home-container');
+        if (!container) return;
+        content = document.querySelector('#home-page-content');
+        header = document.querySelector('.home-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = document.querySelector('.home-top');
+        bottomNav = document.querySelector('.bottom-nav');
+    } else if (!profilePage.classList.contains('hidden-page')) {
+        container = document.querySelector('#profile-page .home-container');
+        if (!container) return;
+        content = document.querySelector('#profile-page-content');
+        header = document.querySelector('#profile-page .home-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = null;
+        bottomNav = document.querySelector('#profile-page .bottom-nav');
+    } else if (!editPage.classList.contains('hidden-page')) {
+        container = document.querySelector('#edit-seeker-page .home-container');
+        if (!container) return;
+        content = document.querySelector('#edit-seeker-page-content');
+        header = document.querySelector('#edit-seeker-page .edit-page-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = null;
+        bottomNav = document.querySelector('#edit-seeker-page .bottom-nav');
+    } else if (!postJobPage.classList.contains('hidden-page')) {
+        container = document.querySelector('.postjob-container');
+        if (!container) return;
+        content = document.querySelector('#postjob-scroll');
+        header = document.querySelector('.postjob-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = null;
+        bottomNav = document.querySelector('#postjob-page .bottom-nav');
+    } else if (!detailPage.classList.contains('hidden-page')) {
+        container = document.querySelector('.detail-container');
+        if (!container) return;
+        content = document.querySelector('#detail-scroll');
+        header = document.querySelector('.detail-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = null;
+        bottomNav = document.querySelector('#detail-page .bottom-nav');
+    } else {
+        return;
+    }
+    
+    if (!content || !header || !bottomNav) return;
+    
+    // Get the card height
+    const card = document.querySelector('.card');
+    const cardHeight = card.offsetHeight;
+    
+    // Calculate heights (including margins)
+    let totalFixedHeight = 0;
+    
+    // Header height + padding/border
+    totalFixedHeight += header.offsetHeight + 8; // padding-bottom
+    
+    // Guest banner if visible
+    if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
+        totalFixedHeight += guestBanner.offsetHeight + 8; // margin-bottom
+    }
+    
+    // Install banner if visible
+    if (installBanner && !installBanner.classList.contains('hidden-banner') && installBanner.style.display !== 'none') {
+        totalFixedHeight += installBanner.offsetHeight + 8;
+    }
+    
+    // Top section (filters) - only on home page
+    if (topSection) {
+        totalFixedHeight += topSection.offsetHeight + 6; // padding-bottom
+    }
+    
+    // Bottom nav
+    totalFixedHeight += bottomNav.offsetHeight + 8; // padding-top
+    
+    // Calculate available height for content
+    let availableHeight = cardHeight - totalFixedHeight - 20; // 20px for padding
+    
+    // Ensure minimum height
+    if (availableHeight < 100) availableHeight = 100;
+    
+    // Apply to page content
+    content.style.height = availableHeight + 'px';
+    content.style.overflowY = 'auto';
+    content.style.display = 'block';
+    
+    // Debug log (remove in production)
+    console.log('Layout fixed:', {
+        page: currentPage,
+        cardHeight: cardHeight,
+        totalFixed: totalFixedHeight,
+        available: availableHeight
+    });
+}
+
+// Handle window resize
+let resizeTimer;
+function handleResize() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        fixLayoutHeight();
+    }, 200);
+}
+
+// ============================================================
 // POPULATE DROPDOWNS
 // ============================================================
 function populateEditZones(){
@@ -475,9 +623,10 @@ function showHomeScreenAfterLogin(){
   $('login-screen').style.display='none';$('home-page').classList.remove('hidden-page');
   updateAvatar();updateGuestUI();setTimeout(autoDetectLocation,500);fetchFeedData();
   setTimeout(showInstallBanner, 500);
+  setTimeout(fixLayoutHeight, 300);
   window.addEventListener('resize', handleResize);
 }
-function updateGuestUI(){const b=$('guest-banner');if(b)b.style.display=isGuest?'flex':'none';}
+function updateGuestUI(){const b=$('guest-banner');if(b)b.style.display=isGuest?'flex':'none'; setTimeout(fixLayoutHeight, 100);}
 function showLogin(){resetForm();$('mobile').focus();showToast('🔐 Enter your mobile number to login')}
 
 // ============================================================
@@ -514,72 +663,185 @@ function handleShareClick(){if(!currentDetailData||!currentDetailType){showToast
 function shareFromFeed(e,t,id){e.stopPropagation();const item=feedItems.find(i=>{const id2=i.type==='JOB'?i._raw?.job_id:i._raw?.mobile;return i.type===t&&String(id2)===String(id)});if(item&&item._raw){currentDetailData=item._raw;currentDetailType=item.type;incrementShareCount(t,id);openShareModal()}}
 
 // ============================================================
-// INCREMENT COUNTS (same as original)
+// INCREMENT COUNTS
 // ============================================================
 async function incrementViewCount(type,id){
-  // ... same as original
+  try{
+    const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',viewCol=getViewColumn(type),view30Col=getView30Column(type);
+    if(type==='JOB'){
+      const {data,error}=await sb.from(table).select(viewCol).eq(idField,id).maybeSingle();
+      if(error||!data)return null;
+      const newTotal=(data[viewCol]||0)+1;const updates={};updates[viewCol]=newTotal;
+      const {error:updateError}=await sb.from(table).update(updates).eq(idField,id);
+      if(updateError)return null;
+      if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[viewCol]=newTotal;$('detail-views-total').textContent=newTotal}
+      feedItems=feedItems.map(item=>{const itemId=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;if(item.type===type&&String(itemId)===String(id)){if(item._raw)item._raw[viewCol]=newTotal;item.views=newTotal}return item});return{total:newTotal}
+    }
+    const {data,error}=await sb.from(table).select(`${viewCol},${view30Col}`).eq(idField,id).maybeSingle();
+    if(error||!data)return null;
+    const newTotal=(data[viewCol]||0)+1,new30=(data[view30Col]||0)+1;
+    const updates={};updates[viewCol]=newTotal;updates[view30Col]=new30;
+    const {error:updateError}=await sb.from(table).update(updates).eq(idField,id);
+    if(updateError)return null;
+    if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[viewCol]=newTotal;currentDetailData[view30Col]=new30;$('detail-views-30d').textContent=new30;$('detail-views-total').textContent=newTotal}
+    feedItems=feedItems.map(item=>{const itemId=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;if(item.type===type&&String(itemId)===String(id)){if(item._raw){item._raw[viewCol]=newTotal;item._raw[view30Col]=new30}item.views=newTotal}return item});return{total:newTotal,days30:new30}
+  }catch(err){console.error('View count error:',err);return null}
 }
 async function incrementCallCount(type,id){
-  // ... same as original
+  try{
+    const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',callCol=getCallColumn(type),call30Col=getCall30Column(type);
+    if(type==='JOB'){
+      const {data,error}=await sb.from(table).select(callCol).eq(idField,id).maybeSingle();
+      if(error||!data)return null;
+      const newTotal=(data[callCol]||0)+1;const updates={};updates[callCol]=newTotal;
+      await sb.from(table).update(updates).eq(idField,id);
+      if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[callCol]=newTotal;$('detail-calls-total').textContent=newTotal}
+      return{total:newTotal}
+    }
+    const {data,error}=await sb.from(table).select(`${callCol},${call30Col}`).eq(idField,id).maybeSingle();
+    if(error||!data)return null;
+    const newTotal=(data[callCol]||0)+1,new30=(data[call30Col]||0)+1;
+    const updates={};updates[callCol]=newTotal;updates[call30Col]=new30;
+    await sb.from(table).update(updates).eq(idField,id);
+    if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[callCol]=newTotal;currentDetailData[call30Col]=new30;$('detail-calls-30d').textContent=new30;$('detail-calls-total').textContent=newTotal}
+    return{total:newTotal,days30:new30}
+  }catch(err){console.error('Call count error:',err);return null}
 }
 async function incrementWhatsAppCount(type,id){
-  // ... same as original
+  try{
+    const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',waCol=getWhatsAppColumn(type),wa30Col=getWhatsApp30Column(type);
+    if(type==='JOB'){
+      const {data,error}=await sb.from(table).select(waCol).eq(idField,id).maybeSingle();
+      if(error||!data)return null;
+      const newTotal=(data[waCol]||0)+1;const updates={};updates[waCol]=newTotal;
+      await sb.from(table).update(updates).eq(idField,id);
+      if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[waCol]=newTotal;$('detail-wa-total').textContent=newTotal}
+      return{total:newTotal}
+    }
+    const {data,error}=await sb.from(table).select(`${waCol},${wa30Col}`).eq(idField,id).maybeSingle();
+    if(error||!data)return null;
+    const newTotal=(data[waCol]||0)+1,new30=(data[wa30Col]||0)+1;
+    const updates={};updates[waCol]=newTotal;updates[wa30Col]=new30;
+    await sb.from(table).update(updates).eq(idField,id);
+    if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[waCol]=newTotal;currentDetailData[wa30Col]=new30;$('detail-wa-30d').textContent=new30;$('detail-wa-total').textContent=newTotal}
+    return{total:newTotal,days30:new30}
+  }catch(err){console.error('WhatsApp count error:',err);return null}
 }
 async function incrementShareCount(type,id){
-  // ... same as original
+  try{
+    const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile';
+    const {data,error}=await sb.from(table).select('share_count').eq(idField,id).maybeSingle();
+    if(error||!data)return null;
+    const newCount=(data?.share_count||0)+1;
+    await sb.from(table).update({share_count:newCount}).eq(idField,id);
+    if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData.share_count=newCount;$('detail-shares').textContent=newCount;updateDetailStats()}
+    feedItems=feedItems.map(item=>{const itemId=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;if(item.type===type&&String(itemId)===String(id)){if(item._raw)item._raw.share_count=newCount;item.share_count=newCount}return item});renderFeed();return newCount
+  }catch(err){console.error('Share count error:',err);return null}
 }
 
 // ============================================================
-// AUTO CHECK & OTP (same as original)
+// AUTO CHECK & OTP
 // ============================================================
 async function autoCheckMobile(mobile){
-  // ... same as original
+  if(isChecking)return;isChecking=true;const input=$('mobile');input.disabled=true;setStatus('⏳ Checking...','blue');
+  try{
+    const {data:activeUser}=await sb.from('active_users').select('*').eq('mobile',mobile).maybeSingle();
+    if(activeUser){isNewUser=false;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Existing user - Enter PIN';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Existing user. Enter your PIN.','green');showToast('📱 Existing user - Enter PIN');isChecking=false;input.disabled=false;return}
+    const {data:platformData}=await sb.from('platform_stats').select('all_users').maybeSingle();let isArchived=false;
+    if(platformData&&platformData.all_users){const allUsers=platformData.all_users||[],mobileBigInt=BigInt(mobile);isArchived=allUsers.some(m=>{try{return BigInt(m)===mobileBigInt}catch(e){return String(m)===mobile}})}
+    if(isArchived){showToast('📱 Welcome back! Moving from archive to active...');const {data:newActive,error:createError}=await sb.from('active_users').insert([{mobile:mobile,last_active:new Date().toISOString()}]).select().single();if(createError){console.error('Error creating active user:',createError);isNewUser=false;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Welcome back!';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Welcome back! Enter your PIN.','green');showToast('📱 Welcome back!');isChecking=false;input.disabled=false;return}showToast('✅ User moved from archive to active!');isNewUser=false;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Welcome back! Enter PIN';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Welcome back! Enter your PIN.','green');showToast('📱 Welcome back!');isChecking=false;input.disabled=false;return}
+    isNewUser=true;currentMobile=mobile;await sendWhatsAppOTP(mobile);
+  }catch(err){console.error('Error checking user:',err);isNewUser=true;currentMobile=mobile;await sendWhatsAppOTP(mobile)}finally{isChecking=false;input.disabled=false}
 }
 function formatMobileForWA(mobile){return`91${mobile}`}
 async function sendWhatsAppOTP(mobile){
-  // ... same as original
+  setStatus('📱 Sending OTP via WhatsApp...','blue');
+  const otp=Math.floor(100000+Math.random()*900000).toString();
+  sessionStorage.setItem('otp_'+mobile,otp);sessionStorage.setItem('otp_expiry_'+mobile,Date.now()+300000);
+  const waNumber=formatMobileForWA(mobile),message=`Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;
+  window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`,'_blank');
+  $('step1').style.display='none';$('step2').classList.add('hidden');$('step3').classList.remove('hidden');$('step4').classList.add('hidden');$('wa-display-mobile').textContent=mobile;
+  document.querySelectorAll('.otp-input').forEach(el=>el.value='');document.querySelector('.otp-input').focus();
+  startOTPTimer();setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.','green');showToast('💬 OTP sent via WhatsApp!');
 }
 function getOTP(){return Array.from(document.querySelectorAll('.otp-input')).map(el=>el.value).join('')}
 function startOTPTimer(){
-  // ... same as original
+  let timeLeft=otpExpiryTime;const timerEl=$('otp-timer'),resendBtn=$('resend-otp');
+  if(otpTimerInterval)clearInterval(otpTimerInterval);
+  otpTimerInterval=setInterval(()=>{const m=Math.floor(timeLeft/60),s=timeLeft%60;timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;timeLeft--;if(timeLeft<0){clearInterval(otpTimerInterval);timerEl.textContent='Expired';resendBtn.disabled=false}},1000);
 }
 async function verifyOTP(){
-  // ... same as original
+  const otp=getOTP();if(otp.length!==6){showToast('⚠️ Enter complete 6-digit OTP');return}
+  const storedOtp=sessionStorage.getItem('otp_'+currentMobile),storedExpiry=sessionStorage.getItem('otp_expiry_'+currentMobile);
+  if(!storedOtp){showToast('❌ OTP expired. Please request again.');return}
+  if(Date.now()>parseInt(storedExpiry)){showToast('❌ OTP expired. Please request again.');sessionStorage.removeItem('otp_'+currentMobile);$('resend-otp').disabled=false;return}
+  if(otp!==storedOtp){showToast('❌ Invalid OTP. Please try again.');document.querySelectorAll('.otp-input').forEach(el=>{el.value='';el.classList.remove('filled')});document.querySelector('.otp-input').focus();return}
+  showToast('✅ Phone verified successfully!');sessionStorage.removeItem('otp_'+currentMobile);sessionStorage.removeItem('otp_expiry_'+currentMobile);
+  $('step3').classList.add('hidden');$('step4').classList.remove('hidden');$('reg-display-mobile').textContent=currentMobile;$('reg-pin').value='';$('reg-pin-confirm').value='';$('reg-pin').focus();setStatus('📱 Set your PIN','blue');
 }
 async function resendOTP(){
-  // ... same as original
+  const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();
+  sessionStorage.setItem('otp_'+mobile,otp);sessionStorage.setItem('otp_expiry_'+mobile,Date.now()+300000);
+  const waNumber=formatMobileForWA(mobile),message=`Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;
+  window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`,'_blank');
+  $('resend-otp').disabled=true;startOTPTimer();showToast('🔄 OTP resent via WhatsApp!');
 }
 async function registerUser(){
-  // ... same as original
+  const pin=$('reg-pin').value.trim(),confirmPin=$('reg-pin-confirm').value.trim();
+  if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){showToast('⚠️ Enter a valid 4-digit PIN');$('reg-pin').focus();return}
+  if(pin!==confirmPin){showToast('⚠️ PINs do not match');$('reg-pin-confirm').value='';$('reg-pin-confirm').focus();return}
+  $('register-btn').disabled=true;$('register-btn').textContent='⏳ Creating...';
+  try{
+    const response=await fetch(`${EDGE_FUNCTION_URL}/register-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});
+    const data=await response.json();
+    if(data.success){const {data:platformData}=await sb.from('platform_stats').select('all_users').maybeSingle();let allUsers=platformData?.all_users||[];const mobileBigInt=BigInt(currentMobile),exists=allUsers.some(m=>{try{return BigInt(m)===mobileBigInt}catch(e){return String(m)===currentMobile}});if(!exists){allUsers.push(Number(currentMobile));if(platformData)await sb.from('platform_stats').update({all_users:allUsers}).eq('id',platformData.id);else await sb.from('platform_stats').insert([{all_users:allUsers}])}showToast('✅ Registration successful!');await fetchUserData(currentMobile)}else{showToast('❌ Registration failed: '+data.error);$('register-btn').disabled=false;$('register-btn').textContent='✅ Create Account'}
+  }catch(err){showToast('❌ Error: '+err.message);$('register-btn').disabled=false;$('register-btn').textContent='✅ Create Account'}
 }
 window.submitPin=async function(){
-  // ... same as original
+  const pin=$('pin').value.trim();if(!pin||pin.length!==4){showToast('⚠️ Enter 4-digit PIN');$('pin').focus();return}
+  $('submitBtn').disabled=true;$('submitBtn').textContent='⏳ Verifying...';
+  try{
+    const response=await fetch(`${EDGE_FUNCTION_URL}/login-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});
+    const data=await response.json();
+    if(data.success){isGuest=false;sessionStorage.removeItem('guest_session');await fetchUserData(currentMobile);showToast('✅ Welcome back!')}
+    else{showToast('❌ Invalid PIN. Please try again.');$('pin').value='';$('pin').focus()}
+  }catch(err){showToast('❌ Error: '+err.message)}finally{$('submitBtn').disabled=false;$('submitBtn').textContent='🔐 Login'}
 };
 async function fetchUserData(mobile){
-  // ... same as original
+  const {data,error}=await sb.from('active_users').select('*').eq('mobile',mobile).single();
+  if(error){const {data:newUser,error:insertError}=await sb.from('active_users').insert([{mobile:mobile,last_active:new Date().toISOString()}]).select().single();if(insertError){showToast('❌ Error creating user: '+insertError.message);return}currentUser=newUser}else currentUser=data;
+  showHomeScreenAfterLogin();setTimeout(processSharedLinkAfterLogin,500);
 }
 function resetPIN(){
-  // ... same as original
+  if(confirm('Forgot your PIN? We\'ll send an OTP to reset it.')){const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,otp);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${otp}*`)}`,'_blank');showToast('📱 PIN reset OTP sent via WhatsApp!');$('step2').classList.add('hidden');$('step3').classList.remove('hidden');$('wa-display-mobile').textContent=mobile;$('verify-btn').textContent='✅ Verify & Reset PIN';$('verify-btn').className='btn-primary btn-green';$('verify-btn').onclick=function(){verifyResetOTP()};document.querySelectorAll('.otp-input').forEach(el=>el.value='');document.querySelector('.otp-input').focus();startOTPTimer();$('resend-otp').disabled=true;$('resend-otp').onclick=function(){const newOtp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,newOtp);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${newOtp}*`)}`,'_blank');$('resend-otp').disabled=true;startOTPTimer();showToast('🔄 Reset OTP resent!')}}
 }
 async function verifyResetOTP(){
-  // ... same as original
+  const otp=getOTP();if(otp.length!==6){showToast('⚠️ Enter complete 6-digit OTP');return}
+  const mobile=currentMobile,storedOtp=sessionStorage.getItem('reset_otp_'+mobile),storedExpiry=sessionStorage.getItem('reset_otp_expiry_'+mobile);
+  if(!storedOtp||Date.now()>parseInt(storedExpiry)){showToast('❌ OTP expired. Please try again.');return}
+  if(otp!==storedOtp){showToast('❌ Invalid OTP. Please try again.');document.querySelectorAll('.otp-input').forEach(el=>{el.value='';el.classList.remove('filled')});document.querySelector('.otp-input').focus();return}
+  showToast('✅ OTP verified! Set your new PIN.');sessionStorage.removeItem('reset_otp_'+mobile);sessionStorage.removeItem('reset_otp_expiry_'+mobile);
+  $('step3').classList.add('hidden');$('step4').classList.remove('hidden');$('reg-display-mobile').textContent=mobile;$('register-btn').textContent='💾 Reset PIN';$('register-btn').className='btn-primary btn-yellow';$('register-btn').onclick=function(){saveResetPIN()};$('reg-pin').value='';$('reg-pin-confirm').value='';$('reg-pin').focus();
 }
 async function saveResetPIN(){
-  // ... same as original
+  const pin=$('reg-pin').value.trim(),confirmPin=$('reg-pin-confirm').value.trim();
+  if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){showToast('⚠️ Enter a valid 4-digit PIN');$('reg-pin').focus();return}
+  if(pin!==confirmPin){showToast('⚠️ PINs do not match');$('reg-pin-confirm').value='';$('reg-pin-confirm').focus();return}
+  try{
+    const response=await fetch(`${EDGE_FUNCTION_URL}/change-pin`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,new_pin:pin})});
+    const data=await response.json();
+    if(data.success){showToast('✅ PIN reset successfully! Please login with your new PIN.');resetForm();$('mobile').value=currentMobile;$('mobile').focus()}else showToast('❌ Failed to reset PIN: '+data.error)
+  }catch(err){showToast('❌ Error: '+err.message)}
 }
 
 // ============================================================
-// AVATAR & DROPDOWN - FIXED GENDER SYMBOL DISPLAY
+// AVATAR & DROPDOWN
 // ============================================================
 function updateAvatar(){
-  if(!currentUser){document.querySelectorAll('.avatar-btn').forEach(b=>{b.className='avatar-btn other';const s=b.querySelector('span');if(s)s.innerHTML='👤'});return}
-  const gender=currentUser.gender||0;let symbol='👤',cls='';
-  if(gender===1){symbol='♀️';cls='female'}
-  else if(gender===2){symbol='♂️';cls='male'}
-  else cls='other';
-  document.querySelectorAll('.avatar-btn').forEach(b=>{b.className=`avatar-btn ${cls}`;const s=b.querySelector('span');if(s)s.innerHTML=symbol})
+  if(!currentUser){document.querySelectorAll('.avatar-btn').forEach(b=>{b.className='avatar-btn other';const s=b.querySelector('span');if(s)s.textContent='👤'});return}
+  const gender=currentUser.gender||0;let symbol='👤',cls='';if(gender===1){symbol='♀';cls='female'}else if(gender===2){symbol='♂';cls='male'}else cls='other';
+  document.querySelectorAll('.avatar-btn').forEach(b=>{b.className=`avatar-btn ${cls}`;const s=b.querySelector('span');if(s)s.textContent=symbol})
 }
-
 function toggleDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.toggle('show'))}
 function closeDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.remove('show'))}
 function openChangePin(){
@@ -654,7 +916,7 @@ function openDetail(data,type){
   if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';
   if(isJob){if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=true;if(waBtn)waBtn.disabled=true}else{if(callBtn)callBtn.disabled=false;if(waBtn)waBtn.disabled=false}if(endorseBtn)endorseBtn.disabled=false;if(flagBtn)flagBtn.disabled=false}else{if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=true;if(waBtn)waBtn.disabled=true}else{if(callBtn)callBtn.disabled=false;if(waBtn)waBtn.disabled=false}if(endorseBtn)endorseBtn.disabled=false;if(flagBtn)flagBtn.disabled=false}
 }
-function closeDetail(){currentDetailData=null;currentDetailType=null;$('detail-page').classList.add('hidden-page');$('home-page').classList.remove('hidden-page');goHome();}
+function closeDetail(){currentDetailData=null;currentDetailType=null;$('detail-page').classList.add('hidden-page');$('home-page').classList.remove('hidden-page');goHome();setTimeout(fixLayoutHeight, 100);}
 
 // ============================================================
 // CALL & WHATSAPP
@@ -683,34 +945,50 @@ function sendWhatsApp(){
 // ENDORSEMENTS & FLAGS
 // ============================================================
 async function toggleEndorsement(type,id,mobile){
-  // ... same as original
+  if(isGuest){showToast('🔐 Please login to recommend');showLogin();return null}
+  if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}
+  const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;
+  try{
+    const {data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;
+    let endorsements=data.endorsements||[],flags=data.flags||[];
+    const targetMobileStr=String(targetMobile),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr);
+    if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed')}else{if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed, adding endorsement')}endorsements.push(Number(targetMobile));showToast('👍 Endorsed successfully!')}
+    await sb.from(table).update({endorsements,flags}).eq(idField,id);
+    if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}
+    await fetchFeedData();return{endorsements,flags}
+  }catch(err){console.error('Error toggling endorsement:',err);showToast('❌ Failed to update: '+err.message);return null}
 }
 async function toggleFlag(type,id,mobile){
-  // ... same as original
+  if(isGuest){showToast('🔐 Please login to flag');showLogin();return null}
+  if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}
+  const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;
+  try{
+    const {data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;
+    let endorsements=data.endorsements||[],flags=data.flags||[];
+    const targetMobileStr=String(targetMobile),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr);
+    if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed')}else{if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed, adding flag')}flags.push(Number(targetMobile));showToast('👎 Not recommended')}
+    await sb.from(table).update({endorsements,flags}).eq(idField,id);
+    if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}
+    await fetchFeedData();return{endorsements,flags}
+  }catch(err){console.error('Error toggling flag:',err);showToast('❌ Failed to update: '+err.message);return null}
 }
-async function getEndorsersList(type,id){
-  // ... same as original
-}
-async function getFlaggersList(type,id){
-  // ... same as original
-}
-async function detailToggleEndorsement(){
-  // ... same as original
-}
-async function detailToggleFlag(){
-  // ... same as original
-}
-async function detailShowEndorsers(){
-  // ... same as original
-}
-async function detailShowFlaggers(){
-  // ... same as original
-}
+async function getEndorsersList(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile';const {data,error}=await sb.from(table).select('endorsements').eq(idField,id).single();if(error)throw error;const endorsements=data.endorsements||[];if(endorsements.length===0){showToast('No endorsements yet');return[]}const {data:users,error:userError}=await sb.from('active_users').select('mobile,full_name,gender').in('mobile',endorsements.map(m=>String(m)));if(userError)throw userError;return users||[]}catch(err){console.error('Error fetching endorsers:',err);showToast('❌ Failed to load endorsers: '+err.message);return[]}}
+async function getFlaggersList(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile';const {data,error}=await sb.from(table).select('flags').eq(idField,id).single();if(error)throw error;const flags=data.flags||[];if(flags.length===0){showToast('No flags yet');return[]}const {data:users,error:userError}=await sb.from('active_users').select('mobile,full_name,gender').in('mobile',flags.map(m=>String(m)));if(userError)throw userError;return users||[]}catch(err){console.error('Error fetching flaggers:',err);showToast('❌ Failed to load flaggers: '+err.message);return[]}}
+async function detailToggleEndorsement(){if(isGuest){showToast('🔐 Please login to recommend');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;const result=await toggleEndorsement(currentDetailType,id,currentUser.mobile);if(result){updateDetailCounts(result.endorsements,result.flags);updateDetailStats()}}
+async function detailToggleFlag(){if(isGuest){showToast('🔐 Please login to flag');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;const result=await toggleFlag(currentDetailType,id,currentUser.mobile);if(result){updateDetailCounts(result.endorsements,result.flags);updateDetailStats()}}
+async function detailShowEndorsers(){if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;await showEndorsersModal(currentDetailType,id)}
+async function detailShowFlaggers(){if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;await showFlaggersModal(currentDetailType,id)}
 function updateDetailCounts(endorsements,flags){
-  // ... same as original
+  $('detail-flags-count').textContent=flags.length||0;
+  if(currentUser&&!isGuest){const targetMobileStr=String(currentUser.mobile),userEndorsed=endorsements.some(m=>String(m)===targetMobileStr),userFlagged=flags.some(m=>String(m)===targetMobileStr);const endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn');if(endorseBtn)endorseBtn.className=`btn-endorse ${userEndorsed?'active':''}`;if(flagBtn)flagBtn.className=`btn-flag ${userFlagged?'active':''}`}
 }
 function updateDetailStats(){
-  // ... same as original
+  if(!currentDetailData)return;
+  const endorsements=currentDetailData.endorsements||[],shareCount=currentDetailData.share_count||0,flags=currentDetailData.flags||[],totalPopularity=endorsements.length+shareCount;
+  const viewCol=getViewColumn(currentDetailType),callCol=getCallColumn(currentDetailType),waCol=getWhatsAppColumn(currentDetailType),view30Col=getView30Column(currentDetailType),call30Col=getCall30Column(currentDetailType),wa30Col=getWhatsApp30Column(currentDetailType),isSeeker=currentDetailType==='SEEKER';
+  $('detail-total-popularity').textContent=totalPopularity;$('detail-flags-count').textContent=flags.length||0;$('detail-shares').textContent=shareCount;
+  const row30=$('detail-30day-row'),rowTotal=$('detail-total-row');
+  if(isSeeker){row30.style.display='block';rowTotal.style.display='block';$('detail-views-30d').textContent=currentDetailData[view30Col]||0;$('detail-calls-30d').textContent=currentDetailData[call30Col]||0;$('detail-wa-30d').textContent=currentDetailData[wa30Col]||0;$('detail-views-total').textContent=currentDetailData[viewCol]||0;$('detail-calls-total').textContent=currentDetailData[callCol]||0;$('detail-wa-total').textContent=currentDetailData[waCol]||0}else{row30.style.display='none';rowTotal.style.display='block';$('detail-views-total').textContent=currentDetailData[viewCol]||0;$('detail-calls-total').textContent=currentDetailData[callCol]||0;$('detail-wa-total').textContent=currentDetailData[waCol]||0}
 }
 
 // ============================================================
@@ -719,14 +997,14 @@ function updateDetailStats(){
 function closeModal(id){const m=$(id);if(m)m.remove();document.querySelectorAll('.modal-overlay.show').forEach(el=>{el.classList.remove('show');el.style.display='none'})}
 async function showEndorsersModal(type,id){
   const users=await getEndorsersList(type,id);if(users.length===0)return;
-  let html=users.map(u=>{const symbol=u.gender===1?'♀️':u.gender===2?'♂️':'👤',name=u.full_name&&u.full_name.trim()!==''?u.full_name:'Profile not updated yet';return`<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)"><span class="gender-icon">${symbol}</span><span class="name clickable-name">${name}</span></div>`}).join('');
+  let html=users.map(u=>{const symbol=u.gender===1?'♀':u.gender===2?'♂':'👤',name=u.full_name&&u.full_name.trim()!==''?u.full_name:'Profile not updated yet';return`<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)"><span class="gender-icon">${symbol}</span><span class="name clickable-name">${name}</span></div>`}).join('');
   if(users.length>5)html+=`<div class="more-text">+ ${users.length-5} more...</div>`;
   document.querySelector('#endorsers-modal')?.remove();
   document.body.insertAdjacentHTML('beforeend',`<div class="modal-overlay show" id="endorsers-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;border-radius:0"><div class="modal-box" style="background:#fff;border-radius:20px;padding:24px;max-width:400px;width:90%;max-height:80vh;display:flex;flex-direction:column"><h3 style="font-size:18px;font-weight:700;margin:0 0 4px;color:#1e293b">👍 Endorsed by ${users.length} people</h3><div class="user-list" style="flex:1;overflow-y:auto;margin:8px 0">${html}</div><button class="modal-close-btn" onclick="closeModal('endorsers-modal')" style="width:100%;padding:10px;border:none;border-radius:10px;background:#f1f5f9;color:#475569;font-weight:600;cursor:pointer;margin-top:8px">Close</button></div></div>`)
 }
 async function showFlaggersModal(type,id){
   const users=await getFlaggersList(type,id);if(users.length===0)return;
-  let html=users.map(u=>{const symbol=u.gender===1?'♀️':u.gender===2?'♂️':'👤',name=u.full_name&&u.full_name.trim()!==''?u.full_name:'Profile not updated yet';return`<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)"><span class="gender-icon">${symbol}</span><span class="name clickable-name">${name}</span></div>`}).join('');
+  let html=users.map(u=>{const symbol=u.gender===1?'♀':u.gender===2?'♂':'👤',name=u.full_name&&u.full_name.trim()!==''?u.full_name:'Profile not updated yet';return`<div class="user-item" data-mobile="${u.mobile}" onclick="viewUserProfile(this.dataset.mobile)"><span class="gender-icon">${symbol}</span><span class="name clickable-name">${name}</span></div>`}).join('');
   document.querySelector('#flaggers-modal')?.remove();
   document.body.insertAdjacentHTML('beforeend',`<div class="modal-overlay show" id="flaggers-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;border-radius:0"><div class="modal-box" style="background:#fff;border-radius:20px;padding:24px;max-width:400px;width:90%;max-height:80vh;display:flex;flex-direction:column"><h3 style="font-size:18px;font-weight:700;margin:0 0 4px;color:#1e293b">👎 Not recommended by ${users.length} people</h3><div class="user-list" style="flex:1;overflow-y:auto;margin:8px 0">${html}</div><button class="modal-close-btn" onclick="closeModal('flaggers-modal')" style="width:100%;padding:10px;border:none;border-radius:10px;background:#f1f5f9;color:#475569;font-weight:600;cursor:pointer;margin-top:8px">Close</button></div></div>`)
 }
@@ -738,24 +1016,24 @@ async function viewUserDetail(mobile){
 // ============================================================
 // NAVIGATION
 // ============================================================
-function goHome(){currentPage='home';$('home-page').classList.remove('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const first=document.querySelectorAll('.bottom-nav .nav-item')[0];if(first)first.classList.add('active');$('feed-container').style.display='flex';renderFeed();}
+function goHome(){currentPage='home';$('home-page').classList.remove('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const first=document.querySelectorAll('.bottom-nav .nav-item')[0];if(first)first.classList.add('active');$('feed-container').style.display='flex';renderFeed();setTimeout(fixLayoutHeight, 100);}
 function goPostJob(){
   if(isGuest){showToast('🔐 Please login to post jobs');showLogin();return}
   if(!currentUser){showToast('⚠️ Please login first');showLogin();return}
   if(!currentUser.company_name||currentUser.company_name.trim()===''){const w=$('recruiter-warning');if(w)w.style.display='flex';$('pj-company').value='';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=true);$('pj-publish-btn').disabled=true;$('pj-publish-btn').textContent='⚠️ Complete Recruiter Profile First'}else{const w=$('recruiter-warning');if(w)w.style.display='none';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=false);$('pj-publish-btn').disabled=false;$('pj-publish-btn').textContent='📤 Publish Job';$('pj-company').value=currentUser.company_name}
   $('pj-publish-btn').dataset.editing='false';$('pj-publish-btn').dataset.jobid='';
   if(!$('recruiter-warning').style.display||$('recruiter-warning').style.display==='none'){$('pj-title').value='';$('pj-skills').value='';$('pj-description').value='';$('pj-salary').value='';$('pj-experience').value='3.5';$('pj-gender').value='0';$('pj-zone').value='5001';updatePostAreas();const d=new Date();d.setDate(d.getDate()+30);$('pj-expiry').value=d.toISOString().split('T')[0];document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))})}
-  currentPage='postjob';$('home-page').classList.add('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.remove('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const second=document.querySelectorAll('.bottom-nav .nav-item')[1];if(second)second.classList.add('active')
+  currentPage='postjob';$('home-page').classList.add('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.remove('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const second=document.querySelectorAll('.bottom-nav .nav-item')[1];if(second)second.classList.add('active');setTimeout(fixLayoutHeight, 100);
 }
 function goToProfile(){
   if(isGuest){showToast('👤 You are viewing as Guest. Login to access profile.');showLogin();return}
-  currentPage='profile';$('home-page').classList.add('hidden-page');$('profile-page').classList.remove('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const third=document.querySelectorAll('.bottom-nav .nav-item')[2];if(third)third.classList.add('active');loadProfile();loadMyJobs();
+  currentPage='profile';$('home-page').classList.add('hidden-page');$('profile-page').classList.remove('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const third=document.querySelectorAll('.bottom-nav .nav-item')[2];if(third)third.classList.add('active');loadProfile();loadMyJobs();setTimeout(fixLayoutHeight, 100);
 }
 function goToEditSeeker(){
   if(isGuest){showToast('🔐 Please login to create profile');showLogin();return}
   currentPage='edit-seeker';$('home-page').classList.add('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.remove('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');populateEditZones();
   if(currentUser){$('edit-seeker-name').value=currentUser.full_name||'';$('edit-seeker-title').value=currentUser.job_title||'';$('edit-seeker-exp').value=currentUser.total_experience_years||'';const salary=currentUser.expected_salary_monthly||'';$('edit-seeker-salary').value=salary?formatSalaryDisplay(salary):'';$('edit-seeker-skills').value=currentUser.skills_comma_separated||'';$('edit-seeker-about').value=currentUser.professional_summary||'';$('edit-seeker-gender').value=currentUser.gender||0;$('edit-seeker-notice').value=currentUser.notice_period_days||'';if(currentUser.zone_id){$('edit-seeker-zone').value=currentUser.zone_id;updateEditAreas();if(currentUser.area_id)$('edit-seeker-area').value=currentUser.area_id}}
-  const about=$('edit-seeker-about'),count=$('char-count');if(about&&count)count.textContent=about.value.length;
+  const about=$('edit-seeker-about'),count=$('char-count');if(about&&count)count.textContent=about.value.length;setTimeout(fixLayoutHeight, 100);
 }
 function cancelPostJob(){if($('pj-publish-btn').dataset.editing==='true'){if(confirm('Cancel editing this job?'))closeDetail()}else if(confirm('Cancel posting this job?'))goHome()}
 
@@ -833,13 +1111,6 @@ $('zone-search').addEventListener('keydown',function(e){if(e.key==='Enter'){cons
 // LOGOUT
 // ============================================================
 window.logout=function(){if(confirm('Are you sure you want to logout?')){resetForm();showToast('👋 Logged out');window.removeEventListener('resize', handleResize);}}
-
-// ============================================================
-// WINDOW RESIZE HANDLER FOR SCROLLING
-// ============================================================
-function handleResize() {
-    // Nothing needed - flex handles it
-}
 
 // ============================================================
 // INIT
