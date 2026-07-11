@@ -386,10 +386,9 @@ function getWhatsApp30Column(t){return t==='JOB'?null:'whatsapp_30days'}
 // GENDER SYMBOL HELPERS
 // ============================================================
 function getGenderSymbol(gender) {
-    // gender: 0 = Not Specified, 1 = Female, 2 = Male
-    if (gender === 2) return '🧑‍💼'; // Male - Man in Suit
-    if (gender === 1) return '👩‍💼'; // Female - Woman in Suit
-    return '👤'; // Not Specified
+    if (gender === 2) return '🧑‍💼';
+    if (gender === 1) return '👩‍💼';
+    return '👤';
 }
 
 function getGenderClass(gender) {
@@ -863,11 +862,24 @@ async function saveResetPIN(){
 // AVATAR & DROPDOWN
 // ============================================================
 function updateAvatar(){
-  if(!currentUser){document.querySelectorAll('.avatar-btn').forEach(b=>{b.className='avatar-btn other';const s=b.querySelector('span');if(s)s.textContent='👤'});return}
+  if(!currentUser){
+    document.querySelectorAll('.avatar-btn').forEach(b=>{
+      b.className='avatar-btn other';
+      const s=b.querySelector('span');
+      if(s) s.textContent='👤';
+    });
+    return;
+  }
   const gender=currentUser.gender||0;
-  const symbol = getGenderSymbol(gender);
-  const cls = getGenderClass(gender);
-  document.querySelectorAll('.avatar-btn').forEach(b=>{b.className=`avatar-btn ${cls}`;const s=b.querySelector('span');if(s)s.textContent=symbol})
+  let symbol='👤',cls='';
+  if(gender===1){symbol='👩‍💼';cls='female';}
+  else if(gender===2){symbol='🧑‍💼';cls='male';}
+  else {symbol='👤';cls='other';}
+  document.querySelectorAll('.avatar-btn').forEach(b=>{
+    b.className=`avatar-btn ${cls}`;
+    const s=b.querySelector('span');
+    if(s) s.textContent=symbol;
+  });
 }
 function toggleDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.toggle('show'))}
 function closeDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.remove('show'))}
