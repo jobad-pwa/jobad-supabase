@@ -76,7 +76,6 @@
     padding: 8px 0 4px;
     -webkit-overflow-scrolling: touch;
     display: block;
-    /* Height will be set by JavaScript */
 }
 
 /* SCROLLBAR STYLING */
@@ -386,9 +385,9 @@ function getWhatsApp30Column(t){return t==='JOB'?null:'whatsapp_30days'}
 // GENDER SYMBOL HELPERS
 // ============================================================
 function getGenderSymbol(gender) {
-    if (gender === 2) return '🧑‍💼';
-    if (gender === 1) return '👩‍💼';
-    return '👤';
+    if (gender === 2) return '🧑‍💼'; // Male - Man in Suit
+    if (gender === 1) return '👩‍💼'; // Female - Woman in Suit
+    return '👤'; // Not Specified
 }
 
 function getGenderClass(gender) {
@@ -476,90 +475,134 @@ function fixLayoutHeight() {
     let content, header, guestBanner, installBanner, topSection, bottomNav;
     
     if (!homePage.classList.contains('hidden-page')) {
+        // HOME PAGE
         content = document.querySelector('#home-page-content');
         header = document.querySelector('.home-header');
         guestBanner = document.querySelector('.guest-banner');
         installBanner = document.querySelector('.install-banner');
         topSection = document.querySelector('.home-top');
         bottomNav = document.querySelector('.bottom-nav');
+        
+        if (!content || !header || !bottomNav) return;
+        
+        const card = document.querySelector('.card');
+        const cardHeight = card.offsetHeight;
+        
+        let totalFixedHeight = 0;
+        totalFixedHeight += header.offsetHeight + 8;
+        
+        if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
+            totalFixedHeight += guestBanner.offsetHeight + 8;
+        }
+        
+        if (installBanner && !installBanner.classList.contains('hidden-banner') && installBanner.style.display !== 'none') {
+            totalFixedHeight += installBanner.offsetHeight + 8;
+        }
+        
+        if (topSection) {
+            totalFixedHeight += topSection.offsetHeight + 6;
+        }
+        
+        totalFixedHeight += bottomNav.offsetHeight + 8;
+        
+        let availableHeight = cardHeight - totalFixedHeight - 20;
+        if (availableHeight < 100) availableHeight = 100;
+        
+        content.style.height = availableHeight + 'px';
+        content.style.overflowY = 'auto';
+        content.style.display = 'block';
+        return;
+        
     } else if (!profilePage.classList.contains('hidden-page')) {
+        // PROFILE PAGE
         content = document.querySelector('#profile-page-content');
         header = document.querySelector('#profile-page .home-header');
-        guestBanner = document.querySelector('.guest-banner');
-        installBanner = document.querySelector('.install-banner');
-        topSection = null;
         bottomNav = document.querySelector('#profile-page .bottom-nav');
+        
+        if (!content || !header || !bottomNav) return;
+        
+        const card = document.querySelector('.card');
+        const cardHeight = card.offsetHeight;
+        
+        let totalFixedHeight = 0;
+        totalFixedHeight += header.offsetHeight + 8;
+        totalFixedHeight += bottomNav.offsetHeight + 8;
+        
+        let availableHeight = cardHeight - totalFixedHeight - 20;
+        if (availableHeight < 100) availableHeight = 100;
+        
+        content.style.height = availableHeight + 'px';
+        content.style.overflowY = 'auto';
+        content.style.display = 'block';
+        return;
+        
     } else if (!editPage.classList.contains('hidden-page')) {
+        // EDIT SEEKER PAGE
         content = document.querySelector('#edit-seeker-page-content');
         header = document.querySelector('#edit-seeker-page .edit-page-header');
-        guestBanner = document.querySelector('.guest-banner');
-        installBanner = document.querySelector('.install-banner');
-        topSection = null;
         bottomNav = document.querySelector('#edit-seeker-page .bottom-nav');
+        
+        if (!content || !header || !bottomNav) return;
+        
+        const card = document.querySelector('.card');
+        const cardHeight = card.offsetHeight;
+        
+        let totalFixedHeight = 0;
+        totalFixedHeight += header.offsetHeight + 8;
+        totalFixedHeight += bottomNav.offsetHeight + 8;
+        
+        let availableHeight = cardHeight - totalFixedHeight - 20;
+        if (availableHeight < 100) availableHeight = 100;
+        
+        content.style.height = availableHeight + 'px';
+        content.style.overflowY = 'auto';
+        content.style.display = 'block';
+        return;
+        
     } else if (!postJobPage.classList.contains('hidden-page')) {
+        // POST JOB PAGE
         const scrollArea = document.getElementById('postjob-scroll');
         const headerEl = document.querySelector('.postjob-header');
         const bottomNavEl = document.querySelector('#postjob-page .bottom-nav');
+        
         if (scrollArea && headerEl && bottomNavEl) {
             const card = document.querySelector('.card');
             const cardHeight = card.offsetHeight;
+            
             let fixedHeight = headerEl.offsetHeight + 8;
             fixedHeight += bottomNavEl.offsetHeight + 8;
+            
             let availableHeight = cardHeight - fixedHeight - 20;
             if (availableHeight < 100) availableHeight = 100;
+            
             scrollArea.style.height = availableHeight + 'px';
             scrollArea.style.overflowY = 'auto';
             scrollArea.style.display = 'block';
         }
         return;
+        
     } else if (!detailPage.classList.contains('hidden-page')) {
+        // DETAIL PAGE
         const scrollArea = document.getElementById('detail-scroll');
         const headerEl = document.querySelector('.detail-header');
         const bottomNavEl = document.querySelector('#detail-page .bottom-nav');
+        
         if (scrollArea && headerEl && bottomNavEl) {
             const card = document.querySelector('.card');
             const cardHeight = card.offsetHeight;
+            
             let fixedHeight = headerEl.offsetHeight + 8;
             fixedHeight += bottomNavEl.offsetHeight + 8;
+            
             let availableHeight = cardHeight - fixedHeight - 20;
             if (availableHeight < 100) availableHeight = 100;
+            
             scrollArea.style.height = availableHeight + 'px';
             scrollArea.style.overflowY = 'auto';
             scrollArea.style.display = 'block';
         }
         return;
-    } else {
-        return;
     }
-    
-    if (!content || !header || !bottomNav) return;
-    
-    const card = document.querySelector('.card');
-    const cardHeight = card.offsetHeight;
-    
-    let totalFixedHeight = 0;
-    totalFixedHeight += header.offsetHeight + 8;
-    
-    if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
-        totalFixedHeight += guestBanner.offsetHeight + 8;
-    }
-    
-    if (installBanner && !installBanner.classList.contains('hidden-banner') && installBanner.style.display !== 'none') {
-        totalFixedHeight += installBanner.offsetHeight + 8;
-    }
-    
-    if (topSection) {
-        totalFixedHeight += topSection.offsetHeight + 6;
-    }
-    
-    totalFixedHeight += bottomNav.offsetHeight + 8;
-    
-    let availableHeight = cardHeight - totalFixedHeight - 20;
-    if (availableHeight < 100) availableHeight = 100;
-    
-    content.style.height = availableHeight + 'px';
-    content.style.overflowY = 'auto';
-    content.style.display = 'block';
 }
 
 // Handle window resize
@@ -881,6 +924,7 @@ function updateAvatar(){
     if(s) s.textContent=symbol;
   });
 }
+
 function toggleDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.toggle('show'))}
 function closeDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.remove('show'))}
 function openChangePin(){
