@@ -16,7 +16,7 @@
 .hidden,.hidden-page{display:none}
 
 /* ===== LAYOUT - FLEX + JAVASCRIPT HEIGHT ===== */
-.home-container,.profile-container,.edit-container,.postjob-container,.detail-container {
+.home-container,.profile-container,.edit-container {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -25,8 +25,8 @@
     position: relative;
 }
 
-/* HEADERS - FIXED TOP */
-.home-header,.profile-header,.edit-header,.postjob-header,.detail-header {
+/* Fixed elements - they just sit at their natural height */
+.home-header,.profile-header,.edit-header {
     flex-shrink: 0;
     display: flex;
     justify-content: space-between;
@@ -38,7 +38,6 @@
     position: relative;
 }
 
-/* BANNERS - FIXED */
 .guest-banner {
     flex-shrink: 0;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
@@ -66,7 +65,6 @@
 }
 .install-banner.hidden-banner { display: none; }
 
-/* FILTERS - FIXED (Home page only) */
 .home-top {
     flex-shrink: 0;
     padding-bottom: 6px;
@@ -78,20 +76,7 @@
     padding: 8px 0 4px;
     -webkit-overflow-scrolling: touch;
     display: block;
-}
-
-.postjob-scroll {
-    overflow-y: auto;
-    padding: 12px 0 8px;
-    -webkit-overflow-scrolling: touch;
-    flex: 1;
-}
-
-.detail-scroll {
-    overflow-y: auto;
-    padding: 12px 0 8px;
-    -webkit-overflow-scrolling: touch;
-    flex: 1;
+    /* Height will be set by JavaScript */
 }
 
 /* SCROLLBAR STYLING */
@@ -107,7 +92,7 @@
     border-radius: 10px;
 }
 
-/* BOTTOM NAV - FIXED */
+/* BOTTOM NAV - FIXED AT BOTTOM */
 .bottom-nav {
     flex-shrink: 0;
     display: flex;
@@ -122,7 +107,7 @@
 
 /* ===== REST OF STYLES ===== */
 .input-field{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:12px;text-align:center;background:#fff;transition:border-color .2s}.input-field:focus{border-color:#2563eb;outline:2px solid #93c5fd;outline-offset:-1px}.btn-primary{width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:background .2s}.btn-primary:hover{background:#1d4ed8}.btn-primary:disabled{opacity:.5;cursor:not-allowed}.btn-back{background:#6b7280;margin-top:8px;width:100%;padding:14px;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer}.btn-back:hover{background:#4b5563}.btn-green{background:#16a34a}.btn-green:hover{background:#15803d}.btn-yellow{background:#d97706}.btn-yellow:hover{background:#b45309}.msg{margin-top:16px;padding:12px;border-radius:12px;text-align:center;font-size:14px}.msg-green{background:#dcfce7;color:#166534}.msg-red{background:#fee2e2;color:#991b1b}.msg-blue{background:#dbeafe;color:#1e40af}.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;z-index:1000;animation:fadeOut 2s ease forwards;white-space:nowrap}@keyframes fadeOut{0%{opacity:1;transform:translateX(-50%) translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px);visibility:hidden}}.mobile-display{font-size:20px;font-weight:700;color:#1e293b;padding:4px 0}.fade-in{animation:fadeIn .3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}#login-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center}#login-screen h1{font-size:40px;font-weight:900;color:#2563eb;margin:0 0 4px}.mobile-status{font-size:12px;color:#94a3b8;margin-top:4px}.pin-login-input{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;text-align:center;letter-spacing:8px;margin:8px 0 12px;background:#fff;transition:border-color .2s}.pin-login-input:focus{border-color:#2563eb;outline:2px solid #93c5fd}.otp-input-group{display:flex;gap:8px;justify-content:center;margin:12px 0}.otp-input-group input{width:48px;height:56px;text-align:center;font-size:24px;font-weight:700;border-radius:12px;border:2px solid #e2e8f0;background:#fff}.otp-input-group input:focus{border-color:#2563eb;outline:0}.otp-input-group input.filled{border-color:#16a34a;background:#f0fdf4}.timer-text{font-size:13px;color:#64748b;margin-top:8px}.resend-btn{background:0 0;border:none;color:#2563eb;font-weight:600;cursor:pointer;padding:4px;font-size:14px}.resend-btn:disabled{opacity:.5;cursor:not-allowed}
-.home-header .logo,.postjob-header .logo,.detail-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}.home-header .header-right{display:flex;align-items:center;gap:8px;position:relative}.home-header .avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:.2s;padding:0}.home-header .avatar-btn:hover{border-color:#2563eb;background:#eff6ff}.home-header .avatar-btn.male{color:#2563eb;border-color:#2563eb}.home-header .avatar-btn.female{color:#ec4899;border-color:#ec4899}.home-header .avatar-btn.other{color:#8b5cf6;border-color:#8b5cf6}.profile-dropdown{position:absolute;top:44px;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;z-index:100;display:none;overflow:hidden}.profile-dropdown.show{display:block}.profile-dropdown .dropdown-item{padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#1e293b;cursor:pointer;border:none;background:0 0;width:100%;text-align:left;transition:.15s}.profile-dropdown .dropdown-item:hover{background:#f8fafc}.profile-dropdown .dropdown-divider{height:1px;background:#e2e8f0;margin:4px 12px}.profile-dropdown .dropdown-item.danger{color:#dc2626}.profile-dropdown .dropdown-item.danger:hover{background:#fef2f2}
+.home-header .logo,.profile-header .logo,.edit-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}.home-header .header-right{display:flex;align-items:center;gap:8px;position:relative}.home-header .avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:.2s;padding:0}.home-header .avatar-btn:hover{border-color:#2563eb;background:#eff6ff}.home-header .avatar-btn.male{color:#2563eb;border-color:#2563eb}.home-header .avatar-btn.female{color:#ec4899;border-color:#ec4899}.home-header .avatar-btn.other{color:#8b5cf6;border-color:#8b5cf6}.profile-dropdown{position:absolute;top:44px;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;z-index:100;display:none;overflow:hidden}.profile-dropdown.show{display:block}.profile-dropdown .dropdown-item{padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#1e293b;cursor:pointer;border:none;background:0 0;width:100%;text-align:left;transition:.15s}.profile-dropdown .dropdown-item:hover{background:#f8fafc}.profile-dropdown .dropdown-divider{height:1px;background:#e2e8f0;margin:4px 12px}.profile-dropdown .dropdown-item.danger{color:#dc2626}.profile-dropdown .dropdown-item.danger:hover{background:#fef2f2}
 .zone-filter{background:#0f172a;border-radius:12px;padding:8px 12px;margin-bottom:8px}
 .zone-filter .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .zone-filter .header label{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em}
@@ -191,8 +176,11 @@
 .action-required{background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
 .action-required .btn-action{background:#2563eb;color:#fff;border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;width:auto;flex-shrink:0}
 .action-required .btn-action:hover{background:#1d4ed8}
+.postjob-header,.detail-header,.edit-page-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;flex-shrink:0;border-bottom:1px solid #f1f5f9;background:#fff;z-index:10}
+.postjob-header .logo,.detail-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}
 .postjob-header .cancel-btn,.detail-header .cancel-btn{font-size:14px;font-weight:600;color:#6b7280;background:0 0;border:none;padding:6px 12px;cursor:pointer;border-radius:20px;transition:.2s}
 .postjob-header .cancel-btn:hover,.detail-header .cancel-btn:hover{background:#f3f4f6}
+.postjob-scroll,.detail-scroll{flex:1;overflow-y:auto;padding:12px 0 8px;min-height:0;-webkit-overflow-scrolling:touch}
 .edit-page-header h2{font-size:16px;font-weight:800;color:#1e293b;margin:0;white-space:nowrap}
 .edit-page-header .cancel-btn{font-size:12px;font-weight:700;color:#94a3b8;cursor:pointer;background:0 0;border:none;padding:4px 8px;flex-shrink:0;margin-left:8px}
 .edit-page-header .cancel-btn:hover{color:#64748b}
@@ -305,6 +293,7 @@
 .loading-overlay.show{display:flex}
 .loading-overlay .spinner{width:40px;height:40px;border:4px solid #e2e8f0;border-top-color:#2563eb;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .loading-overlay .loading-text{margin-top:12px;font-size:14px;color:#475569;font-weight:500}
+.postjob-container,.detail-container{display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden}
 .clickable-name{cursor:pointer;color:#2563eb;font-weight:600;text-decoration:underline}
 .clickable-name:hover{color:#1d4ed8}
 .bottom-nav .nav-item{display:flex;flex-direction:column;align-items:center;text-decoration:none;color:#94a3b8;font-size:9px;font-weight:600;cursor:pointer;padding:3px 12px;border-radius:8px;background:0 0;border:none;width:auto}
@@ -478,126 +467,100 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // CRITICAL: FIX SCROLLING WITH JAVASCRIPT HEIGHT CALCULATION
 // ============================================================
 function fixLayoutHeight() {
+    // Find which page is visible
+    const homePage = document.getElementById('home-page');
+    const profilePage = document.getElementById('profile-page');
+    const editPage = document.getElementById('edit-seeker-page');
+    const postJobPage = document.getElementById('postjob-page');
+    const detailPage = document.getElementById('detail-page');
+    
+    let content, header, guestBanner, installBanner, topSection, bottomNav;
+    
+    if (!homePage.classList.contains('hidden-page')) {
+        content = document.querySelector('#home-page-content');
+        header = document.querySelector('.home-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = document.querySelector('.home-top');
+        bottomNav = document.querySelector('.bottom-nav');
+    } else if (!profilePage.classList.contains('hidden-page')) {
+        content = document.querySelector('#profile-page-content');
+        header = document.querySelector('#profile-page .home-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = null;
+        bottomNav = document.querySelector('#profile-page .bottom-nav');
+    } else if (!editPage.classList.contains('hidden-page')) {
+        content = document.querySelector('#edit-seeker-page-content');
+        header = document.querySelector('#edit-seeker-page .edit-page-header');
+        guestBanner = document.querySelector('.guest-banner');
+        installBanner = document.querySelector('.install-banner');
+        topSection = null;
+        bottomNav = document.querySelector('#edit-seeker-page .bottom-nav');
+    } else if (!postJobPage.classList.contains('hidden-page')) {
+        const scrollArea = document.getElementById('postjob-scroll');
+        const headerEl = document.querySelector('.postjob-header');
+        const bottomNavEl = document.querySelector('#postjob-page .bottom-nav');
+        if (scrollArea && headerEl && bottomNavEl) {
+            const card = document.querySelector('.card');
+            const cardHeight = card.offsetHeight;
+            let fixedHeight = headerEl.offsetHeight + 8;
+            fixedHeight += bottomNavEl.offsetHeight + 8;
+            let availableHeight = cardHeight - fixedHeight - 20;
+            if (availableHeight < 100) availableHeight = 100;
+            scrollArea.style.height = availableHeight + 'px';
+            scrollArea.style.overflowY = 'auto';
+            scrollArea.style.display = 'block';
+        }
+        return;
+    } else if (!detailPage.classList.contains('hidden-page')) {
+        const scrollArea = document.getElementById('detail-scroll');
+        const headerEl = document.querySelector('.detail-header');
+        const bottomNavEl = document.querySelector('#detail-page .bottom-nav');
+        if (scrollArea && headerEl && bottomNavEl) {
+            const card = document.querySelector('.card');
+            const cardHeight = card.offsetHeight;
+            let fixedHeight = headerEl.offsetHeight + 8;
+            fixedHeight += bottomNavEl.offsetHeight + 8;
+            let availableHeight = cardHeight - fixedHeight - 20;
+            if (availableHeight < 100) availableHeight = 100;
+            scrollArea.style.height = availableHeight + 'px';
+            scrollArea.style.overflowY = 'auto';
+            scrollArea.style.display = 'block';
+        }
+        return;
+    } else {
+        return;
+    }
+    
+    if (!content || !header || !bottomNav) return;
+    
     const card = document.querySelector('.card');
     const cardHeight = card.offsetHeight;
-    const padding = 20;
     
-    // === HOME PAGE ===
-    const homePage = document.getElementById('home-page');
-    if (!homePage.classList.contains('hidden-page')) {
-        const content = document.getElementById('home-page-content');
-        const header = document.querySelector('.home-header');
-        const guestBanner = document.querySelector('.guest-banner');
-        const installBanner = document.querySelector('.install-banner');
-        const topSection = document.querySelector('.home-top');
-        const bottomNav = document.querySelector('.bottom-nav');
-        
-        if (content && header && bottomNav) {
-            let fixedHeight = header.offsetHeight + 8;
-            if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
-                fixedHeight += guestBanner.offsetHeight + 8;
-            }
-            if (installBanner && !installBanner.classList.contains('hidden-banner')) {
-                fixedHeight += installBanner.offsetHeight + 8;
-            }
-            if (topSection) {
-                fixedHeight += topSection.offsetHeight + 6;
-            }
-            fixedHeight += bottomNav.offsetHeight + 8;
-            
-            let availableHeight = cardHeight - fixedHeight - padding;
-            if (availableHeight < 100) availableHeight = 100;
-            
-            content.style.height = availableHeight + 'px';
-            content.style.overflowY = 'auto';
-            content.style.display = 'block';
-        }
-        return;
+    let totalFixedHeight = 0;
+    totalFixedHeight += header.offsetHeight + 8;
+    
+    if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
+        totalFixedHeight += guestBanner.offsetHeight + 8;
     }
     
-    // === PROFILE PAGE ===
-    const profilePage = document.getElementById('profile-page');
-    if (!profilePage.classList.contains('hidden-page')) {
-        const content = document.getElementById('profile-page-content');
-        const header = document.querySelector('#profile-page .home-header');
-        const bottomNav = document.querySelector('#profile-page .bottom-nav');
-        
-        if (content && header && bottomNav) {
-            let fixedHeight = header.offsetHeight + 8;
-            fixedHeight += bottomNav.offsetHeight + 8;
-            
-            let availableHeight = cardHeight - fixedHeight - padding;
-            if (availableHeight < 100) availableHeight = 100;
-            
-            content.style.height = availableHeight + 'px';
-            content.style.overflowY = 'auto';
-            content.style.display = 'block';
-        }
-        return;
+    if (installBanner && !installBanner.classList.contains('hidden-banner') && installBanner.style.display !== 'none') {
+        totalFixedHeight += installBanner.offsetHeight + 8;
     }
     
-    // === EDIT SEEKER PAGE ===
-    const editPage = document.getElementById('edit-seeker-page');
-    if (!editPage.classList.contains('hidden-page')) {
-        const content = document.getElementById('edit-seeker-page-content');
-        const header = document.querySelector('#edit-seeker-page .edit-page-header');
-        const bottomNav = document.querySelector('#edit-seeker-page .bottom-nav');
-        
-        if (content && header && bottomNav) {
-            let fixedHeight = header.offsetHeight + 8;
-            fixedHeight += bottomNav.offsetHeight + 8;
-            
-            let availableHeight = cardHeight - fixedHeight - padding;
-            if (availableHeight < 100) availableHeight = 100;
-            
-            content.style.height = availableHeight + 'px';
-            content.style.overflowY = 'auto';
-            content.style.display = 'block';
-        }
-        return;
+    if (topSection) {
+        totalFixedHeight += topSection.offsetHeight + 6;
     }
     
-    // === POST JOB PAGE ===
-    const postJobPage = document.getElementById('postjob-page');
-    if (!postJobPage.classList.contains('hidden-page')) {
-        const scrollArea = document.getElementById('postjob-scroll');
-        const header = document.querySelector('.postjob-header');
-        const bottomNav = document.querySelector('#postjob-page .bottom-nav');
-        
-        if (scrollArea && header && bottomNav) {
-            let fixedHeight = header.offsetHeight + 8;
-            fixedHeight += bottomNav.offsetHeight + 8;
-            
-            let availableHeight = cardHeight - fixedHeight - padding;
-            if (availableHeight < 100) availableHeight = 100;
-            
-            scrollArea.style.height = availableHeight + 'px';
-            scrollArea.style.overflowY = 'auto';
-            scrollArea.style.display = 'block';
-        }
-        return;
-    }
+    totalFixedHeight += bottomNav.offsetHeight + 8;
     
-    // === DETAIL PAGE ===
-    const detailPage = document.getElementById('detail-page');
-    if (!detailPage.classList.contains('hidden-page')) {
-        const scrollArea = document.getElementById('detail-scroll');
-        const header = document.querySelector('.detail-header');
-        const bottomNav = document.querySelector('#detail-page .bottom-nav');
-        
-        if (scrollArea && header && bottomNav) {
-            let fixedHeight = header.offsetHeight + 8;
-            fixedHeight += bottomNav.offsetHeight + 8;
-            
-            let availableHeight = cardHeight - fixedHeight - padding;
-            if (availableHeight < 100) availableHeight = 100;
-            
-            scrollArea.style.height = availableHeight + 'px';
-            scrollArea.style.overflowY = 'auto';
-            scrollArea.style.display = 'block';
-        }
-        return;
-    }
+    let availableHeight = cardHeight - totalFixedHeight - 20;
+    if (availableHeight < 100) availableHeight = 100;
+    
+    content.style.height = availableHeight + 'px';
+    content.style.overflowY = 'auto';
+    content.style.display = 'block';
 }
 
 // Handle window resize
