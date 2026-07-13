@@ -12,10 +12,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 *{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;background:#f3f4f6;margin:0;padding:16px;display:flex;justify-content:center;align-items:center;min-height:100vh}
-.card{max-width:400px;width:100%;background:#fff;border-radius:24px;padding:20px 18px 10px;box-shadow:0 4px 20px rgba(0,0,0,.1);display:flex;flex-direction:column;height:95vh;max-height:780px;position:relative;overflow:hidden}
+.card{max-width:400px;width:100%;background:#fff;border-radius:24px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);display:flex;flex-direction:column;height:95vh;max-height:780px;position:relative;overflow:hidden}
 .hidden,.hidden-page{display:none}
 
-/* ===== LAYOUT - FLEX + JAVASCRIPT HEIGHT ===== */
+/* ===== LAYOUT - FLEX CONTAINER ===== */
 .home-container,.profile-container,.edit-container,.postjob-container,.detail-container {
     display: flex;
     flex-direction: column;
@@ -25,7 +25,7 @@
     position: relative;
 }
 
-/* Fixed elements - they just sit at their natural height */
+/* FIXED HEADER */
 .home-header,.profile-header,.edit-header,.postjob-header,.detail-header {
     flex-shrink: 0;
     display: flex;
@@ -38,42 +38,45 @@
     position: relative;
 }
 
+/* GUEST BANNER - FIXED */
 .guest-banner {
     flex-shrink: 0;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
     color: #fff;
-    padding: 8px 14px;
+    padding: 6px 12px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
-    gap: 8px;
+    margin-bottom: 6px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
+/* INSTALL BANNER - FIXED */
 .install-banner {
     flex-shrink: 0;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
     color: #fff;
-    padding: 10px 16px;
+    padding: 8px 14px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 .install-banner.hidden-banner { display: none; }
 
+/* HOME TOP FILTERS - FIXED */
 .home-top {
     flex-shrink: 0;
-    padding-bottom: 6px;
+    padding-bottom: 4px;
 }
 
-/* MIDDLE CONTENT - HEIGHT SET BY JAVASCRIPT FOR ALL PAGES */
+/* MIDDLE CONTENT - SCROLLABLE, HEIGHT SET BY JAVASCRIPT */
 .page-content {
     overflow-y: auto;
-    padding: 8px 0 4px;
+    padding: 4px 0;
     -webkit-overflow-scrolling: touch;
     display: block;
     /* Height will be set by JavaScript */
@@ -98,13 +101,14 @@
     justify-content: space-around;
     align-items: center;
     border-top: 1px solid #e2e8f0;
-    padding-top: 8px;
+    padding-top: 6px;
     background: #fff;
     position: relative;
     z-index: 10;
+    min-height: 44px;
 }
 
-/* ===== REST OF STYLES ===== */
+/* ===== REST OF STYLES (unchanged) ===== */
 .input-field{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:12px;text-align:center;background:#fff;transition:border-color .2s}.input-field:focus{border-color:#2563eb;outline:2px solid #93c5fd;outline-offset:-1px}.btn-primary{width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:background .2s}.btn-primary:hover{background:#1d4ed8}.btn-primary:disabled{opacity:.5;cursor:not-allowed}.btn-back{background:#6b7280;margin-top:8px;width:100%;padding:14px;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer}.btn-back:hover{background:#4b5563}.btn-green{background:#16a34a}.btn-green:hover{background:#15803d}.btn-yellow{background:#d97706}.btn-yellow:hover{background:#b45309}.msg{margin-top:16px;padding:12px;border-radius:12px;text-align:center;font-size:14px}.msg-green{background:#dcfce7;color:#166534}.msg-red{background:#fee2e2;color:#991b1b}.msg-blue{background:#dbeafe;color:#1e40af}.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;z-index:1000;animation:fadeOut 2s ease forwards;white-space:nowrap}@keyframes fadeOut{0%{opacity:1;transform:translateX(-50%) translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px);visibility:hidden}}.mobile-display{font-size:20px;font-weight:700;color:#1e293b;padding:4px 0}.fade-in{animation:fadeIn .3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}#login-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center}#login-screen h1{font-size:40px;font-weight:900;color:#2563eb;margin:0 0 4px}.mobile-status{font-size:12px;color:#94a3b8;margin-top:4px}.pin-login-input{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;text-align:center;letter-spacing:8px;margin:8px 0 12px;background:#fff;transition:border-color .2s}.pin-login-input:focus{border-color:#2563eb;outline:2px solid #93c5fd}.otp-input-group{display:flex;gap:8px;justify-content:center;margin:12px 0}.otp-input-group input{width:48px;height:56px;text-align:center;font-size:24px;font-weight:700;border-radius:12px;border:2px solid #e2e8f0;background:#fff}.otp-input-group input:focus{border-color:#2563eb;outline:0}.otp-input-group input.filled{border-color:#16a34a;background:#f0fdf4}.timer-text{font-size:13px;color:#64748b;margin-top:8px}.resend-btn{background:0 0;border:none;color:#2563eb;font-weight:600;cursor:pointer;padding:4px;font-size:14px}.resend-btn:disabled{opacity:.5;cursor:not-allowed}
 .home-header .logo,.profile-header .logo,.edit-header .logo,.postjob-header .logo,.detail-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}.home-header .header-right{display:flex;align-items:center;gap:8px;position:relative}.home-header .avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:.2s;padding:0}.home-header .avatar-btn:hover{border-color:#2563eb;background:#eff6ff}.home-header .avatar-btn.male{color:#2563eb;border-color:#2563eb}.home-header .avatar-btn.female{color:#ec4899;border-color:#ec4899}.home-header .avatar-btn.other{color:#8b5cf6;border-color:#8b5cf6}.profile-dropdown{position:absolute;top:44px;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;z-index:100;display:none;overflow:hidden}.profile-dropdown.show{display:block}.profile-dropdown .dropdown-item{padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#1e293b;cursor:pointer;border:none;background:0 0;width:100%;text-align:left;transition:.15s}.profile-dropdown .dropdown-item:hover{background:#f8fafc}.profile-dropdown .dropdown-divider{height:1px;background:#e2e8f0;margin:4px 12px}.profile-dropdown .dropdown-item.danger{color:#dc2626}.profile-dropdown .dropdown-item.danger:hover{background:#fef2f2}
 .zone-filter{background:#0f172a;border-radius:12px;padding:8px 12px;margin-bottom:8px}
@@ -472,190 +476,83 @@ function setLastSelectedZone(zoneId) {
 }
 
 // ============================================================
-// PHASE 1 STEP 3: SEARCHABLE ZONE SELECTION WITH RECENT ZONES
-// ============================================================
-function searchZone() {
-    const input = document.getElementById('zone-search');
-    const suggestions = document.getElementById('zone-suggestions');
-    if (!input || !suggestions) return;
-    
-    const query = input.value.toLowerCase().trim();
-    let items = [];
-    const recentZones = getRecentZones();
-    
-    if (!query) {
-        // Show recent zones when search is empty
-        if (recentZones.length) {
-            items = recentZones.map(z => ({ zone: z, isRecent: true }));
-        }
-    } else {
-        const seen = new Set();
-        const matches = ZONES.filter(zone => {
-            if (seen.has(zone.zone_id)) return false;
-            if (zone.zone_name.toLowerCase().includes(query)) {
-                seen.add(zone.zone_id);
-                return true;
-            }
-            return false;
-        });
-        
-        // Show recent matches first
-        const recentMatches = matches.filter(z => recentZones.some(r => r.zone_id === z.zone_id));
-        const otherMatches = matches.filter(z => !recentZones.some(r => r.zone_id === z.zone_id));
-        items = [
-            ...recentMatches.map(z => ({ zone: z, isRecent: true })),
-            ...otherMatches.map(z => ({ zone: z, isRecent: false }))
-        ];
-    }
-    
-    if (items.length === 0) {
-        suggestions.innerHTML = '<div class="no-result">No zones found</div>';
-        suggestions.classList.add('show');
-        return;
-    }
-    
-    suggestions.innerHTML = items.map(({ zone, isRecent }) => 
-        `<div class="item" onclick="selectZone(${zone.zone_id},'${zone.zone_name}')">
-            ${isRecent ? '🕐 ' : '📍 '}${zone.zone_name}
-            ${isRecent ? ' <span class="recent-tag">(recent)</span>' : ''}
-        </div>`
-    ).join('');
-    suggestions.classList.add('show');
-}
-
-function selectZone(zoneId, zoneName) {
-    const input = document.getElementById('zone-search');
-    const suggestions = document.getElementById('zone-suggestions');
-    
-    if (input) input.value = zoneName;
-    if (suggestions) suggestions.classList.remove('show');
-    
-    selectedZoneId = zoneId;
-    selectedAreaId = null;
-    document.getElementById('zone-status').textContent = zoneName;
-    
-    addToRecent(zoneId);
-    setLastSelectedZone(zoneId);
-    
-    const areaSelect = document.getElementById('filter-area');
-    if (areaSelect) {
-        const areas = getAreasByZone(zoneId);
-        areaSelect.innerHTML = '<option value="ALL">All areas</option>';
-        areas.forEach(area => {
-            areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
-        });
-    }
-    renderFeed();
-}
-
-// ============================================================
-// CRITICAL: FIX SCROLLING WITH JAVASCRIPT HEIGHT CALCULATION
+// PHASE 1 STEP 1: FIX SCROLLING WITH JAVASCRIPT HEIGHT CALCULATION
 // ============================================================
 function fixLayoutHeight() {
-    // Find which page is visible
-    const homePage = document.getElementById('home-page');
-    const profilePage = document.getElementById('profile-page');
-    const editPage = document.getElementById('edit-seeker-page');
-    const postJobPage = document.getElementById('postjob-page');
-    const detailPage = document.getElementById('detail-page');
-    
-    let container, content, header, guestBanner, installBanner, topSection, bottomNav;
-    
-    if (!homePage.classList.contains('hidden-page')) {
-        container = document.querySelector('.home-container');
-        if (!container) return;
-        content = document.querySelector('#home-page-content');
-        header = document.querySelector('.home-header');
-        guestBanner = document.querySelector('.guest-banner');
-        installBanner = document.querySelector('.install-banner');
-        topSection = document.querySelector('.home-top');
-        bottomNav = document.querySelector('.bottom-nav');
-    } else if (!profilePage.classList.contains('hidden-page')) {
-        container = document.querySelector('#profile-page .home-container');
-        if (!container) return;
-        content = document.querySelector('#profile-page-content');
-        header = document.querySelector('#profile-page .home-header');
-        guestBanner = document.querySelector('.guest-banner');
-        installBanner = document.querySelector('.install-banner');
-        topSection = null;
-        bottomNav = document.querySelector('#profile-page .bottom-nav');
-    } else if (!editPage.classList.contains('hidden-page')) {
-        container = document.querySelector('#edit-seeker-page .home-container');
-        if (!container) return;
-        content = document.querySelector('#edit-seeker-page-content');
-        header = document.querySelector('#edit-seeker-page .edit-page-header');
-        guestBanner = document.querySelector('.guest-banner');
-        installBanner = document.querySelector('.install-banner');
-        topSection = null;
-        bottomNav = document.querySelector('#edit-seeker-page .bottom-nav');
-    } else if (!postJobPage.classList.contains('hidden-page')) {
-        container = document.querySelector('.postjob-container');
-        if (!container) return;
-        content = document.querySelector('#postjob-scroll');
-        header = document.querySelector('.postjob-header');
-        guestBanner = document.querySelector('.guest-banner');
-        installBanner = document.querySelector('.install-banner');
-        topSection = null;
-        bottomNav = document.querySelector('#postjob-page .bottom-nav');
-    } else if (!detailPage.classList.contains('hidden-page')) {
-        container = document.querySelector('.detail-container');
-        if (!container) return;
-        content = document.querySelector('#detail-scroll');
-        header = document.querySelector('.detail-header');
-        guestBanner = document.querySelector('.guest-banner');
-        installBanner = document.querySelector('.install-banner');
-        topSection = null;
-        bottomNav = document.querySelector('#detail-page .bottom-nav');
-    } else {
-        return;
-    }
-    
-    if (!content || !header || !bottomNav) return;
-    
-    // Get the card height
     const card = document.querySelector('.card');
-    const cardHeight = card.offsetHeight;
+    if (!card) return;
+    const cardHeight = card.clientHeight;
     
-    // Calculate heights (including margins)
-    let totalFixedHeight = 0;
+    // Find which page is visible and get its elements
+    const pages = {
+        home: { container: '.home-container', content: '#home-page-content', header: '.home-header', top: '.home-top', nav: '.bottom-nav' },
+        profile: { container: '#profile-page .home-container', content: '#profile-page-content', header: '#profile-page .home-header', top: null, nav: '#profile-page .bottom-nav' },
+        edit: { container: '#edit-seeker-page .home-container', content: '#edit-seeker-page-content', header: '#edit-seeker-page .edit-page-header', top: null, nav: '#edit-seeker-page .bottom-nav' },
+        postjob: { container: '.postjob-container', content: '#postjob-scroll', header: '.postjob-header', top: null, nav: '#postjob-page .bottom-nav' },
+        detail: { container: '.detail-container', content: '#detail-scroll', header: '.detail-header', top: null, nav: '#detail-page .bottom-nav' }
+    };
     
-    // Header height + padding/border
-    totalFixedHeight += header.offsetHeight + 8; // padding-bottom
+    let activePage = null;
+    for (const [key, config] of Object.entries(pages)) {
+        const pageEl = document.getElementById(key + '-page');
+        if (pageEl && !pageEl.classList.contains('hidden-page')) {
+            activePage = key;
+            break;
+        }
+    }
     
-    // Guest banner if visible
+    if (!activePage) return;
+    const config = pages[activePage];
+    
+    const container = document.querySelector(config.container);
+    const content = document.querySelector(config.content);
+    const header = document.querySelector(config.header);
+    const topSection = config.top ? document.querySelector(config.top) : null;
+    const bottomNav = document.querySelector(config.nav);
+    const guestBanner = document.querySelector('.guest-banner');
+    const installBanner = document.getElementById('install-banner');
+    
+    if (!container || !content || !header || !bottomNav) return;
+    
+    // Calculate total fixed height
+    let fixedHeight = 0;
+    
+    // Header
+    fixedHeight += header.offsetHeight + 8; // padding-bottom
+    
+    // Guest banner
     if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
-        totalFixedHeight += guestBanner.offsetHeight + 8; // margin-bottom
+        fixedHeight += guestBanner.offsetHeight + 6;
     }
     
-    // Install banner if visible
+    // Install banner
     if (installBanner && !installBanner.classList.contains('hidden-banner') && installBanner.style.display !== 'none') {
-        totalFixedHeight += installBanner.offsetHeight + 8;
+        fixedHeight += installBanner.offsetHeight + 6;
     }
     
-    // Top section (filters) - only on home page
+    // Top section (home page filters)
     if (topSection) {
-        totalFixedHeight += topSection.offsetHeight + 6; // padding-bottom
+        fixedHeight += topSection.offsetHeight + 4;
     }
     
     // Bottom nav
-    totalFixedHeight += bottomNav.offsetHeight + 8; // padding-top
+    fixedHeight += bottomNav.offsetHeight + 6;
     
     // Calculate available height for content
-    let availableHeight = cardHeight - totalFixedHeight - 20; // 20px for padding
+    let availableHeight = cardHeight - fixedHeight - 16; // 16px padding
     
     // Ensure minimum height
-    if (availableHeight < 100) availableHeight = 100;
+    if (availableHeight < 80) availableHeight = 80;
     
-    // Apply to page content
+    // Apply to content
     content.style.height = availableHeight + 'px';
     content.style.overflowY = 'auto';
     content.style.display = 'block';
     
-    // Debug log (remove in production)
     console.log('Layout fixed:', {
-        page: currentPage,
+        page: activePage,
         cardHeight: cardHeight,
-        totalFixed: totalFixedHeight,
+        fixedHeight: fixedHeight,
         available: availableHeight
     });
 }
@@ -1138,7 +1035,20 @@ async function viewUserDetail(mobile){
 // ============================================================
 // NAVIGATION
 // ============================================================
-function goHome(){currentPage='home';$('home-page').classList.remove('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const first=document.querySelectorAll('.bottom-nav .nav-item')[0];if(first)first.classList.add('active');$('feed-container').style.display='flex';renderFeed();setTimeout(fixLayoutHeight, 100);}
+function goHome(){
+    currentPage='home';
+    $('home-page').classList.remove('hidden-page');
+    $('profile-page').classList.add('hidden-page');
+    $('edit-seeker-page').classList.add('hidden-page');
+    $('postjob-page').classList.add('hidden-page');
+    $('detail-page').classList.add('hidden-page');
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));
+    const first=document.querySelectorAll('.bottom-nav .nav-item')[0];
+    if(first)first.classList.add('active');
+    $('feed-container').style.display='flex';
+    renderFeed();
+    setTimeout(fixLayoutHeight, 100);
+}
 function goPostJob(){
   if(isGuest){showToast('🔐 Please login to post jobs');showLogin();return}
   if(!currentUser){showToast('⚠️ Please login first');showLogin();return}
@@ -1212,37 +1122,106 @@ async function feedShowEndorsers(type,targetId){const item=feedItems.find(i=>{co
 async function feedShowFlaggers(type,targetId){const item=feedItems.find(i=>{const id=i.type==='JOB'?i._raw?.job_id:i._raw?.mobile;return i.type===type&&String(id)===String(targetId)});if(item&&item._raw){currentDetailData=item._raw;currentDetailType=type;await showFlaggersModal(type,targetId)}else showToast('⚠️ Could not find item data')}
 function setFilter(type){currentFilter=type;const both=$('filter-both'),job=$('filter-job'),seeker=$('filter-seeker');if(both)both.className=type==='BOTH'?'active':'inactive';if(job)job.className=type==='JOB'?'active':'inactive';if(seeker)seeker.className=type==='SEEKER'?'active':'inactive';renderFeed()}
 
-// PHASE 1 STEP 3: UPDATED searchZone function with recent zones
-// (Already updated above)
+// PHASE 1 STEP 3: SEARCHABLE ZONE WITH RECENT ZONES
+function searchZone() {
+    const input = document.getElementById('zone-search');
+    const suggestions = document.getElementById('zone-suggestions');
+    if (!input || !suggestions) return;
+    
+    const query = input.value.toLowerCase().trim();
+    let items = [];
+    const recentZones = getRecentZones();
+    
+    if (!query) {
+        if (recentZones.length) {
+            items = recentZones.map(z => ({ zone: z, isRecent: true }));
+        }
+    } else {
+        const seen = new Set();
+        const matches = ZONES.filter(zone => {
+            if (seen.has(zone.zone_id)) return false;
+            if (zone.zone_name.toLowerCase().includes(query)) {
+                seen.add(zone.zone_id);
+                return true;
+            }
+            return false;
+        });
+        const recentMatches = matches.filter(z => recentZones.some(r => r.zone_id === z.zone_id));
+        const otherMatches = matches.filter(z => !recentZones.some(r => r.zone_id === z.zone_id));
+        items = [
+            ...recentMatches.map(z => ({ zone: z, isRecent: true })),
+            ...otherMatches.map(z => ({ zone: z, isRecent: false }))
+        ];
+    }
+    
+    if (items.length === 0) {
+        suggestions.innerHTML = '<div class="no-result">No zones found</div>';
+        suggestions.classList.add('show');
+        return;
+    }
+    
+    suggestions.innerHTML = items.map(({ zone, isRecent }) => 
+        `<div class="item" onclick="selectZone(${zone.zone_id},'${zone.zone_name}')">
+            ${isRecent ? '🕐 ' : '📍 '}${zone.zone_name}
+            ${isRecent ? ' <span class="recent-tag">(recent)</span>' : ''}
+        </div>`
+    ).join('');
+    suggestions.classList.add('show');
+}
+
+function selectZone(zoneId, zoneName) {
+    const input = document.getElementById('zone-search');
+    const suggestions = document.getElementById('zone-suggestions');
+    
+    if (input) input.value = zoneName;
+    if (suggestions) suggestions.classList.remove('show');
+    
+    selectedZoneId = zoneId;
+    selectedAreaId = null;
+    document.getElementById('zone-status').textContent = zoneName;
+    
+    addToRecent(zoneId);
+    setLastSelectedZone(zoneId);
+    
+    const areaSelect = document.getElementById('filter-area');
+    if (areaSelect) {
+        const areas = getAreasByZone(zoneId);
+        areaSelect.innerHTML = '<option value="ALL">All areas</option>';
+        areas.forEach(area => {
+            areaSelect.innerHTML += `<option value="${area.area_id}">${area.area_name}</option>`;
+        });
+    }
+    renderFeed();
+}
 
 function onAreaFilterChange(){const areaSelect=$('filter-area');if(areaSelect)selectedAreaId=areaSelect.value!=='ALL'?parseInt(areaSelect.value):null;renderFeed()}
 
 // PHASE 1 STEP 4: Auto-select most recent zone on page load
 function autoDetectLocation(){
-  // Try to use last selected zone first
-  const lastZoneId = getLastSelectedZone();
-  if (lastZoneId) {
-    const zone = ZONES.find(z => z.zone_id === lastZoneId);
-    if (zone) {
-      selectZone(lastZoneId, zone.zone_name);
-      document.getElementById('zone-search').value = zone.zone_name;
-      return;
+    // Try to use last selected zone first
+    const lastZoneId = getLastSelectedZone();
+    if (lastZoneId) {
+        const zone = ZONES.find(z => z.zone_id === lastZoneId);
+        if (zone) {
+            selectZone(lastZoneId, zone.zone_name);
+            document.getElementById('zone-search').value = zone.zone_name;
+            return;
+        }
     }
-  }
-  
-  // Fallback to IP detection
-  fetch('https://ipapi.co/json/').then(res=>res.json()).then(data=>{
-    const city=data.city||'';
-    const matched=ZONES.find(zone=>city.toLowerCase().includes(zone.zone_name.toLowerCase())||zone.zone_name.toLowerCase().includes(city.toLowerCase()));
-    if(matched){selectZone(matched.zone_id,matched.zone_name);document.getElementById('zone-search').value=matched.zone_name}
-  }).catch(()=>{
-    // Final fallback: Hyderabad
-    const hyderabad = ZONES.find(z => z.zone_id === 5001);
-    if (hyderabad) {
-      selectZone(5001, hyderabad.zone_name);
-      document.getElementById('zone-search').value = hyderabad.zone_name;
-    }
-  })
+    
+    // Fallback to IP detection
+    fetch('https://ipapi.co/json/').then(res=>res.json()).then(data=>{
+        const city=data.city||'';
+        const matched=ZONES.find(zone=>city.toLowerCase().includes(zone.zone_name.toLowerCase())||zone.zone_name.toLowerCase().includes(city.toLowerCase()));
+        if(matched){selectZone(matched.zone_id,matched.zone_name);document.getElementById('zone-search').value=matched.zone_name}
+    }).catch(()=>{
+        // Final fallback: Hyderabad
+        const hyderabad = ZONES.find(z => z.zone_id === 5001);
+        if (hyderabad) {
+            selectZone(5001, hyderabad.zone_name);
+            document.getElementById('zone-search').value = hyderabad.zone_name;
+        }
+    })
 }
 
 // Close zone suggestions when clicking outside
