@@ -397,7 +397,6 @@ function dismissInstallBanner() {
 function showInstallBanner() {
     const banner = document.getElementById('install-banner');
     if (!banner) return;
-    // Always show if not installed and not dismissed
     if (isAppInstalled()) {
         banner.classList.add('hidden-banner');
         return;
@@ -480,7 +479,7 @@ function setLastSelectedZone(zoneId) {
 }
 
 // ============================================================
-// PHASE 1 STEP 1: FIX SCROLLING WITH JAVASCRIPT HEIGHT CALCULATION
+// PHASE 1 STEP 1: FIX SCROLLING - PROVEN JAVASCRIPT HEIGHT CALCULATION
 // ============================================================
 function fixLayoutHeight() {
     // Get card height
@@ -488,88 +487,67 @@ function fixLayoutHeight() {
     if (!card) return;
     const cardHeight = card.clientHeight;
     
-    // Find which page is visible
-    const homePage = document.getElementById('home-page');
-    const profilePage = document.getElementById('profile-page');
-    const editPage = document.getElementById('edit-seeker-page');
-    const postJobPage = document.getElementById('postjob-page');
-    const detailPage = document.getElementById('detail-page');
+    // Determine which page is visible
+    const pages = {
+        home: { page: document.getElementById('home-page'), content: document.getElementById('home-page-content'), header: document.querySelector('.home-header'), top: document.querySelector('.home-top'), nav: document.querySelector('#home-page .bottom-nav') },
+        profile: { page: document.getElementById('profile-page'), content: document.getElementById('profile-page-content'), header: document.querySelector('#profile-page .home-header'), top: null, nav: document.querySelector('#profile-page .bottom-nav') },
+        edit: { page: document.getElementById('edit-seeker-page'), content: document.getElementById('edit-seeker-page-content'), header: document.querySelector('#edit-seeker-page .edit-page-header'), top: null, nav: document.querySelector('#edit-seeker-page .bottom-nav') },
+        postjob: { page: document.getElementById('postjob-page'), content: document.getElementById('postjob-scroll'), header: document.querySelector('.postjob-header'), top: null, nav: document.querySelector('#postjob-page .bottom-nav') },
+        detail: { page: document.getElementById('detail-page'), content: document.getElementById('detail-scroll'), header: document.querySelector('.detail-header'), top: null, nav: document.querySelector('#detail-page .bottom-nav') }
+    };
     
-    let content, header, topSection, bottomNav;
-    let guestBanner = document.querySelector('.guest-banner');
-    let installBanner = document.getElementById('install-banner');
-    let pageType = 'home';
-    
-    if (!homePage.classList.contains('hidden-page')) {
-        content = document.querySelector('#home-page-content');
-        header = document.querySelector('.home-header');
-        topSection = document.querySelector('.home-top');
-        bottomNav = document.querySelector('#home-page .bottom-nav');
-        pageType = 'home';
-    } else if (!profilePage.classList.contains('hidden-page')) {
-        content = document.querySelector('#profile-page-content');
-        header = document.querySelector('#profile-page .home-header');
-        topSection = null;
-        bottomNav = document.querySelector('#profile-page .bottom-nav');
-        pageType = 'profile';
-    } else if (!editPage.classList.contains('hidden-page')) {
-        content = document.querySelector('#edit-seeker-page-content');
-        header = document.querySelector('#edit-seeker-page .edit-page-header');
-        topSection = null;
-        bottomNav = document.querySelector('#edit-seeker-page .bottom-nav');
-        pageType = 'edit';
-    } else if (!postJobPage.classList.contains('hidden-page')) {
-        content = document.querySelector('#postjob-scroll');
-        header = document.querySelector('.postjob-header');
-        topSection = null;
-        bottomNav = document.querySelector('#postjob-page .bottom-nav');
-        pageType = 'postjob';
-    } else if (!detailPage.classList.contains('hidden-page')) {
-        content = document.querySelector('#detail-scroll');
-        header = document.querySelector('.detail-header');
-        topSection = null;
-        bottomNav = document.querySelector('#detail-page .bottom-nav');
-        pageType = 'detail';
-    } else {
-        return;
+    let activePage = null;
+    let pageConfig = null;
+    for (const [key, config] of Object.entries(pages)) {
+        if (config.page && !config.page.classList.contains('hidden-page')) {
+            activePage = key;
+            pageConfig = config;
+            break;
+        }
     }
     
-    if (!content || !header || !bottomNav) return;
+    if (!pageConfig || !pageConfig.content || !pageConfig.header || !pageConfig.nav) return;
+    
+    // Get fixed elements
+    const guestBanner = document.querySelector('.guest-banner');
+    const installBanner = document.getElementById('install-banner');
     
     // Calculate total fixed height
     let fixedHeight = 0;
     
     // Header
-    fixedHeight += header.offsetHeight + 8; // padding-bottom
+    fixedHeight += pageConfig.header.offsetHeight + 8;
     
-    // Guest banner - check if visible
+    // Guest banner
     if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
         fixedHeight += guestBanner.offsetHeight + 6;
     }
     
-    // Install banner - check if visible
+    // Install banner
     if (installBanner && !installBanner.classList.contains('hidden-banner') && installBanner.style.display !== 'none') {
         fixedHeight += installBanner.offsetHeight + 6;
     }
     
-    // Top section (home page filters)
-    if (topSection) {
-        fixedHeight += topSection.offsetHeight + 4;
+    // Top section (home page only)
+    if (pageConfig.top) {
+        fixedHeight += pageConfig.top.offsetHeight + 4;
     }
     
     // Bottom nav
-    fixedHeight += bottomNav.offsetHeight + 6;
+    fixedHeight += pageConfig.nav.offsetHeight + 6;
     
     // Calculate available height for content
-    let availableHeight = cardHeight - fixedHeight - 16; // 16px padding
+    let availableHeight = cardHeight - fixedHeight - 16;
     
     // Ensure minimum height
     if (availableHeight < 80) availableHeight = 80;
     
     // Apply to content
-    content.style.height = availableHeight + 'px';
-    content.style.overflowY = 'auto';
-    content.style.display = 'block';
+    pageConfig.content.style.height = availableHeight + 'px';
+    pageConfig.content.style.overflowY = 'auto';
+    pageConfig.content.style.display = 'block';
+    
+    console.log('Layout fixed:', { page: activePage, cardHeight, fixedHeight, available: availableHeight });
 }
 
 // Handle window resize
