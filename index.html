@@ -55,7 +55,7 @@
 }
 .guest-banner.hidden { display: none; }
 
-/* INSTALL BANNER - FIXED - VISIBLE BY DEFAULT, HIDDEN BY CLASS */
+/* INSTALL BANNER - VISIBLE BY DEFAULT, HIDDEN ONLY WHEN INSTALLED OR DISMISSED */
 .install-banner {
     flex-shrink: 0;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
@@ -68,7 +68,9 @@
     margin-bottom: 6px;
     min-height: 40px;
 }
-.install-banner.hidden-banner { display: none; }
+.install-banner.hidden-banner { 
+    display: none; 
+}
 
 /* HOME TOP FILTERS - FIXED */
 .home-top {
@@ -111,7 +113,7 @@
     min-height: 44px;
 }
 
-/* ===== REST OF STYLES ===== */
+/* ===== REST OF STYLES (unchanged) ===== */
 .input-field{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:12px;text-align:center;background:#fff;transition:border-color .2s}.input-field:focus{border-color:#2563eb;outline:2px solid #93c5fd;outline-offset:-1px}.btn-primary{width:100%;padding:14px;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:background .2s}.btn-primary:hover{background:#1d4ed8}.btn-primary:disabled{opacity:.5;cursor:not-allowed}.btn-back{background:#6b7280;margin-top:8px;width:100%;padding:14px;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer}.btn-back:hover{background:#4b5563}.btn-green{background:#16a34a}.btn-green:hover{background:#15803d}.btn-yellow{background:#d97706}.btn-yellow:hover{background:#b45309}.msg{margin-top:16px;padding:12px;border-radius:12px;text-align:center;font-size:14px}.msg-green{background:#dcfce7;color:#166534}.msg-red{background:#fee2e2;color:#991b1b}.msg-blue{background:#dbeafe;color:#1e40af}.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;z-index:1000;animation:fadeOut 2s ease forwards;white-space:nowrap}@keyframes fadeOut{0%{opacity:1;transform:translateX(-50%) translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px);visibility:hidden}}.mobile-display{font-size:20px;font-weight:700;color:#1e293b;padding:4px 0}.fade-in{animation:fadeIn .3s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}#login-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center}#login-screen h1{font-size:40px;font-weight:900;color:#2563eb;margin:0 0 4px}.mobile-status{font-size:12px;color:#94a3b8;margin-top:4px}.pin-login-input{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;text-align:center;letter-spacing:8px;margin:8px 0 12px;background:#fff;transition:border-color .2s}.pin-login-input:focus{border-color:#2563eb;outline:2px solid #93c5fd}.otp-input-group{display:flex;gap:8px;justify-content:center;margin:12px 0}.otp-input-group input{width:48px;height:56px;text-align:center;font-size:24px;font-weight:700;border-radius:12px;border:2px solid #e2e8f0;background:#fff}.otp-input-group input:focus{border-color:#2563eb;outline:0}.otp-input-group input.filled{border-color:#16a34a;background:#f0fdf4}.timer-text{font-size:13px;color:#64748b;margin-top:8px}.resend-btn{background:0 0;border:none;color:#2563eb;font-weight:600;cursor:pointer;padding:4px;font-size:14px}.resend-btn:disabled{opacity:.5;cursor:not-allowed}
 .home-header .logo,.profile-header .logo,.edit-header .logo,.postjob-header .logo,.detail-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}.home-header .header-right{display:flex;align-items:center;gap:8px;position:relative}.home-header .avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:.2s;padding:0}.home-header .avatar-btn:hover{border-color:#2563eb;background:#eff6ff}.home-header .avatar-btn.male{color:#2563eb;border-color:#2563eb}.home-header .avatar-btn.female{color:#ec4899;border-color:#ec4899}.home-header .avatar-btn.other{color:#8b5cf6;border-color:#8b5cf6}.profile-dropdown{position:absolute;top:44px;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;z-index:100;display:none;overflow:hidden}.profile-dropdown.show{display:block}.profile-dropdown .dropdown-item{padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#1e293b;cursor:pointer;border:none;background:0 0;width:100%;text-align:left;transition:.15s}.profile-dropdown .dropdown-item:hover{background:#f8fafc}.profile-dropdown .dropdown-divider{height:1px;background:#e2e8f0;margin:4px 12px}.profile-dropdown .dropdown-item.danger{color:#dc2626}.profile-dropdown .dropdown-item.danger:hover{background:#fef2f2}
 .zone-filter{background:#0f172a;border-radius:12px;padding:8px 12px;margin-bottom:8px}
@@ -393,7 +395,10 @@ function isAppInstalled() {
 function dismissInstallBanner() {
     localStorage.setItem('installBannerDismissed', 'true');
     const banner = document.getElementById('install-banner');
-    if (banner) banner.classList.add('hidden-banner');
+    if (banner) {
+        banner.classList.add('hidden-banner');
+        banner.style.display = 'none';
+    }
 }
 
 function showInstallBanner() {
@@ -403,17 +408,20 @@ function showInstallBanner() {
     // If app is already installed, hide banner
     if (isAppInstalled()) {
         banner.classList.add('hidden-banner');
+        banner.style.display = 'none';
         return;
     }
     
     // If user previously dismissed, hide banner
     if (localStorage.getItem('installBannerDismissed') === 'true') {
         banner.classList.add('hidden-banner');
+        banner.style.display = 'none';
         return;
     }
     
     // Show banner on both mobile and desktop
     banner.classList.remove('hidden-banner');
+    banner.style.display = 'flex';
 }
 
 function installApp() {
@@ -431,6 +439,7 @@ function installApp() {
                 const banner = document.getElementById('install-banner');
                 if (banner) {
                     banner.classList.add('hidden-banner');
+                    banner.style.display = 'none';
                     localStorage.setItem('installBannerDismissed', 'true');
                 }
             }
@@ -446,7 +455,6 @@ function installApp() {
     }
     
     // For desktop browsers (Chrome, Edge, etc.)
-    // Show guidance to use browser's install option
     showToast('📱 Click the install icon in the browser address bar or use "Install App" option');
 }
 
@@ -454,8 +462,12 @@ function installApp() {
 window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
-    // Banner might already be shown by showInstallBanner()
-    // Just update the install button text
+    // Make sure banner is visible
+    const banner = document.getElementById('install-banner');
+    if (banner) {
+        banner.classList.remove('hidden-banner');
+        banner.style.display = 'flex';
+    }
     const installBtn = document.getElementById('install-btn');
     if (installBtn) {
         installBtn.textContent = '📲 Install';
