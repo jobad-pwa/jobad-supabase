@@ -321,7 +321,7 @@
 <!-- HOME -->
 <div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span id="avatar-symbol">👤</span></button><div class="profile-dropdown" id="profile-dropdown"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div>
 
-<!-- INSTALL BANNER - VISIBLE BY DEFAULT, FORCED SHOW -->
+<!-- INSTALL BANNER - VISIBLE BY DEFAULT -->
 <div class="install-banner" id="install-banner">
     <span class="text">📲 Install JobAd app</span>
     <div>
@@ -395,17 +395,14 @@ let currentMobile='',currentUser=null,isGuest=!1,isChecking=!1,currentFilter='BO
 let deferredPrompt = null;
 
 // ============================================================
-// INSTALL BANNER - COMPLETELY INDEPENDENT WITH FORCE VISIBLE FLAG
+// INSTALL BANNER - FIXED
 // ============================================================
-let bannerForceVisible = false;
-
 function dismissInstallBanner() {
     localStorage.setItem('installBannerDismissed', 'true');
     const banner = document.getElementById('install-banner');
     if (banner) {
         banner.classList.add('hidden');
         banner.style.display = 'none';
-        bannerForceVisible = false;
     }
 }
 
@@ -417,16 +414,12 @@ function showInstallBanner() {
     if (localStorage.getItem('installBannerDismissed') === 'true') {
         banner.classList.add('hidden');
         banner.style.display = 'none';
-        bannerForceVisible = false;
         return;
     }
     
-    // FORCE SHOW - completely override any other styles
+    // FORCE SHOW - remove hidden class and set display
     banner.classList.remove('hidden');
     banner.style.display = 'flex';
-    banner.style.visibility = 'visible';
-    banner.style.opacity = '1';
-    bannerForceVisible = true;
 }
 
 function installApp() {
@@ -440,7 +433,6 @@ function installApp() {
                     banner.classList.add('hidden');
                     banner.style.display = 'none';
                     localStorage.setItem('installBannerDismissed', 'true');
-                    bannerForceVisible = false;
                 }
             }
             deferredPrompt = null;
@@ -457,9 +449,6 @@ window.addEventListener('beforeinstallprompt', function(e) {
     if (banner) {
         banner.classList.remove('hidden');
         banner.style.display = 'flex';
-        banner.style.visibility = 'visible';
-        banner.style.opacity = '1';
-        bannerForceVisible = true;
     }
     const installBtn = document.getElementById('install-btn');
     if (installBtn) {
@@ -577,14 +566,7 @@ function handleResize() {
         fixLayoutHeight();
     }, 200);
 }
-// CRITICAL FIX: After layout calculation, make sure banner is still visible
-const installBanner = document.getElementById('install-banner');
-if (bannerForceVisible && installBanner) {
-    installBanner.classList.remove('hidden');
-    installBanner.style.display = 'flex';
-    installBanner.style.visibility = 'visible';
-    installBanner.style.opacity = '1';
-}
+
 // ============================================================
 // POPULATE DROPDOWNS
 // ============================================================
