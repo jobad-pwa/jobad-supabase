@@ -55,7 +55,7 @@
 }
 .guest-banner.hidden { display: none; }
 
-/* INSTALL BANNER - VISIBLE BY DEFAULT */
+/* INSTALL BANNER - VISIBLE BY DEFAULT, HIDDEN ONLY WHEN DISMISSED */
 .install-banner {
     flex-shrink: 0;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
@@ -321,7 +321,7 @@
 <!-- HOME -->
 <div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span id="avatar-symbol">👤</span></button><div class="profile-dropdown" id="profile-dropdown"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div>
 
-<!-- INSTALL BANNER - VISIBLE BY DEFAULT -->
+<!-- INSTALL BANNER - VISIBLE BY DEFAULT, FORCED SHOW -->
 <div class="install-banner" id="install-banner">
     <span class="text">📲 Install JobAd app</span>
     <div>
@@ -395,17 +395,14 @@ let currentMobile='',currentUser=null,isGuest=!1,isChecking=!1,currentFilter='BO
 let deferredPrompt = null;
 
 // ============================================================
-// INSTALL BANNER - WORKS ON BOTH MOBILE & DESKTOP
+// INSTALL BANNER - FORCE SHOW ON ALL DEVICES
 // ============================================================
-function isAppInstalled() {
-    return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
-}
-
 function dismissInstallBanner() {
     localStorage.setItem('installBannerDismissed', 'true');
     const banner = document.getElementById('install-banner');
     if (banner) {
         banner.classList.add('hidden');
+        banner.style.display = 'none';
     }
 }
 
@@ -413,28 +410,19 @@ function showInstallBanner() {
     const banner = document.getElementById('install-banner');
     if (!banner) return;
     
-    // If app is already installed, hide banner
-    if (isAppInstalled()) {
-        banner.classList.add('hidden');
-        return;
-    }
-    
-    // If user previously dismissed, hide banner
+    // Check if user dismissed
     if (localStorage.getItem('installBannerDismissed') === 'true') {
         banner.classList.add('hidden');
+        banner.style.display = 'none';
         return;
     }
     
-    // SHOW THE BANNER - force remove hidden class
+    // FORCE SHOW - remove hidden class and set display
     banner.classList.remove('hidden');
+    banner.style.display = 'flex';
 }
 
 function installApp() {
-    if (isAppInstalled()) {
-        showToast('✅ App is already installed');
-        return;
-    }
-    
     // Try to use native install prompt (mobile Chrome)
     if (deferredPrompt) {
         deferredPrompt.prompt();
@@ -444,6 +432,7 @@ function installApp() {
                 const banner = document.getElementById('install-banner');
                 if (banner) {
                     banner.classList.add('hidden');
+                    banner.style.display = 'none';
                     localStorage.setItem('installBannerDismissed', 'true');
                 }
             }
@@ -452,14 +441,8 @@ function installApp() {
         return;
     }
     
-    // For iOS Safari
-    if (window.navigator && window.navigator.standalone === false) {
-        showToast('📱 Tap the share button then "Add to Home Screen"');
-        return;
-    }
-    
-    // For desktop browsers (Chrome, Edge, etc.)
-    showToast('📱 Click the install icon in the browser address bar or use "Install App" option');
+    // For desktop and other browsers
+    showToast('📱 To install, click the install icon in your browser address bar');
 }
 
 // Listen for beforeinstallprompt event (mobile Chrome)
@@ -470,6 +453,7 @@ window.addEventListener('beforeinstallprompt', function(e) {
     const banner = document.getElementById('install-banner');
     if (banner) {
         banner.classList.remove('hidden');
+        banner.style.display = 'flex';
     }
     const installBtn = document.getElementById('install-btn');
     if (installBtn) {
@@ -1275,8 +1259,8 @@ document.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('.otp-input').forEach((input,index,arr)=>{input.addEventListener('input',function(e){this.value=this.value.replace(/[^0-9]/g,'');if(this.value.length===1){this.classList.add('filled');if(index<arr.length-1)arr[index+1].focus();else{const allFilled=Array.from(arr).every(el=>el.value.length===1);if(allFilled)verifyOTP()}}else this.classList.remove('filled')});input.addEventListener('keydown',function(e){if(e.key==='Backspace'&&this.value.length===0&&index>0){arr[index-1].focus();arr[index-1].classList.remove('filled')}if(e.key==='Enter'){const allFilled=Array.from(arr).every(el=>el.value.length===1);if(allFilled)verifyOTP();else{const firstEmpty=Array.from(arr).find(el=>el.value.length===0);if(firstEmpty)firstEmpty.focus()}}});input.addEventListener('focus',function(){this.select()})});
   console.log(`✅ JobAd Ready - ${ZONES.length} zones, ${AREAS.length} real sub-areas loaded!`);
   
-  // Show install banner after page loads (for desktop)
-  setTimeout(showInstallBanner, 1500);
+  // Force show install banner after page loads
+  setTimeout(showInstallBanner, 100);
   
   const isRootPath=window.location.pathname==='/'||window.location.pathname==='/index.html';
   const shouldAutoLogin=(hasSharedLink||sessionStorage.getItem('guest_session')==='true')&&!isRootPath;
