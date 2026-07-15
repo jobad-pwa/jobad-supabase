@@ -638,14 +638,30 @@ async function fetchGuestUserData(mobile){
   if(error||!data){const {data:newUser,error:insertError}=await sb.from('active_users').insert([{mobile:mobile,is_guest:true,last_active:new Date().toISOString()}]).select().single();if(insertError){showToast('❌ Error creating guest: '+insertError.message);return}currentUser=newUser}else currentUser=data;
   showHomeScreenAfterLogin();
 }
+
+// ============================================================
+// FIXED: showHomeScreenAfterLogin - Install banner shows immediately, layout recalculated after
+// ============================================================
 function showHomeScreenAfterLogin(){
-  $('step2').classList.add('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');
-  $('login-screen').style.display='none';$('home-page').classList.remove('hidden-page');
-  updateAvatar();updateGuestUI();setTimeout(autoDetectLocation,500);fetchFeedData();
-  setTimeout(showInstallBanner, 500);
-  setTimeout(fixLayoutHeight, 300);
+  $('step2').classList.add('hidden');
+  $('step3').classList.add('hidden');
+  $('step4').classList.add('hidden');
+  $('login-screen').style.display='none';
+  $('home-page').classList.remove('hidden-page');
+  updateAvatar();
+  updateGuestUI();
+  setTimeout(autoDetectLocation, 500);
+  fetchFeedData();
+  
+  // SHOW INSTALL BANNER IMMEDIATELY (no delay)
+  showInstallBanner();
+  
+  // RECALCULATE LAYOUT AFTER BANNER STATE IS KNOWN
+  setTimeout(fixLayoutHeight, 50);
+  
   window.addEventListener('resize', handleResize);
 }
+
 function updateGuestUI(){const b=$('guest-banner');if(b)b.style.display=isGuest?'flex':'none'; setTimeout(fixLayoutHeight, 100);}
 function showLogin(){resetForm();$('mobile').focus();showToast('🔐 Enter your mobile number to login')}
 
@@ -905,7 +921,9 @@ async function publishJob(){
 async function loadMyJobs(){
   if(!currentUser||isGuest){const c=$('my-jobs-list');if(c)c.innerHTML='<p style="font-size:11px;color:#94a3b8">Login to see your jobs.</p>';return}
   const c=$('my-jobs-list');if(!c)return;
-  try{await autoCleanExpiredJobs();const {data,error}=await sb.from('active_jobs').select('*').eq('mobile',currentUser.mobile).order('posted_date',{ascending:false});if(error)throw error;if(!data||data.length===0){c.innerHTML='<p style="font-size:11px;color:#94a3b8">No jobs posted yet.</p>';return}c.innerHTML=data.map(job=>{const isExpired=new Date(job.expiry_date)<new Date();return`<div class="my-job-item" onclick="viewJob(${job.job_id})"><div class="job-title">${job.job_title||'Untitled'}${isExpired?' <span class="expired">Expired</span>':''}</div><div class="job-meta">${job.company_name} · ${job.min_experience_years||0} yrs · ₹${(job.max_salary_monthly||0).toLocaleString('en-IN')}</div><div class="job-meta" style="font-size:9px;color:#94a3b8">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div></div>`}).join('')
+  try{await autoCleanExpiredJobs();const {data,error}=await sb.from('active_jobs').select('*').eq('mobile',currentUser.mobile).order('posted_date',{ascending:false});if(error)throw error;if(!data||data.length===0){c.innerHTML='<p style="font-size:11px;color:#94a3b8">No jobs posted yet.</p>';return}c.innerHTML=data.map(job=>{const isExpired=new Date(job.expiry_date)<new Date();return`<div class="my-job-item" onclick="viewJob(${job.job_id})"><div class="job-title">${job.job_title||'Untitled'}${isExpired?' <span class="expired">Expired</span>':''}</div><div class="job-meta">${job.company_name} · ${job.min_experience_years||0} yrs · ₹${(job.max_salary_monthly||0).toLocaleString('en-IN')}</div><div class="job-meta" style="font-size:9px;color:#94a3b8">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')}</div></div>`}).join('');
+    // FIX: Recalculate layout after jobs load
+    setTimeout(fixLayoutHeight, 50);
   }catch(err){console.error('Error loading my jobs:',err);c.innerHTML='<p style="font-size:11px;color:#ef4444">Error loading jobs</p>'}
 }
 async function viewJob(jobId){try{const {data,error}=await sb.from('active_jobs').select('*').eq('job_id',jobId).single();if(error)throw error;openDetail(data,'JOB')}catch(err){showToast('❌ Error loading job: '+err.message)}}
@@ -935,6 +953,8 @@ function openDetail(data,type){
   const callBtn=$('detail-call-btn'),waBtn=$('detail-wa-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');
   if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';
   if(isJob){if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=true;if(waBtn)waBtn.disabled=true}else{if(callBtn)callBtn.disabled=false;if(waBtn)waBtn.disabled=false}if(endorseBtn)endorseBtn.disabled=false;if(flagBtn)flagBtn.disabled=false}else{if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=true;if(waBtn)waBtn.disabled=true}else{if(callBtn)callBtn.disabled=false;if(waBtn)waBtn.disabled=false}if(endorseBtn)endorseBtn.disabled=false;if(flagBtn)flagBtn.disabled=false}
+  // Recalculate layout after detail loads
+  setTimeout(fixLayoutHeight, 100);
 }
 function closeDetail(){currentDetailData=null;currentDetailType=null;$('detail-page').classList.add('hidden-page');$('home-page').classList.remove('hidden-page');goHome();setTimeout(fixLayoutHeight, 100);}
 
@@ -1034,7 +1054,7 @@ async function viewUserDetail(mobile){
 }
 
 // ============================================================
-// NAVIGATION
+// FIXED: NAVIGATION - AWAIT async functions and recalculate layout
 // ============================================================
 function goHome(){
     currentPage='home';
@@ -1058,20 +1078,30 @@ function goPostJob(){
   if(!$('recruiter-warning').style.display||$('recruiter-warning').style.display==='none'){$('pj-title').value='';$('pj-skills').value='';$('pj-description').value='';$('pj-salary').value='';$('pj-experience').value='3.5';$('pj-gender').value='0';$('pj-zone').value='5001';updatePostAreas();const d=new Date();d.setDate(d.getDate()+30);$('pj-expiry').value=d.toISOString().split('T')[0];document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))})}
   currentPage='postjob';$('home-page').classList.add('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.remove('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const second=document.querySelectorAll('.bottom-nav .nav-item')[1];if(second)second.classList.add('active');setTimeout(fixLayoutHeight, 100);
 }
-function goToProfile(){
+
+// FIXED: goToProfile - await async functions, recalculate after content loads
+async function goToProfile(){
   if(isGuest){showToast('👤 You are viewing as Guest. Login to access profile.');showLogin();return}
-  currentPage='profile';$('home-page').classList.add('hidden-page');$('profile-page').classList.remove('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const third=document.querySelectorAll('.bottom-nav .nav-item')[2];if(third)third.classList.add('active');loadProfile();loadMyJobs();setTimeout(fixLayoutHeight, 100);
+  currentPage='profile';$('home-page').classList.add('hidden-page');$('profile-page').classList.remove('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const third=document.querySelectorAll('.bottom-nav .nav-item')[2];if(third)third.classList.add('active');
+  // AWAIT both async functions so content loads before layout fix
+  await Promise.all([loadProfile(), loadMyJobs()]);
+  // Recalculate layout AFTER content is loaded
+  setTimeout(fixLayoutHeight, 100);
 }
+
+// FIXED: goToEditSeeker - recalculate after DOM updates
 function goToEditSeeker(){
   if(isGuest){showToast('🔐 Please login to create profile');showLogin();return}
   currentPage='edit-seeker';$('home-page').classList.add('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.remove('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');populateEditZones();
   if(currentUser){$('edit-seeker-name').value=currentUser.full_name||'';$('edit-seeker-title').value=currentUser.job_title||'';$('edit-seeker-exp').value=currentUser.total_experience_years||'';const salary=currentUser.expected_salary_monthly||'';$('edit-seeker-salary').value=salary?formatSalaryDisplay(salary):'';$('edit-seeker-skills').value=currentUser.skills_comma_separated||'';$('edit-seeker-about').value=currentUser.professional_summary||'';$('edit-seeker-gender').value=currentUser.gender||0;$('edit-seeker-notice').value=currentUser.notice_period_days||'';if(currentUser.zone_id){$('edit-seeker-zone').value=currentUser.zone_id;updateEditAreas();if(currentUser.area_id)$('edit-seeker-area').value=currentUser.area_id}}
-  const about=$('edit-seeker-about'),count=$('char-count');if(about&&count)count.textContent=about.value.length;setTimeout(fixLayoutHeight, 100);
+  const about=$('edit-seeker-about'),count=$('char-count');if(about&&count)count.textContent=about.value.length;
+  // Recalculate after DOM updates
+  setTimeout(fixLayoutHeight, 100);
 }
 function cancelPostJob(){if($('pj-publish-btn').dataset.editing==='true'){if(confirm('Cancel editing this job?'))closeDetail()}else if(confirm('Cancel posting this job?'))goHome()}
 
 // ============================================================
-// PROFILE
+// FIXED: PROFILE - add fixLayoutHeight at end
 // ============================================================
 function formatSalary(amount){if(!amount||amount===0)return'Not specified';return'₹'+Number(amount).toLocaleString('en-IN')}
 async function loadProfile(){
@@ -1079,6 +1109,8 @@ async function loadProfile(){
   $('seeker-section').style.display='block';$('recruiter-section').style.display='block';$('profile-mobile').textContent=currentUser.mobile;
   if(currentUser.full_name&&currentUser.full_name.trim()!==''){$('seeker-badge').textContent='✅ Active';$('seeker-badge').style.background='#dcfce7';$('seeker-badge').style.color='#166534';$('seeker-desc').textContent='Your job profile is active.';$('seeker-input-area').style.display='none';$('seeker-active-area').style.display='block';$('seeker-display-name').textContent=currentUser.full_name;$('seeker-display-title').textContent=currentUser.job_title||'Not set';$('seeker-display-exp').textContent=currentUser.total_experience_years||'0';$('seeker-display-salary').textContent=formatSalary(currentUser.expected_salary_monthly);$('seeker-display-notice').textContent=currentUser.notice_period_days||'0';$('seeker-display-skills').textContent=currentUser.skills_comma_separated||'None';$('seeker-display-about').textContent=currentUser.professional_summary||'';const zoneName=getZoneName(currentUser.zone_id),areaName=getAreaName(currentUser.area_id);$('seeker-display-location').textContent=areaName?`${zoneName} - ${areaName}`:zoneName||'Not set';$('seeker-section').className='profile-section profile-active'}else{$('seeker-badge').textContent='⚠️ Required to Apply';$('seeker-badge').style.background='#fef3c7';$('seeker-badge').style.color='#d97706';$('seeker-desc').textContent='Complete your job profile to get matched with relevant jobs.';$('seeker-input-area').style.display='block';$('seeker-active-area').style.display='none';$('seeker-section').className='profile-section'}
   if(currentUser.company_name&&currentUser.company_name.trim()!==''){$('recruiter-badge').textContent='✅ Active';$('recruiter-badge').style.background='#dcfce7';$('recruiter-badge').style.color='#166534';$('recruiter-desc').textContent='Your recruiter profile is active.';$('recruiter-input-area').style.display='none';$('recruiter-active-area').style.display='block';$('recruiter-display-company').textContent=currentUser.company_name;$('recruiter-section').className='profile-section profile-active'}else{$('recruiter-badge').textContent='⚠️ Required to Post Jobs';$('recruiter-badge').style.background='#fef3c7';$('recruiter-badge').style.color='#d97706';$('recruiter-desc').textContent='Create your recruiter profile to post jobs and find candidates.';$('recruiter-input-area').style.display='block';$('recruiter-active-area').style.display='none';$('recruiter-section').className='profile-section'}
+  // FIX: Recalculate layout after profile loads
+  setTimeout(fixLayoutHeight, 50);
 }
 async function saveEditSeeker(){
   if(isGuest){showToast('🔐 Please login to save profile');showLogin();return}
@@ -1254,7 +1286,7 @@ document.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('.otp-input').forEach((input,index,arr)=>{input.addEventListener('input',function(e){this.value=this.value.replace(/[^0-9]/g,'');if(this.value.length===1){this.classList.add('filled');if(index<arr.length-1)arr[index+1].focus();else{const allFilled=Array.from(arr).every(el=>el.value.length===1);if(allFilled)verifyOTP()}}else this.classList.remove('filled')});input.addEventListener('keydown',function(e){if(e.key==='Backspace'&&this.value.length===0&&index>0){arr[index-1].focus();arr[index-1].classList.remove('filled')}if(e.key==='Enter'){const allFilled=Array.from(arr).every(el=>el.value.length===1);if(allFilled)verifyOTP();else{const firstEmpty=Array.from(arr).find(el=>el.value.length===0);if(firstEmpty)firstEmpty.focus()}}});input.addEventListener('focus',function(){this.select()})});
   console.log(`✅ JobAd Ready - ${ZONES.length} zones, ${AREAS.length} real sub-areas loaded!`);
   
-  // Force show install banner after page loads
+  // Force show install banner after page loads (with a small delay to ensure DOM is ready)
   setTimeout(showInstallBanner, 100);
   
   const isRootPath=window.location.pathname==='/'||window.location.pathname==='/index.html';
