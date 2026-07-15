@@ -355,6 +355,8 @@
 // ============================================================
 // CONFIGURATION
 // ============================================================
+console.log('🚀 [INIT] JobAd application starting...');
+
 const SUPABASE_URL='https://njhioapckeupxrcixmdh.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
 const EDGE_FUNCTION_URL='https://njhioapckeupxrcixmdh.supabase.co/functions/v1';
@@ -395,26 +397,41 @@ let currentMobile='',currentUser=null,isGuest=!1,isChecking=!1,currentFilter='BO
 let deferredPrompt = null;
 
 // ============================================================
-// INSTALL BANNER - IMPROVED APPROACH
+// INSTALL BANNER - IMPROVED APPROACH WITH LOGGING
 // ============================================================
+console.log('🔍 [BANNER] Setting up install banner functions...');
+
 function dismissInstallBanner() {
+    console.log('🔍 [BANNER] dismissInstallBanner() called - User dismissed banner');
     localStorage.setItem('installBannerDismissed', 'true');
     const banner = document.getElementById('install-banner');
     if (banner) {
+        console.log('🔇 [BANNER] Hiding banner after user dismissal');
         banner.classList.add('hidden');
         banner.style.display = 'none';
+    } else {
+        console.log('❌ [BANNER] Banner element not found in dismissInstallBanner');
     }
-    // Recalculate layout after hiding banner
     setTimeout(fixLayoutHeight, 50);
 }
 
 function checkAndHandleInstallBanner() {
+    console.log('🔍 [BANNER] checkAndHandleInstallBanner() called');
     const banner = document.getElementById('install-banner');
-    if (!banner) return;
+    if (!banner) {
+        console.log('❌ [BANNER] Banner element NOT found in DOM!');
+        return;
+    }
+    console.log('✅ [BANNER] Banner element found');
+    console.log(`🔍 [BANNER] Current banner classes: "${banner.className}"`);
+    console.log(`🔍 [BANNER] Current banner display: "${banner.style.display}"`);
+    console.log(`🔍 [BANNER] Has hidden class: ${banner.classList.contains('hidden')}`);
     
     // Check 1: Is app already installed (standalone mode)?
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-        // App is already installed - hide banner
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    console.log(`🔍 [BANNER] Check 1 - Is standalone mode? ${isStandalone}`);
+    if (isStandalone) {
+        console.log('🔇 [BANNER] App is in standalone mode - hiding banner');
         banner.classList.add('hidden');
         banner.style.display = 'none';
         localStorage.setItem('installBannerDismissed', 'true');
@@ -422,19 +439,28 @@ function checkAndHandleInstallBanner() {
     }
     
     // Check 2: Did user previously dismiss?
-    if (localStorage.getItem('installBannerDismissed') === 'true') {
+    const dismissed = localStorage.getItem('installBannerDismissed');
+    console.log(`🔍 [BANNER] Check 2 - User dismissed previously? ${dismissed === 'true'}`);
+    if (dismissed === 'true') {
+        console.log('🔇 [BANNER] User previously dismissed - hiding banner');
         banner.classList.add('hidden');
         banner.style.display = 'none';
         return;
     }
     
-    // Check 3: Check if beforeinstallprompt event fired (browser supports PWA)
-    // If deferredPrompt is null, we might still show a fallback
-    // But we keep banner visible by default
+    // Check 3: Check if we're on a device that supports PWA
+    const isPWASupported = 'serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;
+    console.log(`🔍 [BANNER] Check 3 - PWA supported? ${isPWASupported}`);
+    
+    // Check 4: Check if deferredPrompt exists (browser supports installation)
+    console.log(`🔍 [BANNER] Check 4 - DeferredPrompt exists? ${!!deferredPrompt}`);
+    
+    // If all checks pass, show the banner
+    console.log('✅ [BANNER] All checks passed - SHOWING banner');
     banner.classList.remove('hidden');
     banner.style.display = 'flex';
     
-    // Update install button text based on browser support
+    // Update install button text
     const installBtn = document.getElementById('install-btn');
     if (installBtn) {
         if (deferredPrompt) {
@@ -442,20 +468,26 @@ function checkAndHandleInstallBanner() {
         } else {
             installBtn.textContent = '📲 Install';
         }
+        console.log(`🔍 [BANNER] Install button text set to: "${installBtn.textContent}"`);
     }
+    
+    console.log('✅ [BANNER] Banner should now be visible');
 }
 
 function showInstallBanner() {
-    // This is now handled by checkAndHandleInstallBanner()
-    // Kept for compatibility with existing calls
+    console.log('🔍 [BANNER] showInstallBanner() called - forwarding to checkAndHandleInstallBanner');
     checkAndHandleInstallBanner();
 }
 
 function installApp() {
+    console.log('🔍 [BANNER] installApp() called');
     if (deferredPrompt) {
+        console.log('✅ [BANNER] DeferredPrompt available - showing install prompt');
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then(function(choiceResult) {
+            console.log(`🔍 [BANNER] User choice: ${choiceResult.outcome}`);
             if (choiceResult.outcome === 'accepted') {
+                console.log('✅ [BANNER] App installed successfully!');
                 showToast('✅ App installed successfully!');
                 const banner = document.getElementById('install-banner');
                 if (banner) {
@@ -463,31 +495,52 @@ function installApp() {
                     banner.style.display = 'none';
                     localStorage.setItem('installBannerDismissed', 'true');
                 }
+            } else {
+                console.log('🔍 [BANNER] User declined installation');
             }
             deferredPrompt = null;
         });
         return;
     }
+    console.log('🔍 [BANNER] No deferredPrompt - showing fallback message');
     showToast('📱 To install, click the install icon in your browser address bar');
 }
 
 window.addEventListener('beforeinstallprompt', function(e) {
+    console.log('🔍 [BANNER] beforeinstallprompt event FIRED!');
     e.preventDefault();
     deferredPrompt = e;
-    // Banner might already be visible, but ensure it is
+    console.log(`✅ [BANNER] DeferredPrompt stored: ${!!deferredPrompt}`);
+    
     const banner = document.getElementById('install-banner');
-    if (banner && !banner.classList.contains('hidden')) {
-        // Already visible, just update button text
-        const installBtn = document.getElementById('install-btn');
-        if (installBtn) installBtn.textContent = '📲 Install';
-    } else if (banner) {
-        // Show banner if not dismissed
-        if (localStorage.getItem('installBannerDismissed') !== 'true') {
-            banner.classList.remove('hidden');
-            banner.style.display = 'flex';
-            const installBtn = document.getElementById('install-btn');
-            if (installBtn) installBtn.textContent = '📲 Install';
-        }
+    if (!banner) {
+        console.log('❌ [BANNER] Banner not found in beforeinstallprompt handler');
+        return;
+    }
+    
+    console.log(`🔍 [BANNER] Banner hidden class before: ${banner.classList.contains('hidden')}`);
+    
+    // Check if user dismissed before
+    if (localStorage.getItem('installBannerDismissed') === 'true') {
+        console.log('🔇 [BANNER] User dismissed - not showing via beforeinstallprompt');
+        return;
+    }
+    
+    // Check if standalone
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+        console.log('🔇 [BANNER] Already in standalone mode - not showing via beforeinstallprompt');
+        return;
+    }
+    
+    // Show banner
+    console.log('✅ [BANNER] Showing banner via beforeinstallprompt event');
+    banner.classList.remove('hidden');
+    banner.style.display = 'flex';
+    
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) {
+        installBtn.textContent = '📲 Install';
+        console.log('✅ [BANNER] Install button updated to "Install"');
     }
 });
 
@@ -678,6 +731,7 @@ async function fetchGuestUserData(mobile){
 // FIXED: showHomeScreenAfterLogin - Install banner handled by checkAndHandleInstallBanner
 // ============================================================
 function showHomeScreenAfterLogin(){
+  console.log('🔍 [LOGIN] showHomeScreenAfterLogin() called');
   $('step2').classList.add('hidden');
   $('step3').classList.add('hidden');
   $('step4').classList.add('hidden');
@@ -688,10 +742,10 @@ function showHomeScreenAfterLogin(){
   setTimeout(autoDetectLocation, 500);
   fetchFeedData();
   
-  // Check and handle install banner conditions
+  console.log('🔍 [LOGIN] Calling checkAndHandleInstallBanner()');
   checkAndHandleInstallBanner();
   
-  // Recalculate layout after banner state is determined
+  console.log('🔍 [LOGIN] Calling fixLayoutHeight()');
   setTimeout(fixLayoutHeight, 50);
   
   window.addEventListener('resize', handleResize);
@@ -1295,6 +1349,8 @@ window.logout=function(){if(confirm('Are you sure you want to logout?')){resetFo
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded',function(){
+  console.log('🔍 [INIT] DOMContentLoaded - Page loaded, initializing...');
+  
   const about=$('edit-seeker-about'),count=$('char-count');if(about&&count)about.addEventListener('input',function(){count.textContent=this.value.length});
   const salaryInput=$('edit-seeker-salary');if(salaryInput)salaryInput.addEventListener('input',function(){const raw=parseSalaryValue(this.value);if(raw){this.value=formatSalaryDisplay(raw);this.setSelectionRange(this.value.length,this.value.length)}});
   populateEditZones();
@@ -1312,7 +1368,18 @@ document.addEventListener('DOMContentLoaded',function(){
   console.log(`✅ JobAd Ready - ${ZONES.length} zones, ${AREAS.length} real sub-areas loaded!`);
   
   // Check install banner conditions on page load
+  console.log('🔍 [INIT] Calling checkAndHandleInstallBanner() on page load');
   checkAndHandleInstallBanner();
+  
+  // Force check after 1 second to ensure DOM is fully rendered
+  setTimeout(function() {
+    console.log('🔍 [INIT] 1-second delay check - verifying banner state');
+    const banner = document.getElementById('install-banner');
+    if (banner) {
+      console.log(`🔍 [INIT] Banner after 1s: hidden=${banner.classList.contains('hidden')}, display=${banner.style.display}`);
+    }
+    checkAndHandleInstallBanner();
+  }, 1000);
   
   const isRootPath=window.location.pathname==='/'||window.location.pathname==='/index.html';
   const shouldAutoLogin=(hasSharedLink||sessionStorage.getItem('guest_session')==='true')&&!isRootPath;
