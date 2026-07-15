@@ -395,14 +395,17 @@ let currentMobile='',currentUser=null,isGuest=!1,isChecking=!1,currentFilter='BO
 let deferredPrompt = null;
 
 // ============================================================
-// INSTALL BANNER - FORCE SHOW ON ALL DEVICES
+// INSTALL BANNER - COMPLETELY INDEPENDENT WITH FORCE VISIBLE FLAG
 // ============================================================
+let bannerForceVisible = false;
+
 function dismissInstallBanner() {
     localStorage.setItem('installBannerDismissed', 'true');
     const banner = document.getElementById('install-banner');
     if (banner) {
         banner.classList.add('hidden');
         banner.style.display = 'none';
+        bannerForceVisible = false;
     }
 }
 
@@ -414,16 +417,19 @@ function showInstallBanner() {
     if (localStorage.getItem('installBannerDismissed') === 'true') {
         banner.classList.add('hidden');
         banner.style.display = 'none';
+        bannerForceVisible = false;
         return;
     }
     
-    // FORCE SHOW - remove hidden class and set display
+    // FORCE SHOW - completely override any other styles
     banner.classList.remove('hidden');
     banner.style.display = 'flex';
+    banner.style.visibility = 'visible';
+    banner.style.opacity = '1';
+    bannerForceVisible = true;
 }
 
 function installApp() {
-    // Try to use native install prompt (mobile Chrome)
     if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then(function(choiceResult) {
@@ -434,26 +440,26 @@ function installApp() {
                     banner.classList.add('hidden');
                     banner.style.display = 'none';
                     localStorage.setItem('installBannerDismissed', 'true');
+                    bannerForceVisible = false;
                 }
             }
             deferredPrompt = null;
         });
         return;
     }
-    
-    // For desktop and other browsers
     showToast('📱 To install, click the install icon in your browser address bar');
 }
 
-// Listen for beforeinstallprompt event (mobile Chrome)
 window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
-    // Make sure banner is visible
     const banner = document.getElementById('install-banner');
     if (banner) {
         banner.classList.remove('hidden');
         banner.style.display = 'flex';
+        banner.style.visibility = 'visible';
+        banner.style.opacity = '1';
+        bannerForceVisible = true;
     }
     const installBtn = document.getElementById('install-btn');
     if (installBtn) {
@@ -571,7 +577,14 @@ function handleResize() {
         fixLayoutHeight();
     }, 200);
 }
-
+// CRITICAL FIX: After layout calculation, make sure banner is still visible
+const installBanner = document.getElementById('install-banner');
+if (bannerForceVisible && installBanner) {
+    installBanner.classList.remove('hidden');
+    installBanner.style.display = 'flex';
+    installBanner.style.visibility = 'visible';
+    installBanner.style.opacity = '1';
+}
 // ============================================================
 // POPULATE DROPDOWNS
 // ============================================================
