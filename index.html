@@ -55,7 +55,7 @@
 }
 .guest-banner.hidden { display: none; }
 
-/* INSTALL BANNER - ALWAYS VISIBLE BY DEFAULT, HIDDEN ONLY WHEN CONDITIONS MET */
+/* INSTALL BANNER - VISIBLE BY DEFAULT, HIDDEN ONLY IF INSTALLED */
 .install-banner {
     flex-shrink: 0;
     background: linear-gradient(135deg,#2563eb,#1d4ed8);
@@ -321,7 +321,7 @@
 <!-- HOME -->
 <div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span id="avatar-symbol">👤</span></button><div class="profile-dropdown" id="profile-dropdown"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div>
 
-<!-- INSTALL BANNER - ALWAYS VISIBLE BY DEFAULT, HIDDEN BY JAVASCRIPT CONDITIONS -->
+<!-- INSTALL BANNER - ALWAYS VISIBLE BY DEFAULT, HIDDEN ONLY IF APP IS INSTALLED -->
 <div class="install-banner" id="install-banner">
     <span class="text">📲 Install JobAd app</span>
     <div>
@@ -395,22 +395,21 @@ function getWhatsApp30Column(t){return t==='JOB'?null:'whatsapp_30days'}
 // ============================================================
 let currentMobile='',currentUser=null,isGuest=!1,isChecking=!1,currentFilter='BOTH',selectedZoneId=null,selectedAreaId=null,feedItems=[],currentPage='home',currentDetailData=null,currentDetailType=null,otpTimerInterval=null,otpExpiryTime=300,isNewUser=!1,sharedLinkData=null,sharedLinkProcessed=!1;
 let deferredPrompt = null;
+let bannerShown = false;
 
 // ============================================================
-// INSTALL BANNER - IMPROVED APPROACH WITH LOGGING
+// INSTALL BANNER - IMPROVED: No localStorage, only checks installation status
 // ============================================================
 console.log('🔍 [BANNER] Setting up install banner functions...');
 
 function dismissInstallBanner() {
     console.log('🔍 [BANNER] dismissInstallBanner() called - User dismissed banner');
-    localStorage.setItem('installBannerDismissed', 'true');
     const banner = document.getElementById('install-banner');
     if (banner) {
         console.log('🔇 [BANNER] Hiding banner after user dismissal');
         banner.classList.add('hidden');
         banner.style.display = 'none';
-    } else {
-        console.log('❌ [BANNER] Banner element not found in dismissInstallBanner');
+        bannerShown = false;
     }
     setTimeout(fixLayoutHeight, 50);
 }
@@ -431,47 +430,57 @@ function checkAndHandleInstallBanner() {
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     console.log(`🔍 [BANNER] Check 1 - Is standalone mode? ${isStandalone}`);
     if (isStandalone) {
-        console.log('🔇 [BANNER] App is in standalone mode - hiding banner');
+        console.log('🔇 [BANNER] App is in standalone mode - hiding banner (app already installed)');
         banner.classList.add('hidden');
         banner.style.display = 'none';
-        localStorage.setItem('installBannerDismissed', 'true');
+        bannerShown = false;
         return;
     }
     
-    // Check 2: Did user previously dismiss?
-    const dismissed = localStorage.getItem('installBannerDismissed');
-    console.log(`🔍 [BANNER] Check 2 - User dismissed previously? ${dismissed === 'true'}`);
-    if (dismissed === 'true') {
-        console.log('🔇 [BANNER] User previously dismissed - hiding banner');
-        banner.classList.add('hidden');
-        banner.style.display = 'none';
-        return;
-    }
-    
-    // Check 3: Check if we're on a device that supports PWA
+    // Check 2: Check if browser supports PWA installation
     const isPWASupported = 'serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;
-    console.log(`🔍 [BANNER] Check 3 - PWA supported? ${isPWASupported}`);
+    console.log(`🔍 [BANNER] Check 2 - PWA supported? ${isPWASupported}`);
+    
+    // Check 3: Check if we're on mobile (Android/Chrome typically supports PWA)
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    console.log(`🔍 [BANNER] Check 3 - Is mobile device? ${isMobile}`);
     
     // Check 4: Check if deferredPrompt exists (browser supports installation)
     console.log(`🔍 [BANNER] Check 4 - DeferredPrompt exists? ${!!deferredPrompt}`);
     
-    // If all checks pass, show the banner
-    console.log('✅ [BANNER] All checks passed - SHOWING banner');
-    banner.classList.remove('hidden');
-    banner.style.display = 'flex';
+    // Show banner if:
+    // - App is NOT installed (standalone mode is false)
+    // - AND (browser supports PWA OR it's a mobile device)
+    // - AND (deferredPrompt exists OR it's mobile - we'll try anyway)
+    const shouldShow = !isStandalone && (isPWASupported || isMobile);
+    console.log(`🔍 [BANNER] Check 5 - Should show banner? ${shouldShow}`);
     
-    // Update install button text
-    const installBtn = document.getElementById('install-btn');
-    if (installBtn) {
-        if (deferredPrompt) {
-            installBtn.textContent = '📲 Install';
-        } else {
-            installBtn.textContent = '📲 Install';
+    if (shouldShow) {
+        console.log('✅ [BANNER] All checks passed - SHOWING banner');
+        banner.classList.remove('hidden');
+        banner.style.display = 'flex';
+        bannerShown = true;
+        
+        // Update install button text
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) {
+            if (deferredPrompt) {
+                installBtn.textContent = '📲 Install';
+            } else if (isMobile) {
+                installBtn.textContent = '📲 Install App';
+            } else {
+                installBtn.textContent = '📲 Install';
+            }
+            console.log(`🔍 [BANNER] Install button text set to: "${installBtn.textContent}"`);
         }
-        console.log(`🔍 [BANNER] Install button text set to: "${installBtn.textContent}"`);
+    } else {
+        console.log('🔇 [BANNER] Conditions not met - hiding banner');
+        banner.classList.add('hidden');
+        banner.style.display = 'none';
+        bannerShown = false;
     }
     
-    console.log('✅ [BANNER] Banner should now be visible');
+    console.log('✅ [BANNER] Banner state updated');
 }
 
 function showInstallBanner() {
@@ -493,7 +502,7 @@ function installApp() {
                 if (banner) {
                     banner.classList.add('hidden');
                     banner.style.display = 'none';
-                    localStorage.setItem('installBannerDismissed', 'true');
+                    bannerShown = false;
                 }
             } else {
                 console.log('🔍 [BANNER] User declined installation');
@@ -503,7 +512,8 @@ function installApp() {
         return;
     }
     console.log('🔍 [BANNER] No deferredPrompt - showing fallback message');
-    showToast('📱 To install, click the install icon in your browser address bar');
+    // For mobile without beforeinstallprompt (iOS, some Android browsers)
+    showToast('📱 To install, click the share button and select "Add to Home Screen"');
 }
 
 window.addEventListener('beforeinstallprompt', function(e) {
@@ -520,27 +530,27 @@ window.addEventListener('beforeinstallprompt', function(e) {
     
     console.log(`🔍 [BANNER] Banner hidden class before: ${banner.classList.contains('hidden')}`);
     
-    // Check if user dismissed before
-    if (localStorage.getItem('installBannerDismissed') === 'true') {
-        console.log('🔇 [BANNER] User dismissed - not showing via beforeinstallprompt');
-        return;
-    }
-    
-    // Check if standalone
+    // Check if standalone mode (already installed)
     if (window.matchMedia('(display-mode: standalone)').matches) {
-        console.log('🔇 [BANNER] Already in standalone mode - not showing via beforeinstallprompt');
+        console.log('🔇 [BANNER] Already in standalone mode - hiding');
+        banner.classList.add('hidden');
+        banner.style.display = 'none';
+        bannerShown = false;
         return;
     }
     
-    // Show banner
-    console.log('✅ [BANNER] Showing banner via beforeinstallprompt event');
-    banner.classList.remove('hidden');
-    banner.style.display = 'flex';
-    
-    const installBtn = document.getElementById('install-btn');
-    if (installBtn) {
-        installBtn.textContent = '📲 Install';
-        console.log('✅ [BANNER] Install button updated to "Install"');
+    // Show banner if not already shown
+    if (!bannerShown) {
+        console.log('✅ [BANNER] Showing banner via beforeinstallprompt event');
+        banner.classList.remove('hidden');
+        banner.style.display = 'flex';
+        bannerShown = true;
+        
+        const installBtn = document.getElementById('install-btn');
+        if (installBtn) {
+            installBtn.textContent = '📲 Install';
+            console.log('✅ [BANNER] Install button updated to "Install"');
+        }
     }
 });
 
@@ -580,12 +590,10 @@ function setLastSelectedZone(zoneId) {
 // PHASE 1 STEP 1: FIX SCROLLING - PROVEN JAVASCRIPT HEIGHT CALCULATION
 // ============================================================
 function fixLayoutHeight() {
-    // Get card height
     const card = document.querySelector('.card');
     if (!card) return;
     const cardHeight = card.clientHeight;
     
-    // Determine which page is visible
     const pages = {
         home: { page: document.getElementById('home-page'), content: document.getElementById('home-page-content'), header: document.querySelector('.home-header'), top: document.querySelector('.home-top'), nav: document.querySelector('#home-page .bottom-nav') },
         profile: { page: document.getElementById('profile-page'), content: document.getElementById('profile-page-content'), header: document.querySelector('#profile-page .home-header'), top: null, nav: document.querySelector('#profile-page .bottom-nav') },
@@ -594,11 +602,9 @@ function fixLayoutHeight() {
         detail: { page: document.getElementById('detail-page'), content: document.getElementById('detail-scroll'), header: document.querySelector('.detail-header'), top: null, nav: document.querySelector('#detail-page .bottom-nav') }
     };
     
-    let activePage = null;
     let pageConfig = null;
     for (const [key, config] of Object.entries(pages)) {
         if (config.page && !config.page.classList.contains('hidden-page')) {
-            activePage = key;
             pageConfig = config;
             break;
         }
@@ -606,47 +612,34 @@ function fixLayoutHeight() {
     
     if (!pageConfig || !pageConfig.content || !pageConfig.header || !pageConfig.nav) return;
     
-    // Get fixed elements
     const guestBanner = document.querySelector('.guest-banner');
     const installBanner = document.getElementById('install-banner');
     
-    // Calculate total fixed height
     let fixedHeight = 0;
-    
-    // Header
     fixedHeight += pageConfig.header.offsetHeight + 8;
     
-    // Guest banner
     if (guestBanner && guestBanner.style.display !== 'none' && !guestBanner.classList.contains('hidden')) {
         fixedHeight += guestBanner.offsetHeight + 6;
     }
     
-    // Install banner
     if (installBanner && !installBanner.classList.contains('hidden') && installBanner.style.display !== 'none') {
         fixedHeight += installBanner.offsetHeight + 6;
     }
     
-    // Top section (home page only)
     if (pageConfig.top) {
         fixedHeight += pageConfig.top.offsetHeight + 4;
     }
     
-    // Bottom nav
     fixedHeight += pageConfig.nav.offsetHeight + 6;
     
-    // Calculate available height for content
     let availableHeight = cardHeight - fixedHeight - 16;
-    
-    // Ensure minimum height
     if (availableHeight < 80) availableHeight = 80;
     
-    // Apply to content
     pageConfig.content.style.height = availableHeight + 'px';
     pageConfig.content.style.overflowY = 'auto';
     pageConfig.content.style.display = 'block';
 }
 
-// Handle window resize
 let resizeTimer;
 function handleResize() {
     clearTimeout(resizeTimer);
@@ -1141,7 +1134,7 @@ async function viewUserDetail(mobile){
 }
 
 // ============================================================
-// FIXED: NAVIGATION - AWAIT async functions and recalculate layout
+// NAVIGATION
 // ============================================================
 function goHome(){
     currentPage='home';
@@ -1165,16 +1158,12 @@ function goPostJob(){
   if(!$('recruiter-warning').style.display||$('recruiter-warning').style.display==='none'){$('pj-title').value='';$('pj-skills').value='';$('pj-description').value='';$('pj-salary').value='';$('pj-experience').value='3.5';$('pj-gender').value='0';$('pj-zone').value='5001';updatePostAreas();const d=new Date();d.setDate(d.getDate()+30);$('pj-expiry').value=d.toISOString().split('T')[0];document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))})}
   currentPage='postjob';$('home-page').classList.add('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.remove('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const second=document.querySelectorAll('.bottom-nav .nav-item')[1];if(second)second.classList.add('active');setTimeout(fixLayoutHeight, 100);
 }
-
-// FIXED: goToProfile - await async functions, recalculate after content loads
 async function goToProfile(){
   if(isGuest){showToast('👤 You are viewing as Guest. Login to access profile.');showLogin();return}
   currentPage='profile';$('home-page').classList.add('hidden-page');$('profile-page').classList.remove('hidden-page');$('edit-seeker-page').classList.add('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const third=document.querySelectorAll('.bottom-nav .nav-item')[2];if(third)third.classList.add('active');
   await Promise.all([loadProfile(), loadMyJobs()]);
   setTimeout(fixLayoutHeight, 100);
 }
-
-// FIXED: goToEditSeeker - recalculate after DOM updates
 function goToEditSeeker(){
   if(isGuest){showToast('🔐 Please login to create profile');showLogin();return}
   currentPage='edit-seeker';$('home-page').classList.add('hidden-page');$('profile-page').classList.add('hidden-page');$('edit-seeker-page').classList.remove('hidden-page');$('postjob-page').classList.add('hidden-page');$('detail-page').classList.add('hidden-page');populateEditZones();
@@ -1185,7 +1174,7 @@ function goToEditSeeker(){
 function cancelPostJob(){if($('pj-publish-btn').dataset.editing==='true'){if(confirm('Cancel editing this job?'))closeDetail()}else if(confirm('Cancel posting this job?'))goHome()}
 
 // ============================================================
-// FIXED: PROFILE - add fixLayoutHeight at end
+// PROFILE
 // ============================================================
 function formatSalary(amount){if(!amount||amount===0)return'Not specified';return'₹'+Number(amount).toLocaleString('en-IN')}
 async function loadProfile(){
