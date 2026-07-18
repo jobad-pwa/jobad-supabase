@@ -181,24 +181,24 @@
 .my-job-item .job-title{font-weight:600;font-size:13px;color:#0f172a}
 .my-job-item .job-meta{font-size:10px;color:#64748b}
 .my-job-item .expired{color:#dc2626;font-size:9px;font-weight:600;background:#fee2e2;padding:1px 8px;border-radius:4px;display:inline-block}
-.detail-field{margin-bottom:10px}
+.detail-field{margin-bottom:6px}
 .detail-field label{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:1px}
-.detail-field .value{font-size:14px;font-weight:500;color:#1e293b;padding:4px 0;border-bottom:1px solid #f1f5f9}
-.detail-field .value-multiline{font-size:14px;font-weight:500;color:#1e293b;padding:4px 0;border-bottom:1px solid #f1f5f9;white-space:pre-wrap;word-break:break-word}
-.detail-stats{display:flex;flex-direction:column;gap:8px;margin-top:8px;margin-bottom:8px;padding:8px 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
-.detail-stats .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
-.detail-stats .stat-row:last-child{margin-bottom:0}
-.detail-stats .stat-item{text-align:center;padding:6px;background:#f8fafc;border-radius:8px;cursor:pointer}
+.detail-field .value{font-size:13px;font-weight:500;color:#1e293b;padding:2px 0;border-bottom:1px solid #f1f5f9}
+.detail-field .value-multiline{font-size:13px;font-weight:500;color:#1e293b;padding:4px 0;white-space:pre-wrap;word-break:break-word}
+.detail-stats{display:flex;flex-direction:column;gap:6px;margin-top:8px;margin-bottom:8px;padding:6px 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
+.detail-stats .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:0}
+.detail-stats .stat-item{text-align:center;padding:4px;background:#f8fafc;border-radius:8px;cursor:pointer;transition:.15s}
 .detail-stats .stat-item:hover{background:#f1f5f9}
-.detail-stats .stat-item .number{font-size:20px;font-weight:700;color:#2563eb;text-decoration:underline;cursor:pointer}
-.detail-stats .stat-item .number:hover{color:#1d4ed8}
-.detail-stats .stat-item .label{font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.detail-stats .stat-item .sub-label{font-size:9px;color:#94a3b8;display:block;margin-top:2px}
-.detail-stats .stat-row-label{font-size:9px;color:#94a3b8;font-weight:600;text-align:center;letter-spacing:.05em;padding:2px 0}
-.detail-actions{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:12px}
+.detail-stats .stat-item .number{font-size:18px;font-weight:700;color:#2563eb}
+.detail-stats .stat-item .label{font-size:9px;color:#94a3b8;font-weight:600}
+.detail-stats .compact-line{text-align:center;font-size:12px;color:#475569;padding:4px 0;background:#f8fafc;border-radius:8px}
+.detail-stats .compact-line .stat-value{font-weight:700;color:#2563eb}
+.detail-stats .compact-line .stat-label{font-weight:600;color:#1e293b}
+.detail-stats .compact-line .sep{color:#e2e8f0;margin:0 4px}
+.detail-actions{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
 .detail-actions .action-group{display:flex;flex-direction:column;align-items:center;gap:2px}
 .detail-actions .action-group .action-label{font-size:7px;color:#94a3b8;text-transform:uppercase;letter-spacing:.03em;font-weight:600}
-.detail-actions button{width:100%;padding:8px 2px;border-radius:10px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;min-height:44px}
+.detail-actions button{width:100%;padding:6px 2px;border-radius:10px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;min-height:38px}
 .detail-actions .btn-call{background:#16a34a;color:#fff}
 .detail-actions .btn-call:hover:not(:disabled){background:#15803d}
 .detail-actions .btn-apply{background:#2563eb;color:#fff}
@@ -209,19 +209,21 @@
 .detail-actions .btn-invite{background:#8b5cf6;color:#fff}
 .detail-actions .btn-invite:hover:not(:disabled){background:#7c3aed}
 .detail-actions .btn-invite:disabled{opacity:.5;cursor:not-allowed}
+.detail-actions .btn-invite.own-profile{background:#94a3b8;cursor:default}
+.detail-actions .btn-invite.own-profile:hover{background:#94a3b8}
 .detail-actions .btn-close{background:#6b7280;color:#fff}
 .detail-actions .btn-close:hover{background:#4b5563}
-.detail-actions .btn-endorse{background:#f1f5f9;color:#475569;font-size:20px}
+.detail-actions .btn-endorse{background:#f1f5f9;color:#475569;font-size:18px}
 .detail-actions .btn-endorse.active{background:#2563eb;color:#fff}
 .detail-actions .btn-endorse:hover:not(:disabled){background:#dbeafe}
 .detail-actions .btn-endorse.active:hover{background:#1d4ed8}
-.detail-actions .btn-flag{background:#f1f5f9;color:#475569;font-size:20px}
+.detail-actions .btn-flag{background:#f1f5f9;color:#475569;font-size:18px}
 .detail-actions .btn-flag.active{background:#dc2626;color:#fff}
 .detail-actions .btn-flag:hover:not(:disabled){background:#fee2e2}
 .detail-actions .btn-flag.active:hover{background:#b91c1c}
 .detail-actions .btn-share{background:#25D366;color:#fff}
 .detail-actions .btn-share:hover{background:#1da851}
-.detail-actions .btn-share svg{width:22px;height:22px;fill:#fff}
+.detail-actions .btn-share svg{width:18px;height:18px;fill:#fff}
 .detail-actions button:disabled{opacity:.5;cursor:not-allowed}
 .type-badge{display:inline-block;padding:2px 12px;border-radius:12px;font-size:10px;font-weight:700}
 .type-badge.job{background:#dbeafe;color:#1e40af}
@@ -305,9 +307,21 @@
 .profile-stats-grid .stat-card:hover{background:#f1f5f9;border-color:#e2e8f0}
 .profile-stats-grid .stat-card .number{font-size:20px;font-weight:700;color:#2563eb}
 .profile-stats-grid .stat-card .label{font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.compact-stat{font-size:12px;color:#475569;padding:3px 0;display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
-.compact-stat .stat-label{font-weight:600;color:#1e293b}
-.compact-stat .stat-value{font-weight:600;color:#2563eb}
+.detail-compact-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.detail-compact-header .left{flex:1}
+.detail-compact-header .left .title{font-size:17px;font-weight:700;color:#0f172a;margin:0}
+.detail-compact-header .left .company{font-size:13px;color:#64748b;font-weight:500}
+.detail-compact-header .left .sub-info{font-size:12px;color:#475569;margin-top:2px}
+.detail-compact-header .left .sub-info .sep{color:#e2e8f0;margin:0 4px}
+.detail-compact-header .badge-wrap{flex-shrink:0;margin-left:8px}
+.detail-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-bottom:8px;padding:6px 0;border-bottom:1px solid #f1f5f9}
+.detail-info-grid .info-item{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.detail-info-grid .info-item .info-label{color:#94a3b8;font-weight:500}
+.detail-info-grid .info-item .info-value{color:#1e293b;font-weight:500}
+.detail-skills{font-size:12px;color:#475569;padding:4px 0;border-bottom:1px solid #f1f5f9;margin-bottom:6px}
+.detail-skills .label{color:#94a3b8;font-weight:500;margin-right:4px}
+.detail-desc{margin-bottom:6px}
+.detail-desc .value-multiline{font-size:12px;color:#475569;white-space:pre-wrap;word-break:break-word}
 </style>
 </head>
 <body>
@@ -378,25 +392,36 @@
 <div class="grid-2"><div class="form-group"><label class="form-label">Job Location Zone <span class="required">*</span></label><div class="zone-search-wrapper"><input type="text" id="pj-zone-input" placeholder="Search zone..." autocomplete="off" onfocus="this.select()" oninput="searchZoneInForm('pj')"><input type="hidden" id="pj-zone-hidden" value=""><div class="zone-suggestions" id="pj-zone-suggestions"></div></div></div><div class="form-group"><label class="form-label">Specific Area <span class="required">*</span></label><select class="form-control" id="pj-area"><option value="">Select zone first</option></select><div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div></div></div>
 <div class="grid-2"><div class="form-group"><label class="form-label">Skills (comma separated) <span class="required">*</span></label><input class="form-control" type="text" id="pj-skills" placeholder="Python, AWS, Docker" maxlength="200"><div class="inline-hint"><span></span><span id="pj-skills-counter">0/200</span></div></div><div class="form-group"><label class="form-label">Expiry Date <span class="required">*</span></label><input class="form-control" type="date" id="pj-expiry"><div class="inline-hint"><span>⏳ Auto: +30 days</span><span id="expiry-hint">max 45 days</span></div></div></div><div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="pj-description" rows="5" placeholder="Job details..." maxlength="500"></textarea><div class="inline-hint"><span></span><span id="pj-desc-counter">0/500</span></div></div><button class="publish-btn" id="pj-publish-btn" onclick="publishJob()">📤 Publish Job</button><div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item active" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
-<!-- DETAIL PAGE -->
-<div id="detail-page" class="hidden-page"><div class="detail-container"><div class="detail-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="closeDetail()">Cancel</button></div><div class="page-content" id="detail-scroll"><div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center"><div><h3 style="font-size:16px;font-weight:700;color:#0f172a;margin:0" id="detail-title">Title</h3><p style="font-size:11px;color:#64748b;margin:2px 0 0" id="detail-company">Company</p></div><span id="detail-type-badge"></span></div><div id="detail-job-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name to contact job seekers.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div><div id="detail-seeker-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Job Seeker Profile Required</strong> Please complete your job seeker profile to apply for jobs.</div><button class="btn-action" onclick="goToEditSeeker()">Create Profile</button></div><div class="grid-2" style="gap:8px"><div class="detail-field"><label>Experience</label><div class="value" id="detail-exp">--</div></div><div class="detail-field"><label>Salary</label><div class="value" id="detail-salary">--</div></div></div><div class="detail-field" id="detail-gender-field"><label>Gender Preference</label><div class="value" id="detail-gender">--</div></div><div class="grid-2" style="gap:8px"><div class="detail-field"><label>Zone</label><div class="value" id="detail-zone">--</div></div><div class="detail-field"><label>Area</label><div class="value" id="detail-area">--</div></div></div><div class="detail-field"><label>Skills</label><div class="value" id="detail-skills">--</div></div><div class="detail-field" id="detail-expiry-field"><label>Expiry Date</label><div class="value" id="detail-expiry">--</div></div><div class="detail-field" id="detail-notice-field"><label>Notice Period</label><div class="value" id="detail-notice">--</div></div><div class="detail-field"><label>Description / About</label><div class="value-multiline" id="detail-desc">--</div></div><div class="detail-field"><label>Posted / Active Since</label><div class="value" id="detail-posted">--</div></div>
+<!-- DETAIL PAGE - REDESIGNED COMPACT -->
+<div id="detail-page" class="hidden-page"><div class="detail-container"><div class="detail-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="closeDetail()">Cancel</button></div><div class="page-content" id="detail-scroll">
+<!-- Compact Header -->
+<div class="detail-compact-header"><div class="left"><div class="title" id="detail-title">Title</div><div class="company" id="detail-company">Company</div><div class="sub-info"><span id="detail-exp-sub">-- yrs exp</span><span class="sep">·</span><span id="detail-salary-sub">₹--</span><span class="sep">·</span><span id="detail-location-sub">📍 --</span></div></div><div class="badge-wrap"><span id="detail-type-badge"></span></div></div>
+<div id="detail-job-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name to contact job seekers.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div>
+<div id="detail-seeker-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Job Seeker Profile Required</strong> Please complete your job seeker profile to apply for jobs.</div><button class="btn-action" onclick="goToEditSeeker()">Create Profile</button></div>
+<!-- Info Grid -->
+<div class="detail-info-grid"><div class="info-item"><span class="info-label">Gender</span><span class="info-value" id="detail-gender">--</span></div><div class="info-item"><span class="info-label">Zone</span><span class="info-value" id="detail-zone">--</span></div><div class="info-item"><span class="info-label">Area</span><span class="info-value" id="detail-area">--</span></div><div class="info-item"><span class="info-label" id="detail-expiry-label">Expiry</span><span class="info-value" id="detail-expiry">--</span></div><div class="info-item"><span class="info-label" id="detail-notice-label">Notice</span><span class="info-value" id="detail-notice">--</span></div><div class="info-item"><span class="info-label">Posted</span><span class="info-value" id="detail-posted">--</span></div></div>
+<!-- Skills -->
+<div class="detail-skills"><span class="label">Skills:</span><span id="detail-skills">--</span></div>
+<!-- Description -->
+<div class="detail-desc"><div class="value-multiline" id="detail-desc">--</div></div>
+<!-- Stats - Compact 2 Rows -->
 <div class="detail-stats" id="detail-stats-container">
     <div class="stat-row">
         <div class="stat-item" onclick="detailShowEndorsers()"><div class="number" id="detail-total-popularity">0</div><div class="label">⭐ Popularity</div></div>
         <div class="stat-item" onclick="detailShowFlaggers()"><div class="number" id="detail-flags-count">0</div><div class="label">👎 Flags</div></div>
-        <div class="stat-item" onclick="detailShowInvitations()"><div class="number" id="detail-invitations-count">0</div><div class="label">📨 Invitations</div></div>
+        <div class="stat-item" id="detail-third-stat" onclick="detailShowThirdStat()"><div class="number" id="detail-third-count">0</div><div class="label" id="detail-third-label">📋 Applicants</div></div>
     </div>
-    <div class="compact-stat"><span class="stat-label">👁️ Views:</span> <span class="stat-value" id="detail-views-30d">0</span> <span style="color:#94a3b8">30d</span> | <span class="stat-value" id="detail-views-total">0</span> <span style="color:#94a3b8">total</span></div>
-    <div class="compact-stat"><span class="stat-label">📞 Calls:</span> <span class="stat-value" id="detail-calls-30d">0</span> <span style="color:#94a3b8">30d</span> | <span class="stat-value" id="detail-calls-total">0</span> <span style="color:#94a3b8">total</span></div>
+    <div class="compact-line"><span class="stat-label">👁️ Views:</span> <span class="stat-value" id="detail-views-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-views-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span> <span class="sep">|</span> <span class="stat-label">📞 Calls:</span> <span class="stat-value" id="detail-calls-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-calls-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span></div>
 </div>
+<!-- Actions -->
 <div class="detail-actions">
-    <div class="action-group"><button class="btn-call" id="detail-call-btn" onclick="makeCall()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><span class="action-label">Call</span></div>
-    <div class="action-group"><button class="btn-apply" id="detail-apply-btn" onclick="applyToJob()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></button><span class="action-label" id="detail-apply-label">Apply</span></div>
-    <div class="action-group"><button class="btn-invite" id="detail-invite-btn" onclick="inviteSeeker()" style="display:none"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button><span class="action-label" id="detail-invite-label">Invite</span></div>
-    <div class="action-group"><button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><span class="action-label">Recommend</span></div>
-    <div class="action-group"><button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button><span class="action-label">Not Rec</span></div>
-    <div class="action-group"><button class="btn-share" id="detail-share-btn" onclick="handleShareClick()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button><span class="action-label">Share</span></div>
-    <div class="action-group"><button class="btn-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span class="action-label">Close</span></div>
+    <div class="action-group"><button class="btn-call" id="detail-call-btn" onclick="makeCall()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><span class="action-label">Call</span></div>
+    <div class="action-group"><button class="btn-apply" id="detail-apply-btn" onclick="applyToJob()" style="display:none"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></button><span class="action-label" id="detail-apply-label">Apply</span></div>
+    <div class="action-group"><button class="btn-invite" id="detail-invite-btn" onclick="inviteSeeker()" style="display:none"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button><span class="action-label" id="detail-invite-label">Invite</span></div>
+    <div class="action-group"><button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><span class="action-label">Recommend</span></div>
+    <div class="action-group"><button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button><span class="action-label">Not Rec</span></div>
+    <div class="action-group"><button class="btn-share" id="detail-share-btn" onclick="handleShareClick()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button><span class="action-label">Share</span></div>
+    <div class="action-group"><button class="btn-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span class="action-label">Close</span></div>
 </div>
 <div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
@@ -540,7 +565,7 @@ async function applyToJob(){
     const jobId=currentDetailData.job_id;const applicants=currentDetailData.applicants||[];const userMobile=Number(currentUser.mobile);
     if(applicants.includes(userMobile)){showToast('✅ You already applied to this job');return}
     try{const updatedApplicants=[...applicants,userMobile];const{data,error}=await sb.from('active_jobs').update({applicants:updatedApplicants}).eq('job_id',jobId).select().single();if(error)throw error;currentDetailData.applicants=updatedApplicants;showToast('✅ Applied successfully!');updateDetailStats();updateApplyButton();feedItems=feedItems.map(item=>{if(item.type==='JOB'&&item._raw?.job_id===jobId){if(item._raw)item._raw.applicants=updatedApplicants;item.applicants=updatedApplicants}return item});renderFeed()}catch(err){console.error('Apply error:',err);showToast('❌ Failed to apply: '+err.message)}}
-function updateApplyButton(){const btn=$('detail-apply-btn');const label=$('detail-apply-label');if(!btn||!label)return;if(!currentDetailData||currentDetailType!=='JOB'){btn.disabled=!0;label.textContent='Apply';return}const applicants=currentDetailData.applicants||[];const userMobile=currentUser?Number(currentUser.mobile):null;const alreadyApplied=userMobile?applicants.includes(userMobile):!1;const isOwnJob=currentUser?currentDetailData.mobile===String(currentUser.mobile):!1;if(isOwnJob){btn.disabled=!0;btn.className='btn-apply';label.textContent='Your Job'}else if(alreadyApplied){btn.disabled=!0;btn.className='btn-apply applied';label.textContent='✅ Applied'}else{btn.disabled=!1;btn.className='btn-apply';label.textContent='Apply'}}
+function updateApplyButton(){const btn=$('detail-apply-btn');const label=$('detail-apply-label');if(!btn||!label)return;if(!currentDetailData||currentDetailType!=='JOB'){btn.style.display='none';return}btn.style.display='flex';const applicants=currentDetailData.applicants||[];const userMobile=currentUser?Number(currentUser.mobile):null;const alreadyApplied=userMobile?applicants.includes(userMobile):!1;const isOwnJob=currentUser?currentDetailData.mobile===String(currentUser.mobile):!1;if(isOwnJob){btn.disabled=!0;btn.className='btn-apply';label.textContent='Your Job'}else if(alreadyApplied){btn.disabled=!0;btn.className='btn-apply applied';label.textContent='✅ Applied'}else{btn.disabled=!1;btn.className='btn-apply';label.textContent='Apply'}}
 
 // ============================================================
 // APPLICANTS LIST
@@ -612,7 +637,6 @@ function showMyInvitations(){
     if(isHidden){loadSeekerInvitations()}
 }
 function showSeekerInvitationsModal(){
-    // This function is kept for backward compatibility
     showMyInvitations();
 }
 
@@ -623,10 +647,10 @@ function loadMyJobs(){if(!currentUser||isGuest){const c=$('my-jobs-list');if(c)c
 async function viewJob(jobId){try{const{data,error}=await sb.from('active_jobs').select('*').eq('job_id',jobId).single();if(error)throw error;openDetail(data,'JOB')}catch(err){showToast('❌ Error loading job: '+err.message)}}
 
 // ============================================================
-// DETAIL VIEW
+// DETAIL VIEW - REDESIGNED COMPACT
 // ============================================================
 function openDetailFromFeed(item){if(item._raw)openDetail(item._raw,item.type);else openDetail(item,item.type)}
-function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('detail-page').classList.remove('hidden-page');['home-page','profile-page','postjob-page','edit-seeker-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});const id=type==='JOB'?data.job_id:data.mobile;if(id)incrementViewCount(type,id).then(result=>{if(result&&currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){if(type==='JOB')$('detail-views-total').textContent=result.total;else{$('detail-views-30d').textContent=result.days30;$('detail-views-total').textContent=result.total}}});const isJob=type==='JOB',genderMap={0:'No Preference',1:'Female',2:'Male'};$('detail-title').textContent=isJob?(data.job_title||'Untitled Job'):(data.full_name||data.mobile||'Job Seeker');$('detail-company').textContent=isJob?(data.company_name||'Unknown'):(data.job_title||'Job Seeker');$('detail-type-badge').innerHTML=`<span class="type-badge ${isJob?'job':'seeker'}">${isJob?'JOB':'SEEKER'}</span>`;$('detail-exp').textContent=(isJob?(data.min_experience_years||0):(data.total_experience_years||0))+' yrs';const salary=isJob?data.max_salary_monthly:data.expected_salary_monthly;$('detail-salary').textContent=salary?'₹'+Number(salary).toLocaleString('en-IN'):'Not specified';$('detail-gender-field').style.display='block';$('detail-gender').textContent=genderMap[isJob?data.preferred_gender:data.gender]||'Not Specified';$('detail-zone').textContent=getZoneName(data.zone_id||0)||'Not set';$('detail-area').textContent=getAreaName(data.area_id||0)||'Not set';$('detail-skills').textContent=data.skills_comma_separated||'—';if(isJob){$('detail-expiry-field').style.display='block';$('detail-expiry').textContent=data.expiry_date?new Date(data.expiry_date).toLocaleDateString('en-IN'):'—';$('detail-notice-field').style.display='none'}else{$('detail-expiry-field').style.display='none';$('detail-notice-field').style.display='block';$('detail-notice').textContent=(data.notice_period_days||'—')+' days'}$('detail-desc').textContent=isJob?(data.job_description||'—'):(data.professional_summary||'—');$('detail-posted').textContent=(data.posted_date||data.created_at||data.last_active)?new Date(data.posted_date||data.created_at||data.last_active).toLocaleString('en-IN'):'—';updateDetailStats();updateDetailCounts(data.endorsements||[],data.flags||[]);const callBtn=$('detail-call-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';if(isJob){if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}else{if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}updateApplyButton();updateInviteButton();updateDetailInvitations();setTimeout(fixLayoutHeight,100)}
+function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('detail-page').classList.remove('hidden-page');['home-page','profile-page','postjob-page','edit-seeker-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});const id=type==='JOB'?data.job_id:data.mobile;if(id)incrementViewCount(type,id).then(result=>{if(result&&currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){if(type==='JOB'){$('detail-views-total').textContent=result.total}else{$('detail-views-30d').textContent=result.days30;$('detail-views-total').textContent=result.total}}});const isJob=type==='JOB',genderMap={0:'No Preference',1:'Female',2:'Male'};$('detail-title').textContent=isJob?(data.job_title||'Untitled Job'):(data.full_name||data.mobile||'Job Seeker');$('detail-company').textContent=isJob?(data.company_name||'Unknown'):(data.job_title||'Job Seeker');const expVal=isJob?(data.min_experience_years||0):(data.total_experience_years||0);const salaryVal=isJob?data.max_salary_monthly:data.expected_salary_monthly;const salaryDisplay=salaryVal?'₹'+Number(salaryVal).toLocaleString('en-IN'):'Negotiable';const zoneName=getZoneName(data.zone_id||0)||'Not set';const areaName=getAreaName(data.area_id||0)||'';const locationDisplay=areaName?`${zoneName} · ${areaName}`:zoneName;$('detail-exp-sub').textContent=`${expVal} yrs exp`;$('detail-salary-sub').textContent=salaryDisplay;$('detail-location-sub').textContent=`📍 ${locationDisplay}`;$('detail-type-badge').innerHTML=`<span class="type-badge ${isJob?'job':'seeker'}">${isJob?'JOB':'SEEKER'}</span>`;$('detail-gender').textContent=genderMap[isJob?data.preferred_gender:data.gender]||'Not Specified';$('detail-zone').textContent=zoneName;$('detail-area').textContent=areaName||'Not set';$('detail-skills').textContent=data.skills_comma_separated||'—';if(isJob){$('detail-expiry-label').textContent='Expiry';$('detail-expiry').textContent=data.expiry_date?new Date(data.expiry_date).toLocaleDateString('en-IN'):'—';$('detail-notice-label').style.display='none';$('detail-notice').textContent='—'}else{$('detail-expiry-label').textContent='Expiry';$('detail-expiry').textContent='—';$('detail-notice-label').style.display='block';$('detail-notice').textContent=(data.notice_period_days||'—')+' days'}$('detail-posted').textContent=(data.posted_date||data.created_at||data.last_active)?new Date(data.posted_date||data.created_at||data.last_active).toLocaleString('en-IN'):'—';$('detail-desc').textContent=isJob?(data.job_description||'—'):(data.professional_summary||'—');const callBtn=$('detail-call-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';if(isJob){if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}else{if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}updateDetailStats();updateDetailCounts(data.endorsements||[],data.flags||[]);updateApplyButton();updateInviteButton();updateThirdStat();setTimeout(fixLayoutHeight,100)}
 function closeDetail(){currentDetailData=null;currentDetailType=null;$('detail-page').classList.add('hidden-page');$('home-page').classList.remove('hidden-page');goHome();setTimeout(fixLayoutHeight,100)}
 
 // ============================================================
@@ -638,13 +662,14 @@ function updateInviteButton(){
     btn.style.display='flex';
     const isOwner=currentUser?currentDetailData.mobile===String(currentUser.mobile):!1;
     const isRecruiter=currentUser&&currentUser.company_name&&currentUser.company_name.trim()!=='';
-    if(isOwner){btn.disabled=!0;label.textContent='Your Profile'}else if(!isRecruiter){btn.disabled=!0;label.textContent='🔐 Need Recruiter'}else{btn.disabled=!1;label.textContent='📨 Invite'}
-
+    if(isOwner){btn.disabled=!0;btn.className='btn-invite own-profile';label.textContent='Your Profile'}else if(!isRecruiter){btn.disabled=!0;btn.className='btn-invite';label.textContent='🔐 Need Recruiter'}else{btn.disabled=!1;btn.className='btn-invite';label.textContent='📨 Invite'}
 }
-function updateDetailInvitations(){
-    if(!currentDetailData||currentDetailType!=='SEEKER'){return}
-    const invitationsCount=currentDetailData.total_invitations||0;
-    $('detail-invitations-count').textContent=invitationsCount;
+function updateThirdStat(){
+    const thirdEl=document.getElementById('detail-third-stat');const countEl=document.getElementById('detail-third-count');const labelEl=document.getElementById('detail-third-label');if(!thirdEl||!countEl||!labelEl)return;
+    if(currentDetailType==='JOB'){const count=currentDetailData.applicants?.length||0;countEl.textContent=count;labelEl.textContent='📋 Applicants';thirdEl.onclick=detailShowApplicants}else{const count=currentDetailData.total_invitations||0;countEl.textContent=count;labelEl.textContent='📨 Invitations';thirdEl.onclick=detailShowInvitations}
+}
+function detailShowThirdStat(){
+    if(currentDetailType==='JOB'){detailShowApplicants()}else{detailShowInvitations()}
 }
 function inviteSeeker(){
     if(!currentDetailData||currentDetailType!=='SEEKER')return;
@@ -683,10 +708,7 @@ async function detailToggleFlag(){if(isGuest){showToast('🔐 Please login to fl
 async function detailShowEndorsers(){if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;await showEndorsersModal(currentDetailType,id)}
 async function detailShowFlaggers(){if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;await showFlaggersModal(currentDetailType,id)}
 function updateDetailCounts(endorsements,flags){$('detail-flags-count').textContent=flags.length||0;if(currentUser&&!isGuest){const targetMobileStr=String(currentUser.mobile),userEndorsed=endorsements.some(m=>String(m)===targetMobileStr),userFlagged=flags.some(m=>String(m)===targetMobileStr);const endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn');if(endorseBtn)endorseBtn.className=`btn-endorse ${userEndorsed?'active':''}`;if(flagBtn)flagBtn.className=`btn-flag ${userFlagged?'active':''}`}}
-function updateDetailStats(){if(!currentDetailData)return;const endorsements=currentDetailData.endorsements||[],shareCount=currentDetailData.share_count||0,flags=currentDetailData.flags||[],applicants=currentDetailData.applicants||[],totalPopularity=endorsements.length+shareCount;const viewCol=getViewColumn(currentDetailType),callCol=getCallColumn(currentDetailType),view30Col=getView30Column(currentDetailType),call30Col=getCall30Column(currentDetailType),isSeeker=currentDetailType==='SEEKER';$('detail-total-popularity').textContent=totalPopularity;$('detail-flags-count').textContent=flags.length||0;// For seekers, show invitations count
-if(isSeeker){const invitationsCount=currentDetailData.total_invitations||0;$('detail-invitations-count').textContent=invitationsCount}else{// For jobs, show applicants count
-    $('detail-invitations-count').textContent=applicants.length}
-const views30=currentDetailData[view30Col]||0;const viewsTotal=currentDetailData[viewCol]||0;const calls30=currentDetailData[call30Col]||0;const callsTotal=currentDetailData[callCol]||0;$('detail-views-30d').textContent=views30;$('detail-views-total').textContent=viewsTotal;$('detail-calls-30d').textContent=calls30;$('detail-calls-total').textContent=callsTotal}
+function updateDetailStats(){if(!currentDetailData)return;const endorsements=currentDetailData.endorsements||[],shareCount=currentDetailData.share_count||0,flags=currentDetailData.flags||[],applicants=currentDetailData.applicants||[],totalPopularity=endorsements.length+shareCount;const viewCol=getViewColumn(currentDetailType),callCol=getCallColumn(currentDetailType),view30Col=getView30Column(currentDetailType),call30Col=getCall30Column(currentDetailType);$('detail-total-popularity').textContent=totalPopularity;$('detail-flags-count').textContent=flags.length||0;const views30=currentDetailData[view30Col]||0;const viewsTotal=currentDetailData[viewCol]||0;const calls30=currentDetailData[call30Col]||0;const callsTotal=currentDetailData[callCol]||0;$('detail-views-30d').textContent=views30;$('detail-views-total').textContent=viewsTotal;$('detail-calls-30d').textContent=calls30;$('detail-calls-total').textContent=callsTotal}
 
 // ============================================================
 // MODALS
