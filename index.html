@@ -307,20 +307,20 @@
 .profile-stats-grid .stat-card:hover{background:#f1f5f9;border-color:#e2e8f0}
 .profile-stats-grid .stat-card .number{font-size:20px;font-weight:700;color:#2563eb}
 .profile-stats-grid .stat-card .label{font-size:10px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.detail-compact-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.detail-compact-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
 .detail-compact-header .left{flex:1}
 .detail-compact-header .left .title{font-size:17px;font-weight:700;color:#0f172a;margin:0}
 .detail-compact-header .left .company{font-size:13px;color:#64748b;font-weight:500}
 .detail-compact-header .left .sub-info{font-size:12px;color:#475569;margin-top:2px}
 .detail-compact-header .left .sub-info .sep{color:#e2e8f0;margin:0 4px}
 .detail-compact-header .badge-wrap{flex-shrink:0;margin-left:8px}
-.detail-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;margin-bottom:8px;padding:6px 0;border-bottom:1px solid #f1f5f9}
+.detail-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;margin-bottom:6px;padding:4px 0;border-bottom:1px solid #f1f5f9}
 .detail-info-grid .info-item{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
 .detail-info-grid .info-item .info-label{color:#94a3b8;font-weight:500}
 .detail-info-grid .info-item .info-value{color:#1e293b;font-weight:500}
-.detail-skills{font-size:12px;color:#475569;padding:4px 0;border-bottom:1px solid #f1f5f9;margin-bottom:6px}
+.detail-skills{font-size:12px;color:#475569;padding:4px 0;border-bottom:1px solid #f1f5f9;margin-bottom:4px}
 .detail-skills .label{color:#94a3b8;font-weight:500;margin-right:4px}
-.detail-desc{margin-bottom:6px}
+.detail-desc{margin-bottom:4px}
 .detail-desc .value-multiline{font-size:12px;color:#475569;white-space:pre-wrap;word-break:break-word}
 </style>
 </head>
@@ -374,7 +374,6 @@
 
 <!-- RECRUITER PROFILE SECTION -->
 <div class="profile-section" id="recruiter-section"><div class="section-header"><span class="section-title">🏢 Recruiter Profile</span><span class="section-badge" id="recruiter-badge">⚠️ Required to Post Jobs</span></div><div class="section-desc" id="recruiter-desc">Create your recruiter profile to post jobs and find candidates.</div><div id="recruiter-input-area"><div class="section-input"><input type="text" id="recruiter-company" placeholder="Company Name" maxlength="100"><button class="section-btn section-btn-green" onclick="saveRecruiterProfile()">Save & Activate</button></div></div><div id="recruiter-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><p><strong id="recruiter-display-company">--</strong></p><p style="color:#64748b;margin-top:2px">✅ Recruiter profile active</p></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="editRecruiterProfile()">✏️ Edit Company</button>
-<!-- Recruiter Stats: My Posted Jobs -->
 <div id="recruiter-stats" style="margin-top:10px;border-top:1px solid #e2e8f0;padding-top:10px"><p style="font-size:11px;font-weight:600;color:#1e293b">📋 My Posted Jobs</p><div id="my-jobs-list"></div></div>
 </div></div>
 
@@ -382,13 +381,11 @@
 
 <!-- EDIT SEEKER PAGE -->
 <div id="edit-seeker-page" class="hidden-page"><div class="home-container"><div class="edit-page-header"><h2>👤 Job Seeker Profile</h2><button class="cancel-btn" onclick="goToProfile()">Cancel</button></div><div class="page-content" id="edit-seeker-page-content"><div class="edit-hint"><div class="hint-title">📍 Why select your location?</div><div class="hint-desc">Selecting your preferred zone and area helps employers find you and shows relevant opportunities.</div></div><div class="edit-field"><label>Full Name *</label><input type="text" id="edit-seeker-name" placeholder="Enter your full name" maxlength="50"></div><div style="display:grid;grid-template-columns:2fr 1fr;gap:10px"><div class="edit-field"><label>Job Title *</label><input type="text" id="edit-seeker-title" placeholder="Job title" maxlength="50"></div><div class="edit-field"><label>Gender</label><select id="edit-seeker-gender"><option value="0">Not Specified</option><option value="1">Female</option><option value="2">Male</option></select></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Experience (Years)</label><input type="number" id="edit-seeker-exp" placeholder="Years" min="0" max="99" step="0.5"></div><div class="edit-field"><label>Expected Monthly Salary</label><div class="salary-input-wrapper"><span class="currency-symbol">₹</span><input type="text" id="edit-seeker-salary" placeholder="50,000" inputmode="numeric"></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Notice (days)</label><input type="number" id="edit-seeker-notice" placeholder="30" min="0" max="365" step="1"></div><div class="edit-field"><label>Skills (comma)</label><input type="text" id="edit-seeker-skills" placeholder="Java, Python, React" maxlength="100"></div></div>
-<!-- Searchable Zone Field for Edit Seeker -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="edit-field"><label>Zone *</label><div class="zone-search-wrapper"><input type="text" id="edit-seeker-zone-input" placeholder="Search zone..." autocomplete="off" onfocus="this.select()" oninput="searchZoneInForm('edit-seeker')"><input type="hidden" id="edit-seeker-zone-hidden" value=""><div class="zone-suggestions" id="edit-seeker-zone-suggestions"></div></div></div><div class="edit-field"><label>Area *</label><select id="edit-seeker-area"><option value="">Select zone first</option></select></div></div>
 <div class="edit-field"><label>About Me <span style="font-size:9px;color:#94a3b8">(max 200 chars)</span></label><textarea id="edit-seeker-about" rows="4" placeholder="Write about yourself..." maxlength="200"></textarea><div class="char-counter"><span id="char-count">0</span> / 200</div></div><button class="edit-activate-btn" onclick="saveEditSeeker()">✅ Activate Profile</button></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item active" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- POST JOB PAGE -->
 <div id="postjob-page" class="hidden-page"><div class="postjob-container"><div class="postjob-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="cancelPostJob()">Cancel</button></div><div class="page-content" id="postjob-scroll"><div id="recruiter-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name in the profile to post jobs.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div><div class="form-group"><label class="form-label">Company <span class="required">*</span></label><input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100"></div><div class="grid-2"><div class="form-group"><label class="form-label">Job Title <span class="required">*</span></label><input class="form-control" type="text" id="pj-title" placeholder="e.g., Senior Developer" maxlength="60"><div class="inline-hint"><span></span><span id="pj-title-counter">0/60</span></div></div><div class="form-group"><label class="form-label">Min Experience (Years) <span class="required">*</span></label><input class="form-control" type="number" id="pj-experience" placeholder="e.g. 3.5" min="0" max="50" step="0.5" value="3.5"></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Max Monthly Salary (₹) <span class="required">*</span></label><div class="salary-wrap"><span class="rupee">₹</span><input class="form-control" type="text" id="pj-salary" placeholder="1,50,000" value="1,50,000"></div></div><div class="form-group"><label class="form-label">Gender Preference</label><select class="form-control" id="pj-gender"><option value="0">No Preference</option><option value="1">Female</option><option value="2">Male</option></select></div></div>
-<!-- Searchable Zone Field for Post Job -->
 <div class="grid-2"><div class="form-group"><label class="form-label">Job Location Zone <span class="required">*</span></label><div class="zone-search-wrapper"><input type="text" id="pj-zone-input" placeholder="Search zone..." autocomplete="off" onfocus="this.select()" oninput="searchZoneInForm('pj')"><input type="hidden" id="pj-zone-hidden" value=""><div class="zone-suggestions" id="pj-zone-suggestions"></div></div></div><div class="form-group"><label class="form-label">Specific Area <span class="required">*</span></label><select class="form-control" id="pj-area"><option value="">Select zone first</option></select><div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div></div></div>
 <div class="grid-2"><div class="form-group"><label class="form-label">Skills (comma separated) <span class="required">*</span></label><input class="form-control" type="text" id="pj-skills" placeholder="Python, AWS, Docker" maxlength="200"><div class="inline-hint"><span></span><span id="pj-skills-counter">0/200</span></div></div><div class="form-group"><label class="form-label">Expiry Date <span class="required">*</span></label><input class="form-control" type="date" id="pj-expiry"><div class="inline-hint"><span>⏳ Auto: +30 days</span><span id="expiry-hint">max 45 days</span></div></div></div><div class="form-group"><label class="form-label">Description</label><textarea class="form-control" id="pj-description" rows="5" placeholder="Job details..." maxlength="500"></textarea><div class="inline-hint"><span></span><span id="pj-desc-counter">0/500</span></div></div><button class="publish-btn" id="pj-publish-btn" onclick="publishJob()">📤 Publish Job</button><div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item active" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
@@ -398,7 +395,7 @@
 <div class="detail-compact-header"><div class="left"><div class="title" id="detail-title">Title</div><div class="company" id="detail-company">Company</div><div class="sub-info"><span id="detail-exp-sub">-- yrs exp</span><span class="sep">·</span><span id="detail-salary-sub">₹--</span><span class="sep">·</span><span id="detail-location-sub">📍 --</span></div></div><div class="badge-wrap"><span id="detail-type-badge"></span></div></div>
 <div id="detail-job-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name to contact job seekers.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div>
 <div id="detail-seeker-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Job Seeker Profile Required</strong> Please complete your job seeker profile to apply for jobs.</div><button class="btn-action" onclick="goToEditSeeker()">Create Profile</button></div>
-<!-- Info Grid -->
+<!-- Info Grid - 2 Columns -->
 <div class="detail-info-grid"><div class="info-item"><span class="info-label">Gender</span><span class="info-value" id="detail-gender">--</span></div><div class="info-item"><span class="info-label">Zone</span><span class="info-value" id="detail-zone">--</span></div><div class="info-item"><span class="info-label">Area</span><span class="info-value" id="detail-area">--</span></div><div class="info-item"><span class="info-label" id="detail-expiry-label">Expiry</span><span class="info-value" id="detail-expiry">--</span></div><div class="info-item"><span class="info-label" id="detail-notice-label">Notice</span><span class="info-value" id="detail-notice">--</span></div><div class="info-item"><span class="info-label">Posted</span><span class="info-value" id="detail-posted">--</span></div></div>
 <!-- Skills -->
 <div class="detail-skills"><span class="label">Skills:</span><span id="detail-skills">--</span></div>
@@ -414,14 +411,13 @@
     <div class="compact-line"><span class="stat-label">👁️ Views:</span> <span class="stat-value" id="detail-views-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-views-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span> <span class="sep">|</span> <span class="stat-label">📞 Calls:</span> <span class="stat-value" id="detail-calls-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-calls-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span></div>
 </div>
 <!-- Actions -->
-<div class="detail-actions">
+<div class="detail-actions" id="detail-actions-container">
     <div class="action-group"><button class="btn-call" id="detail-call-btn" onclick="makeCall()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><span class="action-label">Call</span></div>
     <div class="action-group"><button class="btn-apply" id="detail-apply-btn" onclick="applyToJob()" style="display:none"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></button><span class="action-label" id="detail-apply-label">Apply</span></div>
     <div class="action-group"><button class="btn-invite" id="detail-invite-btn" onclick="inviteSeeker()" style="display:none"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button><span class="action-label" id="detail-invite-label">Invite</span></div>
     <div class="action-group"><button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><span class="action-label">Recommend</span></div>
     <div class="action-group"><button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button><span class="action-label">Not Rec</span></div>
     <div class="action-group"><button class="btn-share" id="detail-share-btn" onclick="handleShareClick()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button><span class="action-label">Share</span></div>
-    <div class="action-group"><button class="btn-close" onclick="closeDetail()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button><span class="action-label">Close</span></div>
 </div>
 <div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
@@ -564,8 +560,72 @@ async function applyToJob(){
     if(!currentUser.full_name||currentUser.full_name.trim()===''){showToast('⚠️ Please complete your job seeker profile first');$('detail-seeker-warning').style.display='flex';return}
     const jobId=currentDetailData.job_id;const applicants=currentDetailData.applicants||[];const userMobile=Number(currentUser.mobile);
     if(applicants.includes(userMobile)){showToast('✅ You already applied to this job');return}
-    try{const updatedApplicants=[...applicants,userMobile];const{data,error}=await sb.from('active_jobs').update({applicants:updatedApplicants}).eq('job_id',jobId).select().single();if(error)throw error;currentDetailData.applicants=updatedApplicants;showToast('✅ Applied successfully!');updateDetailStats();updateApplyButton();feedItems=feedItems.map(item=>{if(item.type==='JOB'&&item._raw?.job_id===jobId){if(item._raw)item._raw.applicants=updatedApplicants;item.applicants=updatedApplicants}return item});renderFeed()}catch(err){console.error('Apply error:',err);showToast('❌ Failed to apply: '+err.message)}}
-function updateApplyButton(){const btn=$('detail-apply-btn');const label=$('detail-apply-label');if(!btn||!label)return;if(!currentDetailData||currentDetailType!=='JOB'){btn.style.display='none';return}btn.style.display='flex';const applicants=currentDetailData.applicants||[];const userMobile=currentUser?Number(currentUser.mobile):null;const alreadyApplied=userMobile?applicants.includes(userMobile):!1;const isOwnJob=currentUser?currentDetailData.mobile===String(currentUser.mobile):!1;if(isOwnJob){btn.disabled=!0;btn.className='btn-apply';label.textContent='Your Job'}else if(alreadyApplied){btn.disabled=!0;btn.className='btn-apply applied';label.textContent='✅ Applied'}else{btn.disabled=!1;btn.className='btn-apply';label.textContent='Apply'}}
+    try{const updatedApplicants=[...applicants,userMobile];const{data,error}=await sb.from('active_jobs').update({applicants:updatedApplicants}).eq('job_id',jobId).select().single();if(error)throw error;currentDetailData.applicants=updatedApplicants;showToast('✅ Applied successfully!');updateDetailStats();updateActionButtons();feedItems=feedItems.map(item=>{if(item.type==='JOB'&&item._raw?.job_id===jobId){if(item._raw)item._raw.applicants=updatedApplicants;item.applicants=updatedApplicants}return item});renderFeed()}catch(err){console.error('Apply error:',err);showToast('❌ Failed to apply: '+err.message)}}
+
+// ============================================================
+// ACTION BUTTONS - CORRECTED LOGIC
+// ============================================================
+function updateActionButtons(){
+    const applyBtn=$('detail-apply-btn');
+    const applyLabel=$('detail-apply-label');
+    const inviteBtn=$('detail-invite-btn');
+    const inviteLabel=$('detail-invite-label');
+    
+    // Hide all by default
+    if(applyBtn)applyBtn.style.display='none';
+    if(inviteBtn)inviteBtn.style.display='none';
+    
+    if(!currentDetailData||!currentDetailType)return;
+    
+    const isJob=currentDetailType==='JOB';
+    const isOwner=currentUser?currentDetailData.mobile===String(currentUser.mobile):!1;
+    const isRecruiter=currentUser&&currentUser.company_name&&currentUser.company_name.trim()!=='';
+    const applicants=currentDetailData.applicants||[];
+    const userMobile=currentUser?Number(currentUser.mobile):null;
+    const alreadyApplied=userMobile?applicants.includes(userMobile):!1;
+    
+    if(isJob){
+        // JOB view - Show Apply button
+        if(applyBtn){
+            applyBtn.style.display='flex';
+            if(isOwner){
+                applyBtn.disabled=!0;
+                applyBtn.className='btn-apply';
+                applyLabel.textContent='Your Job';
+            }else if(alreadyApplied){
+                applyBtn.disabled=!0;
+                applyBtn.className='btn-apply applied';
+                applyLabel.textContent='✅ Applied';
+            }else{
+                applyBtn.disabled=!1;
+                applyBtn.className='btn-apply';
+                applyLabel.textContent='Apply';
+            }
+        }
+        // Hide Invite button on JOB
+        if(inviteBtn)inviteBtn.style.display='none';
+    }else{
+        // SEEKER view - Show Invite button
+        if(inviteBtn){
+            inviteBtn.style.display='flex';
+            if(isOwner){
+                inviteBtn.disabled=!0;
+                inviteBtn.className='btn-invite own-profile';
+                inviteLabel.textContent='Your Profile';
+            }else if(!isRecruiter){
+                inviteBtn.disabled=!0;
+                inviteBtn.className='btn-invite';
+                inviteLabel.textContent='🔐 Need Recruiter';
+            }else{
+                inviteBtn.disabled=!1;
+                inviteBtn.className='btn-invite';
+                inviteLabel.textContent='📨 Invite';
+            }
+        }
+        // Hide Apply button on SEEKER
+        if(applyBtn)applyBtn.style.display='none';
+    }
+}
 
 // ============================================================
 // APPLICANTS LIST
@@ -605,7 +665,7 @@ async function sendInvite(seekerMobile,jobId){
 }
 
 // ============================================================
-// SEEKER PROFILE FUNCTIONS - My Applications & My Invitations
+// SEEKER PROFILE FUNCTIONS
 // ============================================================
 async function loadSeekerApplications(){
     if(!currentUser||isGuest){return}
@@ -624,24 +684,11 @@ async function loadSeekerInvitations(){
         container.innerHTML=jobs.map(job=>{const isExpired=new Date(job.expiry_date)<new Date();return`<div class="my-job-item" onclick="viewJob(${job.job_id})"><div class="job-title">${job.job_title||'Untitled'}${isExpired?' <span class="expired">Expired</span>':''}</div><div class="job-meta">${job.company_name} · ${job.zone_id?getZoneName(job.zone_id):'N/A'}${isExpired?' · ⚠️ Expired':''}</div></div>`}).join('')
     }catch(err){console.error('Error loading invitations:',err);container.innerHTML='<p style="font-size:11px;color:#ef4444">Error loading invitations</p>'}
 }
-function showMyApplications(){
-    const list=$('seeker-applications-list');if(!list)return;
-    const isHidden=list.style.display==='none'||list.style.display==='';
-    list.style.display=isHidden?'block':'none';
-    if(isHidden){loadSeekerApplications()}
-}
-function showMyInvitations(){
-    const list=$('seeker-invitations-list');if(!list)return;
-    const isHidden=list.style.display==='none'||list.style.display==='';
-    list.style.display=isHidden?'block':'none';
-    if(isHidden){loadSeekerInvitations()}
-}
-function showSeekerInvitationsModal(){
-    showMyInvitations();
-}
+function showMyApplications(){const list=$('seeker-applications-list');if(!list)return;const isHidden=list.style.display==='none'||list.style.display==='';list.style.display=isHidden?'block':'none';if(isHidden){loadSeekerApplications()}}
+function showMyInvitations(){const list=$('seeker-invitations-list');if(!list)return;const isHidden=list.style.display==='none'||list.style.display==='';list.style.display=isHidden?'block':'none';if(isHidden){loadSeekerInvitations()}}
 
 // ============================================================
-// RECRUITER PROFILE FUNCTIONS - My Posted Jobs
+// RECRUITER PROFILE FUNCTIONS
 // ============================================================
 function loadMyJobs(){if(!currentUser||isGuest){const c=$('my-jobs-list');if(c)c.innerHTML='<p style="font-size:11px;color:#94a3b8">Login to see your jobs.</p>';return}const c=$('my-jobs-list');if(!c)return;try{autoCleanExpiredJobs();sb.from('active_jobs').select('*').eq('mobile',currentUser.mobile).order('posted_date',{ascending:!1}).then(({data,error})=>{if(error)throw error;if(!data||data.length===0){c.innerHTML='<p style="font-size:11px;color:#94a3b8">No jobs posted yet.</p>';return}c.innerHTML=data.map(job=>{const isExpired=new Date(job.expiry_date)<new Date();const appCount=(job.applicants||[]).length;return`<div class="my-job-item" onclick="viewJob(${job.job_id})"><div class="job-title">${job.job_title||'Untitled'}${isExpired?' <span class="expired">Expired</span>':''}</div><div class="job-meta">${job.company_name} · ${job.min_experience_years||0} yrs · ₹${(job.max_salary_monthly||0).toLocaleString('en-IN')}</div><div class="job-meta" style="font-size:9px;color:#94a3b8">📅 ${new Date(job.posted_date).toLocaleDateString('en-IN')} · Exp: ${new Date(job.expiry_date).toLocaleDateString('en-IN')} · 📋 ${appCount} applicant${appCount!==1?'s':''}</div></div>`}).join('');setTimeout(fixLayoutHeight,50)})}catch(err){console.error('Error loading my jobs:',err);c.innerHTML='<p style="font-size:11px;color:#ef4444">Error loading jobs</p>'}}
 async function viewJob(jobId){try{const{data,error}=await sb.from('active_jobs').select('*').eq('job_id',jobId).single();if(error)throw error;openDetail(data,'JOB')}catch(err){showToast('❌ Error loading job: '+err.message)}}
@@ -650,20 +697,12 @@ async function viewJob(jobId){try{const{data,error}=await sb.from('active_jobs')
 // DETAIL VIEW - REDESIGNED COMPACT
 // ============================================================
 function openDetailFromFeed(item){if(item._raw)openDetail(item._raw,item.type);else openDetail(item,item.type)}
-function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('detail-page').classList.remove('hidden-page');['home-page','profile-page','postjob-page','edit-seeker-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});const id=type==='JOB'?data.job_id:data.mobile;if(id)incrementViewCount(type,id).then(result=>{if(result&&currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){if(type==='JOB'){$('detail-views-total').textContent=result.total}else{$('detail-views-30d').textContent=result.days30;$('detail-views-total').textContent=result.total}}});const isJob=type==='JOB',genderMap={0:'No Preference',1:'Female',2:'Male'};$('detail-title').textContent=isJob?(data.job_title||'Untitled Job'):(data.full_name||data.mobile||'Job Seeker');$('detail-company').textContent=isJob?(data.company_name||'Unknown'):(data.job_title||'Job Seeker');const expVal=isJob?(data.min_experience_years||0):(data.total_experience_years||0);const salaryVal=isJob?data.max_salary_monthly:data.expected_salary_monthly;const salaryDisplay=salaryVal?'₹'+Number(salaryVal).toLocaleString('en-IN'):'Negotiable';const zoneName=getZoneName(data.zone_id||0)||'Not set';const areaName=getAreaName(data.area_id||0)||'';const locationDisplay=areaName?`${zoneName} · ${areaName}`:zoneName;$('detail-exp-sub').textContent=`${expVal} yrs exp`;$('detail-salary-sub').textContent=salaryDisplay;$('detail-location-sub').textContent=`📍 ${locationDisplay}`;$('detail-type-badge').innerHTML=`<span class="type-badge ${isJob?'job':'seeker'}">${isJob?'JOB':'SEEKER'}</span>`;$('detail-gender').textContent=genderMap[isJob?data.preferred_gender:data.gender]||'Not Specified';$('detail-zone').textContent=zoneName;$('detail-area').textContent=areaName||'Not set';$('detail-skills').textContent=data.skills_comma_separated||'—';if(isJob){$('detail-expiry-label').textContent='Expiry';$('detail-expiry').textContent=data.expiry_date?new Date(data.expiry_date).toLocaleDateString('en-IN'):'—';$('detail-notice-label').style.display='none';$('detail-notice').textContent='—'}else{$('detail-expiry-label').textContent='Expiry';$('detail-expiry').textContent='—';$('detail-notice-label').style.display='block';$('detail-notice').textContent=(data.notice_period_days||'—')+' days'}$('detail-posted').textContent=(data.posted_date||data.created_at||data.last_active)?new Date(data.posted_date||data.created_at||data.last_active).toLocaleString('en-IN'):'—';$('detail-desc').textContent=isJob?(data.job_description||'—'):(data.professional_summary||'—');const callBtn=$('detail-call-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';if(isJob){if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}else{if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}updateDetailStats();updateDetailCounts(data.endorsements||[],data.flags||[]);updateApplyButton();updateInviteButton();updateThirdStat();setTimeout(fixLayoutHeight,100)}
+function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('detail-page').classList.remove('hidden-page');['home-page','profile-page','postjob-page','edit-seeker-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});const id=type==='JOB'?data.job_id:data.mobile;if(id)incrementViewCount(type,id).then(result=>{if(result&&currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){if(type==='JOB'){$('detail-views-total').textContent=result.total}else{$('detail-views-30d').textContent=result.days30;$('detail-views-total').textContent=result.total}}});const isJob=type==='JOB',genderMap={0:'No Preference',1:'Female',2:'Male'};$('detail-title').textContent=isJob?(data.job_title||'Untitled Job'):(data.full_name||data.mobile||'Job Seeker');$('detail-company').textContent=isJob?(data.company_name||'Unknown'):(data.job_title||'Job Seeker');const expVal=isJob?(data.min_experience_years||0):(data.total_experience_years||0);const salaryVal=isJob?data.max_salary_monthly:data.expected_salary_monthly;const salaryDisplay=salaryVal?'₹'+Number(salaryVal).toLocaleString('en-IN'):'Negotiable';const zoneName=getZoneName(data.zone_id||0)||'Not set';const areaName=getAreaName(data.area_id||0)||'';const locationDisplay=areaName?`${zoneName} · ${areaName}`:zoneName;$('detail-exp-sub').textContent=`${expVal} yrs exp`;$('detail-salary-sub').textContent=salaryDisplay;$('detail-location-sub').textContent=`📍 ${locationDisplay}`;$('detail-type-badge').innerHTML=`<span class="type-badge ${isJob?'job':'seeker'}">${isJob?'JOB':'SEEKER'}</span>`;$('detail-gender').textContent=genderMap[isJob?data.preferred_gender:data.gender]||'Not Specified';$('detail-zone').textContent=zoneName;$('detail-area').textContent=areaName||'Not set';$('detail-skills').textContent=data.skills_comma_separated||'—';if(isJob){$('detail-expiry-label').textContent='Expiry';$('detail-expiry').textContent=data.expiry_date?new Date(data.expiry_date).toLocaleDateString('en-IN'):'—';$('detail-notice-label').style.display='none';$('detail-notice').textContent='—'}else{$('detail-expiry-label').textContent='Expiry';$('detail-expiry').textContent='—';$('detail-notice-label').style.display='block';$('detail-notice').textContent=(data.notice_period_days||'—')+' days'}$('detail-posted').textContent=(data.posted_date||data.created_at||data.last_active)?new Date(data.posted_date||data.created_at||data.last_active).toLocaleString('en-IN'):'—';$('detail-desc').textContent=isJob?(data.job_description||'—'):(data.professional_summary||'—');const callBtn=$('detail-call-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';if(isJob){if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}else{if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}updateDetailStats();updateDetailCounts(data.endorsements||[],data.flags||[]);updateThirdStat();updateActionButtons();setTimeout(fixLayoutHeight,100)}
 function closeDetail(){currentDetailData=null;currentDetailType=null;$('detail-page').classList.add('hidden-page');$('home-page').classList.remove('hidden-page');goHome();setTimeout(fixLayoutHeight,100)}
 
 // ============================================================
-// INVITE BUTTON ON SEEKER PROFILES
+// THIRD STAT - Applicants for Jobs, Invitations for Seekers
 // ============================================================
-function updateInviteButton(){
-    const btn=$('detail-invite-btn');const label=$('detail-invite-label');if(!btn||!label)return;
-    if(!currentDetailData||currentDetailType!=='SEEKER'){btn.style.display='none';return}
-    btn.style.display='flex';
-    const isOwner=currentUser?currentDetailData.mobile===String(currentUser.mobile):!1;
-    const isRecruiter=currentUser&&currentUser.company_name&&currentUser.company_name.trim()!=='';
-    if(isOwner){btn.disabled=!0;btn.className='btn-invite own-profile';label.textContent='Your Profile'}else if(!isRecruiter){btn.disabled=!0;btn.className='btn-invite';label.textContent='🔐 Need Recruiter'}else{btn.disabled=!1;btn.className='btn-invite';label.textContent='📨 Invite'}
-}
 function updateThirdStat(){
     const thirdEl=document.getElementById('detail-third-stat');const countEl=document.getElementById('detail-third-count');const labelEl=document.getElementById('detail-third-label');if(!thirdEl||!countEl||!labelEl)return;
     if(currentDetailType==='JOB'){const count=currentDetailData.applicants?.length||0;countEl.textContent=count;labelEl.textContent='📋 Applicants';thirdEl.onclick=detailShowApplicants}else{const count=currentDetailData.total_invitations||0;countEl.textContent=count;labelEl.textContent='📨 Invitations';thirdEl.onclick=detailShowInvitations}
