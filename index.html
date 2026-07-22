@@ -592,7 +592,7 @@ function updateActionButtons(){
     const alreadyApplied=userMobile?applicants.includes(userMobile):!1;
     const isRecruiter=currentUser&&currentUser.company_name&&currentUser.company_name.trim()!=='';
     
-    // For JOBS: Show Apply button, Hide Invite button
+    // For JOBS: Show Apply button (with proper state), Hide Invite button
     if(isJob){
         if(applyBtn){
             applyBtn.style.display='flex';
