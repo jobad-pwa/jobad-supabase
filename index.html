@@ -14,8 +14,8 @@
 *{box-sizing:border-box}body{font-family:system-ui,-apple-system,sans-serif;background:#f3f4f6;margin:0;padding:16px;display:flex;justify-content:center;align-items:center;min-height:100vh}
 .card{max-width:400px;width:100%;background:#fff;border-radius:24px;padding:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);display:flex;flex-direction:column;height:95vh;max-height:780px;position:relative;overflow:hidden}
 .hidden,.hidden-page{display:none}
-.home-container,.profile-container,.edit-container,.postjob-container,.detail-container{display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;position:relative}
-.home-header,.profile-header,.edit-header,.postjob-header,.detail-header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #f1f5f9;background:#fff;z-index:10;position:relative}
+.home-container{display:flex;flex-direction:column;height:100%;width:100%;overflow:hidden;position:relative}
+.home-header{flex-shrink:0;display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid #f1f5f9;background:#fff;z-index:10;position:relative}
 .guest-banner{flex-shrink:0;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:6px 12px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px;flex-wrap:wrap;min-height:36px}
 .guest-banner.hidden{display:none}
 .install-banner{flex-shrink:0;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:8px 14px;border-radius:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;min-height:40px}
@@ -37,10 +37,6 @@
 .btn-green:hover{background:#15803d}
 .btn-yellow{background:#d97706}
 .btn-yellow:hover{background:#b45309}
-.msg{margin-top:16px;padding:12px;border-radius:12px;text-align:center;font-size:14px}
-.msg-green{background:#dcfce7;color:#166534}
-.msg-red{background:#fee2e2;color:#991b1b}
-.msg-blue{background:#dbeafe;color:#1e40af}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;z-index:1000;animation:fadeOut 2s ease forwards;white-space:nowrap}
 @keyframes fadeOut{0%{opacity:1;transform:translateX(-50%) translateY(0)}70%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-20px);visibility:hidden}}
 .mobile-display{font-size:20px;font-weight:700;color:#1e293b;padding:4px 0}
@@ -58,7 +54,7 @@
 .timer-text{font-size:13px;color:#64748b;margin-top:8px}
 .resend-btn{background:0 0;border:none;color:#2563eb;font-weight:600;cursor:pointer;padding:4px;font-size:14px}
 .resend-btn:disabled{opacity:.5;cursor:not-allowed}
-.home-header .logo,.profile-header .logo,.edit-header .logo,.postjob-header .logo,.detail-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}
+.home-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}
 .home-header .header-right{display:flex;align-items:center;gap:8px;position:relative}
 .home-header .avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:.2s;padding:0}
 .home-header .avatar-btn:hover{border-color:#2563eb;background:#eff6ff}
@@ -181,10 +177,6 @@
 .my-job-item .job-title{font-weight:600;font-size:13px;color:#0f172a}
 .my-job-item .job-meta{font-size:10px;color:#64748b}
 .my-job-item .expired{color:#dc2626;font-size:9px;font-weight:600;background:#fee2e2;padding:1px 8px;border-radius:4px;display:inline-block}
-.detail-field{margin-bottom:6px}
-.detail-field label{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:1px}
-.detail-field .value{font-size:13px;font-weight:500;color:#1e293b;padding:2px 0;border-bottom:1px solid #f1f5f9}
-.detail-field .value-multiline{font-size:13px;font-weight:500;color:#1e293b;padding:4px 0;white-space:pre-wrap;word-break:break-word}
 .detail-stats{display:flex;flex-direction:column;gap:6px;margin-top:8px;margin-bottom:8px;padding:6px 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
 .detail-stats .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:0}
 .detail-stats .stat-item{text-align:center;padding:4px;background:#f8fafc;border-radius:8px;cursor:pointer;transition:.15s}
@@ -211,8 +203,6 @@
 .detail-actions .btn-invite:disabled{opacity:.5;cursor:not-allowed}
 .detail-actions .btn-invite.own-profile{background:#94a3b8;cursor:default}
 .detail-actions .btn-invite.own-profile:hover{background:#94a3b8}
-.detail-actions .btn-close{background:#6b7280;color:#fff}
-.detail-actions .btn-close:hover{background:#4b5563}
 .detail-actions .btn-endorse{background:#f1f5f9;color:#475569;font-size:18px}
 .detail-actions .btn-endorse.active{background:#2563eb;color:#fff}
 .detail-actions .btn-endorse:hover:not(:disabled){background:#dbeafe}
@@ -228,7 +218,7 @@
 .type-badge{display:inline-block;padding:2px 12px;border-radius:12px;font-size:10px;font-weight:700}
 .type-badge.job{background:#dbeafe;color:#1e40af}
 .type-badge.seeker{background:#dcfce7;color:#166534}
-.modal-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;border-radius:24px}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:9999}
 .modal-overlay.show{display:flex}
 .modal-box{background:#fff;border-radius:20px;padding:24px;max-width:340px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:80vh;display:flex;flex-direction:column}
 .modal-box h3{font-size:18px;font-weight:700;margin:0 0 4px;color:#1e293b}
@@ -240,7 +230,7 @@
 .modal-box .user-list .user-item .name:hover{color:#1d4ed8}
 .modal-box .modal-close-btn{width:100%;padding:10px;border:none;border-radius:10px;background:#f1f5f9;color:#475569;font-weight:600;cursor:pointer;margin-top:8px}
 .modal-box .modal-close-btn:hover{background:#e2e8f0}
-.share-modal-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;border-radius:24px}
+.share-modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:9999;border-radius:0}
 .share-modal-overlay.show{display:flex}
 .share-modal-box{background:#fff;border-radius:20px;padding:24px;max-width:340px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:80vh;display:flex;flex-direction:column}
 .share-modal-box h3{font-size:18px;font-weight:700;margin:0 0 4px;color:#1e293b;display:flex;align-items:center;gap:8px}
@@ -461,7 +451,7 @@ const GUEST_PIN='1234';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // ============================================================
-// ZONE & AREA DATA - India Wide (Complete)
+// ZONE & AREA DATA - India Wide
 // ============================================================
 const ZONE_DATA = [
 [5001,"Hyderabad",[50000101,"Abids"],[50000102,"Koti"],[50000103,"Nampally"],[50000201,"Charminar"],[50000301,"Secunderabad"],[50000401,"Khairatabad"],[50000501,"Jalpally"],[50000502,"Chandrayangutta"],[50000503,"Barkas"],[50000504,"Balapur"],[50000505,"Pahadi Shareef"],[50000701,"Tarnaka"],[50000702,"Habsiguda"],[50000801,"Shaikpet"],[50000802,"Tolichowki"],[50001001,"Alwal"],[50001002,"Bolarum"],[50001101,"Bowenpally"],[50001301,"Amberpet"],[50001501,"Trimulgherry"],[50001601,"Begumpet"],[50001801,"Sanathnagar"],[50002001,"Musheerabad"],[50002601,"Marredpally"],[50002701,"Kachiguda"],[50002801,"Mehdipatnam"],[50002901,"Himayatnagar"],[50002902,"Domalguda"],[50002903,"Narayanaguda"],[50003001,"Rajendranagar"],[50003201,"Gachibowli"],[50003301,"Jubilee Hills"],[50003401,"Banjara Hills"],[50003501,"Saroornagar"],[50003601,"Malakpet"],[50003701,"Balanagar"],[50003801,"Ameerpet"],[50003802,"Sanjeeva Reddy Nagar"],[50003901,"Uppal"],[50003902,"Peerzadiguda"],[50004701,"Malkajgiri"],[50004702,"Safilguda"],[50004801,"Attapur"],[50004901,"Miyapur"],[50004902,"Hafeezpet"],[50005001,"Chanda Nagar"],[50005101,"Cherlapally"],[50005301,"Old City (Falaknuma)"],[50005501,"Quthbullapur"],[50005901,"Santoshnagar"],[50005902,"Saidabad"],[50006001,"Dilsukhnagar"],[50006201,"Kapra"],[50006202,"A.S. Rao Nagar"],[50006401,"Bahadurpura"],[50006701,"Jeedimetla"],[50006801,"Nagole"],[50007001,"Vanasthalipuram"],[50007201,"Kukatpally"],[50007401,"L.B. Nagar"],[50007501,"Narsingi"],[50007502,"Kokapet"],[50007601,"Nacharam"],[50008101,"Madhapur"],[50008201,"Somajiguda"],[50008401,"Kondapur"],[50008801,"Pocharam"],[50008901,"Manikonda"],[50009001,"Nizampet"],[50009002,"Bachupally"],[50009201,"Boduppal"],[50009401,"Sainikpuri"],[50009501,"Koti"],[50010001,"Kompally"],[50010101,"Shamirpet"],[50110101,"Chevella"],[50120301,"Shankarpally"],[50120302,"Mokila"],[50121801,"Shamshabad"],[50130101,"Ghatkesar"],[50135901,"Maheshwaram"],[50135902,"Tukkuguda"],[50140101,"Medchal"],[50140102,"Gundlapochampally"],[50150301,"Chevella"],[50150401,"Moinabad"],[50150501,"Hayathnagar"],[50150601,"Ibrahimpatnam"],[50151001,"Bongloor"],[50203201,"Tellapur"],[50203202,"Ameenpur"],[50231901,"Patancheru"]],
@@ -623,13 +613,6 @@ function fixLayoutHeight(){const card=document.querySelector('.card');if(!card)r
 let resizeTimer;function handleResize(){clearTimeout(resizeTimer);resizeTimer=setTimeout(fixLayoutHeight,200)}
 
 // ============================================================
-// ZONE DROPDOWNS (Legacy)
-// ============================================================
-function populateEditZones(){const s=$('edit-seeker-zone');if(s){s.innerHTML='<option value="">-- Select --</option>';[...ZONES].sort((a,b)=>a.zone_name.localeCompare(b.zone_name)).forEach(z=>{s.innerHTML+=`<option value="${z.zone_id}">📍 ${z.zone_name}</option>`})}}
-function updateEditAreas(){const z=parseInt($('edit-seeker-zone')?.value||0),a=$('edit-seeker-area');if(a){a.innerHTML='<option value="">Select zone first</option>';if(z){getAreasByZone(z).forEach(ar=>{a.innerHTML+=`<option value="${ar.area_id}">${ar.area_name}</option>`})}}}
-function updatePostAreas(){const zs=$('pj-zone'),as=$('pj-area'),ah=$('pj-area-hint');if(!zs||!as)return;const z=parseInt(zs.value);as.innerHTML='<option value="">Select zone first</option>';if(!z){if(ah)ah.textContent='⬆️ Choose zone first';return}const areas=getAreasByZone(z);if(!areas.length){as.innerHTML='<option value="">No areas</option>';if(ah)ah.textContent='⚠️ No areas';return}areas.forEach(a=>{as.innerHTML+=`<option value="${a.area_id}">${a.area_name}</option>`});if(ah)ah.textContent=`✅ ${areas.length} areas available`;if(areas.length)as.value=areas[0].area_id}
-
-// ============================================================
 // TOAST & UI HELPERS
 // ============================================================
 function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2000)}
@@ -693,7 +676,6 @@ function updateActionButtons(){
     const applicants = currentDetailData.applicants||[];
     const userMobile = currentUser ? Number(currentUser.mobile) : null;
     const alreadyApplied = userMobile ? applicants.includes(userMobile) : false;
-    const invitations = currentDetailData.total_invitations||0;
     
     let btnHTML = '';
     
@@ -940,7 +922,7 @@ $('zone-search').addEventListener('keydown',function(e){if(e.key==='Enter'){cons
 // ============================================================
 async function incrementViewCount(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',vc=getViewColumn(type),v30=getView30Column(type);if(type==='JOB'){const{data,error}=await sb.from(table).select(vc).eq(idField,id).maybeSingle();if(error||!data)return null;const n=(data[vc]||0)+1;const up={};up[vc]=n;await sb.from(table).update(up).eq(idField,id);if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[vc]=n;$('detail-views-total').textContent=n}feedItems=feedItems.map(item=>{const it=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;if(item.type===type&&String(it)===String(id)){if(item._raw)item._raw[vc]=n;item.views=n}return item});return{total:n}}const{data,error}=await sb.from(table).select(`${vc},${v30}`).eq(idField,id).maybeSingle();if(error||!data)return null;const n=(data[vc]||0)+1,n30=(data[v30]||0)+1;const up={};up[vc]=n;up[v30]=n30;await sb.from(table).update(up).eq(idField,id);if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[vc]=n;currentDetailData[v30]=n30;$('detail-views-30d').textContent=n30;$('detail-views-total').textContent=n}feedItems=feedItems.map(item=>{const it=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;if(item.type===type&&String(it)===String(id)){if(item._raw){item._raw[vc]=n;item._raw[v30]=n30}item.views=n}return item});return{total:n,days30:n30}}catch(err){console.error('View count error:',err);return null}}
 async function incrementCallCount(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',cc=getCallColumn(type),c30=getCall30Column(type);if(type==='JOB'){const{data,error}=await sb.from(table).select(cc).eq(idField,id).maybeSingle();if(error||!data)return null;const n=(data[cc]||0)+1;const up={};up[cc]=n;await sb.from(table).update(up).eq(idField,id);if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[cc]=n;$('detail-calls-total').textContent=n}return{total:n}}const{data,error}=await sb.from(table).select(`${cc},${c30}`).eq(idField,id).maybeSingle();if(error||!data)return null;const n=(data[cc]||0)+1,n30=(data[c30]||0)+1;const up={};up[cc]=n;up[c30]=n30;await sb.from(table).update(up).eq(idField,id);if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData[cc]=n;currentDetailData[c30]=n30;$('detail-calls-30d').textContent=n30;$('detail-calls-total').textContent=n}return{total:n,days30:n30}}catch(err){console.error('Call count error:',err);return null}}
-async function incrementShareCount(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile';const{data,error}=await sb.from(table).select('share_count').eq(idField,id).maybeSingle();if(error||!data)return null;const n=(data?.share_count||0)+1;await sb.from(table).update({share_count:n}).eq(idField,id);if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData.share_count=n;$('detail-shares').textContent=n;updateDetailStats()}feedItems=feedItems.map(item=>{const it=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;if(item.type===type&&String(it)===String(id)){if(item._raw)item._raw.share_count=n;item.share_count=n}return item});renderFeed();return n}catch(err){console.error('Share count error:',err);return null}}
+async function incrementShareCount(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile';const{data,error}=await sb.from(table).select('share_count').eq(idField,id).maybeSingle();if(error||!data)return null;const n=(data?.share_count||0)+1;await sb.from(table).update({share_count:n}).eq(idField,id);if(currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){currentDetailData.share_count=n;updateDetailStats()}feedItems=feedItems.map(item=>{const it=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;if(item.type===type&&String(it)===String(id)){if(item._raw)item._raw.share_count=n;item.share_count=n}return item});renderFeed();return n}catch(err){console.error('Share count error:',err);return null}}
 
 // ============================================================
 // AUTO CHECK & OTP
