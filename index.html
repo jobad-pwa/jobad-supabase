@@ -422,13 +422,21 @@
     <div class="compact-line"><span class="stat-label">👁️ Views:</span> <span class="stat-value" id="detail-views-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-views-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span> <span class="sep">|</span> <span class="stat-label">📞 Calls:</span> <span class="stat-value" id="detail-calls-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-calls-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span></div>
 </div>
 
-<!-- Actions - 5 buttons -->
+<!-- Actions - Only 5 buttons: Call, (Apply OR Invite), Recommend, Not Rec, Share -->
 <div class="detail-actions" id="detail-actions-container">
+    <!-- CALL - always visible -->
     <div class="action-group"><button class="btn-call" id="detail-call-btn" onclick="makeCall()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><span class="action-label">Call</span></div>
-    <div class="action-group"><button class="btn-apply" id="detail-apply-btn" onclick="applyToJob()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></button><span class="action-label" id="detail-apply-label">Apply</span></div>
-    <div class="action-group"><button class="btn-invite" id="detail-invite-btn" onclick="inviteSeeker()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></button><span class="action-label" id="detail-invite-label">Invite</span></div>
+    
+    <!-- Slot for Apply OR Invite - dynamically created -->
+    <div class="action-group" id="detail-action-slot"></div>
+    
+    <!-- RECOMMEND - always visible -->
     <div class="action-group"><button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><span class="action-label">Recommend</span></div>
+    
+    <!-- NOT REC - always visible -->
     <div class="action-group"><button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button><span class="action-label">Not Rec</span></div>
+    
+    <!-- SHARE - always visible -->
     <div class="action-group"><button class="btn-share" id="detail-share-btn" onclick="handleShareClick()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button><span class="action-label">Share</span></div>
 </div>
 <div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
@@ -575,66 +583,73 @@ async function applyToJob(){
     try{const updatedApplicants=[...applicants,userMobile];const{data,error}=await sb.from('active_jobs').update({applicants:updatedApplicants}).eq('job_id',jobId).select().single();if(error)throw error;currentDetailData.applicants=updatedApplicants;showToast('✅ Applied successfully!');updateDetailStats();updateActionButtons();feedItems=feedItems.map(item=>{if(item.type==='JOB'&&item._raw?.job_id===jobId){if(item._raw)item._raw.applicants=updatedApplicants;item.applicants=updatedApplicants}return item});renderFeed()}catch(err){console.error('Apply error:',err);showToast('❌ Failed to apply: '+err.message)}}
 
 // ============================================================
-// ACTION BUTTONS - Shows/Hides Apply and Invite buttons based on type
+// ACTION BUTTONS - Dynamically creates Apply OR Invite button
 // ============================================================
 function updateActionButtons(){
-    const applyBtn=$('detail-apply-btn');
-    const applyLabel=$('detail-apply-label');
-    const inviteBtn=$('detail-invite-btn');
-    const inviteLabel=$('detail-invite-label');
-    
-    if(!currentDetailData||!currentDetailType)return;
-    
-    const isJob=currentDetailType==='JOB';
-    const isOwner=currentUser?currentDetailData.mobile===String(currentUser.mobile):!1;
-    const applicants=currentDetailData.applicants||[];
-    const userMobile=currentUser?Number(currentUser.mobile):null;
-    const alreadyApplied=userMobile?applicants.includes(userMobile):!1;
-    const isRecruiter=currentUser&&currentUser.company_name&&currentUser.company_name.trim()!=='';
-    
-    // For JOBS: Show Apply button (with proper state), Hide Invite button
-    if(isJob){
-        if(applyBtn){
-            applyBtn.style.display='flex';
-            if(isOwner){
-                applyBtn.disabled=!0;
-                applyBtn.className='btn-apply';
-                applyLabel.textContent='Your Job';
-            }else if(alreadyApplied){
-                applyBtn.disabled=!0;
-                applyBtn.className='btn-apply applied';
-                applyLabel.textContent='✅ Applied';
-            }else{
-                applyBtn.disabled=!1;
-                applyBtn.className='btn-apply';
-                applyLabel.textContent='Apply';
-            }
-        }
-        if(inviteBtn){
-            inviteBtn.style.display='none';
-        }
-    }else{
-        // For SEEKERS: Hide Apply button, Show Invite button
-        if(applyBtn){
-            applyBtn.style.display='none';
-        }
-        if(inviteBtn){
-            inviteBtn.style.display='flex';
-            if(isOwner){
-                inviteBtn.disabled=!0;
-                inviteBtn.className='btn-invite own-profile';
-                inviteLabel.textContent='Your Profile';
-            }else if(!isRecruiter){
-                inviteBtn.disabled=!0;
-                inviteBtn.className='btn-invite';
-                inviteLabel.textContent='🔐 Need Recruiter';
-            }else{
-                inviteBtn.disabled=!1;
-                inviteBtn.className='btn-invite';
-                inviteLabel.textContent='📨 Invite';
-            }
-        }
+    const slot = document.getElementById('detail-action-slot');
+    if(!slot)return;
+    if(!currentDetailData||!currentDetailType){
+        slot.innerHTML='';
+        return;
     }
+    const isJob = currentDetailType==='JOB';
+    const isOwner = currentUser ? currentDetailData.mobile === String(currentUser.mobile) : false;
+    const isRecruiter = currentUser && currentUser.company_name && currentUser.company_name.trim()!=='';
+    const applicants = currentDetailData.applicants||[];
+    const userMobile = currentUser ? Number(currentUser.mobile) : null;
+    const alreadyApplied = userMobile ? applicants.includes(userMobile) : false;
+    const invitations = currentDetailData.total_invitations||0;
+    
+    let btnHTML = '';
+    
+    if(isJob){
+        // JOB: Show Apply button
+        let label = 'Apply';
+        let className = 'btn-apply';
+        let disabled = false;
+        let onclick = 'applyToJob()';
+        if(isOwner){
+            label = 'Your Job';
+            className = 'btn-apply';
+            disabled = true;
+            onclick = '';
+        }else if(alreadyApplied){
+            label = '✅ Applied';
+            className = 'btn-apply applied';
+            disabled = true;
+            onclick = '';
+        }
+        btnHTML = `<button class="${className}" onclick="${onclick}" ${disabled?'disabled':''}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+        </button>
+        <span class="action-label">${label}</span>`;
+    }else{
+        // SEEKER: Show Invite button
+        let label = '📨 Invite';
+        let className = 'btn-invite';
+        let disabled = false;
+        let onclick = 'inviteSeeker()';
+        if(isOwner){
+            label = 'Your Profile';
+            className = 'btn-invite own-profile';
+            disabled = true;
+            onclick = '';
+        }else if(!isRecruiter){
+            label = '🔐 Need Recruiter';
+            className = 'btn-invite';
+            disabled = true;
+            onclick = '';
+        }
+        btnHTML = `<button class="${className}" onclick="${onclick}" ${disabled?'disabled':''}>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff">
+                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+            </svg>
+        </button>
+        <span class="action-label">${label}</span>`;
+    }
+    slot.innerHTML = btnHTML;
 }
 
 // ============================================================
