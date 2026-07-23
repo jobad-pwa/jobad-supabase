@@ -60,11 +60,17 @@
 .resend-btn:disabled{opacity:.5;cursor:not-allowed}
 .home-header .logo,.profile-header .logo,.edit-header .logo,.postjob-header .logo,.detail-header .logo{font-size:22px;font-weight:900;color:#2563eb;cursor:pointer}
 .home-header .header-right{display:flex;align-items:center;gap:8px;position:relative}
-.home-header .avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;background:#f8fafc;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;transition:.2s;padding:0}
-.home-header .avatar-btn:hover{border-color:#2563eb;background:#eff6ff}
-.home-header .avatar-btn.male{color:#2563eb;border-color:#2563eb}
-.home-header .avatar-btn.female{color:#ec4899;border-color:#ec4899}
-.home-header .avatar-btn.other{color:#8b5cf6;border-color:#8b5cf6}
+
+/* ===== NEW AVATAR STYLES ===== */
+.avatar-btn{width:36px;height:36px;border-radius:50%;border:2px solid #e2e8f0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;transition:all .2s;padding:0;position:relative;text-transform:uppercase;flex-shrink:0;background:#94a3b8}
+.avatar-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.avatar-btn:active{transform:scale(.95)}
+.avatar-btn.male{background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-color:#3b82f6}
+.avatar-btn.female{background:linear-gradient(135deg,#ec4899,#8b5cf6);border-color:#ec4899}
+.avatar-btn.other{background:linear-gradient(135deg,#14b8a6,#f59e0b);border-color:#14b8a6}
+.avatar-btn.guest{background:linear-gradient(135deg,#64748b,#475569);border-color:#64748b}
+.avatar-btn .avatar-initials{font-size:14px;font-weight:700;color:#fff;line-height:1;letter-spacing:0.5px;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+
 .profile-dropdown{position:absolute;top:44px;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:180px;z-index:100;display:none;overflow:hidden}
 .profile-dropdown.show{display:block}
 .profile-dropdown .dropdown-item{padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;color:#1e293b;cursor:pointer;border:none;background:0 0;width:100%;text-align:left;transition:.15s}
@@ -72,6 +78,18 @@
 .profile-dropdown .dropdown-divider{height:1px;background:#e2e8f0;margin:4px 12px}
 .profile-dropdown .dropdown-item.danger{color:#dc2626}
 .profile-dropdown .dropdown-item.danger:hover{background:#fef2f2}
+
+/* ===== COMPACT AVATAR IN DROPDOWN ===== */
+.dropdown-avatar-preview{display:flex;align-items:center;gap:10px;padding:8px 16px 4px 16px;border-bottom:1px solid #f1f5f9;margin-bottom:4px}
+.dropdown-avatar-preview .mini-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;flex-shrink:0}
+.dropdown-avatar-preview .mini-avatar.male{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
+.dropdown-avatar-preview .mini-avatar.female{background:linear-gradient(135deg,#ec4899,#8b5cf6)}
+.dropdown-avatar-preview .mini-avatar.other{background:linear-gradient(135deg,#14b8a6,#f59e0b)}
+.dropdown-avatar-preview .mini-avatar.guest{background:linear-gradient(135deg,#64748b,#475569)}
+.dropdown-avatar-preview .user-info{display:flex;flex-direction:column}
+.dropdown-avatar-preview .user-info .name{font-size:13px;font-weight:600;color:#1e293b}
+.dropdown-avatar-preview .user-info .mobile{font-size:11px;color:#94a3b8}
+
 .zone-filter{background:#0f172a;border-radius:12px;padding:8px 12px;margin-bottom:8px}
 .zone-filter .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
 .zone-filter .header label{font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em}
@@ -337,7 +355,13 @@
 <div id="msg" class="hidden"></div></div>
 
 <!-- HOME PAGE -->
-<div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span id="avatar-symbol">👤</span></button><div class="profile-dropdown" id="profile-dropdown"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div>
+<div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span class="avatar-initials" id="avatar-initials">👤</span></button><div class="profile-dropdown" id="profile-dropdown">
+<div class="dropdown-avatar-preview" id="dropdown-preview"><div class="mini-avatar" id="dropdown-avatar"><span id="dropdown-initials">👤</span></div><div class="user-info"><span class="name" id="dropdown-name">Guest</span><span class="mobile" id="dropdown-mobile">--</span></div></div>
+<button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button>
+<button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button>
+<div class="dropdown-divider"></div>
+<button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button>
+</div></div></div>
 
 <!-- INSTALL BANNER -->
 <div class="install-banner" id="install-banner">
@@ -361,7 +385,13 @@
 <div class="bottom-nav"><button class="nav-item active" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- PROFILE PAGE -->
-<div id="profile-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn-profile" onclick="toggleDropdown()"><span id="avatar-symbol-profile">👤</span></button><div class="profile-dropdown" id="profile-dropdown-profile"><button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button><button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button><div class="dropdown-divider"></div><button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button></div></div></div><div class="page-content" id="profile-page-content"><div class="profile-header-card"><div class="welcome">Welcome,</div><div class="mobile" id="profile-mobile">--</div><span class="badge" id="profile-badge">⭐ Member</span></div>
+<div id="profile-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn-profile" onclick="toggleDropdown()"><span class="avatar-initials" id="avatar-initials-profile">👤</span></button><div class="profile-dropdown" id="profile-dropdown-profile">
+<div class="dropdown-avatar-preview" id="dropdown-preview-profile"><div class="mini-avatar" id="dropdown-avatar-profile"><span id="dropdown-initials-profile">👤</span></div><div class="user-info"><span class="name" id="dropdown-name-profile">Guest</span><span class="mobile" id="dropdown-mobile-profile">--</span></div></div>
+<button class="dropdown-item" onclick="closeDropdown();goToProfile()"><span class="icon">👤</span> View Profile</button>
+<button class="dropdown-item" onclick="closeDropdown();openChangePin()"><span class="icon">🔑</span> Change PIN</button>
+<div class="dropdown-divider"></div>
+<button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button>
+</div></div></div><div class="page-content" id="profile-page-content"><div class="profile-header-card"><div class="welcome">Welcome,</div><div class="mobile" id="profile-mobile">--</div><span class="badge" id="profile-badge">⭐ Member</span></div>
 
 <!-- JOB SEEKER PROFILE SECTION -->
 <div class="profile-section" id="seeker-section"><div class="section-header"><span class="section-title">👤 Job Seeker Profile</span><span class="section-badge" id="seeker-badge">⚠️ Required to Apply</span></div><div class="section-desc" id="seeker-desc">Complete your job profile to get matched with relevant jobs.</div><div id="seeker-input-area"><button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%">+ Create Job Profile</button></div><div id="seeker-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px"><strong id="seeker-display-name">--</strong><span style="color:#64748b;font-size:11px" id="seeker-display-title">--</span></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;font-size:11px;color:#475569"><span>📅 <span id="seeker-display-exp">--</span> yrs</span><span>💰 <span id="seeker-display-salary">--</span></span><span>📋 <span id="seeker-display-notice">--</span> days</span><span>📍 <span id="seeker-display-location">--</span></span></div><div style="margin-top:4px;font-size:11px;color:#475569"><span style="font-weight:600">Skills:</span> <span id="seeker-display-skills">--</span></div><div style="margin-top:4px;font-size:11px;color:#64748b;border-top:1px solid #e2e8f0;padding-top:4px"><span id="seeker-display-about">--</span></div></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="goToEditSeeker()">✏️ Edit Profile</button></div>
@@ -580,6 +610,51 @@ function getCall30Column(t){return t==='JOB'?null:'calls_30days'}
 // ============================================================
 let currentMobile='',currentUser=null,isGuest=!1,isChecking=!1,currentFilter='BOTH',selectedZoneId=null,selectedAreaId=null,feedItems=[],currentPage='home',currentDetailData=null,currentDetailType=null,otpTimerInterval=null,otpExpiryTime=300,isNewUser=!1,sharedLinkData=null,sharedLinkProcessed=!1;
 let deferredPrompt=null,bannerShown=!1;
+
+// ============================================================
+// AVATAR FUNCTIONS
+// ============================================================
+function getInitials(name){
+    if(!name || name.trim()==='') return '👤';
+    const parts = name.trim().split(/\s+/);
+    if(parts.length === 1) return parts[0].substring(0,2).toUpperCase();
+    return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+}
+
+function getAvatarClass(gender){
+    if(gender === 1) return 'female';
+    if(gender === 2) return 'male';
+    return 'other';
+}
+
+function updateAvatar(){
+    const isGuestUser = isGuest || !currentUser;
+    const gender = currentUser?.gender || 0;
+    const name = currentUser?.full_name || '';
+    const initials = isGuestUser ? 'GU' : getInitials(name);
+    const avatarClass = isGuestUser ? 'guest' : getAvatarClass(gender);
+    const mobile = currentUser?.mobile || '--';
+    const displayName = isGuestUser ? 'Guest' : (name || 'User');
+    
+    // Update all avatar buttons
+    document.querySelectorAll('.avatar-btn').forEach(btn => {
+        btn.className = `avatar-btn ${avatarClass}`;
+        const span = btn.querySelector('.avatar-initials');
+        if(span) span.textContent = initials;
+    });
+    
+    // Update dropdown previews
+    document.querySelectorAll('.dropdown-avatar-preview').forEach(preview => {
+        const avatar = preview.querySelector('.mini-avatar');
+        const initialsSpan = preview.querySelector('.mini-avatar span');
+        const nameSpan = preview.querySelector('.user-info .name');
+        const mobileSpan = preview.querySelector('.user-info .mobile');
+        if(avatar) avatar.className = `mini-avatar ${avatarClass}`;
+        if(initialsSpan) initialsSpan.textContent = initials;
+        if(nameSpan) nameSpan.textContent = displayName;
+        if(mobileSpan) mobileSpan.textContent = mobile;
+    });
+}
 
 // ============================================================
 // SEARCHABLE ZONE
@@ -962,7 +1037,33 @@ async function saveResetPIN(){const pin=$('reg-pin').value.trim(),confirmPin=$('
 // ============================================================
 // AVATAR & DROPDOWN
 // ============================================================
-function updateAvatar(){if(!currentUser){document.querySelectorAll('.avatar-btn').forEach(b=>{b.className='avatar-btn other';const s=b.querySelector('span');if(s)s.textContent='👤'});return}const gender=currentUser.gender||0;let symbol='👤',cls='';if(gender===1){symbol='♀';cls='female'}else if(gender===2){symbol='♂';cls='male'}else cls='other';document.querySelectorAll('.avatar-btn').forEach(b=>{b.className=`avatar-btn ${cls}`;const s=b.querySelector('span');if(s)s.textContent=symbol})}
+function updateAvatar(){
+    const isGuestUser = isGuest || !currentUser;
+    const gender = currentUser?.gender || 0;
+    const name = currentUser?.full_name || '';
+    const initials = isGuestUser ? 'GU' : getInitials(name);
+    const avatarClass = isGuestUser ? 'guest' : getAvatarClass(gender);
+    const mobile = currentUser?.mobile || '--';
+    const displayName = isGuestUser ? 'Guest' : (name || 'User');
+    
+    document.querySelectorAll('.avatar-btn').forEach(btn => {
+        btn.className = `avatar-btn ${avatarClass}`;
+        const span = btn.querySelector('.avatar-initials');
+        if(span) span.textContent = initials;
+    });
+    
+    document.querySelectorAll('.dropdown-avatar-preview').forEach(preview => {
+        const avatar = preview.querySelector('.mini-avatar');
+        const initialsSpan = preview.querySelector('.mini-avatar span');
+        const nameSpan = preview.querySelector('.user-info .name');
+        const mobileSpan = preview.querySelector('.user-info .mobile');
+        if(avatar) avatar.className = `mini-avatar ${avatarClass}`;
+        if(initialsSpan) initialsSpan.textContent = initials;
+        if(nameSpan) nameSpan.textContent = displayName;
+        if(mobileSpan) mobileSpan.textContent = mobile;
+    });
+}
+
 function toggleDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.toggle('show'))}
 function closeDropdown(){document.querySelectorAll('.profile-dropdown').forEach(d=>d.classList.remove('show'))}
 function openChangePin(){if(isGuest){showToast('🔐 Please login to change PIN');showLogin();return}$('change-pin-modal').classList.add('show');$('new-pin').value='';$('confirm-pin').value='';$('new-pin').focus()}
