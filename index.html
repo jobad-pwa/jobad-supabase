@@ -617,7 +617,7 @@ function getWorkModeLabel(code) {
 // For brevity in this response, I've kept the structure but the actual code would have all zones
 const ZONE_DATA = [
 [5001,"Hyderabad",[50000101,"Abids"],[50000103,"Nampally"],[50000201,"Charminar"],[50000301,"Secunderabad"],[50000401,"Khairatabad"],[50000504,"Balapur"],[50000503,"Barkas"],[50000502,"Chandrayangutta"],[50000501,"Jalpally"],[50000505,"Pahadi Shareef"],[50000702,"Habsiguda"],[50000701,"Tarnaka"],[50000801,"Shaikpet"],[50000802,"Tolichowki"],[50001001,"Alwal"],[50001002,"Bolarum"],[50001101,"Bowenpally"],[50001301,"Amberpet"],[50001501,"Trimulgherry"],[50001601,"Begumpet"],[50001801,"Sanathnagar"],[50002001,"Musheerabad"],[50002601,"Marredpally"],[50002701,"Kachiguda"],[50002801,"Mehdipatnam"],[50002902,"Domalguda"],[50002901,"Himayatnagar"],[50002903,"Narayanaguda"],[50003001,"Rajendranagar"],[50003201,"Gachibowli"],[50003301,"Jubilee Hills"],[50003401,"Banjara Hills"],[50003501,"Saroornagar"],[50003601,"Malakpet"],[50003701,"Balanagar"],[50003801,"Ameerpet"],[50003802,"Sanjeeva Reddy Nagar"],[50003902,"Peerzadiguda"],[50003901,"Uppal"],[50004701,"Malkajgiri"],[50004702,"Safilguda"],[50004801,"Attapur"],[50004902,"Hafeezpet"],[50004901,"Miyapur"],[50005001,"Chanda Nagar"],[50005101,"Cherlapally"],[50005301,"Old City (Falaknuma)"],[50005501,"Quthbullapur"],[50005902,"Saidabad"],[50005901,"Santoshnagar"],[50006001,"Dilsukhnagar"],[50006202,"A.S. Rao Nagar"],[50006201,"Kapra"],[50006401,"Bahadurpura"],[50006701,"Jeedimetla"],[50006801,"Nagole"],[50007001,"Vanasthalipuram"],[50007201,"Kukatpally"],[50007401,"L.B. Nagar"],[50007502,"Kokapet"],[50007501,"Narsingi"],[50007601,"Nacharam"],[50008101,"Madhapur"],[50008201,"Somajiguda"],[50008401,"Kondapur"],[50008801,"Pocharam"],[50008901,"Manikonda"],[50009002,"Bachupally"],[50009001,"Nizampet"],[50009201,"Boduppal"],[50009401,"Sainikpuri"],[50009501,"Koti"],[50010001,"Kompally"],[50010101,"Shamirpet"],[50120302,"Mokila"],[50120301,"Shankarpally"],[50121801,"Shamshabad"],[50130101,"Ghatkesar"],[50135901,"Maheshwaram"],[50135902,"Tukkuguda"],[50140102,"Gundlapochampally"],[50140101,"Medchal"],[50150301,"Chevella"],[50150401,"Moinabad"],[50150501,"Hayathnagar"],[50150601,"Ibrahimpatnam"],[50151001,"Bongloor"],[50203202,"Ameenpur"],[50203201,"Tellapur"],[50231901,"Patancheru"]],
-[5601,"Bangalore",[56000101,"MG Road"],[56000102,"Shivajinagar"],[56000301,"Malleshwaram"],[56000401,"Basavanagudi"],[56000501,"Frazer Town"],[56000502,"Cox Town"],[56000801,"Ulsoor"],[56001001,"Rajajinagar"],[56001601,"Ramamurthy Nagar"],[56001701,"HAL"],[56001901,"Hanumanthnagar"],[56002001,"Seshadripuram"],[56002201,"Yeshwanthpur"],[56002301,"Magadi Road"],[56002401,"Hebbal"],[56002501,"Richmond Town"],[56003201,"RT Nagar"],[56003401,"Koramangala"],[56003501,"Sarjapur Road"],[56003601,"KR Puram"],[56003701,"Marathahalli"],[56003702,"Brookefield"],[56003801,"Indiranagar"],[56003901,"Nayandahalli"],[56004001,"Vijayanagar"],[56004002,"Chandra Layout"],[56004101,"Jayanagar"],[56004301,"Kalyan Nagar"],[56004302,"Banaswadi"],[56004303,"Hennur"],[56004801,"Mahadevapura"],[56004802,"Hoodi"],[56005001,"Banashankari"],[56005201,"Cunningham Road"],[56005202,"Vasanth Nagar"],[56005401,"Mathikere"],[56005801,"Peenya"],[56006001,"Kengeri"],[56006101,"Uttarahalli"],[56006401,"Yelahanka"],[56006402,"Jakkur"],[56006601,"Whitefield"],[56006701,"Kadugodi"],[56006801,"Bommanahalli"],[56006802,"Begur"],[56007001,"Padmanabhanagar"],[56007201,"Nagarbhavi"],[56007301,"Nagasandra"],[56007601,"BTM Layout"],[56007602,"Bannerghatta Road"],[56007603,"Hulimavu"],[56007701,"Thanisandra"],[56007801,"JP Nagar"],[56007802,"Kumaraswamy Layout"],[56007901,"Basaveshwaranagar"],[56007902,"Kamshipalya"],[56008001,"Sadashivanagar"],[56008301,"Gottigere"],[56008701,"Varthur"],[56009001,"Chikkabanavara"],[56009201,"Sahakar Nagar"],[56009301,"CV Raman Nagar"],[56009401,"Sanjay Nagar"],[56010001,"Electronic City Phase 1"],[56010002,"Electronic City Phase 2"],[56010201,"HSR Layout"],[56010301,"Bellandur"],[56011301,"Horamavu"],[56120301,"Doddaballapura"],[56210601,"Anekal"],[56211001,"Devanahalli"],[56211401,"Hosakote"],[56212301,"Dasanapura"],[56212302,"Nelamangala"]],
+[5601,"Bangalore",[56000101,"MG Road"],[56000102,"Shivajinagar"],[56000301,"Malleshwaram"],[56000401,"Basavanagudi"],[56000501,"Frazer Town"],[56000502,"Cox Town"],[56000801,"Ulsoor"],[56001001,"Rajajinagar"],[56001601,"Ramamurthy Nagar"],[56001701,"HAL"],[56001901,"Hanumanthnagar"],[56002001,"Seshadripuram"],[56002201,"Yeshwanthpur"],[56002301,"Magadi Road"],[56002401,"Hebbal"],[56002501,"Richmond Town"],[56003201,"RT Nagar"],[56003401,"Koramangala"],[56003501,"Sarjapur Road"],[56003601,"KR Puram"],[56003701,"Marathahalli"],[56003702,"Brookefield"],[56003801,"Indiranagar"],[56003901,"Nayandahalli"],[56004001,"Vijayanagar"],[56004002,"Chandra Layout"],[56004101,"Jayanagar"],[56004301,"Kalyan Nagar"],[56004302,"Banaswadi"],[56004303,"Hennur"],[56004801,"Mahadevapura"],[56004802,"Hoodi"],[56005001,"Banashankari"],[56005201,"Cunningham Road"],[56005202,"Vasanth Nagar"],[56005401,"Mathikere"],[56005801,"Peenya"],[56006001,"Kengeri"],[56006101,"Uttarahalli"],[56006401,"Yelahanka"],[56006402,"Jakkur"],[56006601,"Whitefield"],[56006701,"Kadugodi"],[56006801,"Bommanahalli"],[56006802,"Begur"],[56007001,"Padmanabhanagar"],[56007201,"Nagarbhavi"],[56007301,"Nagasandra"],[56007601,"BTM Layout"],[56007602,"Bannerghatta Road"],[56007603,"Hulimavu"],[56007701,"Thanisandra"],[56007801,"JP Nagar"],[56007802,"Kumaraswamy Layout"],[56007901,"Basaveshwaranagar"],[56007902,"Kamshipalya"],[56008001,"Sadashivanagar"],[56008301,"Gottigere"],[56008701,"Varthur"],[56009001,"Chikkabanavara"],[56009201,"Sahakar Nagar"],[56009301,"CV Raman Nagar"],[56009401,"Sanjay Nagar"],[56010001,"Electronic City Phase 1"],[56010002,"Electronic City Phase 2"],[56010201,"HSR Layout"],[56010301,"Bellandur"],[56011301,"Horamavu"],[56120301,"Doddaballapura"],[56210601,"Anekal"],[56211001,"Devanahalli"],[56211401,"Hosakote"],[56212301,"Dasanapura"],[56212302,"Nelamangala"]]
 // ... All other zones from the original working code would be here
 ];
 
@@ -998,13 +998,13 @@ function loadMyJobs(){
                 
                 let statusLabel = '', statusClass = '';
                 
-                // DRAFT: posted_date == expiry_date AND expiry_date > today (not expired yet)
-                if(postedTime === expiryTime && expiryTime > todayTime){
+                // DRAFT: posted_date == expiry_date AND expiry_date >= today
+                if(postedTime === expiryTime && expiryTime >= todayTime){
                     statusLabel = '📄 Draft';
                     statusClass = 'status-draft';
                 }
-                // ACTIVE: posted_date < today AND expiry_date >= today
-                else if(postedTime < todayTime && expiryTime >= todayTime){
+                // ACTIVE: posted_date < expiry_date AND expiry_date >= today
+                else if(postedTime < expiryTime && expiryTime >= todayTime){
                     statusLabel = '✅ Active';
                     statusClass = 'status-active';
                 }
@@ -1405,10 +1405,103 @@ function closeChangePin(){$('change-pin-modal').classList.remove('show')}
 async function saveNewPin(){if(isGuest){showToast('🔐 Please login to change PIN');showLogin();return}const newPin=$('new-pin').value.trim(),confirmPin=$('confirm-pin').value.trim();if(!newPin||newPin.length!==4||!/^\d{4}$/.test(newPin)){showToast('⚠️ Enter a valid 4-digit PIN');return}if(newPin!==confirmPin){showToast('⚠️ PINs do not match');return}try{const r=await fetch(`${EDGE_FUNCTION_URL}/change-pin`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentUser.mobile,new_pin:newPin})});const d=await r.json();if(d.success){showToast('✅ PIN changed successfully!');closeChangePin()}else showToast('❌ Failed to change PIN: '+d.error)}catch(err){showToast('❌ Error: '+err.message)}}
 
 // ============================================================
-// PUBLISH JOB
+// PUBLISH JOB - with 30 days expiry limit
 // ============================================================
 function setupCounter(inputId,counterId,maxLen){const input=$(inputId),counter=$(counterId);if(!input||!counter)return;const update=()=>{const l=input.value.length;counter.textContent=`${l}/${maxLen}`;if(l>maxLen){input.value=input.value.slice(0,maxLen);counter.textContent=`${maxLen}/${maxLen}`}};input.addEventListener('input',update);update()}
-async function publishJob(){if(!currentUser||isGuest){showToast('🔐 Please login to post jobs');showLogin();return}if(!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name in profile first');goToProfile();return}const isEditing=$('pj-publish-btn').dataset.editing==='true',editJobId=$('pj-publish-btn').dataset.jobid;const company=$('pj-company').value.trim(),jobTitle=$('pj-title').value.trim(),expRaw=$('pj-experience').value.trim(),salaryRaw=$('pj-salary').value.replace(/,/g,''),gender=parseInt($('pj-gender').value),zoneHidden=$('pj-zone-hidden'),zone=zoneHidden?parseInt(zoneHidden.value):0,area=$('pj-area').value,skills=$('pj-skills').value.trim(),desc=$('pj-description').value.trim(),expiryDate=$('pj-expiry').value,workMode=parseInt($('pj-work-mode').value)||0,educationRequired=parseInt($('pj-education-required').value)||0;if(!company){showToast('⚠️ Company name is required');return}if(!jobTitle){showToast('⚠️ Job Title is required');return}if(jobTitle.length>60){showToast('⚠️ Job Title max 60 characters');return}if(!expRaw||isNaN(parseFloat(expRaw))||parseFloat(expRaw)<0){showToast('⚠️ Enter valid min experience');return}if(!salaryRaw||isNaN(parseInt(salaryRaw))||parseInt(salaryRaw)<=0){showToast('⚠️ Enter valid salary');return}if(!zone){showToast('⚠️ Please select Job Location Zone');const zInput=$('pj-zone-input');if(zInput)zInput.focus();return}if(!area){showToast('⚠️ Please select Specific Area');return}if(!skills){showToast('⚠️ Skills are required');return}if(skills.length>200){showToast('⚠️ Skills max 200 characters');return}if(desc.length>500){showToast('⚠️ Description max 500 characters');return}if(!expiryDate){showToast('⚠️ Please select expiry date');return}const selectedDate=new Date(expiryDate),maxDate=new Date(Date.now()+45*24*60*60*1000);if(selectedDate>maxDate){showToast('⚠️ Expiry date cannot exceed 45 days from today');return}const jobData={mobile:currentUser.mobile,job_title:jobTitle,company_name:company,min_experience_years:parseFloat(expRaw),max_salary_monthly:parseInt(salaryRaw),preferred_gender:gender,skills_comma_separated:skills,job_description:desc||'',zone_id:zone,area_id:parseInt(area),expiry_date:new Date(expiryDate).toISOString(),work_mode:workMode,education_required:educationRequired,share_count:0,views:0,calls:0,applicants:[]};try{if(isEditing&&editJobId){await sb.from('active_jobs').update(jobData).eq('job_id',parseInt(editJobId));showToast('✅ Job updated successfully!')}else{jobData.posted_date=new Date().toISOString();await sb.from('active_jobs').insert([jobData]);showToast('✅ Job published successfully!')}$('pj-publish-btn').dataset.editing='false';$('pj-publish-btn').dataset.jobid='';$('pj-publish-btn').textContent='📤 Publish Job';$('pj-title').value='';$('pj-skills').value='';$('pj-description').value='';$('pj-salary').value='';$('pj-experience').value='3.5';$('pj-company').value=currentUser.company_name||'';$('pj-work-mode').value='1';$('pj-education-required').value='0';document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))});const d=new Date();d.setDate(d.getDate()+30);$('pj-expiry').value=d.toISOString().split('T')[0];$('pj-gender').value='0';$('pj-zone-input').value='';$('pj-zone-hidden').value='';updatePostAreas();fetchFeedData();goToProfile();loadMyJobs()}catch(err){showToast('❌ Failed: '+err.message)}}
+async function publishJob(){
+    if(!currentUser||isGuest){showToast('🔐 Please login to post jobs');showLogin();return}
+    if(!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name in profile first');goToProfile();return}
+    
+    const isEditing=$('pj-publish-btn').dataset.editing==='true';
+    const editJobId=$('pj-publish-btn').dataset.jobid;
+    const company=$('pj-company').value.trim();
+    const jobTitle=$('pj-title').value.trim();
+    const expRaw=$('pj-experience').value.trim();
+    const salaryRaw=$('pj-salary').value.replace(/,/g,'');
+    const gender=parseInt($('pj-gender').value);
+    const zoneHidden=$('pj-zone-hidden');
+    const zone=zoneHidden?parseInt(zoneHidden.value):0;
+    const area=$('pj-area').value;
+    const skills=$('pj-skills').value.trim();
+    const desc=$('pj-description').value.trim();
+    const expiryDate=$('pj-expiry').value;
+    const workMode=parseInt($('pj-work-mode').value)||0;
+    const educationRequired=parseInt($('pj-education-required').value)||0;
+    
+    if(!company){showToast('⚠️ Company name is required');return}
+    if(!jobTitle){showToast('⚠️ Job Title is required');return}
+    if(jobTitle.length>60){showToast('⚠️ Job Title max 60 characters');return}
+    if(!expRaw||isNaN(parseFloat(expRaw))||parseFloat(expRaw)<0){showToast('⚠️ Enter valid min experience');return}
+    if(!salaryRaw||isNaN(parseInt(salaryRaw))||parseInt(salaryRaw)<=0){showToast('⚠️ Enter valid salary');return}
+    if(!zone){showToast('⚠️ Please select Job Location Zone');const zInput=$('pj-zone-input');if(zInput)zInput.focus();return}
+    if(!area){showToast('⚠️ Please select Specific Area');return}
+    if(!skills){showToast('⚠️ Skills are required');return}
+    if(skills.length>200){showToast('⚠️ Skills max 200 characters');return}
+    if(desc.length>500){showToast('⚠️ Description max 500 characters');return}
+    if(!expiryDate){showToast('⚠️ Please select expiry date');return}
+    
+    // Enforce 30 days max limit
+    const selectedDate=new Date(expiryDate);
+    const maxDate=new Date(Date.now() + 30*24*60*60*1000); // 30 days from today
+    if(selectedDate > maxDate){showToast('⚠️ Expiry date cannot exceed 30 days from today');return}
+    
+    const jobData={
+        mobile:currentUser.mobile,
+        job_title:jobTitle,
+        company_name:company,
+        min_experience_years:parseFloat(expRaw),
+        max_salary_monthly:parseInt(salaryRaw),
+        preferred_gender:gender,
+        skills_comma_separated:skills,
+        job_description:desc||'',
+        zone_id:zone,
+        area_id:parseInt(area),
+        expiry_date:selectedDate.toISOString(),
+        work_mode:workMode,
+        education_required:educationRequired,
+        share_count:0,
+        views:0,
+        calls:0,
+        applicants:[]
+    };
+    
+    try{
+        if(isEditing&&editJobId){
+            await sb.from('active_jobs').update(jobData).eq('job_id',parseInt(editJobId));
+            showToast('✅ Job updated successfully!')
+        }else{
+            jobData.posted_date=new Date().toISOString();
+            await sb.from('active_jobs').insert([jobData]);
+            showToast('✅ Job published successfully!')
+        }
+        $('pj-publish-btn').dataset.editing='false';
+        $('pj-publish-btn').dataset.jobid='';
+        $('pj-publish-btn').textContent='📤 Publish Job';
+        $('pj-title').value='';
+        $('pj-skills').value='';
+        $('pj-description').value='';
+        $('pj-salary').value='';
+        $('pj-experience').value='3.5';
+        $('pj-company').value=currentUser.company_name||'';
+        $('pj-work-mode').value='1';
+        $('pj-education-required').value='0';
+        document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))});
+        const d=new Date();
+        d.setDate(d.getDate()+30);
+        $('pj-expiry').value=d.toISOString().split('T')[0];
+        // Also update expiry hint to show 30 days max
+        document.getElementById('expiry-hint').textContent = 'max 30 days';
+        $('pj-gender').value='0';
+        $('pj-zone-input').value='';
+        $('pj-zone-hidden').value='';
+        updatePostAreas();
+        fetchFeedData();
+        goToProfile();
+        loadMyJobs();
+    }catch(err){
+        showToast('❌ Failed: '+err.message)
+    }
+}
 
 // ============================================================
 // LOGOUT
@@ -1423,7 +1516,24 @@ document.addEventListener('DOMContentLoaded',function(){
   const salaryInput=$('edit-seeker-salary');if(salaryInput)salaryInput.addEventListener('input',function(){const raw=parseSalaryValue(this.value);if(raw){this.value=formatSalaryDisplay(raw);this.setSelectionRange(this.value.length,this.value.length)}});
   setupCounter('pj-title','pj-title-counter',60);setupCounter('pj-skills','pj-skills-counter',200);setupCounter('pj-description','pj-desc-counter',500);
   const pjSalary=$('pj-salary');if(pjSalary)pjSalary.addEventListener('input',function(){const raw=this.value.replace(/[^0-9]/g,'');this.value=raw?Number(raw).toLocaleString('en-IN'):''});
-  const expiryInput=$('pj-expiry');if(expiryInput){const d=new Date();d.setDate(d.getDate()+30);expiryInput.value=d.toISOString().split('T')[0];expiryInput.max=new Date(Date.now()+45*24*60*60*1000).toISOString().split('T')[0];expiryInput.min=new Date(Date.now()+1*24*60*60*1000).toISOString().split('T')[0];expiryInput.addEventListener('change',function(){const selected=new Date(this.value),maxDate=new Date(Date.now()+45*24*60*60*1000);if(selected>maxDate){alert('⚠️ Expiry date cannot be more than 45 days from today.');this.value=maxDate.toISOString().split('T')[0]}})}
+  const expiryInput=$('pj-expiry');
+  if(expiryInput){
+      const d=new Date();
+      d.setDate(d.getDate()+30);
+      expiryInput.value=d.toISOString().split('T')[0];
+      // Set max to 30 days from today
+      expiryInput.max=new Date(Date.now()+30*24*60*60*1000).toISOString().split('T')[0];
+      expiryInput.min=new Date(Date.now()+1*24*60*60*1000).toISOString().split('T')[0];
+      document.getElementById('expiry-hint').textContent = 'max 30 days';
+      expiryInput.addEventListener('change',function(){
+          const selected=new Date(this.value);
+          const maxDate=new Date(Date.now()+30*24*60*60*1000);
+          if(selected>maxDate){
+              alert('⚠️ Expiry date cannot be more than 30 days from today.');
+              this.value=maxDate.toISOString().split('T')[0];
+          }
+      });
+  }
   autoCleanExpiredJobs();
   const mobileInput=$('mobile');if(mobileInput)mobileInput.addEventListener('input',function(e){const mobile=this.value.trim();if(mobile.length===10)autoCheckMobile(mobile);else if(mobile.length>0&&mobile.length<10){setStatus('Enter 10 digits','gray');$('step2').classList.add('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('step1').style.display='block'}else{$('step2').classList.add('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('step1').style.display='block';$('mobile-status').textContent=''}});
   $('pin').addEventListener('keydown',function(e){if(e.key==='Enter')submitPin()});
