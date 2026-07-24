@@ -2,137 +2,34 @@
 const supabaseUrl = 'https://njhioapckeupxrcixmdh.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
 
+// ============================================================
+// ZONES DATA - Compact Format
+// ============================================================
 const ZONES = [
-    // Nellore (5241)
-    { zone_id: 5241, zone_name: "Nellore" },
-    // Hyderabad (5001)
-    { zone_id: 5001, zone_name: "Hyderabad" },
-    // Vikarabad (5012)
-    { zone_id: 5012, zone_name: "Vikarabad" },
-    // Medak (5021)
-    { zone_id: 5021, zone_name: "Medak" },
-    // Sangareddy (5022)
-    { zone_id: 5022, zone_name: "Sangareddy" },
-    // Siddipet (5023)
-    { zone_id: 5023, zone_name: "Siddipet" },
-    // Kamareddy (5031)
-    { zone_id: 5031, zone_name: "Kamareddy" },
-    // Nizamabad (5032)
-    { zone_id: 5032, zone_name: "Nizamabad" },
-    // Adilabad (5041)
-    { zone_id: 5041, zone_name: "Adilabad" },
-    // Asifabad (5042)
-    { zone_id: 5042, zone_name: "Asifabad" },
-    // Mancherial (5043)
-    { zone_id: 5043, zone_name: "Mancherial" },
-    // Nirmal (5044)
-    { zone_id: 5044, zone_name: "Nirmal" },
-    // Jagtial (5051)
-    { zone_id: 5051, zone_name: "Jagtial" },
-    // Karimnagar (5052)
-    { zone_id: 5052, zone_name: "Karimnagar" },
-    // Peddapalli (5053)
-    { zone_id: 5053, zone_name: "Peddapalli" },
-    // Sircilla (5054)
-    { zone_id: 5054, zone_name: "Sircilla" },
-    // Hanumakonda (5061)
-    { zone_id: 5061, zone_name: "Hanumakonda" },
-    // Jangaon (5062)
-    { zone_id: 5062, zone_name: "Jangaon" },
-    // Bhupalpally (5063)
-    { zone_id: 5063, zone_name: "Bhupalpally" },
-    // Mahabubabad (5064)
-    { zone_id: 5064, zone_name: "Mahabubabad" },
-    // Mulugu (5065)
-    { zone_id: 5065, zone_name: "Mulugu" },
-    // Warangal (5066)
-    { zone_id: 5066, zone_name: "Warangal" },
-    // Kothagudem (5071)
-    { zone_id: 5071, zone_name: "Kothagudem" },
-    // Khammam (5072)
-    { zone_id: 5072, zone_name: "Khammam" },
-    // Nalgonda (5081)
-    { zone_id: 5081, zone_name: "Nalgonda" },
-    // Suryapet (5082)
-    { zone_id: 5082, zone_name: "Suryapet" },
-    // Bhongir (5083)
-    { zone_id: 5083, zone_name: "Bhongir" },
-    // Gadwal (5091)
-    { zone_id: 5091, zone_name: "Gadwal" },
-    // Mahabubnagar (5092)
-    { zone_id: 5092, zone_name: "Mahabubnagar" },
-    // Nagarkurnool (5093)
-    { zone_id: 5093, zone_name: "Nagarkurnool" },
-    // Narayanpet (5094)
-    { zone_id: 5094, zone_name: "Narayanpet" },
-    // Wanaparthy (5095)
-    { zone_id: 5095, zone_name: "Wanaparthy" },
-    // Anantapuram (5151)
-    { zone_id: 5151, zone_name: "Anantapuram" },
-    // Puttaparthi (5152)
-    { zone_id: 5152, zone_name: "Puttaparthi" },
-    // Kadapa (5161)
-    { zone_id: 5161, zone_name: "Kadapa" },
-    // Rayachoti (5162)
-    { zone_id: 5162, zone_name: "Rayachoti" },
-    // Chittoor (5171)
-    { zone_id: 5171, zone_name: "Chittoor" },
-    // Madanapalle (5172)
-    { zone_id: 5172, zone_name: "Madanapalle" },
-    // Tirupati (5173)
-    { zone_id: 5173, zone_name: "Tirupati" },
-    // Kurnool (5181)
-    { zone_id: 5181, zone_name: "Kurnool" },
-    // Nandyal (5182)
-    { zone_id: 5182, zone_name: "Nandyal" },
-    // Vijayawada (5201)
-    { zone_id: 5201, zone_name: "Vijayawada" },
-    // Machilipatnam (5211)
-    { zone_id: 5211, zone_name: "Machilipatnam" },
-    // Guntur (5221)
-    { zone_id: 5221, zone_name: "Guntur" },
-    // Bapatla (5222)
-    { zone_id: 5222, zone_name: "Bapatla" },
-    // Narasaraopeta (5223)
-    { zone_id: 5223, zone_name: "Narasaraopeta" },
-    // Ongole (5231)
-    { zone_id: 5231, zone_name: "Ongole" },
-    // Markapuram (5232)
-    { zone_id: 5232, zone_name: "Markapuram" },
-    // Visakhapatnam (5301)
-    { zone_id: 5301, zone_name: "Visakhapatnam" },
-    // Anakapalli (5311)
-    { zone_id: 5311, zone_name: "Anakapalli" },
-    // Paderu (5312)
-    { zone_id: 5312, zone_name: "Paderu" },
-    // Srikakulam (5321)
-    { zone_id: 5321, zone_name: "Srikakulam" },
-    // Kakinada (5331)
-    { zone_id: 5331, zone_name: "Kakinada" },
-    // Rajahmundry (5332)
-    { zone_id: 5332, zone_name: "Rajahmundry" },
-    // Amalapuram (5333)
-    { zone_id: 5333, zone_name: "Amalapuram" },
-    // Rampachodavaram (5334)
-    { zone_id: 5334, zone_name: "Rampachodavaram" },
-    // Eluru (5341)
-    { zone_id: 5341, zone_name: "Eluru" },
-    // Bhimavaram (5342)
-    { zone_id: 5342, zone_name: "Bhimavaram" },
-    // Vizianagaram (5351)
-    { zone_id: 5351, zone_name: "Vizianagaram" },
-    // Parvathipuram (5352)
-    { zone_id: 5352, zone_name: "Parvathipuram" }
+  [5001,"Hyderabad"],[5012,"Vikarabad"],[5021,"Medak"],[5022,"Sangareddy"],[5023,"Siddipet"],
+  [5031,"Kamareddy"],[5032,"Nizamabad"],[5041,"Adilabad"],[5042,"Asifabad"],[5043,"Mancherial"],
+  [5044,"Nirmal"],[5051,"Jagtial"],[5052,"Karimnagar"],[5053,"Peddapalli"],[5054,"Sircilla"],
+  [5061,"Hanumakonda"],[5062,"Jangaon"],[5063,"Bhupalpally"],[5064,"Mahabubabad"],[5065,"Mulugu"],
+  [5066,"Warangal"],[5071,"Kothagudem"],[5072,"Khammam"],[5081,"Nalgonda"],[5082,"Suryapet"],
+  [5083,"Bhongir"],[5091,"Gadwal"],[5092,"Mahabubnagar"],[5093,"Nagarkurnool"],[5094,"Narayanpet"],
+  [5095,"Wanaparthy"],[5151,"Anantapuram"],[5152,"Puttaparthi"],[5161,"Kadapa"],[5162,"Rayachoti"],
+  [5171,"Chittoor"],[5172,"Madanapalle"],[5173,"Tirupati"],[5181,"Kurnool"],[5182,"Nandyal"],
+  [5201,"Vijayawada"],[5211,"Machilipatnam"],[5221,"Guntur"],[5222,"Bapatla"],[5223,"Narasaraopeta"],
+  [5231,"Ongole"],[5232,"Markapuram"],[5301,"Visakhapatnam"],[5311,"Anakapalli"],[5312,"Paderu"],
+  [5321,"Srikakulam"],[5331,"Kakinada"],[5332,"Rajahmundry"],[5333,"Amalapuram"],[5334,"Rampachodavaram"],
+  [5341,"Eluru"],[5342,"Bhimavaram"],[5351,"Vizianagaram"],[5352,"Parvathipuram"]
 ];
 
 function getZoneName(id) {
-  const z = ZONES.find(z => z.zone_id === id);
-  return z ? z.zone_name : 'Unknown';
+  const z = ZONES.find(z => z[0] === id);
+  return z ? z[1] : 'Unknown';
 }
 
+// ============================================================
+// API Handler
+// ============================================================
 export default async function handler(req, res) {
   try {
-    // Get the ID from the query parameter or URL path
     const urlParts = req.url.split('/');
     const id = urlParts[urlParts.length - 1] || req.query.id;
     
@@ -142,7 +39,6 @@ export default async function handler(req, res) {
       return res.status(400).send('Missing job ID');
     }
 
-    // Fetch job from Supabase using REST API
     const response = await fetch(
       `${supabaseUrl}/rest/v1/active_jobs?select=*&job_id=eq.${id}`,
       {
