@@ -1216,6 +1216,162 @@ async function saveDraftJob(){
 }
 
 // ============================================================
+// FIND DRAFT BY TITLE AND COMPANY - for publishing draft
+// ============================================================
+async function findDraftByTitleAndCompany(title, company) {
+    try {
+        const {data, error} = await sb.from('active_jobs')
+            .select('*')
+            .eq('job_title', title)
+            .eq('company_name', company)
+            .eq('status', STATUS.DRAFT)
+            .maybeSingle();
+        if(error) throw error;
+        return data;
+    } catch(err) {
+        console.error('Error finding draft:', err);
+        return null;
+    }
+}
+
+// ============================================================
+// PUBLISH JOB - with 30 days expiry limit
+// ============================================================
+function setupCounter(inputId,counterId,maxLen){const input=$(inputId),counter=$(counterId);if(!input||!counter)return;const update=()=>{const l=input.value.length;counter.textContent=`${l}/${maxLen}`;if(l>maxLen){input.value=input.value.slice(0,maxLen);counter.textContent=`${maxLen}/${maxLen}`}};input.addEventListener('input',update);update()}
+async function publishJob(){
+    if(!currentUser||isGuest){showToast('🔐 Please login to post jobs');showLogin();return}
+    if(!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name in profile first');goToProfile();return}
+    
+    const isEditing=$('pj-publish-btn').dataset.editing==='true';
+    const editJobId=$('pj-publish-btn').dataset.jobid;
+    const company=$('pj-company').value.trim();
+    const jobTitle=$('pj-title').value.trim();
+    const expRaw=$('pj-experience').value.trim();
+    const salaryRaw=$('pj-salary').value.replace(/,/g,'');
+    const gender=parseInt($('pj-gender').value);
+    const zoneHidden=$('pj-zone-hidden');
+    const zone=zoneHidden?parseInt(zoneHidden.value):0;
+    const area=$('pj-area').value;
+    const skills=$('pj-skills').value.trim();
+    const desc=$('pj-description').value.trim();
+    const expiryDate=$('pj-expiry').value;
+    const workMode=parseInt($('pj-work-mode').value)||0;
+    const educationRequired=parseInt($('pj-education-required').value)||0;
+    
+    if(!company){showToast('⚠️ Company name is required');return}
+    if(!jobTitle){showToast('⚠️ Job Title is required');return}
+    if(jobTitle.length>60){showToast('⚠️ Job Title max 60 characters');return}
+    if(!expRaw||isNaN(parseFloat(expRaw))||parseFloat(expRaw)<0){showToast('⚠️ Enter valid min experience');return}
+    if(!salaryRaw||isNaN(parseInt(salaryRaw))||parseInt(salaryRaw)<=0){showToast('⚠️ Enter valid salary');return}
+    if(!zone){showToast('⚠️ Please select Job Location Zone');const zInput=$('pj-zone-input');if(zInput)zInput.focus();return}
+    if(!area){showToast('⚠️ Please select Specific Area');return}
+    if(!skills){showToast('⚠️ Skills are required');return}
+    if(skills.length>200){showToast('⚠️ Skills max 200 characters');return}
+    if(desc.length>500){showToast('⚠️ Description max 500 characters');return}
+    if(!expiryDate){showToast('⚠️ Please select expiry date');return}
+    
+    // Enforce 30 days max limit
+    const selectedDate=new Date(expiryDate);
+    const maxDate=new Date(Date.now() + 30*24*60*60*1000); // 30 days from today
+    if(selectedDate > maxDate){showToast('⚠️ Expiry date cannot exceed 30 days from today');return}
+    
+    // Check if expiry date is in the past
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    if(selectedDate < today){showToast('⚠️ Expiry date cannot be in the past');return}
+    
+    const jobData={
+        mobile:currentUser.mobile,
+        job_title:jobTitle,
+        company_name:company,
+        min_experience_years:parseFloat(expRaw),
+        max_salary_monthly:parseInt(salaryRaw),
+        preferred_gender:gender,
+        skills_comma_separated:skills,
+        job_description:desc||'',
+        zone_id:zone,
+        area_id:parseInt(area),
+        expiry_date:selectedDate.toISOString(),
+        work_mode:workMode,
+        education_required:educationRequired,
+        share_count:0,
+        views:0,
+        calls:0,
+        applicants:[],
+        status: STATUS.ACTIVE
+    };
+    
+    try{
+        if(isEditing && editJobId){
+            // EDIT JOB - Update existing job
+            await sb.from('active_jobs').update(jobData).eq('job_id',parseInt(editJobId));
+            // Update status after edit
+            const newStatus = await updateJobStatus(parseInt(editJobId));
+            if(newStatus !== null) {
+                showToast(`✅ Job updated successfully! Status: ${getStatusLabel(newStatus)}`);
+            } else {
+                showToast('✅ Job updated successfully!');
+            }
+        } else {
+            // Check if there's an existing draft with same title and company
+            const existingDraft = await findDraftByTitleAndCompany(jobTitle, company);
+            
+            if(existingDraft) {
+                // PUBLISH DRAFT - Update existing draft
+                const draftId = existingDraft.job_id;
+                const todayISO = new Date().toISOString();
+                
+                const updateData = {
+                    ...jobData,
+                    job_id: draftId, // Keep same ID
+                    posted_date: todayISO, // Set posted_date to TODAY
+                    expiry_date: selectedDate.toISOString(),
+                    status: STATUS.ACTIVE
+                };
+                
+                // Remove job_id from updateData as it's not needed in the update payload
+                delete updateData.job_id;
+                
+                await sb.from('active_jobs').update(updateData).eq('job_id', draftId);
+                showToast('✅ Draft published successfully!');
+            } else {
+                // NEW JOB PUBLISH - Create new job
+                jobData.posted_date = new Date().toISOString();
+                const {data, error} = await sb.from('active_jobs').insert([jobData]);
+                if(error) throw error;
+                showToast('✅ Job published successfully!');
+            }
+        }
+        
+        $('pj-publish-btn').dataset.editing='false';
+        $('pj-publish-btn').dataset.jobid='';
+        $('pj-publish-btn').textContent='📤 Publish Job';
+        $('pj-title').value='';
+        $('pj-skills').value='';
+        $('pj-description').value='';
+        $('pj-salary').value='';
+        $('pj-experience').value='3.5';
+        $('pj-company').value=currentUser.company_name||'';
+        $('pj-work-mode').value='1';
+        $('pj-education-required').value='0';
+        document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))});
+        const d=new Date();
+        d.setDate(d.getDate()+30);
+        $('pj-expiry').value=d.toISOString().split('T')[0];
+        document.getElementById('expiry-hint').textContent = 'max 30 days';
+        $('pj-gender').value='0';
+        $('pj-zone-input').value='';
+        $('pj-zone-hidden').value='';
+        updatePostAreas();
+        fetchFeedData();
+        goToProfile();
+        loadMyJobs();
+    }catch(err){
+        showToast('❌ Failed: '+err.message)
+    }
+}
+
+// ============================================================
 // EDIT JOB - Load data into form for editing
 // ============================================================
 async function editJob(jobId){
@@ -1231,10 +1387,20 @@ async function editJob(jobId){
         $('pj-skills').value = data.skills_comma_separated||'';
         $('pj-description').value = data.job_description||'';
         
-        const now = new Date();
-        const defaultExpiry = new Date(now);
-        defaultExpiry.setDate(defaultExpiry.getDate() + 30);
-        $('pj-expiry').value = data.expiry_date ? new Date(data.expiry_date).toISOString().split('T')[0] : defaultExpiry.toISOString().split('T')[0];
+        // Set expiry date - show original expiry date
+        if(data.expiry_date){
+            const expiryDate = new Date(data.expiry_date);
+            $('pj-expiry').value = expiryDate.toISOString().split('T')[0];
+            // Update hint to show original expiry
+            document.getElementById('expiry-hint').textContent = 'Original expiry date';
+        } else {
+            const now = new Date();
+            const defaultExpiry = new Date(now);
+            defaultExpiry.setDate(defaultExpiry.getDate() + 30);
+            $('pj-expiry').value = defaultExpiry.toISOString().split('T')[0];
+            document.getElementById('expiry-hint').textContent = 'max 30 days';
+        }
+        
         $('pj-work-mode').value = data.work_mode||1;
         $('pj-education-required').value = data.education_required||0;
         // Zone and Area
@@ -1487,108 +1653,6 @@ function closeChangePin(){$('change-pin-modal').classList.remove('show')}
 async function saveNewPin(){if(isGuest){showToast('🔐 Please login to change PIN');showLogin();return}const newPin=$('new-pin').value.trim(),confirmPin=$('confirm-pin').value.trim();if(!newPin||newPin.length!==4||!/^\d{4}$/.test(newPin)){showToast('⚠️ Enter a valid 4-digit PIN');return}if(newPin!==confirmPin){showToast('⚠️ PINs do not match');return}try{const r=await fetch(`${EDGE_FUNCTION_URL}/change-pin`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentUser.mobile,new_pin:newPin})});const d=await r.json();if(d.success){showToast('✅ PIN changed successfully!');closeChangePin()}else showToast('❌ Failed to change PIN: '+d.error)}catch(err){showToast('❌ Error: '+err.message)}}
 
 // ============================================================
-// PUBLISH JOB - with 30 days expiry limit
-// ============================================================
-function setupCounter(inputId,counterId,maxLen){const input=$(inputId),counter=$(counterId);if(!input||!counter)return;const update=()=>{const l=input.value.length;counter.textContent=`${l}/${maxLen}`;if(l>maxLen){input.value=input.value.slice(0,maxLen);counter.textContent=`${maxLen}/${maxLen}`}};input.addEventListener('input',update);update()}
-async function publishJob(){
-    if(!currentUser||isGuest){showToast('🔐 Please login to post jobs');showLogin();return}
-    if(!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name in profile first');goToProfile();return}
-    
-    const isEditing=$('pj-publish-btn').dataset.editing==='true';
-    const editJobId=$('pj-publish-btn').dataset.jobid;
-    const company=$('pj-company').value.trim();
-    const jobTitle=$('pj-title').value.trim();
-    const expRaw=$('pj-experience').value.trim();
-    const salaryRaw=$('pj-salary').value.replace(/,/g,'');
-    const gender=parseInt($('pj-gender').value);
-    const zoneHidden=$('pj-zone-hidden');
-    const zone=zoneHidden?parseInt(zoneHidden.value):0;
-    const area=$('pj-area').value;
-    const skills=$('pj-skills').value.trim();
-    const desc=$('pj-description').value.trim();
-    const expiryDate=$('pj-expiry').value;
-    const workMode=parseInt($('pj-work-mode').value)||0;
-    const educationRequired=parseInt($('pj-education-required').value)||0;
-    
-    if(!company){showToast('⚠️ Company name is required');return}
-    if(!jobTitle){showToast('⚠️ Job Title is required');return}
-    if(jobTitle.length>60){showToast('⚠️ Job Title max 60 characters');return}
-    if(!expRaw||isNaN(parseFloat(expRaw))||parseFloat(expRaw)<0){showToast('⚠️ Enter valid min experience');return}
-    if(!salaryRaw||isNaN(parseInt(salaryRaw))||parseInt(salaryRaw)<=0){showToast('⚠️ Enter valid salary');return}
-    if(!zone){showToast('⚠️ Please select Job Location Zone');const zInput=$('pj-zone-input');if(zInput)zInput.focus();return}
-    if(!area){showToast('⚠️ Please select Specific Area');return}
-    if(!skills){showToast('⚠️ Skills are required');return}
-    if(skills.length>200){showToast('⚠️ Skills max 200 characters');return}
-    if(desc.length>500){showToast('⚠️ Description max 500 characters');return}
-    if(!expiryDate){showToast('⚠️ Please select expiry date');return}
-    
-    // Enforce 30 days max limit
-    const selectedDate=new Date(expiryDate);
-    const maxDate=new Date(Date.now() + 30*24*60*60*1000); // 30 days from today
-    if(selectedDate > maxDate){showToast('⚠️ Expiry date cannot exceed 30 days from today');return}
-    
-    const jobData={
-        mobile:currentUser.mobile,
-        job_title:jobTitle,
-        company_name:company,
-        min_experience_years:parseFloat(expRaw),
-        max_salary_monthly:parseInt(salaryRaw),
-        preferred_gender:gender,
-        skills_comma_separated:skills,
-        job_description:desc||'',
-        zone_id:zone,
-        area_id:parseInt(area),
-        expiry_date:selectedDate.toISOString(),
-        work_mode:workMode,
-        education_required:educationRequired,
-        share_count:0,
-        views:0,
-        calls:0,
-        applicants:[],
-        status: STATUS.ACTIVE
-    };
-    
-    try{
-        if(isEditing&&editJobId){
-            await sb.from('active_jobs').update(jobData).eq('job_id',parseInt(editJobId));
-            // Update status after edit
-            await updateJobStatus(parseInt(editJobId));
-            showToast('✅ Job updated successfully!')
-        }else{
-            jobData.posted_date=new Date().toISOString();
-            const {data, error} = await sb.from('active_jobs').insert([jobData]);
-            if(error) throw error;
-            showToast('✅ Job published successfully!')
-        }
-        $('pj-publish-btn').dataset.editing='false';
-        $('pj-publish-btn').dataset.jobid='';
-        $('pj-publish-btn').textContent='📤 Publish Job';
-        $('pj-title').value='';
-        $('pj-skills').value='';
-        $('pj-description').value='';
-        $('pj-salary').value='';
-        $('pj-experience').value='3.5';
-        $('pj-company').value=currentUser.company_name||'';
-        $('pj-work-mode').value='1';
-        $('pj-education-required').value='0';
-        document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))});
-        const d=new Date();
-        d.setDate(d.getDate()+30);
-        $('pj-expiry').value=d.toISOString().split('T')[0];
-        document.getElementById('expiry-hint').textContent = 'max 30 days';
-        $('pj-gender').value='0';
-        $('pj-zone-input').value='';
-        $('pj-zone-hidden').value='';
-        updatePostAreas();
-        fetchFeedData();
-        goToProfile();
-        loadMyJobs();
-    }catch(err){
-        showToast('❌ Failed: '+err.message)
-    }
-}
-
-// ============================================================
 // LOGOUT
 // ============================================================
 window.logout=function(){if(confirm('Are you sure you want to logout?')){resetForm();showToast('👋 Logged out');window.removeEventListener('resize',handleResize)}}
@@ -1616,6 +1680,11 @@ document.addEventListener('DOMContentLoaded',function(){
           if(selected>maxDate){
               alert('⚠️ Expiry date cannot be more than 30 days from today.');
               this.value=maxDate.toISOString().split('T')[0];
+          }
+          if(selected<new Date(Date.now())){
+              alert('⚠️ Expiry date cannot be in the past.');
+              const tomorrow=new Date(Date.now()+24*60*60*1000);
+              this.value=tomorrow.toISOString().split('T')[0];
           }
       });
   }
