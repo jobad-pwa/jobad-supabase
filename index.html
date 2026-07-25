@@ -408,7 +408,7 @@
 <div class="type-buttons"><button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button><button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button><button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button></div>
 
 <!-- Collapsible Filter Container -->
-<div class="filter-container" id="filter-container">
+<div class="filter-container open" id="filter-container">
     <div class="filter-row">
         <div><label>Job Title</label><input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()"></div>
         <div><label>Experience</label><select id="filter-exp" onchange="renderFeed()"><option value="ALL">Any</option><option value="0-2">0-2 Years</option><option value="3-5">3-5 Years</option><option value="5+">5+ Years</option></select></div>
@@ -425,8 +425,8 @@
 
 <!-- Filter Toggle -->
 <div class="filter-toggle" onclick="toggleFilters()">
-    <span id="filter-toggle-label">Show Filters</span>
-    <span class="arrow closed" id="filter-arrow">▼</span>
+    <span id="filter-toggle-label">Hide Filters</span>
+    <span class="arrow open" id="filter-arrow">▼</span>
 </div>
 
 <div class="results-count"><span id="results-count">Showing 0 Records</span></div>
