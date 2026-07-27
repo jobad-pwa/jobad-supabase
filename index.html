@@ -575,7 +575,6 @@
         <div id="step1">
             <input type="tel" id="mobile" class="input-field" placeholder="Enter Mobile Number" maxlength="10" autofocus>
             <div class="mobile-status" id="mobile-status"></div>
-            <!-- Removed Login button - auto-check happens on input -->
             
             <div class="login-divider">
                 <span class="line"></span>
@@ -738,7 +737,11 @@
     <button class="draft-btn" onclick="saveDraftJob()">💾 Save Draft</button>
     <button class="cancel-btn" onclick="cancelPostJob()">Cancel</button>
   </div>
-</div><div class="page-content" id="postjob-scroll"><div id="recruiter-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name in the profile to post jobs.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div><div class="form-group"><label class="form-label">Company <span class="required">*</span></label><input class="form-control" type="text" id="pj-company" placeholder="Company name" maxlength="100"></div><div class="grid-2"><div class="form-group"><label class="form-label">Job Title <span class="required">*</span></label><input class="form-control" type="text" id="pj-title" placeholder="e.g., Senior Developer" maxlength="60"><div class="inline-hint"><span></span><span id="pj-title-counter">0/60</span></div></div><div class="form-group"><label class="form-label">Min Experience (Years) <span class="required">*</span></label><input class="form-control" type="number" id="pj-experience" placeholder="e.g. 3.5" min="0" max="50" step="0.5" value="3.5"></div></div><div class="grid-2"><div class="form-group"><label class="form-label">Max Monthly Salary (₹) <span class="required">*</span></label><div class="salary-wrap"><span class="rupee">₹</span><input class="form-control" type="text" id="pj-salary" placeholder="1,50,000" value="1,50,000"></div></div><div class="form-group"><label class="form-label">Gender Preference</label><select class="form-control" id="pj-gender"><option value="0">No Preference</option><option value="1">Female</option><option value="2">Male</option></select></div></div>
+</div><div class="page-content" id="postjob-scroll"><div id="recruiter-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name in the profile to post jobs.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div>
+<div class="form-group"><label class="form-label">Company Name <span class="required">*</span></label><input class="form-control" type="text" id="pj-company" placeholder="Company name (e.g., XYZ Corp)" maxlength="100"></div>
+<div class="form-group"><label class="form-label">Company Website</label><input class="form-control" type="text" id="pj-company-website" placeholder="https://company.com (optional)" maxlength="200"></div>
+<div class="grid-2"><div class="form-group"><label class="form-label">Job Title <span class="required">*</span></label><input class="form-control" type="text" id="pj-title" placeholder="e.g., Senior Developer" maxlength="60"><div class="inline-hint"><span></span><span id="pj-title-counter">0/60</span></div></div><div class="form-group"><label class="form-label">Min Experience (Years) <span class="required">*</span></label><input class="form-control" type="number" id="pj-experience" placeholder="e.g. 3.5" min="0" max="50" step="0.5" value="3.5"></div></div>
+<div class="grid-2"><div class="form-group"><label class="form-label">Max Monthly Salary (₹) <span class="required">*</span></label><div class="salary-wrap"><span class="rupee">₹</span><input class="form-control" type="text" id="pj-salary" placeholder="1,50,000" value="1,50,000"></div></div><div class="form-group"><label class="form-label">Gender Preference</label><select class="form-control" id="pj-gender"><option value="0">No Preference</option><option value="1">Female</option><option value="2">Male</option></select></div></div>
 <div class="grid-2"><div class="form-group"><label class="form-label">Job Location Zone <span class="required">*</span></label><div class="zone-search-wrapper"><input type="text" id="pj-zone-input" placeholder="Search zone..." autocomplete="off" onfocus="this.select()" oninput="searchZoneInForm('pj')"><input type="hidden" id="pj-zone-hidden" value=""><div class="zone-suggestions" id="pj-zone-suggestions"></div></div></div><div class="form-group"><label class="form-label">Specific Area <span class="required">*</span></label><select class="form-control" id="pj-area"><option value="">Select zone first</option></select><div class="select-hint" id="pj-area-hint">⬆️ Choose zone first</div></div></div>
 <div class="grid-2"><div class="form-group"><label class="form-label">Skills (comma separated) <span class="required">*</span></label><input class="form-control" type="text" id="pj-skills" placeholder="Python, AWS, Docker" maxlength="200"><div class="inline-hint"><span></span><span id="pj-skills-counter">0/200</span></div></div><div class="form-group"><label class="form-label">Expiry Date <span class="required">*</span></label><input class="form-control" type="date" id="pj-expiry"><div class="inline-hint"><span>⏳ Auto: +30 days</span><span id="expiry-hint">max 30 days</span></div></div></div>
 <div class="grid-2">
@@ -858,8 +861,6 @@ function getWorkModeLabel(code) {
 
 // ============================================================
 // ZONE DATA - India Wide - [FULL ARRAY REQUIRED]
-// Note: The complete ZONE_DATA array is omitted here for brevity.
-// In production, include the full ZONE_DATA from your original code.
 // ============================================================
 const ZONE_DATA = [
 [5001,"Hyderabad",[50000101,"Abids"],[50000103,"Nampally"],[50000201,"Charminar"],[50000301,"Secunderabad"],[50000401,"Khairatabad"],[50000504,"Balapur"],[50000503,"Barkas"],[50000502,"Chandrayangutta"],[50000501,"Jalpally"],[50000505,"Pahadi Shareef"],[50000702,"Habsiguda"],[50000701,"Tarnaka"],[50000801,"Shaikpet"],[50000802,"Tolichowki"],[50001001,"Alwal"],[50001002,"Bolarum"],[50001101,"Bowenpally"],[50001301,"Amberpet"],[50001501,"Trimulgherry"],[50001601,"Begumpet"],[50001801,"Sanathnagar"],[50002001,"Musheerabad"],[50002601,"Marredpally"],[50002701,"Kachiguda"],[50002801,"Mehdipatnam"],[50002902,"Domalguda"],[50002901,"Himayatnagar"],[50002903,"Narayanaguda"],[50003001,"Rajendranagar"],[50003201,"Gachibowli"],[50003301,"Jubilee Hills"],[50003401,"Banjara Hills"],[50003501,"Saroornagar"],[50003601,"Malakpet"],[50003701,"Balanagar"],[50003801,"Ameerpet"],[50003802,"Sanjeeva Reddy Nagar"],[50003902,"Peerzadiguda"],[50003901,"Uppal"],[50004701,"Malkajgiri"],[50004702,"Safilguda"],[50004801,"Attapur"],[50004902,"Hafeezpet"],[50004901,"Miyapur"],[50005001,"Chanda Nagar"],[50005101,"Cherlapally"],[50005301,"Old City (Falaknuma)"],[50005501,"Quthbullapur"],[50005902,"Saidabad"],[50005901,"Santoshnagar"],[50006001,"Dilsukhnagar"],[50006202,"A.S. Rao Nagar"],[50006201,"Kapra"],[50006401,"Bahadurpura"],[50006701,"Jeedimetla"],[50006801,"Nagole"],[50007001,"Vanasthalipuram"],[50007201,"Kukatpally"],[50007401,"L.B. Nagar"],[50007502,"Kokapet"],[50007501,"Narsingi"],[50007601,"Nacharam"],[50008101,"Madhapur"],[50008201,"Somajiguda"],[50008401,"Kondapur"],[50008801,"Pocharam"],[50008901,"Manikonda"],[50009002,"Bachupally"],[50009001,"Nizampet"],[50009201,"Boduppal"],[50009401,"Sainikpuri"],[50009501,"Koti"],[50010001,"Kompally"],[50010101,"Shamirpet"],[50120302,"Mokila"],[50120301,"Shankarpally"],[50121801,"Shamshabad"],[50130101,"Ghatkesar"],[50135901,"Maheshwaram"],[50135902,"Tukkuguda"],[50140102,"Gundlapochampally"],[50140101,"Medchal"],[50150301,"Chevella"],[50150401,"Moinabad"],[50150501,"Hayathnagar"],[50150601,"Ibrahimpatnam"],[50151001,"Bongloor"],[50203202,"Ameenpur"],[50203201,"Tellapur"],[50231901,"Patancheru"]]
@@ -1187,6 +1188,7 @@ function updateFeedItem(id, type, updates){
                 if(key === 'preferred_work_mode') { if(!item._raw) item._raw={}; item._raw.preferred_work_mode = updates[key]; }
                 if(key === 'education') { if(!item._raw) item._raw={}; item._raw.education = updates[key]; }
                 if(key === 'status') { if(!item._raw) item._raw={}; item._raw.status = updates[key]; }
+                if(key === 'company_website') { if(!item._raw) item._raw={}; item._raw.company_website = updates[key]; }
             });
         }
         return item;
@@ -1460,13 +1462,14 @@ async function autoCleanExpiredJobs() {
 }
 
 // ============================================================
-// SAVE DRAFT JOB
+// SAVE DRAFT JOB - Updated with company_website
 // ============================================================
 async function saveDraftJob(){
     if(isGuest){ showToast('🔐 Please login to save draft'); showLogin(); return; }
     if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){ showToast('⚠️ Please set your company name in profile first'); goToProfile(); return; }
 
     const company = $('pj-company').value.trim();
+    const companyWebsite = $('pj-company-website').value.trim();
     const jobTitle = $('pj-title').value.trim();
     const expRaw = $('pj-experience').value.trim();
     const salaryRaw = $('pj-salary').value.replace(/,/g,'');
@@ -1489,6 +1492,10 @@ async function saveDraftJob(){
     if(!skills){ showToast('⚠️ Skills are required'); return; }
     if(skills.length>200){ showToast('⚠️ Skills max 200 characters'); return; }
     if(desc.length>500){ showToast('⚠️ Description max 500 characters'); return; }
+    if(companyWebsite && !companyWebsite.match(/^https?:\/\/.+\..+/)){
+        showToast('⚠️ Please enter valid website URL (e.g., https://company.com)');
+        return;
+    }
 
     const now = new Date();
     const draftDate = new Date(now);
@@ -1499,6 +1506,7 @@ async function saveDraftJob(){
         mobile: currentUser.mobile,
         job_title: jobTitle,
         company_name: company,
+        company_website: companyWebsite || '',
         min_experience_years: parseFloat(expRaw),
         max_salary_monthly: parseInt(salaryRaw),
         preferred_gender: gender,
@@ -1530,6 +1538,7 @@ async function saveDraftJob(){
         $('pj-salary').value = '';
         $('pj-experience').value = '3.5';
         $('pj-company').value = currentUser.company_name||'';
+        $('pj-company-website').value = currentUser.company_web||'';
         $('pj-work-mode').value = '1';
         $('pj-education-required').value = '0';
         document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{ if(el)el.dispatchEvent(new Event('input')); });
@@ -1566,7 +1575,7 @@ async function findDraftByTitleAndCompany(title, company) {
 }
 
 // ============================================================
-// PUBLISH JOB - with 30 days expiry limit
+// PUBLISH JOB - Updated with company_website
 // ============================================================
 function setupCounter(inputId,counterId,maxLen){const input=$(inputId),counter=$(counterId);if(!input||!counter)return;const update=()=>{const l=input.value.length;counter.textContent=`${l}/${maxLen}`;if(l>maxLen){input.value=input.value.slice(0,maxLen);counter.textContent=`${maxLen}/${maxLen}`}};input.addEventListener('input',update);update()}
 async function publishJob(){
@@ -1576,6 +1585,7 @@ async function publishJob(){
     const isEditing=$('pj-publish-btn').dataset.editing==='true';
     const editJobId=$('pj-publish-btn').dataset.jobid;
     const company=$('pj-company').value.trim();
+    const companyWebsite=$('pj-company-website').value.trim();
     const jobTitle=$('pj-title').value.trim();
     const expRaw=$('pj-experience').value.trim();
     const salaryRaw=$('pj-salary').value.replace(/,/g,'');
@@ -1600,6 +1610,10 @@ async function publishJob(){
     if(skills.length>200){showToast('⚠️ Skills max 200 characters');return}
     if(desc.length>500){showToast('⚠️ Description max 500 characters');return}
     if(!expiryDate){showToast('⚠️ Please select expiry date');return}
+    if(companyWebsite && !companyWebsite.match(/^https?:\/\/.+\..+/)){
+        showToast('⚠️ Please enter valid website URL (e.g., https://company.com)');
+        return;
+    }
     
     const selectedDate=new Date(expiryDate);
     const maxDate=new Date(Date.now() + 30*24*60*60*1000);
@@ -1613,6 +1627,7 @@ async function publishJob(){
         mobile:currentUser.mobile,
         job_title:jobTitle,
         company_name:company,
+        company_website:companyWebsite || '',
         min_experience_years:parseFloat(expRaw),
         max_salary_monthly:parseInt(salaryRaw),
         preferred_gender:gender,
@@ -1675,6 +1690,7 @@ async function publishJob(){
         $('pj-salary').value='';
         $('pj-experience').value='3.5';
         $('pj-company').value=currentUser.company_name||'';
+        $('pj-company-website').value=currentUser.company_web||'';
         $('pj-work-mode').value='1';
         $('pj-education-required').value='0';
         document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))});
@@ -1695,13 +1711,14 @@ async function publishJob(){
 }
 
 // ============================================================
-// EDIT JOB - Load data into form for editing
+// EDIT JOB - Updated with company_website
 // ============================================================
 async function editJob(jobId){
     try {
         const{data,error}=await sb.from('active_jobs').select('*').eq('job_id',jobId).single();
         if(error) throw error;
         $('pj-company').value = data.company_name||'';
+        $('pj-company-website').value = data.company_website||'';
         $('pj-title').value = data.job_title||'';
         $('pj-experience').value = data.min_experience_years||'';
         $('pj-salary').value = data.max_salary_monthly ? Number(data.max_salary_monthly).toLocaleString('en-IN') : '';
@@ -1767,10 +1784,10 @@ async function deleteJob(jobId){
 async function viewJob(jobId){try{const{data,error}=await sb.from('active_jobs').select('*').eq('job_id',jobId).single();if(error)throw error;openDetail(data,'JOB')}catch(err){showToast('❌ Error loading job: '+err.message)}}
 
 // ============================================================
-// DETAIL VIEW
+// DETAIL VIEW - Updated to show company_website in company profile
 // ============================================================
 function openDetailFromFeed(item){if(item._raw)openDetail(item._raw,item.type);else openDetail(item,item.type)}
-function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('detail-page').classList.remove('hidden-page');['home-page','profile-page','postjob-page','edit-seeker-page','company-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});const id=type==='JOB'?data.job_id:data.mobile;if(id)incrementViewCount(type,id).then(result=>{if(result&&currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){if(type==='JOB'){$('detail-views-total').textContent=result.total}else{$('detail-views-30d').textContent=result.days30;$('detail-views-total').textContent=result.total}}});const isJob=type==='JOB',genderMap={0:'No Preference',1:'Female',2:'Male'};$('detail-title').textContent=isJob?(data.job_title||'Untitled Job'):(data.full_name||data.mobile||'Job Seeker');$('detail-company').textContent=isJob?(data.company_name||'Unknown'):(data.job_title||'Job Seeker');$('detail-company').onclick=function(){if(isJob){viewCompanyProfile(data.mobile)}};const expVal=isJob?(data.min_experience_years||0):(data.total_experience_years||0);const salaryVal=isJob?data.max_salary_monthly:data.expected_salary_monthly;const salaryDisplay=salaryVal?'₹'+Number(salaryVal).toLocaleString('en-IN'):'Negotiable';const zoneName=getZoneName(data.zone_id||0)||'Not set';const areaName=getAreaName(data.area_id||0)||'';const locationDisplay=areaName?`${zoneName} • ${areaName}`:zoneName;$('detail-exp-sub').textContent=`${expVal} yrs exp`;$('detail-salary-sub').textContent=salaryDisplay;$('detail-location-sub').textContent=`📍 ${locationDisplay}`;$('detail-type-badge').innerHTML=`<span class="type-badge ${isJob?'job':'seeker'}">${isJob?'JOB':'SEEKER'}</span>`;$('detail-gender').textContent=genderMap[isJob?data.preferred_gender:data.gender]||'Not Specified';$('detail-skills').textContent=data.skills_comma_separated||'—';
+function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('detail-page').classList.remove('hidden-page');['home-page','profile-page','postjob-page','edit-seeker-page','company-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});const id=type==='JOB'?data.job_id:data.mobile;if(id)incrementViewCount(type,id).then(result=>{if(result&&currentDetailData&&currentDetailType===type&&String(type==='JOB'?currentDetailData.job_id:currentDetailData.mobile)===String(id)){if(type==='JOB'){$('detail-views-total').textContent=result.total}else{$('detail-views-30d').textContent=result.days30;$('detail-views-total').textContent=result.total}}});const isJob=type==='JOB',genderMap={0:'No Preference',1:'Female',2:'Male'};$('detail-title').textContent=isJob?(data.job_title||'Untitled Job'):(data.full_name||data.mobile||'Job Seeker');$('detail-company').textContent=isJob?(data.company_name||'Unknown'):(data.job_title||'Job Seeker');$('detail-company').onclick=function(){if(isJob){viewCompanyProfile(data.mobile, data.company_name, data.company_website)}};const expVal=isJob?(data.min_experience_years||0):(data.total_experience_years||0);const salaryVal=isJob?data.max_salary_monthly:data.expected_salary_monthly;const salaryDisplay=salaryVal?'₹'+Number(salaryVal).toLocaleString('en-IN'):'Negotiable';const zoneName=getZoneName(data.zone_id||0)||'Not set';const areaName=getAreaName(data.area_id||0)||'';const locationDisplay=areaName?`${zoneName} • ${areaName}`:zoneName;$('detail-exp-sub').textContent=`${expVal} yrs exp`;$('detail-salary-sub').textContent=salaryDisplay;$('detail-location-sub').textContent=`📍 ${locationDisplay}`;$('detail-type-badge').innerHTML=`<span class="type-badge ${isJob?'job':'seeker'}">${isJob?'JOB':'SEEKER'}</span>`;$('detail-gender').textContent=genderMap[isJob?data.preferred_gender:data.gender]||'Not Specified';$('detail-skills').textContent=data.skills_comma_separated||'—';
     if(isJob){
         $('detail-expiry-label').textContent='Expiry';
         $('detail-expiry').textContent=data.expiry_date?new Date(data.expiry_date).toLocaleDateString('en-IN'):'—';
@@ -1813,32 +1830,47 @@ function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('
 function closeDetail(){currentDetailData=null;currentDetailType=null;$('detail-page').classList.add('hidden-page');$('home-page').classList.remove('hidden-page');goHome();setTimeout(fixLayoutHeight,100)}
 
 // ============================================================
-// COMPANY PROFILE FUNCTIONS
+// COMPANY PROFILE FUNCTIONS - Updated to handle company_website from job
 // ============================================================
-function viewCompanyProfile(mobile){
+function viewCompanyProfile(mobile, companyName, companyWebsite){
     if(!mobile && currentDetailData){
         mobile = currentDetailData.mobile;
+        companyName = currentDetailData.company_name;
+        companyWebsite = currentDetailData.company_website;
     }
     if(!mobile){showToast('⚠️ No company found');return}
     $('company-page').classList.remove('hidden-page');
     ['home-page','profile-page','edit-seeker-page','postjob-page','detail-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});
-    loadCompanyProfile(mobile);
+    loadCompanyProfile(mobile, companyName, companyWebsite);
 }
 function closeCompanyProfile(){
     $('company-page').classList.add('hidden-page');
     $('home-page').classList.remove('hidden-page');
     goHome();
 }
-async function loadCompanyProfile(mobile){
+async function loadCompanyProfile(mobile, companyName, companyWebsite){
     const nameEl=$('company-name');const websiteEl=$('company-website-link');const websiteContainer=$('company-website');const jobsCountEl=$('company-jobs-count');const contactEl=$('company-contact');const jobsList=$('company-jobs-list');
     nameEl.textContent='Loading...';
     jobsList.innerHTML='<div class="no-records">Loading jobs...</div>';
     try{
-        const{data:userData,error:userError}=await sb.from('active_users').select('company_name,company_web,mobile').eq('mobile',mobile).maybeSingle();
-        if(userError||!userData){nameEl.textContent='Company not found';jobsList.innerHTML='<div class="no-records">Company not found</div>';return}
-        nameEl.textContent=userData.company_name||'Company';
-        if(userData.company_web){websiteEl.href=userData.company_web;websiteEl.textContent=userData.company_web;websiteContainer.style.display='flex'}else{websiteContainer.style.display='none'}
-        contactEl.textContent=`📞 ${userData.mobile}`;
+        // First check if we have company info from job
+        if(companyName){
+            nameEl.textContent=companyName;
+            if(companyWebsite){
+                websiteEl.href=companyWebsite;
+                websiteEl.textContent=companyWebsite;
+                websiteContainer.style.display='flex';
+            } else {
+                websiteContainer.style.display='none';
+            }
+        } else {
+            // Fallback to user's profile
+            const{data:userData,error:userError}=await sb.from('active_users').select('company_name,company_web,mobile').eq('mobile',mobile).maybeSingle();
+            if(userError||!userData){nameEl.textContent='Company not found';jobsList.innerHTML='<div class="no-records">Company not found</div>';return}
+            nameEl.textContent=userData.company_name||'Company';
+            if(userData.company_web){websiteEl.href=userData.company_web;websiteEl.textContent=userData.company_web;websiteContainer.style.display='flex'}else{websiteContainer.style.display='none'}
+        }
+        contactEl.textContent=`📞 ${mobile}`;
         const{data:jobs,error:jobsError}=await sb.from('active_jobs').select('*').eq('mobile',mobile).eq('status', STATUS.ACTIVE).order('posted_date',{ascending:false});
         if(jobsError)throw jobsError;
         const activeJobs=jobs.filter(j=>new Date(j.expiry_date)>new Date());
@@ -1913,7 +1945,7 @@ async function viewUserDetail(mobile){try{showToast('⏳ Loading profile...');co
 // NAVIGATION
 // ============================================================
 function goHome(){currentPage='home';['home-page','profile-page','edit-seeker-page','postjob-page','detail-page','company-page'].forEach(id=>{const e=$(id);if(e)e.classList.toggle('hidden-page',id!=='home-page')});document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const first=document.querySelectorAll('.bottom-nav .nav-item')[0];if(first)first.classList.add('active');$('feed-container').style.display='flex';renderFeed();setTimeout(fixLayoutHeight,100)}
-function goPostJob(){if(isGuest){showToast('🔐 Please login to post jobs');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentUser.company_name||currentUser.company_name.trim()===''){const w=$('recruiter-warning');if(w)w.style.display='flex';$('pj-company').value='';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=true);$('pj-publish-btn').disabled=true;$('pj-publish-btn').textContent='⚠️ Complete Recruiter Profile First'}else{const w=$('recruiter-warning');if(w)w.style.display='none';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=false);$('pj-publish-btn').disabled=false;$('pj-publish-btn').textContent='📤 Publish Job';$('pj-company').value=currentUser.company_name}
+function goPostJob(){if(isGuest){showToast('🔐 Please login to post jobs');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentUser.company_name||currentUser.company_name.trim()===''){const w=$('recruiter-warning');if(w)w.style.display='flex';$('pj-company').value='';$('pj-company-website').value='';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=true);$('pj-publish-btn').disabled=true;$('pj-publish-btn').textContent='⚠️ Complete Recruiter Profile First'}else{const w=$('recruiter-warning');if(w)w.style.display='none';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=false);$('pj-publish-btn').disabled=false;$('pj-publish-btn').textContent='📤 Publish Job';$('pj-company').value=currentUser.company_name;$('pj-company-website').value=currentUser.company_web||'';}
     if($('pj-publish-btn').dataset.editing !== 'true'){
         $('pj-title').value='';$('pj-skills').value='';$('pj-description').value='';$('pj-salary').value='';$('pj-experience').value='3.5';$('pj-gender').value='0';$('pj-zone-input').value='';$('pj-zone-hidden').value='';$('pj-work-mode').value='1';$('pj-education-required').value='0';updatePostAreas();const d=new Date();d.setDate(d.getDate()+30);$('pj-expiry').value=d.toISOString().split('T')[0];document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))});
     }
@@ -1938,7 +1970,7 @@ function editRecruiterProfile(){$('recruiter-company').value=currentUser.company
 // FEED DATA
 // ============================================================
 async function fetchFeedData(){try{await autoCleanExpiredJobs();const{data:jobs,error:je}=await sb.from('active_jobs').select('*').eq('status', STATUS.ACTIVE).limit(50);if(je)throw je;const{data:seekers,error:se}=await sb.from('active_users').select('*').not('full_name','is',null).limit(50);if(se)throw se;const fJobs=(jobs||[]).map(job=>({type:'JOB',title:job.job_title||'Untitled Job',company:job.company_name||'Unknown',exp:parseInt(job.min_experience_years)||0,skills:job.skills_comma_separated||'',zone_id:job.zone_id||0,area_id:job.area_id||0,salary:job.max_salary_monthly?`₹${Number(job.max_salary_monthly).toLocaleString('en-IN')}`:'Negotiable',desc:job.job_description||'',contact:job.mobile||'N/A',share_count:job.share_count||0,views:job.views||0,applicants:job.applicants||[],_raw:job}));const fSeekers=(seekers||[]).map(user=>({type:'SEEKER',title:user.job_title||'Job Seeker',name:user.full_name||'Job Seeker',exp:parseFloat(user.total_experience_years)||0,skills:user.skills_comma_separated||'',zone_id:user.zone_id||0,area_id:user.area_id||0,salary:user.expected_salary_monthly?`₹${Number(user.expected_salary_monthly).toLocaleString('en-IN')}`:'Not specified',desc:user.professional_summary||'',contact:user.mobile||'N/A',share_count:user.share_count||0,views:user.views_total||0,total_invitations:user.total_invitations||0,_raw:user}));feedItems=[...fJobs,...fSeekers]}catch(err){console.error('Error fetching feed:',err.message);feedItems=[]}renderFeed()}
-function renderFeed(){if(currentPage!=='home')return;const container=$('feed-container'),count=$('results-count');if(!feedItems||feedItems.length===0){if(container)container.innerHTML='<div class="no-records">No data available</div>';if(count)count.textContent='Showing 0 Records';return}let filtered=[...feedItems];if(currentFilter==='JOB')filtered=filtered.filter(item=>item.type==='JOB');else if(currentFilter==='SEEKER')filtered=filtered.filter(item=>item.type==='SEEKER');if(selectedZoneId)filtered=filtered.filter(item=>item.zone_id===selectedZoneId);if(selectedAreaId)filtered=filtered.filter(item=>item.area_id===selectedAreaId);const tf=$('filter-title');if(tf&&tf.value){const st=tf.value.toLowerCase();filtered=filtered.filter(item=>{const searchText=item.type==='JOB'?item.title:item.name;return searchText.toLowerCase().includes(st)})}const sf=$('filter-skills');if(sf&&sf.value){const st=sf.value.toLowerCase();filtered=filtered.filter(item=>item.skills.toLowerCase().includes(st))}const ef=$('filter-exp');if(ef){const v=ef.value;if(v==='0-2')filtered=filtered.filter(item=>item.exp<=2);else if(v==='3-5')filtered=filtered.filter(item=>item.exp>=3&&item.exp<=5);else if(v==='5+')filtered=filtered.filter(item=>item.exp>5)}const wf=$('filter-work-mode');if(wf&&wf.value&&wf.value!=='ALL'){filtered=filtered.filter(item=>{const mode=item.type==='JOB'?item._raw?.work_mode:item._raw?.preferred_work_mode;return mode===parseInt(wf.value)||(wf.value==='0'&&(mode===0||mode===undefined))})}const eduFilter=$('filter-education');if(eduFilter&&eduFilter.value&&eduFilter.value!=='ALL'){filtered=filtered.filter(item=>{if(item.type!=='JOB')return true;const req=item._raw?.education_required||0;const filterVal=parseInt(eduFilter.value);return req===filterVal||(filterVal===0&&req===0)})}if(count)count.textContent=`Showing ${filtered.length} Records`;if(filtered.length===0){if(container)container.innerHTML='<div class="no-records">No records found matching your filters</div>';return}if(container)container.innerHTML=filtered.map(item=>{const zoneName=getZoneName(item.zone_id),areaName=getAreaName(item.area_id),loc=areaName?`${zoneName} - ${areaName}`:zoneName,tc=item.type==='SEEKER'?'badge-seeker':'badge-job',tl=item.type==='SEEKER'?'SEEKER':'JOB',endorsements=item._raw?.endorsements||[],flags=item._raw?.flags||[],applicants=item.applicants||[],sc=item.share_count||0,totalPop=endorsements.length+sc,flagsCount=flags.length,applicantsCount=applicants.length,targetId=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;let titleDisplay,subDisplay,titleClass;if(item.type==='JOB'){titleDisplay=item.title;subDisplay=item.company;titleClass='job-title'}else{titleDisplay=item.name;subDisplay=item.title;titleClass='seeker-name'}const eduLabel=item.type==='JOB'?getEducationLabel(item._raw?.education_required||0):getEducationLabel(item._raw?.education||0);const modeLabel=item.type==='JOB'?getWorkModeLabel(item._raw?.work_mode||0):getWorkModeLabel(item._raw?.preferred_work_mode||0);return`<div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g,'&quot;')})"><div class="title ${titleClass}">${titleDisplay}</div><div class="meta"><span class="highlight" onclick="event.stopPropagation();viewCompanyProfile('${item._raw?.mobile}')">${subDisplay}</span> • ${item.exp} yrs • 📍 ${loc} • ${item.salary}</div><div class="meta edu-mode"><span>🎓 ${eduLabel}</span><span>💼 ${modeLabel}</span></div><div class="bottom-row"><span class="badge ${tc}">${tl}</span><div class="action-row"><span class="action-item" onclick="event.stopPropagation();feedShowEndorsers('${item.type}','${targetId}')">👍 <span class="count">${totalPop}</span></span><span class="action-divider">|</span><span class="action-item" onclick="event.stopPropagation();feedShowFlaggers('${item.type}','${targetId}')">👎 <span class="count">${flagsCount}</span></span>${item.type==='JOB'?`<span class="action-divider">|</span><span class="action-item" onclick="event.stopPropagation();feedShowApplicants('${targetId}')">📋 <span class="count">${applicantsCount}</span></span>`:''}<span class="action-divider">|</span><button class="share-btn" onclick="shareFromFeed(event,'${item.type}','${targetId}')" title="Share"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button></div></div></div>`}).join('')}
+function renderFeed(){if(currentPage!=='home')return;const container=$('feed-container'),count=$('results-count');if(!feedItems||feedItems.length===0){if(container)container.innerHTML='<div class="no-records">No data available</div>';if(count)count.textContent='Showing 0 Records';return}let filtered=[...feedItems];if(currentFilter==='JOB')filtered=filtered.filter(item=>item.type==='JOB');else if(currentFilter==='SEEKER')filtered=filtered.filter(item=>item.type==='SEEKER');if(selectedZoneId)filtered=filtered.filter(item=>item.zone_id===selectedZoneId);if(selectedAreaId)filtered=filtered.filter(item=>item.area_id===selectedAreaId);const tf=$('filter-title');if(tf&&tf.value){const st=tf.value.toLowerCase();filtered=filtered.filter(item=>{const searchText=item.type==='JOB'?item.title:item.name;return searchText.toLowerCase().includes(st)})}const sf=$('filter-skills');if(sf&&sf.value){const st=sf.value.toLowerCase();filtered=filtered.filter(item=>item.skills.toLowerCase().includes(st))}const ef=$('filter-exp');if(ef){const v=ef.value;if(v==='0-2')filtered=filtered.filter(item=>item.exp<=2);else if(v==='3-5')filtered=filtered.filter(item=>item.exp>=3&&item.exp<=5);else if(v==='5+')filtered=filtered.filter(item=>item.exp>5)}const wf=$('filter-work-mode');if(wf&&wf.value&&wf.value!=='ALL'){filtered=filtered.filter(item=>{const mode=item.type==='JOB'?item._raw?.work_mode:item._raw?.preferred_work_mode;return mode===parseInt(wf.value)||(wf.value==='0'&&(mode===0||mode===undefined))})}const eduFilter=$('filter-education');if(eduFilter&&eduFilter.value&&eduFilter.value!=='ALL'){filtered=filtered.filter(item=>{if(item.type!=='JOB')return true;const req=item._raw?.education_required||0;const filterVal=parseInt(eduFilter.value);return req===filterVal||(filterVal===0&&req===0)})}if(count)count.textContent=`Showing ${filtered.length} Records`;if(filtered.length===0){if(container)container.innerHTML='<div class="no-records">No records found matching your filters</div>';return}if(container)container.innerHTML=filtered.map(item=>{const zoneName=getZoneName(item.zone_id),areaName=getAreaName(item.area_id),loc=areaName?`${zoneName} - ${areaName}`:zoneName,tc=item.type==='SEEKER'?'badge-seeker':'badge-job',tl=item.type==='SEEKER'?'SEEKER':'JOB',endorsements=item._raw?.endorsements||[],flags=item._raw?.flags||[],applicants=item.applicants||[],sc=item.share_count||0,totalPop=endorsements.length+sc,flagsCount=flags.length,applicantsCount=applicants.length,targetId=item.type==='JOB'?item._raw?.job_id:item._raw?.mobile;let titleDisplay,subDisplay,titleClass;if(item.type==='JOB'){titleDisplay=item.title;subDisplay=item.company;titleClass='job-title'}else{titleDisplay=item.name;subDisplay=item.title;titleClass='seeker-name'}const eduLabel=item.type==='JOB'?getEducationLabel(item._raw?.education_required||0):getEducationLabel(item._raw?.education||0);const modeLabel=item.type==='JOB'?getWorkModeLabel(item._raw?.work_mode||0):getWorkModeLabel(item._raw?.preferred_work_mode||0);return`<div class="feed-card" onclick="openDetailFromFeed(${JSON.stringify(item).replace(/"/g,'&quot;')})"><div class="title ${titleClass}">${titleDisplay}</div><div class="meta"><span class="highlight" onclick="event.stopPropagation();viewCompanyProfile('${item._raw?.mobile}','${item._raw?.company_name||''}','${item._raw?.company_website||''}')">${subDisplay}</span> • ${item.exp} yrs • 📍 ${loc} • ${item.salary}</div><div class="meta edu-mode"><span>🎓 ${eduLabel}</span><span>💼 ${modeLabel}</span></div><div class="bottom-row"><span class="badge ${tc}">${tl}</span><div class="action-row"><span class="action-item" onclick="event.stopPropagation();feedShowEndorsers('${item.type}','${targetId}')">👍 <span class="count">${totalPop}</span></span><span class="action-divider">|</span><span class="action-item" onclick="event.stopPropagation();feedShowFlaggers('${item.type}','${targetId}')">👎 <span class="count">${flagsCount}</span></span>${item.type==='JOB'?`<span class="action-divider">|</span><span class="action-item" onclick="event.stopPropagation();feedShowApplicants('${targetId}')">📋 <span class="count">${applicantsCount}</span></span>`:''}<span class="action-divider">|</span><button class="share-btn" onclick="shareFromFeed(event,'${item.type}','${targetId}')" title="Share"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button></div></div></div>`}).join('')}
 async function feedShowApplicants(targetId){const item=feedItems.find(i=>{const id=i.type==='JOB'?i._raw?.job_id:i._raw?.mobile;return i.type==='JOB'&&String(id)===String(targetId)});if(item&&item._raw){currentDetailData=item._raw;currentDetailType='JOB';await detailShowApplicants()}else showToast('⚠️ Could not find job data')}
 async function feedShowEndorsers(type,targetId){const item=feedItems.find(i=>{const id=i.type==='JOB'?i._raw?.job_id:i._raw?.mobile;return i.type===type&&String(id)===String(targetId)});if(item&&item._raw){currentDetailData=item._raw;currentDetailType=type;await showEndorsersModal(type,targetId)}else showToast('⚠️ Could not find item data')}
 async function feedShowFlaggers(type,targetId){const item=feedItems.find(i=>{const id=i.type==='JOB'?i._raw?.job_id:i._raw?.mobile;return i.type===type&&String(id)===String(targetId)});if(item&&item._raw){currentDetailData=item._raw;currentDetailType=type;await showFlaggersModal(type,targetId)}else showToast('⚠️ Could not find item data')}
