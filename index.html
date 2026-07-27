@@ -46,8 +46,9 @@
 .mobile-display{font-size:20px;font-weight:700;color:#1e293b;padding:4px 0}
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-#login-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%;text-align:center}
-#login-screen h1{font-size:40px;font-weight:900;color:#2563eb;margin:0 0 4px}
+#login-screen{display:flex;flex-direction:column;height:100%;width:100%;overflow-y:auto;padding:4px 0}
+#login-screen .logo{font-size:32px;font-weight:900;color:#2563eb;text-align:center;margin-bottom:2px}
+#login-screen .subtitle{font-size:12px;color:#64748b;text-align:center;margin-bottom:8px}
 .mobile-status{font-size:12px;color:#94a3b8;margin-top:4px}
 .pin-login-input{width:100%;padding:14px 16px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;text-align:center;letter-spacing:8px;margin:8px 0 12px;background:#fff;transition:border-color .2s}
 .pin-login-input:focus{border-color:#2563eb;outline:2px solid #93c5fd}
@@ -367,19 +368,288 @@
 .company-jobs-list .company-job-item .job-title{font-weight:600;font-size:13px;color:#0f172a}
 .company-jobs-list .company-job-item .job-meta{font-size:10px;color:#64748b}
 .company-jobs-list .company-job-item .expired{color:#dc2626;font-size:9px;font-weight:600;background:#fee2e2;padding:1px 8px;border-radius:4px;display:inline-block}
+
+/* ============================================================
+   LOGIN PAGE NEW STYLES
+   ============================================================ */
+.login-stats-container {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border: 1px solid #bfdbfe;
+}
+
+.login-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 6px;
+}
+
+.login-stat-item {
+    text-align: center;
+    padding: 4px 2px;
+}
+
+.login-stat-item .number {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1d4ed8;
+    line-height: 1.2;
+}
+
+.login-stat-item .label {
+    font-size: 8px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    display: block;
+    margin-top: 1px;
+}
+
+.login-stat-item .icon {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 1px;
+}
+
+.login-stat-divider {
+    width: 1px;
+    background: #bfdbfe;
+    margin: 4px 0;
+}
+
+.login-disclaimer {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-top: 12px;
+    font-size: 10px;
+    color: #92400e;
+    line-height: 1.5;
+}
+
+.login-disclaimer .disclaimer-title {
+    font-weight: 700;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.login-disclaimer .disclaimer-body {
+    margin-top: 2px;
+    opacity: 0.85;
+}
+
+.login-disclaimer .disclaimer-link {
+    color: #d97706;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.login-disclaimer .disclaimer-link:hover {
+    color: #b45309;
+}
+
+.login-trust-badge {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 9px;
+    color: #64748b;
+}
+
+.login-trust-badge span {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.login-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 8px 0;
+}
+
+.login-divider .line {
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.login-divider .text {
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 0 4px;
+}
+
+.login-guest-btn {
+    background: transparent;
+    border: 1.5px solid #8b5cf6;
+    color: #8b5cf6;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.login-guest-btn:hover {
+    background: #8b5cf6;
+    color: #fff;
+}
+
+.login-step-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4px 0;
+}
+
+@media (max-width: 480px) {
+    .login-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4px;
+    }
+    .login-stat-divider {
+        display: none;
+    }
+}
 </style>
 </head>
 <body>
 <div class="card">
 <div class="loading-overlay" id="loading-overlay"><div class="spinner"></div><div class="loading-text">Loading shared item...</div></div>
 
-<!-- LOGIN SCREEN -->
-<div id="login-screen"><h1>JobAd</h1>
-<div id="step1"><input type="tel" id="mobile" class="input-field" placeholder="Enter Mobile Number" maxlength="10" autofocus><div class="mobile-status" id="mobile-status"></div><button class="btn-primary" style="background:#8b5cf6;margin-top:8px" onclick="continueAsGuest()">👤 Continue as Guest</button></div>
-<div id="step2" class="hidden fade-in"><div class="text-center mb-4"><div class="mobile-display" id="display-mobile">--</div><div id="status-badge" class="text-sm font-medium text-green-600">✅ Existing user - Enter PIN</div></div><input type="password" id="pin" class="pin-login-input" placeholder="Enter 4-digit PIN" maxlength="4" inputmode="numeric"><div style="margin:4px 0 8px;font-size:12px;color:#64748b">Forgot PIN? <span style="color:#2563eb;cursor:pointer;font-weight:600" onclick="resetPIN()">Reset PIN</span></div><button onclick="submitPin()" id="submitBtn" class="btn-primary btn-green">🔐 Login</button><button onclick="resetForm()" class="btn-back">← Change Number</button></div>
-<div id="step3" class="hidden fade-in"><div class="text-center mb-4"><div class="mobile-display" id="wa-display-mobile">--</div><p style="font-size:12px;color:#64748b;margin:0">Enter OTP sent via WhatsApp</p></div><div class="otp-input-group" id="otp-group"><input type="text" maxlength="1" class="otp-input" data-index="0" inputmode="numeric"><input type="text" maxlength="1" class="otp-input" data-index="1" inputmode="numeric"><input type="text" maxlength="1" class="otp-input" data-index="2" inputmode="numeric"><input type="text" maxlength="1" class="otp-input" data-index="3" inputmode="numeric"><input type="text" maxlength="1" class="otp-input" data-index="4" inputmode="numeric"><input type="text" maxlength="1" class="otp-input" data-index="5" inputmode="numeric"></div><div class="timer-text">⏳ OTP expires in: <span id="otp-timer">5:00</span></div><div style="margin-top:4px"><button class="resend-btn" id="resend-otp" onclick="resendOTP()" disabled>Resend OTP</button></div><button onclick="verifyOTP()" id="verify-btn" class="btn-primary btn-green">✅ Verify & Continue</button><button onclick="resetForm()" class="btn-back">← Change Number</button></div>
-<div id="step4" class="hidden fade-in"><div class="text-center mb-4"><div class="mobile-display" id="reg-display-mobile">--</div><p style="font-size:13px;color:#64748b;margin:0">Set your 4-digit PIN for login</p></div><input type="password" id="reg-pin" class="pin-login-input" placeholder="New PIN" maxlength="4" inputmode="numeric"><input type="password" id="reg-pin-confirm" class="pin-login-input" placeholder="Confirm PIN" maxlength="4" inputmode="numeric"><button onclick="registerUser()" id="register-btn" class="btn-primary btn-green">✅ Create Account</button><button onclick="resetForm()" class="btn-back">← Change Number</button></div>
-<div id="msg" class="hidden"></div></div>
+<!-- ============================================================
+     LOGIN SCREEN
+     ============================================================ -->
+<div id="login-screen">
+
+    <div class="logo">JobAd</div>
+    <div class="subtitle">Find Jobs • Hire Talent • Grow Together</div>
+
+    <!-- Platform Stats -->
+    <div class="login-stats-container">
+        <div class="login-stats-grid">
+            <div class="login-stat-item">
+                <span class="icon">👤</span>
+                <span class="number" id="stat-seekers">0</span>
+                <span class="label">Seekers</span>
+            </div>
+            <div class="login-stat-divider"></div>
+            <div class="login-stat-item">
+                <span class="icon">🏢</span>
+                <span class="number" id="stat-recruiters">0</span>
+                <span class="label">Recruiters</span>
+            </div>
+            <div class="login-stat-divider"></div>
+            <div class="login-stat-item">
+                <span class="icon">📋</span>
+                <span class="number" id="stat-jobs-active">0</span>
+                <span class="label">Active Jobs</span>
+            </div>
+            <div class="login-stat-divider"></div>
+            <div class="login-stat-item">
+                <span class="icon">📁</span>
+                <span class="number" id="stat-jobs-closed">0</span>
+                <span class="label">Closed Jobs</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-step-container">
+
+        <div id="step1">
+            <input type="tel" id="mobile" class="input-field" placeholder="Enter Mobile Number" maxlength="10" autofocus>
+            <div class="mobile-status" id="mobile-status"></div>
+            <button class="btn-primary" style="background:#2563eb;margin-top:4px" onclick="autoCheckMobile(document.getElementById('mobile').value.trim())">🔐 Login</button>
+
+            <div class="login-divider">
+                <span class="line"></span>
+                <span class="text">or continue as</span>
+                <span class="line"></span>
+            </div>
+
+            <button class="login-guest-btn" onclick="continueAsGuest()">👤 Guest</button>
+        </div>
+
+        <div id="step2" class="hidden fade-in">
+            <div class="text-center mb-2">
+                <div class="mobile-display" id="display-mobile">--</div>
+                <div id="status-badge" class="text-sm font-medium text-green-600">✅ Existing user - Enter PIN</div>
+            </div>
+            <input type="password" id="pin" class="pin-login-input" placeholder="Enter 4-digit PIN" maxlength="4" inputmode="numeric">
+            <div style="margin:2px 0 6px;font-size:12px;color:#64748b;text-align:center">
+                Forgot PIN? <span style="color:#2563eb;cursor:pointer;font-weight:600" onclick="resetPIN()">Reset PIN</span>
+            </div>
+            <button onclick="submitPin()" id="submitBtn" class="btn-primary btn-green">🔐 Login</button>
+            <button onclick="resetForm()" class="btn-back">← Change Number</button>
+        </div>
+
+        <div id="step3" class="hidden fade-in">
+            <div class="text-center mb-2">
+                <div class="mobile-display" id="wa-display-mobile">--</div>
+                <p style="font-size:12px;color:#64748b;margin:0">Enter OTP sent via WhatsApp</p>
+            </div>
+            <div class="otp-input-group" id="otp-group">
+                <input type="text" maxlength="1" class="otp-input" data-index="0" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="1" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="2" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="3" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="4" inputmode="numeric">
+                <input type="text" maxlength="1" class="otp-input" data-index="5" inputmode="numeric">
+            </div>
+            <div class="timer-text">⏳ OTP expires in: <span id="otp-timer">5:00</span></div>
+            <div style="margin-top:2px;text-align:center">
+                <button class="resend-btn" id="resend-otp" onclick="resendOTP()" disabled>Resend OTP</button>
+            </div>
+            <button onclick="verifyOTP()" id="verify-btn" class="btn-primary btn-green" style="margin-top:4px">✅ Verify & Continue</button>
+            <button onclick="resetForm()" class="btn-back">← Change Number</button>
+        </div>
+
+        <div id="step4" class="hidden fade-in">
+            <div class="text-center mb-2">
+                <div class="mobile-display" id="reg-display-mobile">--</div>
+                <p style="font-size:13px;color:#64748b;margin:0">Set your 4-digit PIN for login</p>
+            </div>
+            <input type="password" id="reg-pin" class="pin-login-input" placeholder="New PIN (4 digits)" maxlength="4" inputmode="numeric">
+            <input type="password" id="reg-pin-confirm" class="pin-login-input" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
+            <button onclick="registerUser()" id="register-btn" class="btn-primary btn-green">✅ Create Account</button>
+            <button onclick="resetForm()" class="btn-back">← Change Number</button>
+        </div>
+
+        <div id="msg" class="hidden"></div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="login-disclaimer">
+        <div class="disclaimer-title">⚠️ Disclaimer</div>
+        <div class="disclaimer-body">
+            JobAd is a free platform connecting recruiters &amp; job seekers. All information shared is at the user's own risk and responsibility. We do not verify the accuracy of user-submitted information or guarantee job placements. Users are advised to exercise due diligence before sharing personal or financial information.
+            <span class="disclaimer-link" onclick="alert('Full terms & conditions available.')"> View Full Terms</span>
+        </div>
+    </div>
+
+    <div class="login-trust-badge">
+        <span>🔒 Privacy Protected</span>
+        <span>✓ 100% Free</span>
+        <span>🛡️ No Hidden Charges</span>
+    </div>
+
+</div>
 
 <!-- HOME PAGE -->
 <div id="home-page" class="hidden-page"><div class="home-container"><div class="home-header"><div class="logo" onclick="goHome()">JobAd</div><div class="header-right"><button class="avatar-btn" id="avatar-btn" onclick="toggleDropdown()"><span class="avatar-initials" id="avatar-initials">👤</span></button><div class="profile-dropdown" id="profile-dropdown">
@@ -390,7 +660,6 @@
 <button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button>
 </div></div></div>
 
-<!-- INSTALL BANNER -->
 <div class="install-banner" id="install-banner">
     <span class="text">📲 Install JobAd app</span>
     <div>
@@ -399,15 +668,12 @@
     </div>
 </div>
 
-<!-- GUEST BANNER -->
 <div class="guest-banner" id="guest-banner"><span class="text">👋 Welcome, Guest! You're viewing as a guest. Sign up to interact.</span><button class="btn-login" onclick="showLogin()">🔐 Login</button></div>
 
-<!-- FILTERS -->
 <div class="home-top">
 <div class="zone-filter"><div class="header"><label>📍 Filter by Zone</label><span id="zone-status">All Zones</span></div><div class="search-wrapper"><input type="text" id="zone-search" placeholder="Search zone..." oninput="searchZone()" onfocus="this.select()"><div class="suggestions" id="zone-suggestions"></div></div></div>
 <div class="type-buttons"><button id="filter-both" class="active" onclick="setFilter('BOTH')">Both</button><button id="filter-job" class="inactive" onclick="setFilter('JOB')">Jobs Only</button><button id="filter-seeker" class="inactive" onclick="setFilter('SEEKER')">Profiles Only</button></div>
 
-<!-- Collapsible Filter Container -->
 <div class="filter-container open" id="filter-container">
     <div class="filter-row">
         <div><label>Job Title</label><input type="text" id="filter-title" placeholder="Eg: Engineer" oninput="renderFeed()"></div>
@@ -423,7 +689,6 @@
     </div>
 </div>
 
-<!-- Filter Toggle -->
 <div class="filter-toggle" onclick="toggleFilters()">
     <span id="filter-toggle-label">Hide Filters</span>
     <span class="arrow open" id="filter-arrow">▼</span>
@@ -432,10 +697,8 @@
 <div class="results-count"><span id="results-count">Showing 0 Records</span></div>
 </div>
 
-<!-- FEED -->
 <div class="page-content" id="home-page-content"><div id="feed-container" class="feed-container"></div></div>
 
-<!-- BOTTOM NAV -->
 <div class="bottom-nav"><button class="nav-item active" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
 
 <!-- PROFILE PAGE -->
@@ -447,16 +710,13 @@
 <button class="dropdown-item danger" onclick="closeDropdown();logout()"><span class="icon">🚪</span> Logout</button>
 </div></div></div><div class="page-content" id="profile-page-content"><div class="profile-header-card"><div class="welcome">Welcome,</div><div class="mobile" id="profile-mobile">--</div><span class="badge" id="profile-badge">⭐ Member</span></div>
 
-<!-- JOB SEEKER PROFILE SECTION -->
 <div class="profile-section" id="seeker-section"><div class="section-header"><span class="section-title">👤 Job Seeker Profile</span><span class="section-badge" id="seeker-badge">⚠️ Required to Apply</span></div><div class="section-desc" id="seeker-desc">Complete your job profile to get matched with relevant jobs.</div><div id="seeker-input-area"><button class="section-btn section-btn-green" onclick="goToEditSeeker()" style="width:100%">+ Create Job Profile</button></div><div id="seeker-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px"><strong id="seeker-display-name">--</strong><span style="color:#64748b;font-size:11px" id="seeker-display-title">--</span></div><div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;font-size:11px;color:#475569"><span>📅 <span id="seeker-display-exp">--</span> yrs</span><span>💰 <span id="seeker-display-salary">--</span></span><span>📋 <span id="seeker-display-notice">--</span> days</span><span>📍 <span id="seeker-display-location">--</span></span><span>🎓 <span id="seeker-display-education">--</span></span><span>💼 <span id="seeker-display-work-mode">--</span></span></div><div style="margin-top:4px;font-size:11px;color:#475569"><span style="font-weight:600">Skills:</span> <span id="seeker-display-skills">--</span></div><div style="margin-top:4px;font-size:11px;color:#64748b;border-top:1px solid #e2e8f0;padding-top:4px"><span id="seeker-display-about">--</span></div></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="goToEditSeeker()">✏️ Edit Profile</button></div>
 
-<!-- Seeker Stats: My Applications & My Invitations -->
 <div id="seeker-stats" style="display:none"><div class="profile-stats-grid"><div class="stat-card" onclick="showMyApplications()"><div class="number" id="seeker-applications-count">0</div><div class="label">📋 Applications</div></div><div class="stat-card" onclick="showMyInvitations()"><div class="number" id="seeker-invitations-count">0</div><div class="label">📨 Invitations</div></div></div></div>
 <div id="seeker-applications-list" style="display:none;margin-top:8px;padding:8px;background:#f8fafc;border-radius:8px"><div style="font-size:11px;font-weight:600;color:#1e293b;margin-bottom:4px">📋 My Applications</div><div id="seeker-applications-container"></div></div>
 <div id="seeker-invitations-list" style="display:none;margin-top:8px;padding:8px;background:#f8fafc;border-radius:8px"><div style="font-size:11px;font-weight:600;color:#1e293b;margin-bottom:4px">📨 My Invitations</div><div id="seeker-invitations-container"></div></div>
 </div>
 
-<!-- RECRUITER PROFILE SECTION -->
 <div class="profile-section" id="recruiter-section"><div class="section-header"><span class="section-title">🏢 Recruiter Profile</span><span class="section-badge" id="recruiter-badge">⚠️ Required to Post Jobs</span></div><div class="section-desc" id="recruiter-desc">Create your recruiter profile to post jobs and find candidates.</div><div id="recruiter-input-area"><div class="section-input"><input type="text" id="recruiter-company" placeholder="Company Name" maxlength="100"><input type="text" id="recruiter-website" placeholder="Company Website (optional)" maxlength="100"><button class="section-btn section-btn-green" onclick="saveRecruiterProfile()">Save & Activate</button></div></div><div id="recruiter-active-area" style="display:none"><div style="background:#f8fafc;border-radius:10px;padding:10px;font-size:12px"><p><strong id="recruiter-display-company">--</strong></p><p id="recruiter-display-website" style="color:#2563eb;font-size:11px;cursor:pointer;word-break:break-all"></p><p style="color:#64748b;margin-top:2px">✅ Recruiter profile active</p></div><button class="section-btn" style="margin-top:6px;width:100%" onclick="editRecruiterProfile()">✏️ Edit Company</button>
 <div id="recruiter-stats" style="margin-top:10px;border-top:1px solid #e2e8f0;padding-top:10px"><p style="font-size:11px;font-weight:600;color:#1e293b">📋 My Posted Jobs</p><div id="my-jobs-list"></div></div>
 </div></div>
@@ -490,13 +750,11 @@
 <!-- DETAIL PAGE -->
 <div id="detail-page" class="hidden-page"><div class="detail-container"><div class="detail-header"><span class="logo" onclick="goHome()">JobAd</span><button class="cancel-btn" onclick="closeDetail()">Cancel</button></div><div class="page-content" id="detail-scroll">
 
-<!-- Compact Header -->
 <div class="detail-compact-header"><div class="left"><div class="title" id="detail-title">Title</div><div class="company" id="detail-company" onclick="viewCompanyProfile()">Company</div><div class="sub-info"><span id="detail-exp-sub">-- yrs exp</span><span class="sep">•</span><span id="detail-salary-sub">₹--</span><span class="sep">•</span><span id="detail-location-sub">📍 --</span></div></div><div class="badge-wrap"><span id="detail-type-badge"></span></div></div>
 
 <div id="detail-job-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Recruiter Profile Required</strong> Please set your company name to contact job seekers.</div><button class="btn-action" onclick="goToProfile()">Go to Profile</button></div>
 <div id="detail-seeker-warning" class="action-required" style="display:none"><span class="icon">⚠️</span><div class="text"><strong>Job Seeker Profile Required</strong> Please complete your job seeker profile to apply for jobs.</div><button class="btn-action" onclick="goToEditSeeker()">Create Profile</button></div>
 
-<!-- Info Grid - 2 Columns: Gender & Join/Notice on first row, Expiry & Posted on second row -->
 <div class="detail-info-grid">
     <div class="info-item"><span class="info-label">Gender</span><span class="info-value" id="detail-gender">--</span></div>
     <div class="info-item"><span class="info-label" id="detail-notice-label">Join in</span><span class="info-value" id="detail-notice">--</span></div>
@@ -504,19 +762,15 @@
     <div class="info-item"><span class="info-label">Posted</span><span class="info-value" id="detail-posted">--</span></div>
 </div>
 
-<!-- Education & Work Mode - Single Row -->
 <div class="detail-edu-mode">
     <span class="edu-item"><span class="label">🎓</span> <span id="detail-education">--</span></span>
     <span class="edu-item"><span class="label">💼</span> <span id="detail-work-mode">--</span></span>
 </div>
 
-<!-- Skills -->
 <div class="detail-skills"><span class="label">Skills:</span><span id="detail-skills">--</span></div>
 
-<!-- Description -->
 <div class="detail-desc"><div class="value-multiline" id="detail-desc">--</div></div>
 
-<!-- Stats -->
 <div class="detail-stats" id="detail-stats-container">
     <div class="stat-row">
         <div class="stat-item" onclick="detailShowEndorsers()"><div class="number" id="detail-total-popularity">0</div><div class="label">⭐ Popularity</div></div>
@@ -526,21 +780,15 @@
     <div class="compact-line"><span class="stat-label">👁️ Views:</span> <span class="stat-value" id="detail-views-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-views-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span> <span class="sep">|</span> <span class="stat-label">📞 Calls:</span> <span class="stat-value" id="detail-calls-30d">0</span> <span style="color:#94a3b8;font-size:10px">30d</span> <span class="sep">|</span> <span class="stat-value" id="detail-calls-total">0</span> <span style="color:#94a3b8;font-size:10px">total</span></div>
 </div>
 
-<!-- Actions - Only 5 buttons: Call, (Apply OR Invite), Recommend, Not Rec, Share -->
 <div class="detail-actions" id="detail-actions-container">
-    <!-- CALL - always visible -->
     <div class="action-group"><button class="btn-call" id="detail-call-btn" onclick="makeCall()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button><span class="action-label">Call</span></div>
     
-    <!-- Slot for Apply OR Invite - dynamically created -->
     <div class="action-group" id="detail-action-slot"></div>
     
-    <!-- RECOMMEND - always visible -->
     <div class="action-group"><button class="btn-endorse" id="detail-endorse-btn" onclick="detailToggleEndorsement()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></button><span class="action-label">Recommend</span></div>
     
-    <!-- NOT REC - always visible -->
     <div class="action-group"><button class="btn-flag" id="detail-flag-btn" onclick="detailToggleFlag()"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg></button><span class="action-label">Not Rec</span></div>
     
-    <!-- SHARE - always visible -->
     <div class="action-group"><button class="btn-share" id="detail-share-btn" onclick="handleShareClick()"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg></button><span class="action-label">Share</span></div>
 </div>
 <div class="bottom-spacer"></div></div><div class="bottom-nav"><button class="nav-item" onclick="goHome()"><span class="icon">🏠</span><span class="label">Home</span></button><button class="nav-item" onclick="goPostJob()"><span class="icon">➕</span><span class="label">Post Job</span></button><button class="nav-item" onclick="goToProfile()"><span class="icon">👤</span><span class="label">Profile</span></button></div></div></div>
@@ -573,9 +821,27 @@
 const SUPABASE_URL='https://njhioapckeupxrcixmdh.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qaGlvYXBja2V1cHhyY2l4bWRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTE3OTcsImV4cCI6MjA5NjQ4Nzc5N30.LR9O3xI3kKlU20RORX7d3mu4ktWs6Nw-grSwoOCZhiE';
 const EDGE_FUNCTION_URL='https://njhioapckeupxrcixmdh.supabase.co/functions/v1';
-const GUEST_MOBILE='9999999999';
-const GUEST_PIN='1234';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// ============================================================
+// GUEST STATE - PURE FRONTEND (No fake user in DB)
+// ============================================================
+function generateGuestId() {
+    return 'GUEST_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+}
+
+function getGuestState() {
+    let guestId = sessionStorage.getItem('guest_id');
+    if (!guestId) {
+        guestId = generateGuestId();
+        sessionStorage.setItem('guest_id', guestId);
+    }
+    return {
+        isGuest: true,
+        guestId: guestId,
+        loginTime: sessionStorage.getItem('guest_login_time') || new Date().toISOString()
+    };
+}
 
 // ============================================================
 // EDUCATION & WORK MODE CONSTANTS
@@ -1268,6 +1534,59 @@ function getView30Column(t){return t==='JOB'?null:'views_30days'}
 function getCall30Column(t){return t==='JOB'?null:'calls_30days'}
 
 // ============================================================
+// PLATFORM STATS LOADER - Real users only (no fake guest)
+// ============================================================
+async function loadPlatformStats() {
+    try {
+        const {data: usersData, error: usersError} = await sb.from('active_users').select('mobile, full_name, company_name');
+        if(usersError) throw usersError;
+        
+        // Count REAL users only (exclude any fake/guest users)
+        const seekers = usersData ? usersData.filter(u => 
+            u.full_name && 
+            u.full_name.trim() !== '' && 
+            u.mobile !== '9999999999'
+        ).length : 0;
+        
+        const recruiters = usersData ? usersData.filter(u => 
+            u.company_name && 
+            u.company_name.trim() !== '' && 
+            u.mobile !== '9999999999'
+        ).length : 0;
+        
+        const {data: jobsData, error: jobsError} = await sb.from('active_jobs').select('*');
+        if(jobsError) throw jobsError;
+        
+        const now = new Date();
+        const activeJobs = jobsData ? jobsData.filter(j => {
+            const expiry = new Date(j.expiry_date);
+            return j.status === 1 && expiry > now;
+        }).length : 0;
+        
+        const closedJobs = jobsData ? jobsData.filter(j => {
+            const expiry = new Date(j.expiry_date);
+            return j.status === 2 || expiry < now;
+        }).length : 0;
+        
+        // Update stats on login page
+        const seekerEl = document.getElementById('stat-seekers');
+        const recruiterEl = document.getElementById('stat-recruiters');
+        const activeEl = document.getElementById('stat-jobs-active');
+        const closedEl = document.getElementById('stat-jobs-closed');
+        
+        if(seekerEl) seekerEl.textContent = seekers.toLocaleString();
+        if(recruiterEl) recruiterEl.textContent = recruiters.toLocaleString();
+        if(activeEl) activeEl.textContent = activeJobs.toLocaleString();
+        if(closedEl) closedEl.textContent = closedJobs.toLocaleString();
+        
+        window.platformStats = { seekers, recruiters, activeJobs, closedJobs };
+    } catch(err) {
+        console.error('Error loading platform stats:', err);
+        // Stats are non-critical, don't show error to user
+    }
+}
+
+// ============================================================
 // STATUS CONSTANTS
 // ============================================================
 const STATUS = {
@@ -1297,8 +1616,22 @@ function getStatusClass(status) {
 // ============================================================
 // STATE
 // ============================================================
-let currentMobile='',currentUser=null,isGuest=!1,isChecking=!1,currentFilter='BOTH',selectedZoneId=null,selectedAreaId=null,feedItems=[],currentPage='home',currentDetailData=null,currentDetailType=null,otpTimerInterval=null,otpExpiryTime=300,isNewUser=!1,sharedLinkData=null,sharedLinkProcessed=!1,filterOpen=!1;
-let deferredPrompt=null,bannerShown=!1;
+let currentMobile='', currentUser=null, isGuest=false, isChecking=false, currentFilter='BOTH', selectedZoneId=null, selectedAreaId=null, feedItems=[], currentPage='home', currentDetailData=null, currentDetailType=null, otpTimerInterval=null, otpExpiryTime=300, isNewUser=false, sharedLinkData=null, sharedLinkProcessed=false, filterOpen=false;
+let deferredPrompt=null, bannerShown=false;
+
+// ============================================================
+// GUEST LOGIN - Pure frontend, no DB entry
+// ============================================================
+function continueAsGuest() {
+    const guestId = 'GUEST_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+    sessionStorage.setItem('guest_id', guestId);
+    sessionStorage.setItem('guest_login_time', new Date().toISOString());
+    isGuest = true;
+    currentUser = null;
+    showToast('👤 Welcome, Guest!');
+    showHomeScreenAfterLogin();
+    processSharedLinkAfterLogin();
+}
 
 // ============================================================
 // FILTER TOGGLE
@@ -1342,7 +1675,7 @@ function updateAvatar(){
     const name = currentUser?.full_name || '';
     const initials = isGuestUser ? 'GU' : getInitials(name);
     const avatarClass = isGuestUser ? 'guest' : getAvatarClass(gender);
-    const mobile = currentUser?.mobile || '--';
+    const mobile = isGuestUser ? 'Guest' : (currentUser?.mobile || '--');
     const displayName = isGuestUser ? 'Guest' : (name || 'User');
     
     document.querySelectorAll('.avatar-btn').forEach(btn => {
@@ -1364,7 +1697,7 @@ function updateAvatar(){
 }
 
 // ============================================================
-// SEARCHABLE ZONE
+// SEARCHABLE ZONE - Fixed
 // ============================================================
 function getRecentZones(){try{const ids=JSON.parse(localStorage.getItem('recentZones'))||[];return ids.map(id=>ZONES.find(z=>z.zone_id===id)).filter(Boolean)}catch{return[]}}
 function addToRecent(zoneId){try{let recent=JSON.parse(localStorage.getItem('recentZones'))||[];recent=recent.filter(id=>id!==zoneId);recent.unshift(zoneId);if(recent.length>10)recent=recent.slice(0,10);localStorage.setItem('recentZones',JSON.stringify(recent))}catch{}}
@@ -1393,10 +1726,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Enter'){const input=
 // ============================================================
 // INSTALL BANNER
 // ============================================================
-function dismissInstallBanner(){const b=$('install-banner');if(b){b.classList.add('hidden');b.style.display='none';bannerShown=!1}setTimeout(fixLayoutHeight,50)}
-function checkAndHandleInstallBanner(){const b=$('install-banner');if(!b)return;if(window.matchMedia('(display-mode: standalone)').matches){b.classList.add('hidden');b.style.display='none';bannerShown=!1;return}const isPWASupported='serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);if(isPWASupported||isMobile){b.classList.remove('hidden');b.style.display='flex';bannerShown=!0;const btn=$('install-btn');if(btn)btn.textContent=deferredPrompt?'📲 Install':'📲 Install'}else{b.classList.add('hidden');b.style.display='none';bannerShown=!1}}
-function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(r){if(r.outcome==='accepted'){showToast('✅ App installed!');const b=$('install-banner');if(b){b.classList.add('hidden');b.style.display='none';bannerShown=!1}}deferredPrompt=null});return}showToast('📱 Tap share button → "Add to Home Screen"')}
-window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;if(!window.matchMedia('(display-mode: standalone)').matches&&!bannerShown){const b=$('install-banner');if(b){b.classList.remove('hidden');b.style.display='flex';bannerShown=!0;const btn=$('install-btn');if(btn)btn.textContent='📲 Install'}}});
+function dismissInstallBanner(){const b=$('install-banner');if(b){b.classList.add('hidden');b.style.display='none';bannerShown=false}setTimeout(fixLayoutHeight,50)}
+function checkAndHandleInstallBanner(){const b=$('install-banner');if(!b)return;if(window.matchMedia('(display-mode: standalone)').matches){b.classList.add('hidden');b.style.display='none';bannerShown=false;return}const isPWASupported='serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);if(isPWASupported||isMobile){b.classList.remove('hidden');b.style.display='flex';bannerShown=true;const btn=$('install-btn');if(btn)btn.textContent=deferredPrompt?'📲 Install':'📲 Install'}else{b.classList.add('hidden');b.style.display='none';bannerShown=false}}
+function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(r){if(r.outcome==='accepted'){showToast('✅ App installed!');const b=$('install-banner');if(b){b.classList.add('hidden');b.style.display='none';bannerShown=false}}deferredPrompt=null});return}showToast('📱 Tap share button → "Add to Home Screen"')}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;if(!window.matchMedia('(display-mode: standalone)').matches&&!bannerShown){const b=$('install-banner');if(b){b.classList.remove('hidden');b.style.display='flex';bannerShown=true;const btn=$('install-btn');if(btn)btn.textContent='📲 Install'}}});
 
 // ============================================================
 // LAYOUT HEIGHT CALCULATION
@@ -1416,24 +1749,14 @@ function updatePostAreas(){const zs=$('pj-zone'),as=$('pj-area'),ah=$('pj-area-h
 // ============================================================
 function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2000)}
 function setStatus(text,type){const e=$('mobile-status');if(!e)return;const c={green:'text-green-600',blue:'text-blue-600',yellow:'text-yellow-600',red:'text-red-600',gray:'text-slate-400'};e.textContent=text;e.className='text-xs mt-1 '+(c[type]||c.gray)} 
-function resetForm(){['step1','step2','step3','step4'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden')});$('step1').style.display='block';['home-page','profile-page','edit-seeker-page','postjob-page','detail-page','company-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});$('login-screen').style.display='flex';$('mobile').value='';$('pin').value='';$('reg-pin').value='';$('reg-pin-confirm').value='';document.querySelectorAll('.otp-input').forEach(e=>{e.value='';e.classList.remove('filled')});$('msg').classList.add('hidden');$('mobile-status').textContent='';$('submitBtn').disabled=!1;$('submitBtn').textContent='🔐 Login';$('register-btn').disabled=!1;$('register-btn').textContent='✅ Create Account';if(otpTimerInterval)clearInterval(otpTimerInterval);currentMobile='';currentUser=null;isGuest=!1;isChecking=!1;$('mobile').focus();$('guest-banner').style.display='none';sessionStorage.removeItem('guest_session')}
-
-// ============================================================
-// GUEST LOGIN
-// ============================================================
-function continueAsGuest(){sessionStorage.setItem('guest_session','true');showToast('👤 Continuing as Guest...');autoLoginGuest()}
-async function autoLoginGuest(){try{const{data:pd}=await sb.from('platform_stats').select('all_users').maybeSingle();let au=pd?.all_users||[];const gb=BigInt(GUEST_MOBILE),ex=au.some(m=>{try{return BigInt(m)===gb}catch(e){return String(m)===GUEST_MOBILE}});if(!ex){au.push(Number(GUEST_MOBILE));if(pd)await sb.from('platform_stats').update({all_users:au}).eq('id',pd.id);else await sb.from('platform_stats').insert([{all_users:au}])}const{data:au2}=await sb.from('active_users').select('*').eq('mobile',GUEST_MOBILE).maybeSingle();if(!au2)await sb.from('active_users').insert([{mobile:GUEST_MOBILE,is_guest:true,last_active:new Date().toISOString()}]);const r=await fetch(`${EDGE_FUNCTION_URL}/login-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:GUEST_MOBILE,pin:GUEST_PIN})});const d=await r.json();if(d.success){isGuest=!0;await fetchGuestUserData(GUEST_MOBILE);showToast('👤 Welcome, Guest!');processSharedLinkAfterLogin()}else{const{data:ud}=await sb.from('active_users').select('*').eq('mobile',GUEST_MOBILE).single();if(ud){isGuest=!0;currentUser=ud;showHomeScreenAfterLogin();showToast('👤 Welcome, Guest!');processSharedLinkAfterLogin()}else showToast('⚠️ Guest login failed. Please try again.')}}catch(err){console.error('Guest login error:',err);showToast('⚠️ Guest login failed: '+err.message)}}
-async function fetchGuestUserData(mobile){const{data,error}=await sb.from('active_users').select('*').eq('mobile',mobile).maybeSingle();if(error||!data){const{data:nu,error:ie}=await sb.from('active_users').insert([{mobile:mobile,is_guest:!0,last_active:new Date().toISOString()}]).select().single();if(ie){showToast('❌ Error creating guest: '+ie.message);return}currentUser=nu}else currentUser=data;showHomeScreenAfterLogin()}
-function showHomeScreenAfterLogin(){$('step2').classList.add('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('login-screen').style.display='none';$('home-page').classList.remove('hidden-page');updateAvatar();updateGuestUI();setTimeout(autoDetectLocation,500);fetchFeedData();checkAndHandleInstallBanner();setTimeout(fixLayoutHeight,50);window.addEventListener('resize',handleResize)}
-function updateGuestUI(){const b=$('guest-banner');if(b)b.style.display=isGuest?'flex':'none';setTimeout(fixLayoutHeight,100)}
-function showLogin(){resetForm();$('mobile').focus();showToast('🔐 Enter your mobile number to login')}
+function resetForm(){['step1','step2','step3','step4'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden')});$('step1').style.display='block';['home-page','profile-page','edit-seeker-page','postjob-page','detail-page','company-page'].forEach(id=>{const e=$(id);if(e)e.classList.add('hidden-page')});$('login-screen').style.display='flex';$('mobile').value='';$('pin').value='';$('reg-pin').value='';$('reg-pin-confirm').value='';document.querySelectorAll('.otp-input').forEach(e=>{e.value='';e.classList.remove('filled')});$('msg').classList.add('hidden');$('mobile-status').textContent='';$('submitBtn').disabled=false;$('submitBtn').textContent='🔐 Login';$('register-btn').disabled=false;$('register-btn').textContent='✅ Create Account';if(otpTimerInterval)clearInterval(otpTimerInterval);currentMobile='';currentUser=null;isGuest=false;isChecking=false;$('mobile').focus();$('guest-banner').style.display='none';sessionStorage.removeItem('guest_session')}
 
 // ============================================================
 // SHARED LINK DETECTION
 // ============================================================
-function detectSharedLink(){const p=new URLSearchParams(window.location.search),type=p.get('type'),id=p.get('id');if(type&&id){sharedLinkData={type,id};return!0}return!1}
+function detectSharedLink(){const p=new URLSearchParams(window.location.search),type=p.get('type'),id=p.get('id');if(type&&id){sharedLinkData={type,id};return true}return false}
 const hasSharedLink=detectSharedLink();
-async function processSharedLinkAfterLogin(){if(sharedLinkProcessed||!sharedLinkData)return;sharedLinkProcessed=!0;const o=$('loading-overlay');if(o)o.classList.add('show');try{const{type,id}=sharedLinkData;let data;if(type==='JOB'){const{data:j}=await sb.from('active_jobs').select('*').eq('job_id',parseInt(id)).single();data=j}else{const{data:u}=await sb.from('active_users').select('*').eq('mobile',id).single();data=u}if(data){if(o)o.classList.remove('show');openDetail(data,type);showToast(`📎 ${type==='JOB'?'Job':'Profile'} loaded`);if(window.history&&window.history.pushState)window.history.pushState({},'',window.location.pathname)}}catch(err){console.error('Error processing shared link:',err);if(o)o.classList.remove('show');showToast('⚠️ Could not load the shared item')}}
+async function processSharedLinkAfterLogin(){if(sharedLinkProcessed||!sharedLinkData)return;sharedLinkProcessed=true;const o=$('loading-overlay');if(o)o.classList.add('show');try{const{type,id}=sharedLinkData;let data;if(type==='JOB'){const{data:j}=await sb.from('active_jobs').select('*').eq('job_id',parseInt(id)).single();data=j}else{const{data:u}=await sb.from('active_users').select('*').eq('mobile',id).single();data=u}if(data){if(o)o.classList.remove('show');openDetail(data,type);showToast(`📎 ${type==='JOB'?'Job':'Profile'} loaded`);if(window.history&&window.history.pushState)window.history.pushState({},'',window.location.pathname)}}catch(err){console.error('Error processing shared link:',err);if(o)o.classList.remove('show');showToast('⚠️ Could not load the shared item')}}
 
 // ============================================================
 // SHARE FUNCTIONS
@@ -1447,7 +1770,7 @@ function handleShareClick(){if(!currentDetailData||!currentDetailType){showToast
 function shareFromFeed(e,t,id){e.stopPropagation();const item=feedItems.find(i=>{const id2=i.type==='JOB'?i._raw?.job_id:i._raw?.mobile;return i.type===t&&String(id2)===String(id)});if(item&&item._raw){currentDetailData=item._raw;currentDetailType=item.type;incrementShareCount(t,id);openShareModal()}}
 
 // ============================================================
-// APPLY TO JOB
+// APPLY TO JOB - Guest restricted
 // ============================================================
 async function applyToJob(){
     if(isGuest){showToast('🔐 Please login to apply');showLogin();return}
@@ -1505,7 +1828,6 @@ function updateActionButtons(){
     const applicants = currentDetailData.applicants||[];
     const userMobile = currentUser ? Number(currentUser.mobile) : null;
     const alreadyApplied = userMobile ? applicants.includes(userMobile) : false;
-    const invitations = currentDetailData.total_invitations||0;
     
     let btnHTML = '';
     
@@ -1514,7 +1836,12 @@ function updateActionButtons(){
         let className = 'btn-apply';
         let disabled = false;
         let onclick = 'applyToJob()';
-        if(isOwner){
+        if(isGuest){
+            label = '🔐 Login to Apply';
+            className = 'btn-apply';
+            disabled = true;
+            onclick = '';
+        }else if(isOwner){
             label = 'Your Job';
             className = 'btn-apply';
             disabled = true;
@@ -1536,7 +1863,12 @@ function updateActionButtons(){
         let className = 'btn-invite';
         let disabled = false;
         let onclick = 'inviteSeeker()';
-        if(isOwner){
+        if(isGuest){
+            label = '🔐 Login to Invite';
+            className = 'btn-invite';
+            disabled = true;
+            onclick = '';
+        }else if(isOwner){
             label = 'Your Profile';
             className = 'btn-invite own-profile';
             disabled = true;
@@ -1578,7 +1910,7 @@ function openInviteModal(seekerMobile,seekerName){
 function closeInviteModal(){$('invite-modal').classList.remove('show')}
 async function loadJobsForInvite(seekerMobile){
     const list=$('invite-job-list');list.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px">Loading your jobs...</p>';
-    try{const{data,error}=await sb.from('active_jobs').select('*').eq('mobile',currentUser.mobile).eq('status', STATUS.ACTIVE).order('posted_date',{ascending:!1});if(error)throw error;const activeJobs=data.filter(j=>new Date(j.expiry_date)>new Date());if(activeJobs.length===0){list.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px">No active jobs to invite to.</p>';return}
+    try{const{data,error}=await sb.from('active_jobs').select('*').eq('mobile',currentUser.mobile).eq('status', STATUS.ACTIVE).order('posted_date',{ascending:false});if(error)throw error;const activeJobs=data.filter(j=>new Date(j.expiry_date)>new Date());if(activeJobs.length===0){list.innerHTML='<p style="text-align:center;color:#94a3b8;padding:20px">No active jobs to invite to.</p>';return}
         const{data:seekerData,error:seekerError}=await sb.from('active_users').select('latest_invitations').eq('mobile',seekerMobile).single();
         const invitedJobs=seekerError||!seekerData?[]:(seekerData.latest_invitations||[]);
         list.innerHTML=activeJobs.map(job=>{const alreadyInvited=invitedJobs.includes(job.job_id);const isExpired=new Date(job.expiry_date)<new Date();return`<div class="job-item"><div class="job-info"><div class="title">${job.job_title||'Untitled'}</div><div class="meta">${job.company_name} • ${job.zone_id?getZoneName(job.zone_id):'N/A'}</div></div>${isExpired?'<span class="expired-badge">⚠️ Expired</span>':alreadyInvited?'<span class="invited-badge">✅ Invited</span>':`<button class="invite-btn" onclick="sendInvite('${seekerMobile}',${job.job_id})">Invite</button>`}</div>`}).join('')
@@ -1600,7 +1932,7 @@ async function sendInvite(seekerMobile,jobId){
 async function loadSeekerApplications(){
     if(!currentUser||isGuest){return}
     const container=$('seeker-applications-container');if(!container)return;
-    try{const{data:jobs,error}=await sb.from('active_jobs').select('*').contains('applicants',[Number(currentUser.mobile)]).order('posted_date',{ascending:!1});if(error)throw error;const count=jobs?jobs.length:0;$('seeker-applications-count').textContent=count;
+    try{const{data:jobs,error}=await sb.from('active_jobs').select('*').contains('applicants',[Number(currentUser.mobile)]).order('posted_date',{ascending:false});if(error)throw error;const count=jobs?jobs.length:0;$('seeker-applications-count').textContent=count;
         if(!jobs||jobs.length===0){container.innerHTML='<p style="font-size:11px;color:#94a3b8">No applications yet.</p>';return}
         container.innerHTML=jobs.map(job=>{const isExpired=new Date(job.expiry_date)<new Date();return`<div class="my-job-item" onclick="viewJob(${job.job_id})"><div class="job-title">${job.job_title||'Untitled'}${isExpired?' <span class="expired">Expired</span>':''}</div><div class="job-meta">${job.company_name} • ${job.zone_id?getZoneName(job.zone_id):'N/A'}</div></div>`}).join('')
     }catch(err){console.error('Error loading applications:',err);container.innerHTML='<p style="font-size:11px;color:#ef4444">Error loading applications</p>'}
@@ -1610,7 +1942,7 @@ async function loadSeekerInvitations(){
     const container=$('seeker-invitations-container');if(!container)return;
     try{const{data:userData,error:userError}=await sb.from('active_users').select('latest_invitations,total_invitations').eq('mobile',currentUser.mobile).single();if(userError)throw userError;const jobIds=userData.latest_invitations||[];const count=userData.total_invitations||0;$('seeker-invitations-count').textContent=count;
         if(jobIds.length===0){container.innerHTML='<p style="font-size:11px;color:#94a3b8">No invitations yet.</p>';return}
-        const{data:jobs,error:jobError}=await sb.from('active_jobs').select('*').in('job_id',jobIds).order('posted_date',{ascending:!1});if(jobError)throw jobError;if(!jobs||jobs.length===0){container.innerHTML='<p style="font-size:11px;color:#94a3b8">No invitations yet.</p>';return}
+        const{data:jobs,error:jobError}=await sb.from('active_jobs').select('*').in('job_id',jobIds).order('posted_date',{ascending:false});if(jobError)throw jobError;if(!jobs||jobs.length===0){container.innerHTML='<p style="font-size:11px;color:#94a3b8">No invitations yet.</p>';return}
         container.innerHTML=jobs.map(job=>{const isExpired=new Date(job.expiry_date)<new Date();return`<div class="my-job-item" onclick="viewJob(${job.job_id})"><div class="job-title">${job.job_title||'Untitled'}${isExpired?' <span class="expired">Expired</span>':''}</div><div class="job-meta">${job.company_name} • ${job.zone_id?getZoneName(job.zone_id):'N/A'}${isExpired?' • ⚠️ Expired':''}</div></div>`}).join('')
     }catch(err){console.error('Error loading invitations:',err);container.innerHTML='<p style="font-size:11px;color:#ef4444">Error loading invitations</p>'}
 }
@@ -1625,7 +1957,7 @@ function loadMyJobs(){
     const c=$('my-jobs-list');if(!c)return;
     try{
         autoCleanExpiredJobs();
-        sb.from('active_jobs').select('*').eq('mobile',currentUser.mobile).order('posted_date',{ascending:!1}).then(({data,error})=>{
+        sb.from('active_jobs').select('*').eq('mobile',currentUser.mobile).order('posted_date',{ascending:false}).then(({data,error})=>{
             if(error)throw error;
             if(!data||data.length===0){
                 c.innerHTML='<p style="font-size:11px;color:#94a3b8">No jobs posted yet.</p>';
@@ -1708,7 +2040,6 @@ async function autoCleanExpiredJobs() {
         fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
         const fifteenDaysAgoISO = fifteenDaysAgo.toISOString();
         
-        // Delete expired jobs older than 15 days
         const {error} = await sb.from('active_jobs')
             .delete()
             .eq('status', STATUS.EXPIRED)
@@ -1716,7 +2047,6 @@ async function autoCleanExpiredJobs() {
         
         if(error) throw error;
         
-        // Update status for jobs that have expired within 15 days
         const {data: expiredJobs, error: fetchError} = await sb.from('active_jobs')
             .select('job_id')
             .eq('status', STATUS.ACTIVE)
@@ -1730,7 +2060,6 @@ async function autoCleanExpiredJobs() {
             }
         }
         
-        // Also update any drafts that might have become active
         const {data: draftJobs, error: draftError} = await sb.from('active_jobs')
             .select('job_id')
             .eq('status', STATUS.DRAFT)
@@ -1753,8 +2082,8 @@ async function autoCleanExpiredJobs() {
 // SAVE DRAFT JOB
 // ============================================================
 async function saveDraftJob(){
-    if(!currentUser||isGuest){ showToast('🔐 Please login to save draft'); showLogin(); return; }
-    if(!currentUser.company_name||currentUser.company_name.trim()===''){ showToast('⚠️ Please set your company name in profile first'); goToProfile(); return; }
+    if(isGuest){ showToast('🔐 Please login to save draft'); showLogin(); return; }
+    if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){ showToast('⚠️ Please set your company name in profile first'); goToProfile(); return; }
 
     const company = $('pj-company').value.trim();
     const jobTitle = $('pj-title').value.trim();
@@ -1814,7 +2143,6 @@ async function saveDraftJob(){
         $('pj-publish-btn').dataset.editing = 'false';
         $('pj-publish-btn').dataset.jobid = '';
         $('pj-publish-btn').textContent = '📤 Publish Job';
-        // Clear form
         $('pj-title').value = '';
         $('pj-skills').value = '';
         $('pj-description').value = '';
@@ -1861,8 +2189,8 @@ async function findDraftByTitleAndCompany(title, company) {
 // ============================================================
 function setupCounter(inputId,counterId,maxLen){const input=$(inputId),counter=$(counterId);if(!input||!counter)return;const update=()=>{const l=input.value.length;counter.textContent=`${l}/${maxLen}`;if(l>maxLen){input.value=input.value.slice(0,maxLen);counter.textContent=`${maxLen}/${maxLen}`}};input.addEventListener('input',update);update()}
 async function publishJob(){
-    if(!currentUser||isGuest){showToast('🔐 Please login to post jobs');showLogin();return}
-    if(!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name in profile first');goToProfile();return}
+    if(isGuest){showToast('🔐 Please login to post jobs');showLogin();return}
+    if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name in profile first');goToProfile();return}
     
     const isEditing=$('pj-publish-btn').dataset.editing==='true';
     const editJobId=$('pj-publish-btn').dataset.jobid;
@@ -1892,12 +2220,10 @@ async function publishJob(){
     if(desc.length>500){showToast('⚠️ Description max 500 characters');return}
     if(!expiryDate){showToast('⚠️ Please select expiry date');return}
     
-    // Enforce 30 days max limit
     const selectedDate=new Date(expiryDate);
-    const maxDate=new Date(Date.now() + 30*24*60*60*1000); // 30 days from today
+    const maxDate=new Date(Date.now() + 30*24*60*60*1000);
     if(selectedDate > maxDate){showToast('⚠️ Expiry date cannot exceed 30 days from today');return}
     
-    // Check if expiry date is in the past
     const today = new Date();
     today.setHours(0,0,0,0);
     if(selectedDate < today){showToast('⚠️ Expiry date cannot be in the past');return}
@@ -1925,9 +2251,7 @@ async function publishJob(){
     
     try{
         if(isEditing && editJobId){
-            // EDIT JOB - Update existing job
             await sb.from('active_jobs').update(jobData).eq('job_id',parseInt(editJobId));
-            // Update status after edit
             const newStatus = await updateJobStatus(parseInt(editJobId));
             if(newStatus !== null) {
                 showToast(`✅ Job updated successfully! Status: ${getStatusLabel(newStatus)}`);
@@ -1935,29 +2259,25 @@ async function publishJob(){
                 showToast('✅ Job updated successfully!');
             }
         } else {
-            // Check if there's an existing draft with same title and company
             const existingDraft = await findDraftByTitleAndCompany(jobTitle, company);
             
             if(existingDraft) {
-                // PUBLISH DRAFT - Update existing draft
                 const draftId = existingDraft.job_id;
                 const todayISO = new Date().toISOString();
                 
                 const updateData = {
                     ...jobData,
-                    job_id: draftId, // Keep same ID
-                    posted_date: todayISO, // Set posted_date to TODAY
+                    job_id: draftId,
+                    posted_date: todayISO,
                     expiry_date: selectedDate.toISOString(),
                     status: STATUS.ACTIVE
                 };
                 
-                // Remove job_id from updateData as it's not needed in the update payload
                 delete updateData.job_id;
                 
                 await sb.from('active_jobs').update(updateData).eq('job_id', draftId);
                 showToast('✅ Draft published successfully!');
             } else {
-                // NEW JOB PUBLISH - Create new job
                 jobData.posted_date = new Date().toISOString();
                 const {data, error} = await sb.from('active_jobs').insert([jobData]);
                 if(error) throw error;
@@ -2000,7 +2320,6 @@ async function editJob(jobId){
     try {
         const{data,error}=await sb.from('active_jobs').select('*').eq('job_id',jobId).single();
         if(error) throw error;
-        // Populate form
         $('pj-company').value = data.company_name||'';
         $('pj-title').value = data.job_title||'';
         $('pj-experience').value = data.min_experience_years||'';
@@ -2009,11 +2328,9 @@ async function editJob(jobId){
         $('pj-skills').value = data.skills_comma_separated||'';
         $('pj-description').value = data.job_description||'';
         
-        // Set expiry date - show original expiry date
         if(data.expiry_date){
             const expiryDate = new Date(data.expiry_date);
             $('pj-expiry').value = expiryDate.toISOString().split('T')[0];
-            // Update hint to show original expiry
             document.getElementById('expiry-hint').textContent = 'Original expiry date';
         } else {
             const now = new Date();
@@ -2025,7 +2342,6 @@ async function editJob(jobId){
         
         $('pj-work-mode').value = data.work_mode||1;
         $('pj-education-required').value = data.education_required||0;
-        // Zone and Area
         if(data.zone_id){
             const zone = ZONES.find(z=>z.zone_id===data.zone_id);
             if(zone){
@@ -2087,7 +2403,6 @@ function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('
     }
     $('detail-posted').textContent=(data.posted_date||data.created_at||data.last_active)?new Date(data.posted_date||data.created_at||data.last_active).toLocaleDateString('en-IN'):'—';
     $('detail-desc').textContent=isJob?(data.job_description||'—'):(data.professional_summary||'—');
-    // Education & Work Mode
     if(isJob){
         $('detail-education').textContent = getEducationLabel(data.education_required || 0);
         $('detail-work-mode').textContent = getWorkModeLabel(data.work_mode || 0);
@@ -2095,7 +2410,26 @@ function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('
         $('detail-education').textContent = getEducationLabel(data.education || 0);
         $('detail-work-mode').textContent = getWorkModeLabel(data.preferred_work_mode || 0);
     }
-    const callBtn=$('detail-call-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';if(isJob){if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}else{if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=!0}else{if(callBtn)callBtn.disabled=!1}if(endorseBtn)endorseBtn.disabled=!1;if(flagBtn)flagBtn.disabled=!1}updateDetailStats();updateDetailCounts(data.endorsements||[],data.flags||[]);updateThirdStat();updateActionButtons();setTimeout(fixLayoutHeight,100)}
+    const callBtn=$('detail-call-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';
+    
+    // Guest restrictions
+    if(isGuest){
+        if(callBtn)callBtn.disabled=true;
+        if(endorseBtn)endorseBtn.disabled=true;
+        if(flagBtn)flagBtn.disabled=true;
+        if(jobWarning)jobWarning.style.display='flex';
+    } else {
+        if(isJob){
+            if(!currentUser||!currentUser.company_name||currentUser.company_name.trim()===''){if(jobWarning)jobWarning.style.display='flex';if(callBtn)callBtn.disabled=true;}else{if(callBtn)callBtn.disabled=false;}
+            if(endorseBtn)endorseBtn.disabled=false;
+            if(flagBtn)flagBtn.disabled=false;
+        }else{
+            if(!currentUser||!currentUser.full_name||currentUser.full_name.trim()===''){if(seekerWarning)seekerWarning.style.display='flex';if(callBtn)callBtn.disabled=true;}else{if(callBtn)callBtn.disabled=false;}
+            if(endorseBtn)endorseBtn.disabled=false;
+            if(flagBtn)flagBtn.disabled=false;
+        }
+    }
+    updateDetailStats();updateDetailCounts(data.endorsements||[],data.flags||[]);updateThirdStat();updateActionButtons();setTimeout(fixLayoutHeight,100)}
 function closeDetail(){currentDetailData=null;currentDetailType=null;$('detail-page').classList.add('hidden-page');$('home-page').classList.remove('hidden-page');goHome();setTimeout(fixLayoutHeight,100)}
 
 // ============================================================
@@ -2125,7 +2459,7 @@ async function loadCompanyProfile(mobile){
         nameEl.textContent=userData.company_name||'Company';
         if(userData.company_web){websiteEl.href=userData.company_web;websiteEl.textContent=userData.company_web;websiteContainer.style.display='flex'}else{websiteContainer.style.display='none'}
         contactEl.textContent=`📞 ${userData.mobile}`;
-        const{data:jobs,error:jobsError}=await sb.from('active_jobs').select('*').eq('mobile',mobile).eq('status', STATUS.ACTIVE).order('posted_date',{ascending:!1});
+        const{data:jobs,error:jobsError}=await sb.from('active_jobs').select('*').eq('mobile',mobile).eq('status', STATUS.ACTIVE).order('posted_date',{ascending:false});
         if(jobsError)throw jobsError;
         const activeJobs=jobs.filter(j=>new Date(j.expiry_date)>new Date());
         jobsCountEl.textContent=`📋 ${activeJobs.length} Active Jobs`;
@@ -2160,7 +2494,7 @@ async function detailShowInvitations(){
     if(!currentDetailData||currentDetailType!=='SEEKER'){showToast('⚠️ No seeker profile selected');return}
     const seekerMobile=currentDetailData.mobile;
     try{const{data:userData,error:userError}=await sb.from('active_users').select('latest_invitations,total_invitations').eq('mobile',seekerMobile).single();if(userError)throw userError;const jobIds=userData.latest_invitations||[];const count=userData.total_invitations||0;if(jobIds.length===0){showToast('No invitations yet');return}
-        const{data:jobs,error:jobError}=await sb.from('active_jobs').select('*').in('job_id',jobIds).order('posted_date',{ascending:!1});if(jobError)throw jobError;if(!jobs||jobs.length===0){showToast('No invitations yet');return}
+        const{data:jobs,error:jobError}=await sb.from('active_jobs').select('*').in('job_id',jobIds).order('posted_date',{ascending:false});if(jobError)throw jobError;if(!jobs||jobs.length===0){showToast('No invitations yet');return}
         let html=jobs.map(job=>{const isExpired=new Date(job.expiry_date)<new Date();return`<div class="user-item" onclick="viewJob(${job.job_id})"><div><div style="font-weight:600;font-size:14px;color:#1e293b">${job.job_title||'Untitled'}</div><div style="font-size:11px;color:#64748b">${job.company_name} • ${job.zone_id?getZoneName(job.zone_id):'N/A'}${isExpired?' • ⚠️ Expired':''}</div></div></div>`}).join('');
         document.querySelector('#invitations-modal')?.remove();
         document.body.insertAdjacentHTML('beforeend',`<div class="modal-overlay show" id="invitations-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;border-radius:0"><div class="modal-box" style="background:#fff;border-radius:20px;padding:24px;max-width:400px;width:90%;max-height:80vh;display:flex;flex-direction:column"><h3 style="font-size:18px;font-weight:700;margin:0 0 4px;color:#1e293b">📨 ${count} Invitation${count>1?'s':''}</h3><div class="user-list" style="flex:1;overflow-y:auto;margin:8px 0">${html}</div><button class="modal-close-btn" onclick="closeModal('invitations-modal')" style="width:100%;padding:10px;border:none;border-radius:10px;background:#f1f5f9;color:#475569;font-weight:600;cursor:pointer;margin-top:8px">Close</button></div></div>`)
@@ -2168,12 +2502,12 @@ async function detailShowInvitations(){
 }
 
 // ============================================================
-// CALL
+// CALL - Guest restricted
 // ============================================================
-function makeCall(){if(isGuest||!currentUser){showLogin();showToast('🔐 Please login to make a call');return}if(!currentDetailData){showToast('⚠️ No contact available');return}const contact=currentDetailData.mobile||currentDetailData.contact;if(!contact){showToast('⚠️ No contact number available');return}const isJob=currentDetailType==='JOB';if(isJob&&(!currentUser.company_name||currentUser.company_name.trim()==='')){showToast('⚠️ Please set your company name to contact job seekers');goToProfile();return}if(!isJob&&(!currentUser.full_name||currentUser.full_name.trim()==='')){showToast('⚠️ Please complete your job seeker profile to contact for jobs');goToEditSeeker();return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;incrementCallCount(currentDetailType,id);window.location.href=`tel:${contact}`}
+function makeCall(){if(isGuest){showLogin();showToast('🔐 Please login to make a call');return}if(!currentUser){showLogin();showToast('🔐 Please login to make a call');return}if(!currentDetailData){showToast('⚠️ No contact available');return}const contact=currentDetailData.mobile||currentDetailData.contact;if(!contact){showToast('⚠️ No contact number available');return}const isJob=currentDetailType==='JOB';if(isJob&&(!currentUser.company_name||currentUser.company_name.trim()==='')){showToast('⚠️ Please set your company name to contact job seekers');goToProfile();return}if(!isJob&&(!currentUser.full_name||currentUser.full_name.trim()==='')){showToast('⚠️ Please complete your job seeker profile to contact for jobs');goToEditSeeker();return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;incrementCallCount(currentDetailType,id);window.location.href=`tel:${contact}`}
 
 // ============================================================
-// ENDORSEMENTS & FLAGS
+// ENDORSEMENTS & FLAGS - Guest restricted
 // ============================================================
 async function toggleEndorsement(type,id,mobile){if(isGuest){showToast('🔐 Please login to recommend');showLogin();return null}if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;try{const{data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;let endorsements=data.endorsements||[],flags=data.flags||[];const targetMobileStr=String(targetMobile),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr);if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed')}else{if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed, adding endorsement')}endorsements.push(Number(targetMobile));showToast('👍 Endorsed successfully!')}await sb.from(table).update({endorsements,flags}).eq(idField,id);if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}updateFeedItem(id, type, {endorsements, flags});await fetchFeedData();return{endorsements,flags}}catch(err){console.error('Error toggling endorsement:',err);showToast('❌ Failed to update: '+err.message);return null}}
 async function toggleFlag(type,id,mobile){if(isGuest){showToast('🔐 Please login to flag');showLogin();return null}if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;try{const{data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;let endorsements=data.endorsements||[],flags=data.flags||[];const targetMobileStr=String(targetMobile),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr);if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed')}else{if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed, adding flag')}flags.push(Number(targetMobile));showToast('👎 Not recommended')}await sb.from(table).update({endorsements,flags}).eq(idField,id);if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}updateFeedItem(id, type, {endorsements, flags});await fetchFeedData();return{endorsements,flags}}catch(err){console.error('Error toggling flag:',err);showToast('❌ Failed to update: '+err.message);return null}}
@@ -2199,8 +2533,7 @@ async function viewUserDetail(mobile){try{showToast('⏳ Loading profile...');co
 // NAVIGATION
 // ============================================================
 function goHome(){currentPage='home';['home-page','profile-page','edit-seeker-page','postjob-page','detail-page','company-page'].forEach(id=>{const e=$(id);if(e)e.classList.toggle('hidden-page',id!=='home-page')});document.querySelectorAll('.bottom-nav .nav-item').forEach(el=>el.classList.remove('active'));const first=document.querySelectorAll('.bottom-nav .nav-item')[0];if(first)first.classList.add('active');$('feed-container').style.display='flex';renderFeed();setTimeout(fixLayoutHeight,100)}
-function goPostJob(){if(isGuest){showToast('🔐 Please login to post jobs');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentUser.company_name||currentUser.company_name.trim()===''){const w=$('recruiter-warning');if(w)w.style.display='flex';$('pj-company').value='';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=!0);$('pj-publish-btn').disabled=!0;$('pj-publish-btn').textContent='⚠️ Complete Recruiter Profile First'}else{const w=$('recruiter-warning');if(w)w.style.display='none';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=!1);$('pj-publish-btn').disabled=!1;$('pj-publish-btn').textContent='📤 Publish Job';$('pj-company').value=currentUser.company_name}
-    // Don't auto-clear if editing
+function goPostJob(){if(isGuest){showToast('🔐 Please login to post jobs');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentUser.company_name||currentUser.company_name.trim()===''){const w=$('recruiter-warning');if(w)w.style.display='flex';$('pj-company').value='';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=true);$('pj-publish-btn').disabled=true;$('pj-publish-btn').textContent='⚠️ Complete Recruiter Profile First'}else{const w=$('recruiter-warning');if(w)w.style.display='none';document.querySelectorAll('#postjob-page .form-control').forEach(el=>el.disabled=false);$('pj-publish-btn').disabled=false;$('pj-publish-btn').textContent='📤 Publish Job';$('pj-company').value=currentUser.company_name}
     if($('pj-publish-btn').dataset.editing !== 'true'){
         $('pj-title').value='';$('pj-skills').value='';$('pj-description').value='';$('pj-salary').value='';$('pj-experience').value='3.5';$('pj-gender').value='0';$('pj-zone-input').value='';$('pj-zone-hidden').value='';$('pj-work-mode').value='1';$('pj-education-required').value='0';updatePostAreas();const d=new Date();d.setDate(d.getDate()+30);$('pj-expiry').value=d.toISOString().split('T')[0];document.querySelectorAll('#postjob-page input,#postjob-page textarea').forEach(el=>{if(el)el.dispatchEvent(new Event('input'))});
     }
@@ -2232,9 +2565,12 @@ async function feedShowFlaggers(type,targetId){const item=feedItems.find(i=>{con
 function setFilter(type){currentFilter=type;const both=$('filter-both'),job=$('filter-job'),seeker=$('filter-seeker');if(both)both.className=type==='BOTH'?'active':'inactive';if(job)job.className=type==='JOB'?'active':'inactive';if(seeker)seeker.className=type==='SEEKER'?'active':'inactive';renderFeed()}
 
 // ============================================================
-// ZONE SEARCH & FILTER (Home Page)
+// ZONE SEARCH & FILTER (Home Page) - Fixed
 // ============================================================
-function searchZone(){const input=$('zone-search'),suggestions=$('zone-suggestions');if(!input||!suggestions)return;const query=input.value.toLowerCase().trim();let items=[];const recentZones=getRecentZones();if(!query){if(recentZones.length){items=recentZones.map(z=>({zone:z,isRecent:!0}))}}else{const seen=new Set();const matches=ZONES.filter(zone=>{if(seen.has(zone.zone_id))return!1;if(zone.zone_name.toLowerCase().includes(query)){seen.add(zone.zone_id);return!0}return!1});const recentMatches=matches.filter(z=>recentZones.some(r=>r.zone_id===z.zone_id));const otherMatches=matches.filter(z=>!recentZones.some(r=>r.zone_id===z.zone_id));items=[...recentMatches.map(z=>({zone:z,isRecent:!0})),...otherMatches.map(z=>({zone:z,isRecent:!1}))]}if(items.length===0){suggestions.innerHTML='<div class="no-result">No zones found</div>';suggestions.classList.add('show');return}suggestions.innerHTML=items.map(({zone,isRecent})=>`<div class="item" onclick="selectZone(${zone.zone_id},'${zone.zone_name}')">${isRecent?'🕐 ':'📍 '}${zone.zone_name}${isRecent?' <span class="recent-tag">(recent)</span>':''}</div>`).join('');suggestions.classList.add('show')}
+function searchZone(){const input=$('zone-search'),suggestions=$('zone-suggestions');if(!input||!suggestions)return;const query=input.value.toLowerCase().trim();let items=[];const recentZones=getRecentZones();if(!query){if(recentZones.length){items=recentZones.map(z=>({zone:z,isRecent:true}))}}else{const seen=new Set();const matches=ZONES.filter(zone=>{if(seen.has(zone.zone_id))return false;if(zone.zone_name.toLowerCase().includes(query)){seen.add(zone.zone_id);return true}return false});const recentMatches=matches.filter(z=>recentZones.some(r=>r.zone_id===z.zone_id));const otherMatches=matches.filter(z=>!recentZones.some(r=>r.zone_id===z.zone_id));items=[...recentMatches.map(z=>({zone:z,isRecent:true})),...otherMatches.map(z=>({zone:z,isRecent:false}))]}
+    if(items.length===0){suggestions.innerHTML='<div class="no-result">No zones found</div>';suggestions.classList.add('show');return}
+    suggestions.innerHTML=items.map(({zone,isRecent})=>`<div class="item" onclick="selectZone(${zone.zone_id},'${zone.zone_name}')">${isRecent?'🕐 ':'📍 '}${zone.zone_name}${isRecent?' <span class="recent-tag">(recent)</span>':''}</div>`).join('');
+    suggestions.classList.add('show')}
 function selectZone(zoneId,zoneName){const input=$('zone-search'),suggestions=$('zone-suggestions');if(input)input.value=zoneName;if(suggestions)suggestions.classList.remove('show');selectedZoneId=zoneId;selectedAreaId=null;$('zone-status').textContent=zoneName;addToRecent(zoneId);setLastSelectedZone(zoneId);const areaSelect=$('filter-area');if(areaSelect){const areas=getAreasByZone(zoneId);areaSelect.innerHTML='<option value="ALL">All areas</option>';areas.forEach(area=>{areaSelect.innerHTML+=`<option value="${area.area_id}">${area.area_name}</option>`})}renderFeed()}
 function onAreaFilterChange(){const areaSelect=$('filter-area');if(areaSelect)selectedAreaId=areaSelect.value!=='ALL'?parseInt(areaSelect.value):null;renderFeed()}
 function autoDetectLocation(){const lastZoneId=getLastSelectedZone();if(lastZoneId){const zone=ZONES.find(z=>z.zone_id===lastZoneId);if(zone){selectZone(lastZoneId,zone.zone_name);$('zone-search').value=zone.zone_name;return}}fetch('https://ipapi.co/json/').then(res=>res.json()).then(data=>{const city=data.city||'';const matched=ZONES.find(zone=>city.toLowerCase().includes(zone.zone_name.toLowerCase())||zone.zone_name.toLowerCase().includes(city.toLowerCase()));if(matched){selectZone(matched.zone_id,matched.zone_name);$('zone-search').value=matched.zone_name}}).catch(()=>{const hyderabad=ZONES.find(z=>z.zone_id===5001);if(hyderabad){selectZone(5001,hyderabad.zone_name);$('zone-search').value=hyderabad.zone_name}})}
@@ -2251,17 +2587,17 @@ async function incrementShareCount(type,id){try{const table=type==='JOB'?'active
 // ============================================================
 // AUTO CHECK & OTP
 // ============================================================
-async function autoCheckMobile(mobile){if(isChecking)return;isChecking=!0;const input=$('mobile');input.disabled=!0;setStatus('⏳ Checking...','blue');try{const{data:au}=await sb.from('active_users').select('*').eq('mobile',mobile).maybeSingle();if(au){isNewUser=!1;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Existing user - Enter PIN';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Existing user. Enter your PIN.','green');showToast('📱 Existing user - Enter PIN');isChecking=!1;input.disabled=!1;return}const{data:pd}=await sb.from('platform_stats').select('all_users').maybeSingle();let isArchived=!1;if(pd&&pd.all_users){const allUsers=pd.all_users||[],mb=BigInt(mobile);isArchived=allUsers.some(m=>{try{return BigInt(m)===mb}catch(e){return String(m)===mobile}})}if(isArchived){showToast('📱 Welcome back! Moving from archive...');const{data:na,error:ce}=await sb.from('active_users').insert([{mobile:mobile,last_active:new Date().toISOString()}]).select().single();if(ce){console.error('Error creating active user:',ce);isNewUser=!1;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Welcome back!';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Welcome back! Enter your PIN.','green');showToast('📱 Welcome back!');isChecking=!1;input.disabled=!1;return}showToast('✅ User moved from archive!');isNewUser=!1;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Welcome back! Enter PIN';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Welcome back! Enter your PIN.','green');showToast('📱 Welcome back!');isChecking=!1;input.disabled=!1;return}isNewUser=!0;currentMobile=mobile;await sendWhatsAppOTP(mobile)}catch(err){console.error('Error checking user:',err);isNewUser=!0;currentMobile=mobile;await sendWhatsAppOTP(mobile)}finally{isChecking=!1;input.disabled=!1}}
+async function autoCheckMobile(mobile){if(isChecking)return;isChecking=true;const input=$('mobile');input.disabled=true;setStatus('⏳ Checking...','blue');try{const{data:au}=await sb.from('active_users').select('*').eq('mobile',mobile).maybeSingle();if(au){isNewUser=false;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Existing user - Enter PIN';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Existing user. Enter your PIN.','green');showToast('📱 Existing user - Enter PIN');isChecking=false;input.disabled=false;return}const{data:pd}=await sb.from('platform_stats').select('all_users').maybeSingle();let isArchived=false;if(pd&&pd.all_users){const allUsers=pd.all_users||[];const mb=BigInt(mobile);isArchived=allUsers.some(m=>{try{return BigInt(m)===mb}catch(e){return String(m)===mobile}})}if(isArchived){showToast('📱 Welcome back! Moving from archive...');const{data:na,error:ce}=await sb.from('active_users').insert([{mobile:mobile,last_active:new Date().toISOString()}]).select().single();if(ce){console.error('Error creating active user:',ce);isNewUser=false;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Welcome back!';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Welcome back! Enter your PIN.','green');showToast('📱 Welcome back!');isChecking=false;input.disabled=false;return}showToast('✅ User moved from archive!');isNewUser=false;currentMobile=mobile;$('display-mobile').textContent=mobile;$('status-badge').textContent='✅ Welcome back! Enter PIN';$('status-badge').className='text-sm font-medium text-green-600';$('submitBtn').textContent='🔐 Login';$('submitBtn').className='btn-primary btn-green';$('step1').style.display='none';$('step2').classList.remove('hidden');$('step3').classList.add('hidden');$('step4').classList.add('hidden');$('pin').value='';$('pin').focus();setStatus('✅ Welcome back! Enter your PIN.','green');showToast('📱 Welcome back!');isChecking=false;input.disabled=false;return}isNewUser=true;currentMobile=mobile;await sendWhatsAppOTP(mobile)}catch(err){console.error('Error checking user:',err);isNewUser=true;currentMobile=mobile;await sendWhatsAppOTP(mobile)}finally{isChecking=false;input.disabled=false}}
 function formatMobileForWA(mobile){return`91${mobile}`}
 async function sendWhatsAppOTP(mobile){setStatus('📱 Sending OTP via WhatsApp...','blue');const otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('otp_'+mobile,otp);sessionStorage.setItem('otp_expiry_'+mobile,Date.now()+300000);const waNumber=formatMobileForWA(mobile),msg=`Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.\n\nThis is a one-time verification.`;window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`,'_blank');$('step1').style.display='none';$('step2').classList.add('hidden');$('step3').classList.remove('hidden');$('step4').classList.add('hidden');$('wa-display-mobile').textContent=mobile;document.querySelectorAll('.otp-input').forEach(el=>el.value='');document.querySelector('.otp-input').focus();startOTPTimer();setStatus('📱 OTP sent via WhatsApp! Check your WhatsApp.','green');showToast('💬 OTP sent via WhatsApp!')}
 function getOTP(){return Array.from(document.querySelectorAll('.otp-input')).map(el=>el.value).join('')}
-function startOTPTimer(){let timeLeft=otpExpiryTime;const timerEl=$('otp-timer'),resendBtn=$('resend-otp');if(otpTimerInterval)clearInterval(otpTimerInterval);otpTimerInterval=setInterval(()=>{const m=Math.floor(timeLeft/60),s=timeLeft%60;timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;timeLeft--;if(timeLeft<0){clearInterval(otpTimerInterval);timerEl.textContent='Expired';resendBtn.disabled=!1}},1000)}
-async function verifyOTP(){const otp=getOTP();if(otp.length!==6){showToast('⚠️ Enter complete 6-digit OTP');return}const storedOtp=sessionStorage.getItem('otp_'+currentMobile),storedExpiry=sessionStorage.getItem('otp_expiry_'+currentMobile);if(!storedOtp){showToast('❌ OTP expired. Please request again.');return}if(Date.now()>parseInt(storedExpiry)){showToast('❌ OTP expired. Please request again.');sessionStorage.removeItem('otp_'+currentMobile);$('resend-otp').disabled=!1;return}if(otp!==storedOtp){showToast('❌ Invalid OTP. Please try again.');document.querySelectorAll('.otp-input').forEach(el=>{el.value='';el.classList.remove('filled')});document.querySelector('.otp-input').focus();return}showToast('✅ Phone verified successfully!');sessionStorage.removeItem('otp_'+currentMobile);sessionStorage.removeItem('otp_expiry_'+currentMobile);$('step3').classList.add('hidden');$('step4').classList.remove('hidden');$('reg-display-mobile').textContent=currentMobile;$('reg-pin').value='';$('reg-pin-confirm').value='';$('reg-pin').focus();setStatus('📱 Set your PIN','blue')}
-async function resendOTP(){const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('otp_'+mobile,otp);sessionStorage.setItem('otp_expiry_'+mobile,Date.now()+300000);const waNumber=formatMobileForWA(mobile),msg=`Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`,'_blank');$('resend-otp').disabled=!0;startOTPTimer();showToast('🔄 OTP resent via WhatsApp!')}
-async function registerUser(){const pin=$('reg-pin').value.trim(),confirmPin=$('reg-pin-confirm').value.trim();if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){showToast('⚠️ Enter a valid 4-digit PIN');$('reg-pin').focus();return}if(pin!==confirmPin){showToast('⚠️ PINs do not match');$('reg-pin-confirm').value='';$('reg-pin-confirm').focus();return}$('register-btn').disabled=!0;$('register-btn').textContent='⏳ Creating...';try{const r=await fetch(`${EDGE_FUNCTION_URL}/register-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});const d=await r.json();if(d.success){const{data:pd}=await sb.from('platform_stats').select('all_users').maybeSingle();let allUsers=pd?.all_users||[];const mb=BigInt(currentMobile),ex=allUsers.some(m=>{try{return BigInt(m)===mb}catch(e){return String(m)===currentMobile}});if(!ex){allUsers.push(Number(currentMobile));if(pd)await sb.from('platform_stats').update({all_users:allUsers}).eq('id',pd.id);else await sb.from('platform_stats').insert([{all_users:allUsers}])}showToast('✅ Registration successful!');await fetchUserData(currentMobile)}else{showToast('❌ Registration failed: '+d.error);$('register-btn').disabled=!1;$('register-btn').textContent='✅ Create Account'}}catch(err){showToast('❌ Error: '+err.message);$('register-btn').disabled=!1;$('register-btn').textContent='✅ Create Account'}}
-window.submitPin=async function(){const pin=$('pin').value.trim();if(!pin||pin.length!==4){showToast('⚠️ Enter 4-digit PIN');$('pin').focus();return}$('submitBtn').disabled=!0;$('submitBtn').textContent='⏳ Verifying...';try{const r=await fetch(`${EDGE_FUNCTION_URL}/login-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});const d=await r.json();if(d.success){isGuest=!1;sessionStorage.removeItem('guest_session');await fetchUserData(currentMobile);showToast('✅ Welcome back!')}else{showToast('❌ Invalid PIN. Please try again.');$('pin').value='';$('pin').focus()}}catch(err){showToast('❌ Error: '+err.message)}finally{$('submitBtn').disabled=!1;$('submitBtn').textContent='🔐 Login'}};
+function startOTPTimer(){let timeLeft=otpExpiryTime;const timerEl=$('otp-timer'),resendBtn=$('resend-otp');if(otpTimerInterval)clearInterval(otpTimerInterval);otpTimerInterval=setInterval(()=>{const m=Math.floor(timeLeft/60),s=timeLeft%60;timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;timeLeft--;if(timeLeft<0){clearInterval(otpTimerInterval);timerEl.textContent='Expired';resendBtn.disabled=false}},1000)}
+async function verifyOTP(){const otp=getOTP();if(otp.length!==6){showToast('⚠️ Enter complete 6-digit OTP');return}const storedOtp=sessionStorage.getItem('otp_'+currentMobile),storedExpiry=sessionStorage.getItem('otp_expiry_'+currentMobile);if(!storedOtp){showToast('❌ OTP expired. Please request again.');return}if(Date.now()>parseInt(storedExpiry)){showToast('❌ OTP expired. Please request again.');sessionStorage.removeItem('otp_'+currentMobile);$('resend-otp').disabled=false;return}if(otp!==storedOtp){showToast('❌ Invalid OTP. Please try again.');document.querySelectorAll('.otp-input').forEach(el=>{el.value='';el.classList.remove('filled')});document.querySelector('.otp-input').focus();return}showToast('✅ Phone verified successfully!');sessionStorage.removeItem('otp_'+currentMobile);sessionStorage.removeItem('otp_expiry_'+currentMobile);$('step3').classList.add('hidden');$('step4').classList.remove('hidden');$('reg-display-mobile').textContent=currentMobile;$('reg-pin').value='';$('reg-pin-confirm').value='';$('reg-pin').focus();setStatus('📱 Set your PIN','blue')}
+async function resendOTP(){const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('otp_'+mobile,otp);sessionStorage.setItem('otp_expiry_'+mobile,Date.now()+300000);const waNumber=formatMobileForWA(mobile),msg=`Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`,'_blank');$('resend-otp').disabled=true;startOTPTimer();showToast('🔄 OTP resent via WhatsApp!')}
+async function registerUser(){const pin=$('reg-pin').value.trim(),confirmPin=$('reg-pin-confirm').value.trim();if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){showToast('⚠️ Enter a valid 4-digit PIN');$('reg-pin').focus();return}if(pin!==confirmPin){showToast('⚠️ PINs do not match');$('reg-pin-confirm').value='';$('reg-pin-confirm').focus();return}$('register-btn').disabled=true;$('register-btn').textContent='⏳ Creating...';try{const r=await fetch(`${EDGE_FUNCTION_URL}/register-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});const d=await r.json();if(d.success){const{data:pd}=await sb.from('platform_stats').select('all_users').maybeSingle();let allUsers=pd?.all_users||[];const mb=BigInt(currentMobile),ex=allUsers.some(m=>{try{return BigInt(m)===mb}catch(e){return String(m)===currentMobile}});if(!ex){allUsers.push(Number(currentMobile));if(pd)await sb.from('platform_stats').update({all_users:allUsers}).eq('id',pd.id);else await sb.from('platform_stats').insert([{all_users:allUsers}])}showToast('✅ Registration successful!');await fetchUserData(currentMobile)}else{showToast('❌ Registration failed: '+d.error);$('register-btn').disabled=false;$('register-btn').textContent='✅ Create Account'}}catch(err){showToast('❌ Error: '+err.message);$('register-btn').disabled=false;$('register-btn').textContent='✅ Create Account'}}
+window.submitPin=async function(){const pin=$('pin').value.trim();if(!pin||pin.length!==4){showToast('⚠️ Enter 4-digit PIN');$('pin').focus();return}$('submitBtn').disabled=true;$('submitBtn').textContent='⏳ Verifying...';try{const r=await fetch(`${EDGE_FUNCTION_URL}/login-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});const d=await r.json();if(d.success){isGuest=false;sessionStorage.removeItem('guest_session');await fetchUserData(currentMobile);showToast('✅ Welcome back!')}else{showToast('❌ Invalid PIN. Please try again.');$('pin').value='';$('pin').focus()}}catch(err){showToast('❌ Error: '+err.message)}finally{$('submitBtn').disabled=false;$('submitBtn').textContent='🔐 Login'}};
 async function fetchUserData(mobile){const{data,error}=await sb.from('active_users').select('*').eq('mobile',mobile).single();if(error){const{data:nu,error:ie}=await sb.from('active_users').insert([{mobile:mobile,last_active:new Date().toISOString()}]).select().single();if(ie){showToast('❌ Error creating user: '+ie.message);return}currentUser=nu}else currentUser=data;showHomeScreenAfterLogin();setTimeout(processSharedLinkAfterLogin,500)}
-function resetPIN(){if(confirm('Forgot your PIN? We\'ll send an OTP to reset it.')){const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,otp);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${otp}*`)}`,'_blank');showToast('📱 PIN reset OTP sent via WhatsApp!');$('step2').classList.add('hidden');$('step3').classList.remove('hidden');$('wa-display-mobile').textContent=mobile;$('verify-btn').textContent='✅ Verify & Reset PIN';$('verify-btn').className='btn-primary btn-green';$('verify-btn').onclick=function(){verifyResetOTP()};document.querySelectorAll('.otp-input').forEach(el=>el.value='');document.querySelector('.otp-input').focus();startOTPTimer();$('resend-otp').disabled=!0;$('resend-otp').onclick=function(){const no=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,no);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${no}*`)}`,'_blank');$('resend-otp').disabled=!0;startOTPTimer();showToast('🔄 Reset OTP resent!')}}}
+function resetPIN(){if(confirm('Forgot your PIN? We\'ll send an OTP to reset it.')){const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,otp);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${otp}*`)}`,'_blank');showToast('📱 PIN reset OTP sent via WhatsApp!');$('step2').classList.add('hidden');$('step3').classList.remove('hidden');$('wa-display-mobile').textContent=mobile;$('verify-btn').textContent='✅ Verify & Reset PIN';$('verify-btn').className='btn-primary btn-green';$('verify-btn').onclick=function(){verifyResetOTP()};document.querySelectorAll('.otp-input').forEach(el=>el.value='');document.querySelector('.otp-input').focus();startOTPTimer();$('resend-otp').disabled=true;$('resend-otp').onclick=function(){const no=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,no);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${no}*`)}`,'_blank');$('resend-otp').disabled=true;startOTPTimer();showToast('🔄 Reset OTP resent!')}}}
 async function verifyResetOTP(){const otp=getOTP();if(otp.length!==6){showToast('⚠️ Enter complete 6-digit OTP');return}const mobile=currentMobile,storedOtp=sessionStorage.getItem('reset_otp_'+mobile),storedExpiry=sessionStorage.getItem('reset_otp_expiry_'+mobile);if(!storedOtp||Date.now()>parseInt(storedExpiry)){showToast('❌ OTP expired. Please try again.');return}if(otp!==storedOtp){showToast('❌ Invalid OTP. Please try again.');document.querySelectorAll('.otp-input').forEach(el=>{el.value='';el.classList.remove('filled')});document.querySelector('.otp-input').focus();return}showToast('✅ OTP verified! Set your new PIN.');sessionStorage.removeItem('reset_otp_'+mobile);sessionStorage.removeItem('reset_otp_expiry_'+mobile);$('step3').classList.add('hidden');$('step4').classList.remove('hidden');$('reg-display-mobile').textContent=mobile;$('register-btn').textContent='💾 Reset PIN';$('register-btn').className='btn-primary btn-yellow';$('register-btn').onclick=function(){saveResetPIN()};$('reg-pin').value='';$('reg-pin-confirm').value='';$('reg-pin').focus()}
 async function saveResetPIN(){const pin=$('reg-pin').value.trim(),confirmPin=$('reg-pin-confirm').value.trim();if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){showToast('⚠️ Enter a valid 4-digit PIN');$('reg-pin').focus();return}if(pin!==confirmPin){showToast('⚠️ PINs do not match');$('reg-pin-confirm').value='';$('reg-pin-confirm').focus();return}try{const r=await fetch(`${EDGE_FUNCTION_URL}/change-pin`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,new_pin:pin})});const d=await r.json();if(d.success){showToast('✅ PIN reset successfully! Please login with your new PIN.');resetForm();$('mobile').value=currentMobile;$('mobile').focus()}else showToast('❌ Failed to reset PIN: '+d.error)}catch(err){showToast('❌ Error: '+err.message)}}
 
@@ -2283,6 +2619,11 @@ window.logout=function(){if(confirm('Are you sure you want to logout?')){resetFo
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded',function(){
+  // Load platform stats on login page
+  loadPlatformStats();
+  // Refresh stats every 60 seconds
+  setInterval(loadPlatformStats, 60000);
+  
   const about=$('edit-seeker-about'),count=$('char-count');if(about&&count)about.addEventListener('input',function(){count.textContent=this.value.length});
   const salaryInput=$('edit-seeker-salary');if(salaryInput)salaryInput.addEventListener('input',function(){const raw=parseSalaryValue(this.value);if(raw){this.value=formatSalaryDisplay(raw);this.setSelectionRange(this.value.length,this.value.length)}});
   setupCounter('pj-title','pj-title-counter',60);setupCounter('pj-skills','pj-skills-counter',200);setupCounter('pj-description','pj-desc-counter',500);
@@ -2292,7 +2633,6 @@ document.addEventListener('DOMContentLoaded',function(){
       const d=new Date();
       d.setDate(d.getDate()+30);
       expiryInput.value=d.toISOString().split('T')[0];
-      // Set max to 30 days from today
       expiryInput.max=new Date(Date.now()+30*24*60*60*1000).toISOString().split('T')[0];
       expiryInput.min=new Date(Date.now()+1*24*60*60*1000).toISOString().split('T')[0];
       document.getElementById('expiry-hint').textContent = 'max 30 days';
@@ -2319,10 +2659,10 @@ document.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('.otp-input').forEach((input,index,arr)=>{input.addEventListener('input',function(e){this.value=this.value.replace(/[^0-9]/g,'');if(this.value.length===1){this.classList.add('filled');if(index<arr.length-1)arr[index+1].focus();else{const allFilled=Array.from(arr).every(el=>el.value.length===1);if(allFilled)verifyOTP()}}else this.classList.remove('filled')});input.addEventListener('keydown',function(e){if(e.key==='Backspace'&&this.value.length===0&&index>0){arr[index-1].focus();arr[index-1].classList.remove('filled')}if(e.key==='Enter'){const allFilled=Array.from(arr).every(el=>el.value.length===1);if(allFilled)verifyOTP();else{const firstEmpty=Array.from(arr).find(el=>el.value.length===0);if(firstEmpty)firstEmpty.focus()}}});input.addEventListener('focus',function(){this.select()})});
   checkAndHandleInstallBanner();
   const isRootPath=window.location.pathname==='/'||window.location.pathname==='/index.html';
-  const shouldAutoLogin=(hasSharedLink||sessionStorage.getItem('guest_session')==='true')&&!isRootPath;
-  if(shouldAutoLogin){$('login-screen').style.display='none';$('home-page').classList.remove('hidden-page');if(hasSharedLink)$('loading-overlay').classList.add('show');autoLoginGuest()}else{$('login-screen').style.display='flex';$('mobile').focus();$('home-page').classList.add('hidden-page');if(isRootPath)sessionStorage.removeItem('guest_session')}
+  const shouldAutoLogin=(hasSharedLink||sessionStorage.getItem('guest_id')!==null)&&!isRootPath;
+  if(shouldAutoLogin){$('login-screen').style.display='none';$('home-page').classList.remove('hidden-page');if(hasSharedLink)$('loading-overlay').classList.add('show');isGuest=true;showHomeScreenAfterLogin();if(hasSharedLink)setTimeout(processSharedLinkAfterLogin,500)}else{$('login-screen').style.display='flex';$('mobile').focus();$('home-page').classList.add('hidden-page');if(isRootPath)sessionStorage.removeItem('guest_id')}
 });
-if(hasSharedLink)setTimeout(()=>{if(!sharedLinkProcessed&&currentUser)processSharedLinkAfterLogin()},3000);
+if(hasSharedLink)setTimeout(()=>{if(!sharedLinkProcessed)processSharedLinkAfterLogin()},3000);
 </script>
 </body>
 </html>
