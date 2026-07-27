@@ -928,6 +928,11 @@ let currentMobile='',currentUser=null,isGuest=false,isChecking=false,currentFilt
 let deferredPrompt=null,bannerShown=false;
 
 // ============================================================
+// STORE RETURN URL FOR GUEST LOGIN REDIRECT
+// ============================================================
+let returnToDetailAfterLogin = null;
+
+// ============================================================
 // PLATFORM STATS LOADER
 // ============================================================
 async function loadPlatformStats() {
@@ -1007,9 +1012,12 @@ function updateGuestUI() {
 }
 
 // ============================================================
-// SHOW LOGIN - GLOBAL FUNCTION
+// SHOW LOGIN - GLOBAL FUNCTION with return URL support
 // ============================================================
-function showLogin() {
+function showLogin(returnToDetail) {
+    if(returnToDetail) {
+        returnToDetailAfterLogin = returnToDetail;
+    }
     resetForm();
     document.getElementById('mobile').focus();
     showToast('🔐 Enter your mobile number to login');
@@ -1207,10 +1215,19 @@ function handleShareClick(){if(!currentDetailData||!currentDetailType){showToast
 function shareFromFeed(e,t,id){e.stopPropagation();const item=feedItems.find(i=>{const id2=i.type==='JOB'?i._raw?.job_id:i._raw?.mobile;return i.type===t&&String(id2)===String(id)});if(item&&item._raw){currentDetailData=item._raw;currentDetailType=item.type;incrementShareCount(t,id);openShareModal()}}
 
 // ============================================================
-// APPLY TO JOB - Guest restricted
+// APPLY TO JOB - Guest redirects to login
 // ============================================================
 async function applyToJob(){
-    if(isGuest){showToast('🔐 Please login to apply');showLogin();return}
+    if(isGuest){
+        // Store current detail to return after login
+        if(currentDetailData && currentDetailType) {
+            const id = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+            returnToDetailAfterLogin = { type: currentDetailType, id: id };
+        }
+        showLogin(returnToDetailAfterLogin);
+        showToast('🔐 Please login to apply');
+        return;
+    }
     if(!currentUser){showToast('⚠️ Please login first');showLogin();return}
     if(!currentDetailData||currentDetailType!=='JOB'){showToast('⚠️ No job selected');return}
     if(currentDetailData.mobile===String(currentUser.mobile)){showToast('⚠️ You cannot apply to your own job');return}
@@ -1277,8 +1294,8 @@ function updateActionButtons(){
         if(isGuest){
             label = '🔐 Login to Apply';
             className = 'btn-apply';
-            disabled = true;
-            onclick = '';
+            disabled = false;
+            onclick = 'showLoginAndReturn()';
         }else if(isOwner){
             label = 'Your Job';
             className = 'btn-apply';
@@ -1304,8 +1321,8 @@ function updateActionButtons(){
         if(isGuest){
             label = '🔐 Login to Invite';
             className = 'btn-invite';
-            disabled = true;
-            onclick = '';
+            disabled = false;
+            onclick = 'showLoginAndReturn()';
         }else if(isOwner){
             label = 'Your Profile';
             className = 'btn-invite own-profile';
@@ -1328,6 +1345,18 @@ function updateActionButtons(){
 }
 
 // ============================================================
+// SHOW LOGIN AND RETURN - For guest actions
+// ============================================================
+function showLoginAndReturn() {
+    if(currentDetailData && currentDetailType) {
+        const id = currentDetailType === 'JOB' ? currentDetailData.job_id : currentDetailData.mobile;
+        returnToDetailAfterLogin = { type: currentDetailType, id: id };
+    }
+    showLogin(returnToDetailAfterLogin);
+    showToast('🔐 Please login to continue');
+}
+
+// ============================================================
 // APPLICANTS LIST
 // ============================================================
 async function getApplicantsList(jobId){try{const{data,error}=await sb.from('active_jobs').select('applicants').eq('job_id',jobId).single();if(error)throw error;const applicants=data.applicants||[];if(applicants.length===0){showToast('No applicants yet');return[]}const{data:users,error:userError}=await sb.from('active_users').select('mobile,full_name,gender').in('mobile',applicants.map(m=>String(m)));if(userError)throw userError;return users||[]}catch(err){console.error('Error fetching applicants:',err);showToast('❌ Failed to load applicants: '+err.message);return[]}}
@@ -1337,7 +1366,7 @@ async function detailShowApplicants(){if(!currentDetailData||currentDetailType!=
 // INVITE FUNCTIONS (for SEEKER profiles only)
 // ============================================================
 function openInviteModal(seekerMobile,seekerName){
-    if(isGuest){showToast('🔐 Please login to invite');showLogin();return}
+    if(isGuest){showToast('🔐 Please login to invite');showLoginAndReturn();return}
     if(!currentUser){showToast('⚠️ Please login first');showLogin();return}
     if(!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name first');goToProfile();return}
     if(seekerMobile===String(currentUser.mobile)){showToast('⚠️ You cannot invite yourself');return}
@@ -1766,12 +1795,14 @@ async function publishJob(){
 }
 
 // ============================================================
-// EDIT JOB
+// EDIT JOB - FIXED: Load company and company_website
 // ============================================================
 async function editJob(jobId){
     try {
         const{data,error}=await sb.from('active_jobs').select('*').eq('job_id',jobId).single();
         if(error) throw error;
+        
+        // Populate all fields
         $('pj-company').value = data.company_name||'';
         $('pj-company-website').value = data.company_website||'';
         $('pj-title').value = data.job_title||'';
@@ -1795,6 +1826,7 @@ async function editJob(jobId){
         
         $('pj-work-mode').value = data.work_mode||1;
         $('pj-education-required').value = data.education_required||0;
+        
         if(data.zone_id){
             const zone = ZONES.find(z=>z.zone_id===data.zone_id);
             if(zone){
@@ -1809,6 +1841,7 @@ async function editJob(jobId){
                 }
             }
         }
+        
         $('pj-publish-btn').dataset.editing = 'true';
         $('pj-publish-btn').dataset.jobid = jobId;
         $('pj-publish-btn').textContent = '📝 Update Job';
@@ -1866,9 +1899,9 @@ function openDetail(data,type){currentDetailData=data;currentDetailType=type;$('
     const callBtn=$('detail-call-btn'),endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn'),jobWarning=$('detail-job-warning'),seekerWarning=$('detail-seeker-warning');if(jobWarning)jobWarning.style.display='none';if(seekerWarning)seekerWarning.style.display='none';
     
     if(isGuest){
-        if(callBtn)callBtn.disabled=true;
-        if(endorseBtn)endorseBtn.disabled=true;
-        if(flagBtn)flagBtn.disabled=true;
+        if(callBtn)callBtn.disabled=false; // Allow click but redirect to login
+        if(endorseBtn)endorseBtn.disabled=false;
+        if(flagBtn)flagBtn.disabled=false;
         if(jobWarning)jobWarning.style.display='flex';
     } else {
         if(isJob){
@@ -1948,7 +1981,7 @@ function detailShowThirdStat(){
 }
 function inviteSeeker(){
     if(!currentDetailData||currentDetailType!=='SEEKER')return;
-    if(isGuest){showToast('🔐 Please login to invite');showLogin();return}
+    if(isGuest){showToast('🔐 Please login to invite');showLoginAndReturn();return}
     if(!currentUser){showToast('⚠️ Please login first');showLogin();return}
     if(!currentUser.company_name||currentUser.company_name.trim()===''){showToast('⚠️ Please set your company name first');goToProfile();return}
     if(currentDetailData.mobile===String(currentUser.mobile)){showToast('⚠️ You cannot invite yourself');return}
@@ -1967,19 +2000,43 @@ async function detailShowInvitations(){
 }
 
 // ============================================================
-// CALL - Guest restricted
+// CALL - Guest redirects to login
 // ============================================================
-function makeCall(){if(isGuest){showLogin();showToast('🔐 Please login to make a call');return}if(!currentUser){showLogin();showToast('🔐 Please login to make a call');return}if(!currentDetailData){showToast('⚠️ No contact available');return}const contact=currentDetailData.mobile||currentDetailData.contact;if(!contact){showToast('⚠️ No contact number available');return}const isJob=currentDetailType==='JOB';if(isJob&&(!currentUser.company_name||currentUser.company_name.trim()==='')){showToast('⚠️ Please set your company name to contact job seekers');goToProfile();return}if(!isJob&&(!currentUser.full_name||currentUser.full_name.trim()==='')){showToast('⚠️ Please complete your job seeker profile to contact for jobs');goToEditSeeker();return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;incrementCallCount(currentDetailType,id);window.location.href=`tel:${contact}`}
+function makeCall(){
+    if(isGuest){
+        showLoginAndReturn();
+        showToast('🔐 Please login to make a call');
+        return;
+    }
+    if(!currentUser){showLogin();showToast('🔐 Please login to make a call');return}
+    if(!currentDetailData){showToast('⚠️ No contact available');return}
+    const contact=currentDetailData.mobile||currentDetailData.contact;
+    if(!contact){showToast('⚠️ No contact number available');return}
+    const isJob=currentDetailType==='JOB';
+    if(isJob&&(!currentUser.company_name||currentUser.company_name.trim()==='')){showToast('⚠️ Please set your company name to contact job seekers');goToProfile();return}
+    if(!isJob&&(!currentUser.full_name||currentUser.full_name.trim()==='')){showToast('⚠️ Please complete your job seeker profile to contact for jobs');goToEditSeeker();return}
+    const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;
+    incrementCallCount(currentDetailType,id);
+    window.location.href=`tel:${contact}`;
+}
 
 // ============================================================
-// ENDORSEMENTS & FLAGS - Guest restricted
+// ENDORSEMENTS & FLAGS - Guest redirects to login
 // ============================================================
-async function toggleEndorsement(type,id,mobile){if(isGuest){showToast('🔐 Please login to recommend');showLogin();return null}if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;try{const{data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;let endorsements=data.endorsements||[],flags=data.flags||[];const targetMobileStr=String(targetMobile),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr);if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed')}else{if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed, adding endorsement')}endorsements.push(Number(targetMobile));showToast('👍 Endorsed successfully!')}await sb.from(table).update({endorsements,flags}).eq(idField,id);if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}updateFeedItem(id, type, {endorsements, flags});await fetchFeedData();return{endorsements,flags}}catch(err){console.error('Error toggling endorsement:',err);showToast('❌ Failed to update: '+err.message);return null}}
-async function toggleFlag(type,id,mobile){if(isGuest){showToast('🔐 Please login to flag');showLogin();return null}if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;try{const{data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;let endorsements=data.endorsements||[],flags=data.flags||[];const targetMobileStr=String(targetMobile),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr);if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed')}else{if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed, adding flag')}flags.push(Number(targetMobile));showToast('👎 Not recommended')}await sb.from(table).update({endorsements,flags}).eq(idField,id);if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}updateFeedItem(id, type, {endorsements, flags});await fetchFeedData();return{endorsements,flags}}catch(err){console.error('Error toggling flag:',err);showToast('❌ Failed to update: '+err.message);return null}}
+async function toggleEndorsement(type,id,mobile){
+    if(isGuest){showToast('🔐 Please login to recommend');showLoginAndReturn();return null}
+    if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}
+    const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;
+    try{const{data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;let endorsements=data.endorsements||[],flags=data.flags||[];const targetMobileStr=String(targetMobile),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr);if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed')}else{if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed, adding endorsement')}endorsements.push(Number(targetMobile));showToast('👍 Endorsed successfully!')}await sb.from(table).update({endorsements,flags}).eq(idField,id);if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}updateFeedItem(id, type, {endorsements, flags});await fetchFeedData();return{endorsements,flags}}catch(err){console.error('Error toggling endorsement:',err);showToast('❌ Failed to update: '+err.message);return null}}
+async function toggleFlag(type,id,mobile){
+    if(isGuest){showToast('🔐 Please login to flag');showLoginAndReturn();return null}
+    if(!currentUser){showToast('⚠️ Please login first');showLogin();return null}
+    const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile',targetMobile=currentUser.mobile;
+    try{const{data,error}=await sb.from(table).select('endorsements,flags').eq(idField,id).single();if(error)throw error;let endorsements=data.endorsements||[],flags=data.flags||[];const targetMobileStr=String(targetMobile),alreadyFlagged=flags.some(m=>String(m)===targetMobileStr),alreadyEndorsed=endorsements.some(m=>String(m)===targetMobileStr);if(alreadyFlagged){flags=flags.filter(m=>String(m)!==targetMobileStr);showToast('👎 Flag removed')}else{if(alreadyEndorsed){endorsements=endorsements.filter(m=>String(m)!==targetMobileStr);showToast('👍 Endorsement removed, adding flag')}flags.push(Number(targetMobile));showToast('👎 Not recommended')}await sb.from(table).update({endorsements,flags}).eq(idField,id);if(currentDetailData&&currentDetailType===type){currentDetailData.endorsements=endorsements;currentDetailData.flags=flags;updateDetailStats();updateDetailCounts(endorsements,flags)}updateFeedItem(id, type, {endorsements, flags});await fetchFeedData();return{endorsements,flags}}catch(err){console.error('Error toggling flag:',err);showToast('❌ Failed to update: '+err.message);return null}}
 async function getEndorsersList(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile';const{data,error}=await sb.from(table).select('endorsements').eq(idField,id).single();if(error)throw error;const endorsements=data.endorsements||[];if(endorsements.length===0){showToast('No endorsements yet');return[]}const{data:users,error:userError}=await sb.from('active_users').select('mobile,full_name,gender').in('mobile',endorsements.map(m=>String(m)));if(userError)throw userError;return users||[]}catch(err){console.error('Error fetching endorsers:',err);showToast('❌ Failed to load endorsers: '+err.message);return[]}}
 async function getFlaggersList(type,id){try{const table=type==='JOB'?'active_jobs':'active_users',idField=type==='JOB'?'job_id':'mobile';const{data,error}=await sb.from(table).select('flags').eq(idField,id).single();if(error)throw error;const flags=data.flags||[];if(flags.length===0){showToast('No flags yet');return[]}const{data:users,error:userError}=await sb.from('active_users').select('mobile,full_name,gender').in('mobile',flags.map(m=>String(m)));if(userError)throw userError;return users||[]}catch(err){console.error('Error fetching flaggers:',err);showToast('❌ Failed to load flaggers: '+err.message);return[]}}
-async function detailToggleEndorsement(){if(isGuest){showToast('🔐 Please login to recommend');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;const result=await toggleEndorsement(currentDetailType,id,currentUser.mobile);if(result){updateDetailCounts(result.endorsements,result.flags);updateDetailStats()}}
-async function detailToggleFlag(){if(isGuest){showToast('🔐 Please login to flag');showLogin();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;const result=await toggleFlag(currentDetailType,id,currentUser.mobile);if(result){updateDetailCounts(result.endorsements,result.flags);updateDetailStats()}}
+async function detailToggleEndorsement(){if(isGuest){showToast('🔐 Please login to recommend');showLoginAndReturn();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;const result=await toggleEndorsement(currentDetailType,id,currentUser.mobile);if(result){updateDetailCounts(result.endorsements,result.flags);updateDetailStats()}}
+async function detailToggleFlag(){if(isGuest){showToast('🔐 Please login to flag');showLoginAndReturn();return}if(!currentUser){showToast('⚠️ Please login first');showLogin();return}if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;const result=await toggleFlag(currentDetailType,id,currentUser.mobile);if(result){updateDetailCounts(result.endorsements,result.flags);updateDetailStats()}}
 async function detailShowEndorsers(){if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;await showEndorsersModal(currentDetailType,id)}
 async function detailShowFlaggers(){if(!currentDetailData||!currentDetailType){showToast('⚠️ No item selected');return}const id=currentDetailType==='JOB'?currentDetailData.job_id:currentDetailData.mobile;await showFlaggersModal(currentDetailType,id)}
 function updateDetailCounts(endorsements,flags){$('detail-flags-count').textContent=flags.length||0;if(currentUser&&!isGuest){const targetMobileStr=String(currentUser.mobile),userEndorsed=endorsements.some(m=>String(m)===targetMobileStr),userFlagged=flags.some(m=>String(m)===targetMobileStr);const endorseBtn=$('detail-endorse-btn'),flagBtn=$('detail-flag-btn');if(endorseBtn)endorseBtn.className=`btn-endorse ${userEndorsed?'active':''}`;if(flagBtn)flagBtn.className=`btn-flag ${userFlagged?'active':''}`}}
@@ -2159,7 +2216,44 @@ async function verifyOTP(){const otp=getOTP();if(otp.length!==6){showToast('⚠�
 async function resendOTP(){const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('otp_'+mobile,otp);sessionStorage.setItem('otp_expiry_'+mobile,Date.now()+300000);const waNumber=formatMobileForWA(mobile),msg=`Your JobAd verification code is: *${otp}*\n\nEnter this code to complete your registration.`;window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`,'_blank');$('resend-otp').disabled=true;startOTPTimer();showToast('🔄 OTP resent via WhatsApp!')}
 async function registerUser(){const pin=$('reg-pin').value.trim(),confirmPin=$('reg-pin-confirm').value.trim();if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){showToast('⚠️ Enter a valid 4-digit PIN');$('reg-pin').focus();return}if(pin!==confirmPin){showToast('⚠️ PINs do not match');$('reg-pin-confirm').value='';$('reg-pin-confirm').focus();return}$('register-btn').disabled=true;$('register-btn').textContent='⏳ Creating...';try{const r=await fetch(`${EDGE_FUNCTION_URL}/register-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});const d=await r.json();if(d.success){const{data:pd}=await sb.from('platform_stats').select('all_users').maybeSingle();let allUsers=pd?.all_users||[];const mb=BigInt(currentMobile),ex=allUsers.some(m=>{try{return BigInt(m)===mb}catch(e){return String(m)===currentMobile}});if(!ex){allUsers.push(Number(currentMobile));if(pd)await sb.from('platform_stats').update({all_users:allUsers}).eq('id',pd.id);else await sb.from('platform_stats').insert([{all_users:allUsers}])}showToast('✅ Registration successful!');await fetchUserData(currentMobile)}else{showToast('❌ Registration failed: '+d.error);$('register-btn').disabled=false;$('register-btn').textContent='✅ Create Account'}}catch(err){showToast('❌ Error: '+err.message);$('register-btn').disabled=false;$('register-btn').textContent='✅ Create Account'}}
 window.submitPin=async function(){const pin=$('pin').value.trim();if(!pin||pin.length!==4){showToast('⚠️ Enter 4-digit PIN');$('pin').focus();return}$('submitBtn').disabled=true;$('submitBtn').textContent='⏳ Verifying...';try{const r=await fetch(`${EDGE_FUNCTION_URL}/login-user`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,pin:pin})});const d=await r.json();if(d.success){isGuest=false;await fetchUserData(currentMobile);showToast('✅ Welcome back!')}else{showToast('❌ Invalid PIN. Please try again.');$('pin').value='';$('pin').focus()}}catch(err){showToast('❌ Error: '+err.message)}finally{$('submitBtn').disabled=false;$('submitBtn').textContent='🔐 Login'}};
-async function fetchUserData(mobile){const{data,error}=await sb.from('active_users').select('*').eq('mobile',mobile).single();if(error){const{data:nu,error:ie}=await sb.from('active_users').insert([{mobile:mobile,last_active:new Date().toISOString()}]).select().single();if(ie){showToast('❌ Error creating user: '+ie.message);return}currentUser=nu}else currentUser=data;showHomeScreenAfterLogin();setTimeout(processSharedLinkAfterLogin,500)}
+async function fetchUserData(mobile){
+    const{data,error}=await sb.from('active_users').select('*').eq('mobile',mobile).single();
+    if(error){
+        const{data:nu,error:ie}=await sb.from('active_users').insert([{mobile:mobile,last_active:new Date().toISOString()}]).select().single();
+        if(ie){showToast('❌ Error creating user: '+ie.message);return}
+        currentUser=nu;
+    }else{
+        currentUser=data;
+    }
+    showHomeScreenAfterLogin();
+    
+    // Check if there's a return URL to redirect after login
+    if(returnToDetailAfterLogin) {
+        setTimeout(() => {
+            const { type, id } = returnToDetailAfterLogin;
+            returnToDetailAfterLogin = null;
+            
+            // Fetch the item again and open it
+            if(type === 'JOB') {
+                sb.from('active_jobs').select('*').eq('job_id', parseInt(id)).single().then(({data}) => {
+                    if(data) {
+                        openDetail(data, 'JOB');
+                        showToast('📎 Returning to job');
+                    }
+                });
+            } else {
+                sb.from('active_users').select('*').eq('mobile', id).single().then(({data}) => {
+                    if(data) {
+                        openDetail(data, 'SEEKER');
+                        showToast('👤 Returning to profile');
+                    }
+                });
+            }
+        }, 500);
+    }
+    
+    setTimeout(processSharedLinkAfterLogin, 500);
+}
 function resetPIN(){if(confirm('Forgot your PIN? We\'ll send an OTP to reset it.')){const mobile=currentMobile,otp=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,otp);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${otp}*`)}`,'_blank');showToast('📱 PIN reset OTP sent via WhatsApp!');$('step2').classList.add('hidden');$('step3').classList.remove('hidden');$('wa-display-mobile').textContent=mobile;$('verify-btn').textContent='✅ Verify & Reset PIN';$('verify-btn').className='btn-primary btn-green';$('verify-btn').onclick=function(){verifyResetOTP()};document.querySelectorAll('.otp-input').forEach(el=>el.value='');document.querySelector('.otp-input').focus();startOTPTimer();$('resend-otp').disabled=true;$('resend-otp').onclick=function(){const no=Math.floor(100000+Math.random()*900000).toString();sessionStorage.setItem('reset_otp_'+mobile,no);sessionStorage.setItem('reset_otp_expiry_'+mobile,Date.now()+300000);window.open(`https://wa.me/${formatMobileForWA(mobile)}?text=${encodeURIComponent(`Your JobAd PIN reset code is: *${no}*`)}`,'_blank');$('resend-otp').disabled=true;startOTPTimer();showToast('🔄 Reset OTP resent!')}}}
 async function verifyResetOTP(){const otp=getOTP();if(otp.length!==6){showToast('⚠️ Enter complete 6-digit OTP');return}const mobile=currentMobile,storedOtp=sessionStorage.getItem('reset_otp_'+mobile),storedExpiry=sessionStorage.getItem('reset_otp_expiry_'+mobile);if(!storedOtp||Date.now()>parseInt(storedExpiry)){showToast('❌ OTP expired. Please try again.');return}if(otp!==storedOtp){showToast('❌ Invalid OTP. Please try again.');document.querySelectorAll('.otp-input').forEach(el=>{el.value='';el.classList.remove('filled')});document.querySelector('.otp-input').focus();return}showToast('✅ OTP verified! Set your new PIN.');sessionStorage.removeItem('reset_otp_'+mobile);sessionStorage.removeItem('reset_otp_expiry_'+mobile);$('step3').classList.add('hidden');$('step4').classList.remove('hidden');$('reg-display-mobile').textContent=mobile;$('register-btn').textContent='💾 Reset PIN';$('register-btn').className='btn-primary btn-yellow';$('register-btn').onclick=function(){saveResetPIN()};$('reg-pin').value='';$('reg-pin-confirm').value='';$('reg-pin').focus()}
 async function saveResetPIN(){const pin=$('reg-pin').value.trim(),confirmPin=$('reg-pin-confirm').value.trim();if(!pin||pin.length!==4||!/^\d{4}$/.test(pin)){showToast('⚠️ Enter a valid 4-digit PIN');$('reg-pin').focus();return}if(pin!==confirmPin){showToast('⚠️ PINs do not match');$('reg-pin-confirm').value='';$('reg-pin-confirm').focus();return}try{const r=await fetch(`${EDGE_FUNCTION_URL}/change-pin`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mobile:currentMobile,new_pin:pin})});const d=await r.json();if(d.success){showToast('✅ PIN reset successfully! Please login with your new PIN.');resetForm();$('mobile').value=currentMobile;$('mobile').focus()}else showToast('❌ Failed to reset PIN: '+d.error)}catch(err){showToast('❌ Error: '+err.message)}}
@@ -2243,22 +2337,18 @@ document.addEventListener('DOMContentLoaded',function(){
   
   // Check for shared link - PRIORITY 1
   if(hasSharedLink){
-      // Hide login screen and show loading
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('home-page').classList.add('hidden-page');
       document.getElementById('loading-overlay').classList.add('show');
       document.querySelector('.loading-overlay .loading-text').textContent = 'Loading shared item...';
       
-      // Process shared link immediately
       setTimeout(() => {
           processSharedLinkAfterLogin();
-          // Hide loading after 2 seconds max
           setTimeout(() => {
               document.getElementById('loading-overlay').classList.remove('show');
           }, 2000);
       }, 100);
   } else {
-      // Normal flow - show login screen
       document.getElementById('login-screen').style.display = 'flex';
       document.getElementById('mobile').focus();
       document.getElementById('home-page').classList.add('hidden-page');
