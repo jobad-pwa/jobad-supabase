@@ -1,30 +1,33 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/job/(.*)", "destination": "/api/data/job-id" },
-    { "source": "/job", "destination": "/api/data/job-list" },
-    { "source": "/sitemap.xml", "destination": "/api/data/sitemap" },
-    { "source": "/sitemap-jobs.xml", "destination": "/api/data/sitemap-jobs" },
-    { "source": "/jobs.xml", "destination": "/api/data/indeed-feed" },
-    { "source": "/robots.txt", "destination": "/api/data/robots" },
-    { "source": "/api/jobs", "destination": "/api/data/job-list" },
-    { "source": "/api/job/:id", "destination": "/api/data/job-id" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
     {
-      "source": "/job/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Cache-Control", "value": "public, max-age=3600" }
-      ]
+      "source": "/job/:id",
+      "destination": "/api/job-id"
     },
     {
-      "source": "/api/data/(.*)",
-      "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Cache-Control", "value": "public, max-age=3600" }
-      ]
+      "source": "/api/jobs",
+      "destination": "/api/job-list"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/sitemap-jobs.xml",
+      "destination": "/api/sitemap-jobs"
+    },
+    {
+      "source": "/jobs.xml",
+      "destination": "/api/indeed-feed"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/api/robots"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
